@@ -146,7 +146,7 @@
       </div>
 
       <!-- Media Preview Grid -->
-      <div v-if="mediaPreviews.length > 0" class="publisher__media-previews">
+      <div v-if="!showProductForm && mediaPreviews.length > 0" class="publisher__media-previews">
         <div 
           v-for="(preview, idx) in mediaPreviews" 
           :key="preview.url"
@@ -175,115 +175,15 @@
         </div>
       </div>
 
-      <!-- Sell Product Form -->
-      <div v-else-if="showProductForm" class="publisher__product-form">
+      <div v-if="showProductForm" class="publisher__product-form">
         <p class="publisher__product-title">
           <Icon name="i-ph-shopping-cart-bold" class="h-5 w-5 mr-1 text-orange-500" />
           {{ locale === "vi" ? "Đăng bán sản phẩm" : "List a Product for Sale" }}
         </p>
-        
-        <div class="publisher__product-grid">
-          <div class="publisher__product-field">
-            <label class="publisher__product-label">{{ locale === "vi" ? "Tên sản phẩm *" : "Product Name *" }}</label>
-            <input 
-              v-model="productForm.name" 
-              type="text" 
-              class="publisher__product-input" 
-              :placeholder="locale === 'vi' ? 'Bạn đang bán gì?' : 'What are you selling?'"
-              required
-            >
-          </div>
-
-          <div class="publisher__product-row-2">
-            <div class="publisher__product-field">
-              <label class="publisher__product-label">{{ locale === "vi" ? "Giá *" : "Price *" }}</label>
-              <div class="publisher__price-wrapper">
-                <input 
-                  v-model="productForm.price" 
-                  type="text" 
-                  class="publisher__product-input" 
-                  placeholder="0.00"
-                  required
-                >
-                <select v-model="productForm.currency" class="publisher__product-select publisher__currency-select">
-                  <option value="₫">₫ (VND)</option>
-                  <option value="$">$ (USD)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="publisher__product-field">
-              <label class="publisher__product-label">{{ locale === "vi" ? "Danh mục *" : "Category *" }}</label>
-              <select v-model="productForm.category" class="publisher__product-select">
-                <option value="1">{{ locale === "vi" ? "Trang phục & Phụ kiện" : "Apparel & Accessories" }}</option>
-                <option value="2">{{ locale === "vi" ? "Ô tô & Xe cộ" : "Autos & Vehicles" }}</option>
-                <option value="3">{{ locale === "vi" ? "Sản phẩm trẻ em" : "Baby & Children's Products" }}</option>
-                <option value="4">{{ locale === "vi" ? "Làm đẹp & Sức khỏe" : "Beauty Products & Services" }}</option>
-                <option value="5">{{ locale === "vi" ? "Máy tính & Thiết bị ngoại vi" : "Computers & Peripherals" }}</option>
-                <option value="6">{{ locale === "vi" ? "Điện tử dân dụng" : "Consumer Electronics" }}</option>
-                <option value="10">{{ locale === "vi" ? "Nhà & Vườn" : "Home & Garden" }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="publisher__product-row-2">
-            <div class="publisher__product-field">
-              <label class="publisher__product-label">{{ locale === "vi" ? "Tình trạng" : "Condition" }}</label>
-              <select v-model="productForm.type" class="publisher__product-select">
-                <option value="0">{{ locale === "vi" ? "Mới" : "New" }}</option>
-                <option value="1">{{ locale === "vi" ? "Đã sử dụng" : "Used" }}</option>
-              </select>
-            </div>
-
-            <div class="publisher__product-field">
-              <label class="publisher__product-label">{{ locale === "vi" ? "Địa điểm" : "Location" }}</label>
-              <input 
-                v-model="productForm.location" 
-                type="text" 
-                class="publisher__product-input" 
-                :placeholder="locale === 'vi' ? 'Hà Nội, Việt Nam...' : 'Location...'"
-              >
-            </div>
-          </div>
-
-          <div class="publisher__product-field">
-            <label class="publisher__product-label">{{ locale === "vi" ? "Mô tả sản phẩm *" : "Description *" }}</label>
-            <textarea 
-              v-model="productForm.description" 
-              class="publisher__product-textarea" 
-              :placeholder="locale === 'vi' ? 'Thêm thông tin mô tả chi tiết sản phẩm...' : 'Add details about your product...'"
-              rows="3"
-              required
-            />
-          </div>
-
-          <div class="publisher__product-field">
-            <label class="publisher__product-label">{{ locale === "vi" ? "Hình ảnh sản phẩm *" : "Product Image *" }}</label>
-            <div class="publisher__product-image-uploader" @click="productImageInput?.click()">
-              <input
-                ref="productImageInput"
-                type="file"
-                accept="image/png,image/jpeg,image/gif"
-                class="hidden"
-                @change="e => productForm.imageFile = e.target.files ? e.target.files[0] : null"
-              >
-              <div v-if="productForm.imageFile" class="publisher__product-image-preview">
-                <Icon name="i-ph-image-square-bold" class="h-5 w-5 mr-1 text-green-500" />
-                <span class="truncate flex-1">{{ productForm.imageFile.name }}</span>
-                <button type="button" class="publisher__product-image-remove" @click.stop="productForm.imageFile = null">
-                  <Icon name="i-ph-x-bold" class="h-4 w-4" />
-                </button>
-              </div>
-              <div v-else class="publisher__product-image-placeholder">
-                <Icon name="i-ph-upload-simple-bold" class="h-6 w-6 text-slate-400 mb-1" />
-                <span>{{ locale === "vi" ? "Chọn hình ảnh sản phẩm" : "Upload product image" }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <NewProductPage embedded @created="handleEmbeddedProductCreated" />
       </div>
 
-      <div v-if="showMentionSuggestions" class="publisher__mention-popover">
+      <div v-if="!showProductForm && showMentionSuggestions" class="publisher__mention-popover">
         <div v-if="mentionLoading" class="publisher__mention-state">
           <Icon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
           <span>{{ t("feed.publisherBox.mentionLoading") }}</span>
@@ -316,7 +216,7 @@
 
 
 
-      <div v-if="selectedMediaLabel || activeFeeling" class="publisher__selection-row">
+      <div v-if="!showProductForm && (selectedMediaLabel || activeFeeling)" class="publisher__selection-row">
         <div v-if="selectedMediaLabel && mediaPreviews.length === 0" class="publisher__selection-pill">
           <Icon :name="selectedMediaType === 'video' ? 'i-ph-video-camera-bold' : 'i-ph-image-bold'" class="h-4 w-4" />
           <span>{{ selectedMediaLabel }}</span>
@@ -334,7 +234,7 @@
         </div>
       </div>
 
-      <div class="publisher__toolbar">
+      <div v-if="!showProductForm" class="publisher__toolbar">
         <div class="publisher__actions">
           <button
             v-for="action in actions"
@@ -468,6 +368,7 @@
 import { useFeedMentionSearch } from "../../application/composables/useFeedMentionSearch"
 import { useFeedPublisherBoxVM } from "../../application/view-models/useFeedPublisherBoxVM"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
+import NewProductPage from "../../../product/presentation/pages/NewProductPage.vue"
 
 const { t } = useI18n()
 const { locale } = useI18n()
@@ -482,7 +383,6 @@ const emit = defineEmits<{
 
 const imageInputRef = ref<HTMLInputElement | null>(null)
 const videoInputRef = ref<HTMLInputElement | null>(null)
-const productImageInput = ref<HTMLInputElement | null>(null)
 
 const {
   textareaEl,
@@ -520,7 +420,6 @@ const {
   showColorsPicker,
   postColorOptions,
   showProductForm,
-  productForm,
   imageFiles,
   videoFile,
 } = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId, props.eventId, props.groupId)
@@ -655,6 +554,12 @@ async function publish() {
   if (!draft.value?.text) {
     clearSelectedMentions()
   }
+}
+
+function handleEmbeddedProductCreated() {
+  showProductForm.value = false
+  expanded.value = false
+  emit("created", null)
 }
 
 function resizeTextarea() {
@@ -1568,136 +1473,6 @@ function goToLive() {
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 8px;
   margin: 0;
-}
-
-.publisher__product-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.publisher__product-row-2 {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-@media (min-width: 520px) {
-  .publisher__product-row-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.publisher__product-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.publisher__product-label {
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748b;
-}
-
-.publisher__product-input,
-.publisher__product-select,
-.publisher__product-textarea {
-  font-family: inherit;
-  font-size: 13.5px;
-  color: #0f172a;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-  outline: none;
-  transition: all 0.15s ease;
-}
-
-.publisher__product-input:focus,
-.publisher__product-select:focus,
-.publisher__product-textarea:focus {
-  border-color: #0000ff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.1);
-}
-
-.publisher__price-wrapper {
-  display: flex;
-  gap: 8px;
-}
-
-.publisher__price-wrapper .publisher__product-input {
-  flex: 1;
-}
-
-.publisher__currency-select {
-  width: 90px;
-  flex-shrink: 0;
-}
-
-.publisher__product-textarea {
-  resize: vertical;
-}
-
-/* Product Uploader */
-.publisher__product-image-uploader {
-  display: flex;
-  min-height: 72px;
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  background: #ffffff;
-  cursor: pointer;
-  overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
-  transition: all 0.15s ease;
-}
-
-.publisher__product-image-uploader:hover {
-  border-color: #0000ff;
-  background: rgba(0, 0, 255, 0.02);
-}
-
-.publisher__product-image-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.publisher__product-image-preview {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 8px;
-  font-size: 13.5px;
-  color: #0f172a;
-  font-weight: 600;
-}
-
-.publisher__product-image-remove {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: #f1f5f9;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.12s ease;
-}
-
-.publisher__product-image-remove:hover {
-  background: #fee2e2;
-  color: #dc2626;
 }
 
 .publisher__media-previews {

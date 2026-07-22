@@ -1528,17 +1528,12 @@ const buildPostsResponse = (posts: FeedPostRecord[], limit: number): FeedPostsRe
   nextOffset: posts.at(-1)?.id ?? null,
 })
 
-const isProductPostEntity = (entity: BackendEntity) =>
-  firstNumber(entity, ["product_id"]) > 0
-  || Object.keys(asRecord(entity.product || entity.product_data)).length > 0
-
 const buildHomePostsResponse = (
   rawPosts: BackendEntity[],
   limit: number,
   resolveMediaUrl: (value: unknown) => string,
 ): FeedPostsResponse => {
   const posts = rawPosts
-    .filter(post => !isProductPostEntity(post))
     .map(post => mapPostRecord(post, resolveMediaUrl))
   const lastRawPost = rawPosts.at(-1)
 
