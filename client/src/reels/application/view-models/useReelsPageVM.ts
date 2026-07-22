@@ -18,7 +18,7 @@ export function useReelsPageVM(
 ) {
   const { t } = useI18n()
   const route = useRoute()
-  const { viewer } = useReelsViewerOverlay()
+  const { viewer, close: closeViewer } = useReelsViewerOverlay()
   const initialPost = options.initialPost ?? viewer.value?.post
 
   const loading = ref(!initialPost)
@@ -150,6 +150,11 @@ export function useReelsPageVM(
   }
 
   function exitFullscreen() {
+    if (viewer.value) {
+      closeViewer()
+      return
+    }
+
     if (options.onExit) {
       options.onExit()
       return
@@ -187,8 +192,14 @@ export function useReelsPageVM(
 
     const deltaY = startY - clientY
     const deltaX = clientX - startX
+    const isHorizontalGesture = Math.abs(deltaX) > Math.abs(deltaY)
 
-    if (startedFromLeftEdge && deltaX > 82 && Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (startedFromLeftEdge && deltaX > 82 && isHorizontalGesture) {
+      exitFullscreen()
+      return
+    }
+
+    if (viewer.value && deltaX < -82 && isHorizontalGesture) {
       exitFullscreen()
       return
     }
