@@ -57,72 +57,12 @@
     <div v-if="activeTab === 'multi'" class="cl-multi-panel">
 
       <div class="cl-multi-stack">
-        <section class="cl-filter-card">
-          <USelectMenu
-            v-model="activeTagFilterModel"
-            :items="tagFilterItems"
-            value-key="value"
-            :placeholder="chooseTagLabel"
-            :search-input="{ placeholder: chooseTagLabel }"
-            clear
-            class="w-full"
-            :ui="{
-              base: 'w-full rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] shadow-none',
-            }"
-          />
+        <section class="cl-compose-section">
+          <h2 class="cl-section-title">{{ $t("pages.messagesPage.content") }}</h2>
 
-          <div v-if="activeTagFilter" class="cl-tag-filter-status">
-            <div class="cl-avatar-stack" aria-hidden="true">
-              <UAvatar
-                v-for="recipient in selectedAvatarRecipients"
-                :key="recipient.id"
-                :src="recipient.avatarUrl"
-                :alt="recipient.name"
-                size="xs"
-                class="cl-stacked-avatar"
-              />
-              <span v-if="selectedOverflowCount > 0" class="cl-stacked-more">
-                +{{ selectedOverflowCount }}
-              </span>
-            </div>
-            <p>{{ tagFilterStatus }}</p>
-          </div>
-        </section>
-
-        <div class="cl-multi-actions">
-          <div class="flex items-center gap-2">
-            <UButton
-              type="button"
-              icon="i-ph-paper-plane-tilt-bold"
-              class="rounded-full px-4 btn-primary"
-              size="sm"
-              :loading="multiPending"
-              :disabled="multiPending || !canSendMulti"
-              @click="emit('send-multi')"
-            >
-              {{ multiPending ? $t("pages.messagesPage.multiSendingButton") : $t("pages.messagesPage.sendMessage") }}
-            </UButton>
-          </div>
-        </div>
-
-        <section>
           <div class="cl-recipient-heading">
-            <div class="cl-field-heading cl-field-heading--inline">
-              <Icon name="i-ph-users-three-duotone" class="h-3.5 w-3.5" />
-              <span class="text-black">
-                {{ selectedCountLabel }}
-                {{ $t("pages.messagesPage.sendTo") }}
-              </span>
-            </div>
-            <label class="cl-select-all">
-              <input
-                type="checkbox"
-                :checked="allVisibleRecipientsSelected"
-                class="h-4 w-4 rounded border-slate-300 text-black focus:ring-primary-500"
-                @change="emit('toggle-all-recipients')"
-              >
-              <span>{{ $t("pages.messagesPage.selectAll") }}</span>
-            </label>
+            <label class="cl-field-label">{{ $t("pages.messagesPage.sendTo") }}:</label>
+            <span v-if="selectedRecipients.length > 0" class="cl-selected-count">{{ selectedCountLabel }}</span>
           </div>
           <div class="cl-recipient-box" :class="{ 'cl-recipient-box--empty': selectedRecipients.length === 0 }">
             <UListbox
@@ -136,27 +76,95 @@
             />
             <span v-else class="cl-recipient-empty text-black">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
           </div>
-        </section>
 
-        <UTextarea
-          :model-value="multiText"
-          autoresize
-          :rows="3"
-          :placeholder="$t('pages.messagesPage.messagePlaceholder')"
-          :ui="{ base: 'rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white shadow-none text-sm' }"
-          @update:model-value="emit('update:multiText', String($event || ''))"
-        />
-
-        <div class="cl-upload-box">
-          <UFileUpload
-            v-model="multiFileModel"
-            :multiple="false"
-            layout="list"
-            highlight
-            :label="$t('pages.messagesPage.chooseFile')"
-            class="w-full h-25"
+          <UTextarea
+            :model-value="multiText"
+            :rows="5"
+            :placeholder="$t('pages.messagesPage.messagePlaceholder')"
+            class="w-full"
+            :ui="{ base: 'min-h-28 rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white shadow-none text-sm' }"
+            @update:model-value="emit('update:multiText', String($event || ''))"
           />
-        </div>
+
+          <div class="cl-attachment-field">
+            <label class="cl-field-label">
+              {{ $t("pages.messagesPage.attachmentLabel") }}
+              <span>({{ $t("pages.messagesPage.attachmentOptional").toLocaleLowerCase() }})</span>
+            </label>
+            <div class="cl-upload-box">
+              <UFileUpload
+                v-model="multiFileModel"
+                :multiple="false"
+                layout="list"
+                :label="$t('pages.messagesPage.chooseFile')"
+                class="w-full"
+              />
+            </div>
+          </div>
+
+          <label class="cl-select-all">
+            <input
+              type="checkbox"
+              :checked="allVisibleRecipientsSelected"
+              class="h-4 w-4 rounded border-slate-300 text-black focus:ring-primary-500"
+              @change="emit('toggle-all-recipients')"
+            >
+            <span>{{ $t("pages.messagesPage.selectAll") }}</span>
+          </label>
+
+          <UButton
+            type="button"
+            icon="i-ph-paper-plane-tilt-bold"
+            block
+            class="cl-send-button btn-primary"
+            :loading="multiPending"
+            :disabled="multiPending || !canSendMulti"
+            @click="emit('send-multi')"
+          >
+            {{ multiPending ? $t("pages.messagesPage.multiSendingButton") : $t("pages.messagesPage.sendMessage") }}
+          </UButton>
+
+          <section class="cl-filter-card">
+            <USelectMenu
+              v-model="activeTagFilterModel"
+              :items="tagFilterItems"
+              value-key="value"
+              :placeholder="chooseTagLabel"
+              :search-input="{ placeholder: chooseTagLabel }"
+              clear
+              class="w-full"
+              :ui="{
+                base: 'w-full rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white shadow-none',
+              }"
+            />
+
+            <div v-if="activeTagFilter" class="cl-tag-filter-status">
+              <div class="cl-avatar-stack" aria-hidden="true">
+                <UAvatar
+                  v-for="recipient in selectedAvatarRecipients"
+                  :key="recipient.id"
+                  :src="recipient.avatarUrl"
+                  :alt="recipient.name"
+                  size="xs"
+                  class="cl-stacked-avatar"
+                />
+                <span v-if="selectedOverflowCount > 0" class="cl-stacked-more">
+                  +{{ selectedOverflowCount }}
+                </span>
+              </div>
+              <p>{{ tagFilterStatus }}</p>
+            </div>
+          </section>
+
+          <p
+            v-if="statusMessage"
+            class="cl-send-status"
+            :class="`cl-send-status--${statusTone || 'neutral'}`"
+            role="status"
+          >
+            {{ statusMessage }}
+          </p>
+        </section>
 
         <UAlert
           v-if="permissionDenied || errorMessage"
@@ -168,14 +176,66 @@
           class="rounded-[var(--radius-md)]"
         />
 
-        <UAlert
-          v-if="statusMessage && statusTone !== 'success'"
-          :color="statusColor"
-          variant="subtle"
-          :description="statusMessage"
-          class="rounded-[var(--radius-md)]"
-        />
+        <section class="cl-multi-users">
+          <h2 class="cl-section-title">{{ $t("pages.messagesPage.users") }}</h2>
 
+          <div class="cl-multi-user-list">
+            <UListbox
+              v-if="contacts.length > 0"
+              v-model="selectedRecipientIdModel"
+              :items="multiRecipientListboxItems"
+              value-key="value"
+              multiple
+              class="cl-multi-user-listbox"
+              :ui="{
+                root: 'gap-2',
+                item: 'min-h-16 rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--color-primary-300)] data-[state=checked]:bg-[var(--bg-surface-active)]',
+                itemWrapper: 'min-w-0',
+                itemLabel: 'truncate text-sm font-semibold text-[var(--text-primary)]',
+                itemTrailing: 'ml-auto gap-2',
+                itemTrailingIcon: 'hidden',
+              }"
+            >
+              <template #item-leading="{ item }">
+                <span class="cl-multi-user-avatar">
+                  <UAvatar :src="item.avatarUrl" :alt="item.label" size="sm" />
+                  <span v-if="item.online" class="cl-multi-user-online" />
+                </span>
+              </template>
+
+              <template #item-trailing="{ item }">
+                <span class="cl-multi-select-state" aria-hidden="true">
+                  <span class="cl-multi-checkbox" :class="{ 'cl-multi-checkbox--checked': isRecipientSelected(item.value) }">
+                    <Icon v-if="isRecipientSelected(item.value)" name="i-ph-check-bold" class="h-3 w-3" />
+                  </span>
+                  <span>{{ $t("pages.messagesPage.selectRecipient") }}</span>
+                </span>
+                <UButton
+                  type="button"
+                  size="xs"
+                  class="cl-multi-open-chat btn-primary"
+                  @pointerdown.stop
+                  @click.stop="emit('open-chat', item.contact)"
+                >
+                  {{ $t("pages.messagesPage.openChat") }}
+                </UButton>
+              </template>
+            </UListbox>
+
+            <div v-if="pending && contacts.length === 0" class="space-y-2" aria-hidden="true">
+              <div v-for="i in 4" :key="i" class="cl-multi-user-skeleton">
+                <USkeleton class="h-10 w-10 shrink-0 rounded-full" />
+                <USkeleton class="h-3 w-28" />
+                <USkeleton class="ml-auto h-8 w-20 rounded-[var(--radius-sm)]" />
+              </div>
+            </div>
+
+            <div v-else-if="contacts.length === 0" class="cl-multi-empty">
+              <Icon name="i-ph-users-three-duotone" class="h-7 w-7" />
+              <span>{{ emptyLabel }}</span>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
 
@@ -355,6 +415,15 @@ const selectedRecipientListboxItems = computed(() => props.selectedRecipients.ma
     alt: recipient.name,
   },
 })))
+const multiRecipientListboxItems = computed(() => props.contacts
+  .filter(contact => (contact.userId ?? 0) > 0)
+  .map(contact => ({
+    label: contact.name,
+    value: contact.userId ?? 0,
+    avatarUrl: contact.avatarUrl,
+    online: isContactOnline(contact),
+    contact,
+  })))
 const selectedRecipientIdModel = computed<number[]>({
   get: () => props.selectedRecipientIds ?? [],
   set: userIds => emit("update:selectedRecipientIds", userIds),
@@ -377,13 +446,6 @@ const formattedRecordDuration = computed(() => {
   const s = total % 60
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
 })
-const statusColor = computed(() => {
-  if (props.statusTone === "success") return "success"
-  if (props.statusTone === "warning") return "warning"
-  if (props.statusTone === "error") return "error"
-  return "neutral"
-})
-
 function isContactActive(contact: MessageContact) {
   if (props.activeTab === "multi")
     return Boolean(contact.userId && props.selectedRecipientIds?.includes(contact.userId))
@@ -392,6 +454,10 @@ function isContactActive(contact: MessageContact) {
 
 function isContactOnline(contact: MessageContact) {
   return props.isContactOnline?.(contact) ?? contact.isOnline
+}
+
+function isRecipientSelected(userId: number) {
+  return props.selectedRecipientIds?.includes(userId) ?? false
 }
 
 function getContactStatus(contact: MessageContact) {
@@ -492,44 +558,11 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 
 .cl-multi-panel {
   display: flex;
-  max-height: min(620px, calc(100% - 118px));
   min-height: 0;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   flex-direction: column;
-  border-bottom: 1px solid var(--border-light);
-  background: #f8fafc;
-  padding: 14px 16px 0;
-}
-
-.cl-multi-header {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.cl-multi-title {
-  display: inline-flex;
-  min-width: 0;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.cl-multi-title-icon {
-  display: inline-flex;
-  width: 26px;
-  height: 26px;
-  flex: 0 0 26px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  background: rgba(0, 0, 255, 0.06);
-  color: var(--color-primary-600);
+  background: var(--bg-surface);
+  padding: 0 16px;
 }
 
 .cl-selected-count {
@@ -549,11 +582,11 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 
 .cl-multi-stack {
   display: grid;
-  gap: 12px;
+  gap: 18px;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding-bottom: 16px;
+  padding: 14px 2px 20px 0;
   padding-right: 2px;
   scrollbar-width: thin;
 }
@@ -576,23 +609,33 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 }
 
 .cl-filter-card {
-  padding: 11px;
+  padding: 0;
+  border: 0;
 }
 
-.cl-field-heading {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 7px;
-  color: var(--text-tertiary);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.cl-compose-section {
+  display: grid;
+  gap: 10px;
 }
 
-.cl-field-heading--inline {
-  margin-bottom: 0;
+.cl-section-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-bold);
+  line-height: 1.35;
+}
+
+.cl-field-label {
+  display: block;
+  color: black;
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+}
+
+.cl-field-label span {
+  color: black;
+  font-weight: var(--weight-medium);
 }
 
 .cl-recipient-heading {
@@ -600,18 +643,17 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 7px;
 }
 
 .cl-select-all {
   display: inline-flex;
-  flex-shrink: 0;
+  width: fit-content;
   cursor: pointer;
   align-items: center;
   gap: 6px;
-  color: var(--text-secondary);
-  font-size: 11px;
-  font-weight: 650;
+  color: var(--text-primary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
 }
 
 .cl-tag-filter-status {
@@ -660,7 +702,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 }
 
 .cl-recipient-box {
-  min-height: 48px;
+  min-height: 44px;
   padding: 8px;
 }
 
@@ -674,28 +716,133 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 
 .cl-recipient-listbox {
   width: 100%;
-  max-height: 108px;
+  max-height: 104px;
   overflow-y: auto;
   scrollbar-gutter: stable;
 }
 
 .cl-recipient-empty {
-  color: var(--text-tertiary);
   font-size: 13px;
 }
 
-.cl-multi-actions {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: end;
-  gap: 12px;
+.cl-attachment-field {
+  display: grid;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.cl-upload-box {
+  min-height: 44px;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.cl-send-button {
+  width: 100%;
+  min-height: 40px;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+}
+
+.cl-send-status {
+  margin: -2px 0 0;
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  line-height: 1.45;
+}
+
+.cl-send-status--success { color: var(--color-success-600, #16a34a); }
+.cl-send-status--warning { color: var(--color-warning-700, #a16207); }
+.cl-send-status--error { color: var(--color-error-600, #dc2626); }
+.cl-send-status--neutral { color: var(--text-secondary); }
+
+.cl-multi-users {
+  display: grid;
+  gap: 10px;
   border-top: 1px solid var(--border-light);
-  background: #f8fafc;
-  padding: 12px 0 14px;
+  padding-top: 16px;
+}
+
+.cl-multi-user-list {
+  display: grid;
+  gap: 8px;
+}
+
+.cl-multi-user-listbox {
+  width: 100%;
+}
+
+.cl-multi-user-avatar {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.cl-multi-user-online {
+  position: absolute;
+  right: -1px;
+  bottom: 1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--color-success-500, #22c55e);
+}
+
+.cl-multi-select-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  white-space: nowrap;
+}
+
+.cl-multi-checkbox {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: #ffffff;
+  color: #ffffff;
+}
+
+.cl-multi-checkbox--checked {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-500);
+}
+
+.cl-multi-open-chat {
+  flex: 0 0 auto;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.cl-multi-user-skeleton {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius-md);
+  background: var(--bg-muted);
+  padding: 10px;
+}
+
+.cl-multi-empty {
+  display: flex;
+  min-height: 96px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  text-align: center;
 }
 
 .cl-scroll-list {

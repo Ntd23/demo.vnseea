@@ -40,11 +40,11 @@
           :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
 
         <USelect v-model="selectedCategory" class="w-full" :items="categoryOptions" value-key="value" label-key="label" size="lg"
-          :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
+          :ui="categorySelectUi" />
 
         <USelect v-if="hasSubCategories" v-model="selectedSubCategory" class="w-full" :items="subCategoryOptions" value-key="value"
           label-key="label" size="lg"
-          :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
+          :ui="categorySelectUi" />
 
         <div class="products-filter__distance">
           <div class="flex items-center justify-between gap-3 text-[12px] font-semibold text-slate-600">
@@ -168,6 +168,14 @@ import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useProductMarketplace } from "../../application/composables/useProductMarketplace"
 
 const { t } = useI18n()
+
+const categorySelectUi = {
+  base: "min-h-12 h-auto rounded-xl border-slate-200 bg-slate-50 py-2 text-left text-[13px] font-semibold",
+  value: "overflow-visible text-clip whitespace-normal break-words text-left leading-5",
+  placeholder: "overflow-visible text-clip whitespace-normal break-words text-left leading-5",
+  item: "min-h-10",
+  itemLabel: "overflow-visible text-clip whitespace-normal break-words leading-5",
+}
 
 useSeoMeta({
   title: () => t("pages.productsPage.seoTitle"),
