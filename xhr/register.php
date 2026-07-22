@@ -140,7 +140,8 @@ if ($f == 'register') {
         if (!empty($_POST['phone_num'])) {
             $activate = '1';
         }
-        $code     = md5(rand(1111, 9999) . time());
+        $activation_code = (string) random_int(100000, 999999);
+        $code     = md5($activation_code);
         $re_data  = array(
             'email' => Wo_Secure($_POST['email'], 0),
             'username' => Wo_Secure($_POST['username'], 0),
@@ -246,8 +247,8 @@ if ($f == 'register') {
                     $data['location'] = Wo_SeoLink('index.php?link1=go-pro');
                 }
             } else if ($wo['config']['sms_or_email'] == 'mail') {
-                $wo['code']        = $code;
-                $body              = Wo_LoadPage('emails/activate');
+                $wo['code']        = $activation_code;
+                $body              = Wo_LoadPage('emails/activate_code');
                 $send_message_data = array(
                     'from_email' => $wo['config']['siteEmail'],
                     'from_name' => $wo['config']['siteName'],

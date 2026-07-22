@@ -3,6 +3,8 @@
 import type {
   ConfirmAccountInput,
   ConfirmAccountResult,
+  ResendAccountCodeInput,
+  ResendAccountCodeResult,
   ConfirmLoginInput,
   ConfirmLoginResult,
   CurrentAuthUser,
@@ -26,6 +28,7 @@ export interface AuthRepository {
   register(input: RegisterAccountInput): Promise<RegisterAccountResult>
   confirmLogin(input: ConfirmLoginInput): Promise<ConfirmLoginResult>
   confirmAccount(input: ConfirmAccountInput): Promise<ConfirmAccountResult>
+  resendAccountCode(input: ResendAccountCodeInput): Promise<ResendAccountCodeResult>
   requestPasswordReset(input: ForgotPasswordInput): Promise<ForgotPasswordResult>
   confirmResetSms(input: ConfirmResetSmsInput): Promise<ConfirmResetSmsResult>
   resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult>

@@ -106,6 +106,15 @@ export interface ConfirmAccountResult {
   timezone?: string
 }
 
+export interface ResendAccountCodeInput {
+  userId: number
+}
+
+export interface ResendAccountCodeResult {
+  success: boolean
+  message: string
+}
+
 export interface ConfirmResetSmsInput {
   userId: number
   code: string

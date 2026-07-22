@@ -17,6 +17,14 @@
         <!-- Reel Player Stage -->
         <div class="reels-page__stage">
           <div class="reels-page__player-box">
+            <button
+              class="reels-page__back-button"
+              type="button"
+              :aria-label="t('pages.reelsPage.close')"
+              @click="exitFullscreen"
+            >
+              <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />
+            </button>
             <template v-if="activeMedia?.type === 'video'">
               <video ref="videoRef" :key="activeReel.id" :src="activeMedia.src" class="reels-page__video" autoplay
                 controls playsinline @play="isPlaying = true" @pause="isPlaying = false" @timeupdate="updateProgress"
@@ -232,8 +240,17 @@
 import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
 import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
+import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 import { useReelsPageVM } from "../../application/view-models/useReelsPageVM"
 
+const props = defineProps<{
+  postId?: number
+  initialPost?: FeedPostRecord
+  embedded?: boolean
+}>()
+const emit = defineEmits<{
+  close: []
+}>()
 const { t } = useI18n()
 const { locale } = useI18n()
 const showOptions = ref(false)
@@ -252,6 +269,7 @@ const {
   onMetadataLoaded,
   handleVideoEnded,
   togglePlayPause,
+  exitFullscreen,
   seek,
   currentAuthUserStore,
   showComments,
@@ -280,7 +298,11 @@ const {
   handleShared,
   handleMenuAction,
   toggleComments,
-} = useReelsPageVM()
+} = useReelsPageVM(undefined, {
+  postId: props.postId,
+  initialPost: props.initialPost,
+  onExit: props.embedded ? () => emit("close") : undefined,
+})
 
 const compactFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
   notation: "compact",
@@ -377,6 +399,35 @@ useSeoMeta({
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.reels-page__back-button {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  left: max(16px, env(safe-area-inset-left));
+  z-index: 10;
+  display: inline-flex;
+  height: 44px;
+  width: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  background: rgba(2, 6, 23, 0.68);
+  color: #ffffff;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.reels-page__back-button:hover {
+  background: rgba(2, 6, 23, 0.88);
+  transform: scale(1.06);
+}
+
+.reels-page__back-button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
 }
 
 .reels-page__video-overlay {

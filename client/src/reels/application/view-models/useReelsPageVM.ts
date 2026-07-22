@@ -4,16 +4,26 @@ import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 import type { FeedRepository } from "../../../feed/domain/repositories/FeedRepository"
 import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM"
 import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
+import { useReelsViewerOverlay } from "../composables/useReelsViewerOverlay"
+
+type ReelsPageVMOptions = {
+  postId?: number
+  initialPost?: FeedPostRecord
+  onExit?: () => void
+}
 
 export function useReelsPageVM(
   repository: FeedRepository = createApiFeedRepository(),
+  options: ReelsPageVMOptions = {},
 ) {
   const { t } = useI18n()
   const route = useRoute()
+  const { viewer } = useReelsViewerOverlay()
+  const initialPost = options.initialPost ?? viewer.value?.post
 
-  const loading = ref(true)
+  const loading = ref(!initialPost)
   const errorMessage = ref("")
-  const reels = ref<FeedPostRecord[]>([])
+  const reels = ref<FeedPostRecord[]>(initialPost ? [initialPost] : [])
   const activeIndex = ref(0)
   const gestureStartY = ref<number | null>(null)
   const gestureStartX = ref<number | null>(null)
@@ -34,15 +44,21 @@ export function useReelsPageVM(
   const feedPostVM = useFeedPostCardVM(activeReel)
 
   async function fetchReels() {
-    loading.value = true
+    if (!initialPost) {
+      loading.value = true
+    }
     errorMessage.value = ""
 
     try {
       const response = await repository.getVideos({ limit: 12 })
-      reels.value = response.posts.filter(post =>
+      const fetchedReels = response.posts.filter(post =>
         post.primaryMediaType === "video" || post.mediaItems.some(item => item.type === "video"),
       )
-      const requestedPostId = Number(route.query.postId ?? 0)
+      reels.value = initialPost
+        ? [initialPost, ...fetchedReels.filter(post => post.id !== initialPost.id)]
+        : fetchedReels
+
+      const requestedPostId = options.postId ?? initialPost?.id ?? Number(route.query.postId ?? 0)
       if (requestedPostId > 0) {
         const existingIndex = reels.value.findIndex(post => post.id === requestedPostId)
         if (existingIndex >= 0) {
@@ -134,6 +150,11 @@ export function useReelsPageVM(
   }
 
   function exitFullscreen() {
+    if (options.onExit) {
+      options.onExit()
+      return
+    }
+
     if (import.meta.client && window.history.length > 1) {
       window.history.back()
       return
@@ -145,7 +166,7 @@ export function useReelsPageVM(
   function startGesture(clientX: number, clientY: number) {
     gestureStartY.value = clientY
     gestureStartX.value = clientX
-    gestureStartedFromLeftEdge.value = clientX <= 36
+    gestureStartedFromLeftEdge.value = clientX <= 40
   }
 
   function finishGesture(clientX: number, clientY: number) {
@@ -254,7 +275,14 @@ export function useReelsPageVM(
     { immediate: true },
   )
 
-  void fetchReels()
+  if (initialPost && import.meta.client) {
+    requestAnimationFrame(() => {
+      void fetchReels()
+    })
+  }
+  else {
+    void fetchReels()
+  }
 
   return {
     loading,

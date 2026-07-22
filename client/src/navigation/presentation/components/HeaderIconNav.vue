@@ -41,9 +41,9 @@ const items = computed(() => [
   },
   {
     label: "navigation.headerIconNav.photos",
-    to: appRoutes.photos,
+    to: { path: appRoutes.photos, query: { view: "feed" } },
     icon: "i-ph-image-fill",
-    active: route.path === appRoutes.photos,
+    active: route.path === appRoutes.photos && route.query.view === "feed",
   },
   {
     label: "navigation.headerIconNav.reels",

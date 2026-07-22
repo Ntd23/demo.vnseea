@@ -23,6 +23,7 @@
       v-if="post.mediaItems.length"
       class="shared-post-card__media"
       :items="post.mediaItems"
+      :post="post"
     />
   </article>
 </template>
