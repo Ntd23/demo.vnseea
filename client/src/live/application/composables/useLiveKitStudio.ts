@@ -200,12 +200,40 @@ export function useLiveKitStudio() {
 
   async function setCamera(deviceId: string) {
     if (roomConnected.value) {
+      const track = getVideoTrack()
+
+      if (track) {
+        await track.setDeviceId({ exact: deviceId })
+        attachPreview()
+      }
+
       selectedCameraId.value = deviceId
       return
     }
 
     selectedCameraId.value = deviceId
     await ensurePreview(true)
+  }
+
+  async function switchCamera() {
+    await ensurePreview()
+    await refreshDevices()
+
+    if (cameraOptions.value.length < 2) {
+      return
+    }
+
+    const currentIndex = cameraOptions.value.findIndex(option =>
+      option.deviceId === selectedCameraId.value,
+    )
+    const nextIndex = currentIndex < 0
+      ? 0
+      : (currentIndex + 1) % cameraOptions.value.length
+    const nextCamera = cameraOptions.value[nextIndex]
+
+    if (nextCamera) {
+      await setCamera(nextCamera.deviceId)
+    }
   }
 
   async function setMicrophone(deviceId: string) {
@@ -331,6 +359,7 @@ export function useLiveKitStudio() {
     refreshDevices,
     ensurePreview,
     setCamera,
+    switchCamera,
     setMicrophone,
     toggleAudio,
     toggleVideo,

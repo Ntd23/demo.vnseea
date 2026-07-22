@@ -1,10 +1,17 @@
 <!-- English description: Renders the backend-backed LiveKit host studio for the /live route with real setup, preview, heartbeat, and end-live controls. -->
 <template>
-  <div class="studio">
+  <div
+    class="studio"
+    :class="{
+      'studio--setup': !session,
+      'studio--broadcasting': Boolean(session),
+    }"
+  >
     <div class="studio__shell studio__shell--2col">
 
       <LiveSetupPanel
         v-if="!session"
+        class="studio__desktop-setup"
         v-model:title="title"
         v-model:privacy="privacy"
         :bootstrap="bootstrap"
@@ -49,6 +56,189 @@
               </div>
               <p class="studio__stage-placeholder-title">{{ stageTitle }}</p>
               <p class="studio__stage-placeholder-desc">{{ stageDescription }}</p>
+            </div>
+
+            <div v-if="!session" class="studio__mobile-setup">
+              <header class="studio__mobile-header">
+                <button
+                  type="button"
+                  class="studio__mobile-back"
+                  :aria-label="t('pages.livePage.studio.back')"
+                  @click="handleCloseMobileStudio"
+                >
+                  <UIcon name="i-ph-caret-left-bold" />
+                </button>
+
+                <UAvatar
+                  :src="bootstrap.host?.avatarUrl || undefined"
+                  :alt="bootstrap.host?.name || t('pages.livePage.studio.hostFallback')"
+                  size="lg"
+                  class="studio__mobile-avatar"
+                />
+
+                <div class="studio__mobile-identity">
+                  <p>{{ bootstrap.host?.name || t("pages.livePage.studio.hostFallback") }}</p>
+                  <USelect
+                    v-model="privacy"
+                    :items="privacySelectOptions"
+                    value-key="value"
+                    label-key="label"
+                    icon="i-ph-globe-hemisphere-west-bold"
+                    size="sm"
+                    color="neutral"
+                    variant="soft"
+                    class="studio__mobile-privacy"
+                    :aria-label="t('pages.livePage.studio.privacyLabel')"
+                    :ui="{
+                      base: 'h-8 rounded-xl bg-white/95 px-2.5 text-xs font-bold text-slate-950 shadow-lg ring-0 hover:bg-white focus-visible:ring-2 focus-visible:ring-blue-500',
+                      content: 'z-[200] min-w-52 overflow-hidden rounded-xl bg-white text-slate-950 shadow-2xl ring-1 ring-slate-200',
+                      item: 'cursor-pointer rounded-lg px-3 py-2.5 text-sm font-medium text-slate-800 data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-700',
+                    }"
+                  />
+                </div>
+              </header>
+
+              <div class="studio__mobile-device-list">
+                <button
+                  type="button"
+                  class="studio__mobile-device"
+                  :disabled="previewLoading || cameraOptions.length < 2"
+                  :aria-label="t('pages.livePage.studio.rotateCamera')"
+                  @click="switchCamera"
+                >
+                  <span><UIcon name="i-ph-camera-rotate-bold" /></span>
+                </button>
+                <button
+                  type="button"
+                  class="studio__mobile-device"
+                  :aria-label="audioMuted ? t('pages.livePage.studio.enableMicrophone') : t('pages.livePage.studio.disableMicrophone')"
+                  @click="toggleAudio"
+                >
+                  <span><UIcon :name="audioMuted ? 'i-ph-microphone-slash-bold' : 'i-ph-microphone-bold'" /></span>
+                </button>
+                <button
+                  type="button"
+                  class="studio__mobile-device"
+                  :aria-label="videoMuted ? t('pages.livePage.studio.enableCamera') : t('pages.livePage.studio.disableCamera')"
+                  @click="toggleVideo"
+                >
+                  <span><UIcon :name="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'" /></span>
+                </button>
+              </div>
+
+              <div class="studio__mobile-bottom">
+                <div
+                  v-if="bootstrapErrorMessage || blockedReasonMessage || errorMessage || statusMessage"
+                  class="studio__mobile-message"
+                  :class="{ 'studio__mobile-message--error': bootstrapErrorMessage || blockedReasonMessage || errorMessage }"
+                >
+                  {{ bootstrapErrorMessage || blockedReasonMessage || errorMessage || statusMessage }}
+                </div>
+                <input
+                  v-model="description"
+                  class="studio__mobile-description"
+                  :placeholder="t('pages.livePage.studio.descriptionPlaceholder')"
+                  :aria-label="t('pages.livePage.studio.descriptionLabel')"
+                >
+                <button
+                  type="button"
+                  class="studio__mobile-start"
+                  :disabled="!canStart || previewLoading || !mediaSupported || starting"
+                  @click="handleStartLive"
+                >
+                  <UIcon v-if="starting" name="i-ph-spinner-gap-bold" class="studio__mobile-spinner" />
+                  {{ t("pages.livePage.studio.startBroadcast") }}
+                </button>
+              </div>
+            </div>
+
+            <div v-if="session" class="studio__mobile-live">
+              <div class="studio__mobile-live-meta">
+                <button
+                  type="button"
+                  class="studio__mobile-live-status"
+                  :aria-expanded="showMobileElapsed"
+                  @click="showMobileElapsed = !showMobileElapsed"
+                >
+                  {{ t("pages.livePage.statusLiveUpper") }}
+                </button>
+                <span v-if="showMobileElapsed" class="studio__mobile-live-time">
+                  {{ liveElapsedLabel }}
+                </span>
+                <span class="studio__mobile-live-viewers">
+                  <UIcon name="i-ph-eye-bold" />
+                  {{ viewerCount }}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                class="studio__mobile-end"
+                :disabled="ending"
+                @click="handleEndLive"
+              >
+                <UIcon v-if="ending" name="i-ph-spinner-gap-bold" class="studio__mobile-spinner" />
+                <UIcon v-else name="i-ph-stop-circle-fill" />
+                {{ t("pages.livePage.studio.endBroadcastShort") }}
+              </button>
+
+              <div class="studio__mobile-device-list studio__mobile-device-list--live">
+                <button
+                  type="button"
+                  class="studio__mobile-device"
+                  :disabled="previewLoading || cameraOptions.length < 2"
+                  :aria-label="t('pages.livePage.studio.rotateCamera')"
+                  @click="switchCamera"
+                >
+                  <span><UIcon name="i-ph-camera-rotate-bold" /></span>
+                </button>
+                <button
+                  type="button"
+                  class="studio__mobile-device"
+                  :aria-label="audioMuted ? t('pages.livePage.studio.enableMicrophone') : t('pages.livePage.studio.disableMicrophone')"
+                  @click="toggleAudio"
+                >
+                  <span><UIcon :name="audioMuted ? 'i-ph-microphone-slash-bold' : 'i-ph-microphone-bold'" /></span>
+                </button>
+                <button
+                  type="button"
+                  class="studio__mobile-device"
+                  :aria-label="videoMuted ? t('pages.livePage.studio.enableCamera') : t('pages.livePage.studio.disableCamera')"
+                  @click="toggleVideo"
+                >
+                  <span><UIcon :name="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'" /></span>
+                </button>
+              </div>
+
+              <div class="studio__mobile-live-comments">
+                <article
+                  v-for="item in chatItems.slice(-5)"
+                  :key="`mobile-${item.kind}-${item.id}-${item.username}-${item.timeText}`"
+                  class="studio__mobile-live-comment"
+                >
+                  <UAvatar :src="item.avatarUrl || undefined" :alt="item.author" size="xs" />
+                  <div>
+                    <strong>{{ item.author || item.username }}</strong>
+                    <span>{{ item.message }}</span>
+                  </div>
+                </article>
+              </div>
+
+              <form class="studio__mobile-live-composer" @submit.prevent="submitMobileChat">
+                <input
+                  v-model="mobileChatDraft"
+                  :disabled="chatSending || liveState !== 'live'"
+                  :placeholder="t('pages.livePage.viewer.commentPlaceholder')"
+                >
+                <button
+                  type="submit"
+                  :disabled="chatSending || liveState !== 'live' || !mobileChatDraft.trim()"
+                  :aria-label="t('pages.livePage.viewer.submitComment')"
+                >
+                  <UIcon name="i-ph-paper-plane-tilt-fill" />
+                </button>
+              </form>
+
             </div>
             <!-- Fullscreen icon (overlay, inside video) -->
             <UButton
@@ -144,7 +334,7 @@
                 >
                   <UAvatar :src="item.avatarUrl || undefined" :alt="item.author" size="xs" />
                   <div class="studio__fs-comment-body">
-                    <strong>{{ item.username || item.author }}</strong>
+                    <strong>{{ item.author || item.username }}</strong>
                     <span>{{ item.message }}</span>
                   </div>
                 </article>
@@ -228,12 +418,14 @@
 <script setup lang="ts">
 import { feedReactionAssets } from "../../../feed/application/constants/reaction-assets"
 import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useLiveKitStudio } from "../../application/composables/useLiveKitStudio"
 import { useLiveStudioPageVM } from "../../application/view-models/useLiveStudioPageVM"
 import LiveChat from "../components/LiveChat.vue"
 import LiveSetupPanel from "../components/LiveSetupPanel.vue"
 
 const { t } = useI18n()
+const router = useRouter()
 const feedRepository = createApiFeedRepository()
 useSeoMeta({
   title: () => t("pages.livePage.seoTitle"),
@@ -252,8 +444,8 @@ const {
 
 const {
   mediaSupported, previewLoading, previewReady, previewError,
-  audioMuted, videoMuted,
-  ensurePreview, toggleAudio, toggleVideo,
+  cameraOptions, audioMuted, videoMuted,
+  ensurePreview, switchCamera, toggleAudio, toggleVideo,
   connect, disconnect, setPreviewHost,
 } = useLiveKitStudio()
 
@@ -342,6 +534,15 @@ async function handleEndLive() {
   await endLive(() => { disconnect() })
 }
 
+function handleCloseMobileStudio() {
+  if (window.history.length > 1) {
+    router.back()
+    return
+  }
+
+  void router.push(appRoutes.feed)
+}
+
 function toggleFullscreen() {
   if (document.fullscreenElement) {
     void document.exitFullscreen()
@@ -356,6 +557,8 @@ const liveClockNow = ref(0)
 const chatSending = ref(false)
 const chatErrorMessage = ref("")
 const fullscreenChatDraft = ref("")
+const mobileChatDraft = ref("")
+const showMobileElapsed = ref(false)
 const floatingReactions = ref<Array<{ id: number; src: string; x: number }>>([])
 const animatedReactionIds = new Set<number>()
 let liveClockTimer: ReturnType<typeof window.setInterval> | null = null
@@ -440,6 +643,20 @@ async function submitFullscreenChat() {
   }
 }
 
+async function submitMobileChat() {
+  const message = mobileChatDraft.value.trim()
+
+  if (!message || chatSending.value || liveState.value !== "live") {
+    return
+  }
+
+  await handleSendChatMessage(message)
+
+  if (!chatErrorMessage.value) {
+    mobileChatDraft.value = ""
+  }
+}
+
 function reactionAssetSrc(value: string) {
   return feedReactionAssets.find(asset =>
     asset.value === value || String(asset.backendId) === value,
@@ -495,9 +712,17 @@ watch(session, (nextSession) => {
     return
   }
 
+  mobileChatDraft.value = ""
+  showMobileElapsed.value = false
   animatedReactionIds.clear()
   floatingReactions.value = []
 })
+
+useHead(() => ({
+  bodyAttrs: {
+    class: session.value ? "live-broadcasting-page" : undefined,
+  },
+}))
 
 function handleFullscreenChange() {
   isFullscreen.value = Boolean(document.fullscreenElement)
@@ -896,6 +1121,14 @@ onBeforeUnmount(() => {
   max-height: 760px;
   background: #020617;
   overflow: hidden;
+}
+
+.studio__mobile-setup {
+  display: none;
+}
+
+.studio__mobile-live {
+  display: none;
 }
 
 :deep(.live-studio-preview__video) {
@@ -1474,17 +1707,67 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 640px) {
+  :global(body.live-broadcasting-page header.sticky) {
+    display: none;
+  }
+
   .studio {
     min-height: calc(100vh - 56px);
     padding: 8px 10px 12px;
+  }
+
+  .studio--setup {
+    height: calc(100dvh - 56px);
+    min-height: 560px;
+    overflow: hidden;
+    padding: 0;
+    background: #020617;
+  }
+
+  .studio--broadcasting {
+    height: 100dvh;
+    min-height: 560px;
+    overflow: hidden;
+    padding: 0;
+    background: #020617;
   }
 
   .studio__shell {
     gap: 12px;
   }
 
+  .studio--setup .studio__shell,
+  .studio--broadcasting .studio__shell {
+    display: block;
+    height: 100%;
+    margin: 0;
+  }
+
+  .studio__desktop-setup {
+    display: none;
+  }
+
+  .studio--setup .studio__main,
+  .studio--setup .studio__stage-card,
+  .studio--broadcasting .studio__main,
+  .studio--broadcasting .studio__stage-card {
+    width: 100%;
+    height: 100%;
+  }
+
+  .studio--setup .studio__stage-card,
+  .studio--broadcasting .studio__stage-card {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
   .studio__side-panel {
     height: 360px;
+  }
+
+  .studio--broadcasting .studio__side-panel {
+    display: none;
   }
 
   .studio__sidebar {
@@ -1495,14 +1778,9 @@ onBeforeUnmount(() => {
     grid-template-columns: 1fr;
   }
 
-  .studio__stage-topbar {
-    top: 10px;
-    left: 10px;
-    right: 58px;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-    padding: 9px 10px;
+  .studio--setup .studio__stage-topbar,
+  .studio--broadcasting .studio__stage-topbar {
+    display: none;
   }
 
   .studio__stage-metrics {
@@ -1510,10 +1788,388 @@ onBeforeUnmount(() => {
     flex-wrap: wrap;
   }
 
-  .studio__stage {
-    height: min(calc(100vh - 360px), calc((100vw - 20px) * 0.75));
-    min-height: 300px;
-    max-height: 520px;
+  .studio--setup .studio__stage,
+  .studio--broadcasting .studio__stage {
+    height: 100%;
+    min-height: 100%;
+    max-height: none;
+  }
+
+  .studio--setup .studio__fullscreen-btn,
+  .studio--broadcasting .studio__fullscreen-btn,
+  .studio--broadcasting .studio__stage-controls {
+    display: none;
+  }
+
+  .studio__mobile-setup {
+    position: absolute;
+    z-index: 85;
+    inset: 0;
+    display: block;
+    pointer-events: none;
+    color: #ffffff;
+  }
+
+  .studio__mobile-live {
+    position: absolute;
+    z-index: 86;
+    inset: 0;
+    display: block;
+    color: #ffffff;
+    pointer-events: none;
+  }
+
+  .studio__mobile-live::before,
+  .studio__mobile-live::after {
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: -1;
+    content: "";
+    pointer-events: none;
+  }
+
+  .studio__mobile-live::before {
+    top: 0;
+    height: 130px;
+    background: linear-gradient(180deg, rgba(2, 6, 23, 0.62), transparent);
+  }
+
+  .studio__mobile-live::after {
+    bottom: 0;
+    height: 260px;
+    background: linear-gradient(0deg, rgba(2, 6, 23, 0.82), transparent);
+  }
+
+  .studio__mobile-live-meta {
+    position: absolute;
+    top: max(14px, env(safe-area-inset-top));
+    left: 14px;
+    display: flex;
+    min-height: 30px;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
+  }
+
+  .studio__mobile-live-status {
+    min-height: 28px;
+    border: 0;
+    border-radius: 7px;
+    background: #ef4444;
+    padding: 0 9px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 0.04em;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.28);
+  }
+
+  .studio__mobile-live-time,
+  .studio__mobile-live-viewers {
+    display: inline-flex;
+    height: 28px;
+    align-items: center;
+    gap: 5px;
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 750;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+  }
+
+  .studio__mobile-device-list.studio__mobile-device-list--live {
+    top: 42%;
+  }
+
+  .studio__mobile-live-comments {
+    position: absolute;
+    right: 70px;
+    bottom: 72px;
+    left: 14px;
+    display: flex;
+    max-height: 32dvh;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 8px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .studio__mobile-live-comment {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .studio__mobile-live-comment > div {
+    min-width: 0;
+    max-width: min(280px, calc(100vw - 110px));
+    border-radius: 13px;
+    background: rgba(15, 23, 42, 0.48);
+    padding: 6px 9px;
+    font-size: 12px;
+    line-height: 1.35;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.48);
+    backdrop-filter: blur(5px);
+  }
+
+  .studio__mobile-live-comment strong,
+  .studio__mobile-live-comment span {
+    display: block;
+  }
+
+  .studio__mobile-live-comment strong {
+    margin-bottom: 1px;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .studio__mobile-live-composer {
+    position: absolute;
+    right: 14px;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 14px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    gap: 8px;
+    pointer-events: auto;
+  }
+
+  .studio__mobile-live-composer input {
+    min-width: 0;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 999px;
+    outline: 0;
+    background: rgba(15, 23, 42, 0.64);
+    padding: 0 15px;
+    color: #ffffff;
+    font-size: 14px;
+    backdrop-filter: blur(9px);
+  }
+
+  .studio__mobile-live-composer input::placeholder {
+    color: rgba(255, 255, 255, 0.68);
+  }
+
+  .studio__mobile-live-composer button {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+    font-size: 24px;
+  }
+
+  .studio__mobile-live-composer button:disabled {
+    opacity: 0.45;
+  }
+
+  .studio__mobile-end {
+    position: absolute;
+    top: max(14px, env(safe-area-inset-top));
+    right: 14px;
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 0;
+    border-radius: 8px;
+    background: #ef4444;
+    padding: 0 10px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.3);
+    pointer-events: auto;
+  }
+
+  .studio__mobile-end:disabled {
+    opacity: 0.58;
+  }
+
+  .studio__mobile-setup::before,
+  .studio__mobile-setup::after {
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: -1;
+    content: "";
+    pointer-events: none;
+  }
+
+  .studio__mobile-setup::before {
+    top: 0;
+    height: 190px;
+    background: linear-gradient(180deg, rgba(2, 6, 23, 0.72), transparent);
+  }
+
+  .studio__mobile-setup::after {
+    bottom: 0;
+    height: 300px;
+    background: linear-gradient(0deg, rgba(2, 6, 23, 0.88), transparent);
+  }
+
+  .studio__mobile-header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: max(14px, env(safe-area-inset-top)) 16px 12px;
+    pointer-events: auto;
+  }
+
+  .studio__mobile-back {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.44);
+    color: #ffffff;
+    font-size: 28px;
+    backdrop-filter: blur(8px);
+  }
+
+  .studio__mobile-avatar {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+  }
+
+  .studio__mobile-identity {
+    min-width: 0;
+    padding-top: 1px;
+  }
+
+  .studio__mobile-identity > p {
+    margin: 0 0 5px;
+    overflow: hidden;
+    font-size: 17px;
+    font-weight: 750;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+    white-space: nowrap;
+  }
+
+  .studio__mobile-privacy {
+    width: min(170px, calc(100vw - 140px));
+  }
+
+  .studio__mobile-device-list {
+    position: absolute;
+    top: 45%;
+    right: 14px;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 12px;
+    transform: translateY(-50%);
+    pointer-events: auto;
+  }
+
+  .studio__mobile-device {
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+  }
+
+  .studio__mobile-device span {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    color: #ffffff;
+    font-size: 18px;
+  }
+
+  .studio__mobile-device:disabled {
+    opacity: 0.45;
+  }
+
+  .studio__mobile-bottom {
+    position: absolute;
+    right: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: auto;
+  }
+
+  .studio__mobile-message {
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.62);
+    padding: 9px 11px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 12px;
+    backdrop-filter: blur(8px);
+  }
+
+  .studio__mobile-message--error {
+    background: rgba(127, 29, 29, 0.74);
+  }
+
+  .studio__mobile-description {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.46);
+    outline: 0;
+    background: transparent;
+    padding: 10px 2px;
+    color: #ffffff;
+    font-size: 16px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  }
+
+  .studio__mobile-description::placeholder {
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .studio__mobile-start {
+    display: flex;
+    width: 100%;
+    min-height: 54px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 14px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 800;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+  }
+
+  .studio__mobile-start:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+  }
+
+  .studio__mobile-spinner {
+    animation: liveMobileSpin 0.8s linear infinite;
+  }
+
+  @keyframes liveMobileSpin {
+    to { transform: rotate(360deg); }
   }
 
   .studio__stage-heading {
