@@ -31,13 +31,14 @@
       </div>
 
       <!-- ── Tabs ──────────────────────────────────── -->
-      <div class="mt-4 flex items-center gap-1 rounded-[var(--radius-md)] bg-[var(--bg-muted)] p-1">
+      <div ref="tabListRef" class="mt-4 flex items-center gap-1 rounded-[var(--radius-md)] bg-[var(--bg-muted)] p-1">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           type="button"
           class="cl-tab"
           :class="activeTab === tab.id ? 'cl-tab--active' : ''"
+          :data-message-tab="tab.id"
           @click="emit('update:activeTab', tab.id)"
         >
           <div class="relative">
@@ -56,7 +57,7 @@
     <!-- ── Multi-send composer panel ────────────────── -->
     <div v-if="activeTab === 'multi'" class="cl-multi-panel">
 
-      <div class="cl-multi-stack">
+      <div ref="multiStackRef" class="cl-multi-stack">
         <section class="cl-compose-section">
           <h2 class="cl-section-title">{{ $t("pages.messagesPage.content") }}</h2>
 
@@ -305,12 +306,15 @@
 
 <script setup lang="ts">
 import UListbox from "@nuxt/ui/components/Listbox.vue"
-import { computed, watch } from "vue"
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue"
 import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
 import type { MessageContact, MessageRecordDraft, MessageTab, MessageTabKey, MessageUserTag } from "../../domain/types/messages.types"
 import MessagesChatListItem from "./ChatListItem.vue"
 
 const multiRecordModel = defineModel<MessageRecordDraft | null>("multiRecord", { default: null })
+const tabListRef = ref<HTMLElement | null>(null)
+const multiStackRef = ref<HTMLElement | null>(null)
+let multiPanelResetFrame: number | null = null
 
 const props = defineProps<{
   activeTab: MessageTabKey
@@ -365,6 +369,32 @@ watch(recordDraft, (draft) => { multiRecordModel.value = draft })
 watch(() => props.multiFile, (file) => { if (file && recordDraft.value) clearRecording() })
 watch(() => multiRecordModel.value, (draft) => {
   if (!draft && recordDraft.value && !isRecording.value) clearRecording()
+})
+watch(() => props.activeTab, async (activeTab) => {
+  if (activeTab !== "multi" || !import.meta.client) return
+
+  // Reka Listbox highlights its first/selected item on mount with scrollIntoView().
+  // Restore the tab focus and panel position after both listboxes finish mounting.
+  await nextTick()
+  await nextTick()
+
+  if (multiPanelResetFrame !== null) {
+    window.cancelAnimationFrame(multiPanelResetFrame)
+  }
+
+  multiPanelResetFrame = window.requestAnimationFrame(() => {
+    multiStackRef.value?.scrollTo({ top: 0, left: 0, behavior: "auto" })
+    tabListRef.value
+      ?.querySelector<HTMLElement>('[data-message-tab="multi"]')
+      ?.focus({ preventScroll: true })
+    multiPanelResetFrame = null
+  })
+})
+
+onBeforeUnmount(() => {
+  if (multiPanelResetFrame !== null) {
+    window.cancelAnimationFrame(multiPanelResetFrame)
+  }
 })
 
 const markAllLabel = computed(() => t("pages.messagesPage.markAllRead"))
