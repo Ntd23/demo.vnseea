@@ -1158,6 +1158,54 @@ function marketBuyValidation()
     }
 }
 
+function VNSEEA_MarketOrderHashFromRequest()
+{
+    foreach (array('hash_id', 'hash_order', 'order_hash') as $key) {
+        if (!empty($_POST[$key])) {
+            return Wo_Secure($_POST[$key]);
+        }
+    }
+    return '';
+}
+
+function marketRequestOrderValidation()
+{
+    global $wo, $db;
+
+    $address_id = isset($_POST['address_id']) ? (string)$_POST['address_id'] : '';
+    if (!preg_match('/^[1-9][0-9]*$/', $address_id)) {
+        throw new Exception('address_id can not be empty');
+    }
+    $wo['address'] = $db->where('id', Wo_Secure($address_id))
+        ->where('user_id', $wo['user']['user_id'])
+        ->getOne(T_USER_ADDRESS);
+    if (empty($wo['address'])) {
+        throw new Exception('address not found');
+    }
+
+    $raw_product_ids = isset($_POST['product_ids']) ? $_POST['product_ids'] : '';
+    if (is_string($raw_product_ids)) {
+        $raw_product_ids = json_decode($raw_product_ids, true);
+    }
+    if (!is_array($raw_product_ids)) {
+        throw new Exception('product_ids can not be empty');
+    }
+
+    $product_ids = array();
+    foreach ($raw_product_ids as $product_id) {
+        $product_id_string = (string)$product_id;
+        if (!preg_match('/^[1-9][0-9]*$/', $product_id_string)) {
+            throw new Exception('product_ids are invalid');
+        }
+        $product_ids[(int)$product_id_string] = true;
+    }
+    if (empty($product_ids) || count($product_ids) > 50) {
+        throw new Exception('product_ids are invalid');
+    }
+
+    $wo['request_product_ids'] = array_keys($product_ids);
+}
+
 function chatSearchValidation()
 {
     global $sqlConnect, $wo,$db;
@@ -1187,13 +1235,14 @@ function marketTrackingValidation()
 {
     global $sqlConnect, $wo,$db;
 
-    if (empty($_POST['tracking_url']) || empty($_POST['tracking_id']) || empty($_POST['order_hash'])) {
+	$hash_id = VNSEEA_MarketOrderHashFromRequest();
+	if (empty($_POST['tracking_url']) || empty($_POST['tracking_id']) || empty($hash_id)) {
         throw new Exception("tracking_url , tracking_id , order_hash can not be empty");
     }
     elseif (!filter_var($_POST['tracking_url'], FILTER_VALIDATE_URL)) {
         throw new Exception("tracking_url not valid");
     }
-    $wo['hash_id'] = Wo_Secure($_POST['order_hash']);
+	$wo['hash_id'] = $hash_id;
     $wo['tracking_url'] = Wo_Secure($_POST['tracking_url']);
     $wo['tracking_id'] = Wo_Secure($_POST['tracking_id']);
     $wo['order'] = $db->where('hash_id',$wo['hash_id'])->where('product_owner_id',$wo['user']['user_id'])->getOne(T_USER_ORDERS);
@@ -1206,16 +1255,20 @@ function marketRefundValidation()
 {
     global $sqlConnect, $wo,$db;
 
-    if (empty($_POST['hash_order']) || empty($_POST['message'])) {
+	$hash_id = VNSEEA_MarketOrderHashFromRequest();
+	if (empty($hash_id) || empty($_POST['message'])) {
         throw new Exception("hash_order , message can not be empty");
     }
 
-    $wo['hash_id'] = Wo_Secure($_POST['order_hash']);
+	$wo['hash_id'] = $hash_id;
     $wo['message'] = Wo_Secure($_POST['message']);
 
-    $wo['order'] = $db->where('hash_id',$wo['hash_id'])->where('product_owner_id',$wo['user']['user_id'])->getOne(T_USER_ORDERS);
+	$wo['order'] = $db->where('hash_id',$wo['hash_id'])->where('user_id',$wo['user']['user_id'])->getOne(T_USER_ORDERS);
     if (empty($wo['order'])) {
         throw new Exception("order not found");
+    }
+    if ((string)$wo['order']->order_flow === 'request') {
+        throw new Exception("request orders do not support refunds");
     }
 }
 
@@ -1223,11 +1276,12 @@ function marketChangeStatusValidation()
 {
     global $sqlConnect, $wo,$db;
 
-    if (empty($_POST['hash_order']) || empty($_POST['status'])) {
+    $hash_id = VNSEEA_MarketOrderHashFromRequest();
+    if (empty($hash_id) || empty($_POST['status'])) {
         throw new Exception("hash_order , status can not be empty");
     }
-    
-    $wo['hash_id'] = Wo_Secure($_POST['order_hash']);
+
+    $wo['hash_id'] = $hash_id;
 
     $wo['order'] = $db->where('hash_id',$wo['hash_id'])->getOne(T_USER_ORDERS);
     if (empty($wo['order'])) {
