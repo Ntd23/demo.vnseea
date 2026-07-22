@@ -6234,6 +6234,7 @@
         "justNow": "Just now",
         "defaultHistoryTitle": "VNSEEA exchange to wallet",
         "exchangeHistoryTitle": "Exchanged {points} VNSEEA to wallet",
+        "signupBonusHistoryTitle": "Registration bonus",
         "earnedHistoryTitle": "Earned {points} VNSEEA from {type}",
         "deductHistoryTitle": "Deducted {points} VNSEEA",
         "defaultEarnedType": "activity",
