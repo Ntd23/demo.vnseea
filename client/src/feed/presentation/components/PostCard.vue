@@ -293,6 +293,13 @@
 
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
         <div v-if="enableComments" id="comments" class="post-card__comments-full">
+          <FeedCommentComposer
+            ref="commentComposerRef"
+            :current-user-name="currentAuthUserStore.user?.name"
+            :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+            :submitting="commenting"
+            @submit="submitComment"
+          />
           <FeedCommentList
             :comments="localComments"
             enable-reply
@@ -300,13 +307,6 @@
             :current-user-name="currentAuthUserStore.user?.name"
             :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
             :comment-action-repository="commentActionRepository"
-          />
-          <FeedCommentComposer
-            ref="commentComposerRef"
-            :current-user-name="currentAuthUserStore.user?.name"
-            :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
-            :submitting="commenting"
-            @submit="submitComment"
           />
         </div>
       </Transition>

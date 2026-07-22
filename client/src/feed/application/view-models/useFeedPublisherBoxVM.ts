@@ -39,17 +39,6 @@ export function useFeedPublisherBoxVM(
   const showColorsPicker = ref(false)
   const showProductForm = ref(false)
 
-  const productForm = ref({
-    name: "",
-    price: "",
-    currency: "₫",
-    category: "1",
-    location: "",
-    type: "0",
-    description: "",
-    imageFile: null as File | null,
-  })
-
   const { postColorOptions } = useFeedPostColors()
 
   const storageKey = `feed-publisher-draft:${route.path || "/"}`
@@ -143,16 +132,6 @@ export function useFeedPublisherBoxVM(
   })
 
   const canPublish = computed(() => {
-    if (showProductForm.value) {
-      return Boolean(
-        productForm.value.name.trim() &&
-        productForm.value.price.trim() &&
-        productForm.value.category &&
-        productForm.value.description.trim() &&
-        productForm.value.imageFile
-      )
-    }
-
     if (showPollForm.value) {
       return Boolean(
         draft.value?.text?.trim()
@@ -282,6 +261,15 @@ export function useFeedPublisherBoxVM(
       return
     }
 
+    if (value === "product") {
+      showProductForm.value = true
+      showFeelingPicker.value = false
+      showColorsPicker.value = false
+      showPollForm.value = false
+      expanded.value = true
+      return
+    }
+
     expanded.value = true
   }
 
@@ -400,81 +388,44 @@ export function useFeedPublisherBoxVM(
     statusMessage.value = ""
 
     try {
-      if (showProductForm.value) {
-        // Submit product listing
-        const response = await repository.createProduct({
-          name: productForm.value.name,
-          price: productForm.value.price,
-          category: productForm.value.category,
-          description: productForm.value.description,
-          location: productForm.value.location,
-          type: productForm.value.type,
-          imageFile: productForm.value.imageFile!,
-        })
-        
-        statusTone.value = "neutral"
-        statusMessage.value = ""
-        
-        // Reset product form
-        productForm.value = {
-          name: "",
-          price: "",
-          currency: "₫",
-          category: "1",
-          location: "",
-          type: "0",
-          description: "",
-          imageFile: null,
-        }
-        showProductForm.value = false
-        expanded.value = false
-        
-        toast.add({
-          color: "success",
-          icon: "i-ph-check-circle-fill",
-          title: locale.value === "vi" ? "Đăng sản phẩm thành công" : "Product listed successfully",
-          description: locale.value === "vi" ? "Sản phẩm của bạn đã được đăng lên dòng thời gian." : "Your product has been shared on your timeline.",
-        })
-      } else {
-        const response = await repository.createPost({
-          text: draft.value?.text || "",
-          audience: groupId ? undefined : draft.value?.audience || "public",
-          isAnonymous: isPersonalComposer.value && draft.value?.isAnonymous,
-          feeling: draft.value?.feeling || undefined,
-          imageFiles: imageFiles.value.length ? imageFiles.value : undefined,
-          videoFile: videoFile.value || undefined,
-          pageId,
-          eventId,
-          groupId,
-          colorId: selectedColorId.value || undefined,
-          pollAnswers: showPollForm.value
-            ? pollAnswers.value.map(answer => answer.trim()).filter(Boolean)
-            : undefined,
-        })
+      const response = await repository.createPost({
+        text: draft.value?.text || "",
+        audience: groupId ? undefined : draft.value?.audience || "public",
+        isAnonymous: isPersonalComposer.value && draft.value?.isAnonymous,
+        feeling: draft.value?.feeling || undefined,
+        imageFiles: imageFiles.value.length ? imageFiles.value : undefined,
+        videoFile: videoFile.value || undefined,
+        pageId,
+        eventId,
+        groupId,
+        colorId: selectedColorId.value || undefined,
+        pollAnswers: showPollForm.value
+          ? pollAnswers.value.map(answer => answer.trim()).filter(Boolean)
+          : undefined,
+      })
 
-        statusTone.value = "neutral"
-        statusMessage.value = ""
-        if (draft.value) {
-          draft.value.text = ""
-          draft.value.feeling = ""
-          draft.value.isAnonymous = false
-        }
-        selectedColorId.value = null
-        showColorsPicker.value = false
-        resetSelectedMedia()
-        showFeelingPicker.value = false
-        showPollForm.value = false
-        pollAnswers.value = ["", ""]
-        expanded.value = false
-        emit("created", response.post)
-
-        toast.add({
-          color: "success",
-          icon: "i-ph-check-circle-fill",
-          title: t("feed.publisherBox.statusSuccessTitle"),
-          description: t("feed.publisherBox.statusSuccessDescription"),
-        })
+      statusTone.value = "neutral"
+      statusMessage.value = ""
+      if (draft.value) {
+        draft.value.text = ""
+        draft.value.feeling = ""
+        draft.value.isAnonymous = false
       }
+      selectedColorId.value = null
+      showColorsPicker.value = false
+      resetSelectedMedia()
+      showFeelingPicker.value = false
+      showPollForm.value = false
+      pollAnswers.value = ["", ""]
+      expanded.value = false
+      emit("created", response.post)
+
+      toast.add({
+        color: "success",
+        icon: "i-ph-check-circle-fill",
+        title: t("feed.publisherBox.statusSuccessTitle"),
+        description: t("feed.publisherBox.statusSuccessDescription"),
+      })
     }
     catch (error) {
       statusTone.value = "warning"
@@ -525,7 +476,6 @@ export function useFeedPublisherBoxVM(
     showColorsPicker,
     postColorOptions,
     showProductForm,
-    productForm,
     imageFiles,
     videoFile,
   }

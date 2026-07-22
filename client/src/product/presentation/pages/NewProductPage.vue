@@ -1,8 +1,15 @@
 <!-- English description: Wowonder-aligned product creation form that submits multipart data through the Nuxt API bridge. -->
 
 <template>
-  <div class="new-product-page w-full mt-1.5">
-    <form class="new-product-form" @submit.prevent="submitProduct">
+  <div
+    class="new-product-page w-full"
+    :class="embedded ? 'new-product-page--embedded' : 'mt-1.5'"
+  >
+    <form
+      class="new-product-form"
+      :class="{ 'new-product-form--embedded': embedded }"
+      @submit.prevent="submitProduct"
+    >
       <div class="new-product-row new-product-row--name-price">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.titleLabel')">
           <UInput
@@ -15,11 +22,14 @@
         </UFormField>
 
         <UFormField class="new-product-field" :label="$t('pages.productEditor.priceLabel')">
-          <UInput
-            v-model="draft.fields.price"
+          <UInputNumber
+            v-model="priceInput"
             class="w-full"
             size="lg"
-            inputmode="decimal"
+            orientation="vertical"
+            :min="0"
+            :step="0.01"
+            disable-wheel-change
             placeholder="0.00"
             :ui="{ base: 'h-11 rounded-xl' }"
           />
@@ -41,6 +51,7 @@
         <UFormField class="new-product-field" :label="$t('pages.productEditor.categoryLabel')">
           <USelect
             v-model="draft.fields.category"
+            arrow
             class="w-full"
             :items="categoryOptions"
             value-key="value"
@@ -55,6 +66,7 @@
         <UFormField class="new-product-field" :label="$t('pages.productEditor.conditionLabel')">
           <USelect
             v-model="draft.fields.condition"
+            arrow
             class="w-full"
             :items="conditionOptions"
             value-key="value"
@@ -69,6 +81,7 @@
         <UFormField class="new-product-field" :label="$t('pages.productEditor.subCategoryLabel')">
           <USelect
             v-model="selectedSubCategory"
+            arrow
             class="w-full"
             :items="subCategoryOptions"
             value-key="value"
@@ -92,6 +105,7 @@
         <UFormField class="new-product-field" :label="$t('pages.productEditor.currencyLabel')">
           <USelect
             v-model="draft.fields.currency"
+            arrow
             class="w-full"
             :items="currencyOptions"
             value-key="value"
@@ -161,8 +175,9 @@
         >
       </div>
 
-      <div class="new-product-actions">
+      <div class="new-product-actions" :class="{ 'new-product-actions--embedded': embedded }">
         <UButton
+          v-if="!embedded"
           to="/my-products"
           color="neutral"
           variant="soft"
@@ -189,7 +204,6 @@
 <script setup lang="ts">
 import type { ProductEditorDraft } from "../../domain/types/product-editor.types"
 import type { ProductCategoryOption, ProductSubCategoryOption } from "../../domain/types/product-marketplace.types"
-import { watchDebounced } from "@vueuse/core"
 import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
 import {
   emptyLocationSelection,
@@ -197,11 +211,22 @@ import {
   normalizeLocationSelection,
   type LocationSelection,
 } from "../../../location/domain/types/location.types"
-import { useProductEditorDraft } from "../../application/composables/useProductEditorDraft"
 import { useProductEditorMeta } from "../../application/composables/useProductEditorMeta"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 import { useNuxtApiClient } from "../../../shared-kernel/infrastructure/http/nuxt-api-client"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+
+const props = withDefaults(defineProps<{
+  embedded?: boolean
+}>(), {
+  embedded: false,
+})
+
+const emit = defineEmits<{
+  created: [productId: string]
+}>()
+
+const embedded = computed(() => props.embedded)
 
 type FilePreview = {
   key: string
@@ -252,9 +277,23 @@ const createInitialDraft = (): ProductEditorDraft => ({
   lastSavedAt: null,
 })
 
-const { draft, markSaved, resetDraft } = useProductEditorDraft("product-editor:create", createInitialDraft())
+const draft = ref<ProductEditorDraft>(createInitialDraft())
 stockInput.value = draft.value.fields.stock
 productLocationSelection.value = normalizeLocationSelection({ address: draft.value.fields.location })
+
+const priceInput = computed<number | undefined>({
+  get: () => {
+    if (!draft.value.fields.price.trim()) {
+      return undefined
+    }
+
+    const value = Number(draft.value.fields.price)
+    return Number.isFinite(value) ? value : undefined
+  },
+  set: (value) => {
+    draft.value.fields.price = value === undefined || value === null ? "" : String(value)
+  },
+})
 
 const locationModel = computed({
   get: () => productLocationSelection.value,
@@ -442,14 +481,6 @@ const removeNewFile = (key: string) => {
   newFilePreviews.value = newFilePreviews.value.filter(preview => preview.key !== key)
 }
 
-watchDebounced(
-  [() => draft.value.fields, () => newFilePreviews.value.length],
-  () => {
-    markSaved()
-  },
-  { deep: true, debounce: 800, maxWait: 2000 },
-)
-
 const ensureCategory = () => {
   const categoryExists = categoryOptions.value.some(category => category.value === draft.value.fields.category)
 
@@ -556,9 +587,10 @@ const submitProduct = async () => {
 
   try {
     const response = await apiClient.post<{ id?: string; postId?: string }, FormData>("product/create", form)
-    markSaved()
-    resetDraft(createInitialDraft())
+    draft.value = createInitialDraft()
     stockInput.value = ""
+    selectedSubCategory.value = ""
+    hasTouchedStockInput.value = false
     productLocationSelection.value = emptyLocationSelection()
     revokePreviews()
     if (fileInput.value) {
@@ -568,6 +600,11 @@ const submitProduct = async () => {
       title: t("pages.newProductPage.createSuccessTitle"),
       color: "success",
     })
+
+    if (props.embedded) {
+      emit("created", response.id || "")
+      return
+    }
 
     await navigateTo(response.id ? appRoutes.productDetail(response.id) : appRoutes.myProducts)
   }
@@ -629,6 +666,17 @@ onBeforeUnmount(() => {
 
 .new-product-form {
   padding: 18px;
+}
+
+.new-product-page--embedded {
+  margin-top: 0;
+}
+
+.new-product-form--embedded {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .new-product-row {
@@ -768,6 +816,10 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 10px;
   margin-top: 18px;
+}
+
+.new-product-actions--embedded {
+  justify-content: flex-end;
 }
 
 .new-product-back,
