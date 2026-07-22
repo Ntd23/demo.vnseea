@@ -355,10 +355,12 @@ function handleMenuAction(item: { key: string }) {
 }
 
 .post-header__context-icon {
+  display: inline-block;
   width: 13px;
   height: 13px;
   flex: 0 0 auto;
   color: #111827;
+  vertical-align: -1px;
 }
 
 .post-header__feeling-text,
@@ -494,7 +496,6 @@ function handleMenuAction(item: { key: string }) {
   .post-header__feeling-text,
   .post-header__feeling-emoji,
   .post-header__feeling-label,
-  .post-header__context-icon,
   .post-header__event-link {
     display: inline;
   }
