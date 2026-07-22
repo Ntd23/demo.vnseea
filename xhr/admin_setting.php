@@ -4107,6 +4107,7 @@ if ($f == 'admin_setting' AND (Wo_IsAdmin() || Wo_IsModerator())) {
         foreach ($_POST as $key => $value) {
             if ($key != 'hash_id' && in_array($key, array(
                 'activate',
+                'activate_code',
                 'invite',
                 'login_with',
                 'notification',

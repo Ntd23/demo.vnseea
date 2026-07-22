@@ -296,7 +296,11 @@ const logoutAction = {
   z-index: 110;
   margin-top: 8px;
   width: 318px;
-  overflow: hidden;
+  max-height: min(720px, calc(100dvh - 84px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   border-radius: 22px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #ffffff;

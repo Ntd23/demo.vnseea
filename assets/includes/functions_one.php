@@ -171,7 +171,12 @@ function Wo_SaveHTMLEmails($update_name, $value)
     }
     $update_name = Wo_Secure($update_name);
     $value = mysqli_real_escape_string($sqlConnect, $value);
-    $query_one = " UPDATE " . T_HTML_EMAILS . " SET `value` = '{$value}' WHERE `name` = '{$update_name}'";
+    $exists = mysqli_query($sqlConnect, "SELECT `name` FROM " . T_HTML_EMAILS . " WHERE `name` = '{$update_name}' LIMIT 1");
+    if ($exists && mysqli_num_rows($exists) > 0) {
+        $query_one = "UPDATE " . T_HTML_EMAILS . " SET `value` = '{$value}' WHERE `name` = '{$update_name}'";
+    } else {
+        $query_one = "INSERT INTO " . T_HTML_EMAILS . " (`name`, `value`) VALUES ('{$update_name}', '{$value}')";
+    }
     $query = mysqli_query($sqlConnect, $query_one);
     if ($query) {
         return true;

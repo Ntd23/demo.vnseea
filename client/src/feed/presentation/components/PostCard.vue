@@ -133,7 +133,13 @@
 
       <FeedSharedPostCard v-else-if="post.sharedPost" :post="post.sharedPost" class="mt-4" />
 
-      <FeedPostMediaGrid v-else-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
+      <FeedPostMediaGrid
+        v-else-if="mediaItems.length"
+        class="post-card__media"
+        :items="mediaItems"
+        :post="post"
+        @open="handleMediaOpen"
+      />
 
       <div class="post-card__stats">
         <button

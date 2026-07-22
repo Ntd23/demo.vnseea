@@ -12,6 +12,7 @@
           :to="appRoutes.feed"
           class="header-home-link"
           :aria-label="$t('navigation.headerBar.home')"
+          @click="handleHomeClick"
         >
           <img
             v-if="faviconUrl && !faviconFailed"
@@ -162,6 +163,7 @@
             :to="appRoutes.feed"
             class="mobile-home-link"
             :aria-label="$t('navigation.headerBar.home')"
+            @click="handleHomeClick"
           >
             <img
               v-if="faviconUrl && !faviconFailed"
@@ -395,6 +397,7 @@ const createMenuOpen = ref(false)
 const isClientReady = ref(false)
 const faviconFailed = ref(false)
 const route = useRoute()
+const router = useRouter()
 const createActions = [
   {
     id: "ads",
@@ -460,6 +463,15 @@ const currentUserInitials = computed(() =>
 
 const isHeaderHidden = ref(false)
 const lastScrollY = ref(0)
+
+function handleHomeClick(event: MouseEvent) {
+  if (route.path !== appRoutes.feed) {
+    return
+  }
+
+  event.preventDefault()
+  router.go(0)
+}
 
 const handleScroll = () => {
   const currentScrollY = window.scrollY

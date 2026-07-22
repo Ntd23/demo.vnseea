@@ -6,6 +6,10 @@
     </ClientOnly>
 
     <ClientOnly>
+      <ReelsPresentationReelsViewerOverlay />
+    </ClientOnly>
+
+    <ClientOnly>
       <NavigationHeaderBar />
 
       <template v-slot:fallback>
@@ -55,6 +59,7 @@ import NavigationHeaderIconNav from "../../src/navigation/presentation/component
 import NavigationLeftSidebar from "../../src/navigation/presentation/components/LeftSidebar.vue"
 import NavigationRightSidebar from "../../src/navigation/presentation/components/RightSidebar.vue"
 import DirectoryLeftSidebar from "../../src/directory/presentation/components/LeftSidebar.vue"
+import ReelsPresentationReelsViewerOverlay from "../../src/reels/presentation/components/ReelsViewerOverlay.vue"
 
 const route = useRoute()
 

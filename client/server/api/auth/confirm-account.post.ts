@@ -27,17 +27,19 @@ export default defineEventHandler(async (event): Promise<ConfirmAccountResult> =
     })
   }
 
-  if (!body.code?.trim()) {
+  const confirmationCode = String(body.code ?? "").replace(/\D/g, "")
+
+  if (!/^\d{6}$/.test(confirmationCode)) {
     throw createError({
       statusCode: 422,
-      statusMessage: "Confirmation code is required.",
+      statusMessage: "Confirmation code must contain exactly 6 digits.",
     })
   }
 
   const response = assertBackendApiSuccess(
     await client.post<BackendConfirmAccountResponse, Record<string, unknown>>(backendRoutes.api.activeAccountSms, {
       user_id: Number(body.userId),
-      code: body.code.trim(),
+      code: confirmationCode,
       timezone: body.timezone || "UTC",
       device_type: "windows",
     }),

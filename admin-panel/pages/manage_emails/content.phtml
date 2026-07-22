@@ -34,6 +34,14 @@
                         <br>
                         <div class="form-group form-float">
                             <div class="form-line">
+                                <label class="form-label">Kích hoạt tài khoản qua mã 6 số (Cho phép HTML)</label>
+                                <div class="alert alert-warning">Hãy đảm bảo thêm {{USERNAME}}, {{SITE_URL}}, {{EMAIL}}, {{CODE}} và {{SITE_NAME}} vào đúng vị trí. {{CODE}} là mã xác thực gồm 6 chữ số.</div>
+                                <textarea name="activate_code" id="activate_code" class="form-control" cols="30" rows="10"><?php echo $wo['emails']['activate_code'] ?? '<p>Xin chào {{USERNAME}},</p><p>Mã kích hoạt tài khoản {{SITE_NAME}} của bạn là:</p><h1>{{CODE}}</h1><p>Mã có hiệu lực trong thời gian giới hạn. Không chia sẻ mã này cho bất kỳ ai.</p>';?></textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-group form-float">
+                            <div class="form-line">
                                 <label class="form-label">Email mời (Cho phép HTML)</label>
                                 <div class="alert alert-warning">Đảm bảo thêm {{USERNAME}}, {{SITE_URL}}, {{NAME}}, {{URL}}, {{SITE_NAME}}, {{BACKGOUND_COLOR}} vào đúng vị trí</div>
                                 <textarea name="invite" id="invite" class="form-control" cols="30" rows="10"><?php echo $wo['emails']['invite'];?></textarea>

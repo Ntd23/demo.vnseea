@@ -37,6 +37,8 @@
           playsinline
           preload="auto"
           @loadedmetadata="playVideoWithSound"
+          @fullscreenchange="handleVideoFullscreenChange"
+          @webkitbeginfullscreen="openVideoInReels"
         >
           <source :src="item.src" :type="item.mime || 'video/mp4'">
         </video>
@@ -55,8 +57,12 @@
 </template>
 
 <script setup lang="ts">
+import { useReelsViewerOverlay } from "../../../reels/application/composables/useReelsViewerOverlay"
+import type { FeedPostRecord } from "../../domain/types/feed.types"
+
 const { t } = useI18n()
 const videoRefs = ref<HTMLVideoElement[]>([])
+const { open: openReelsViewer } = useReelsViewerOverlay()
 
 const props = defineProps<{
   items: Array<{
@@ -65,6 +71,7 @@ const props = defineProps<{
     alt?: string
     mime?: string
   }>
+  post: FeedPostRecord
 }>()
 
 const emit = defineEmits<{ open: [index: number] }>()
@@ -112,6 +119,18 @@ function playVisibleVideo(video: HTMLVideoElement) {
   void video.play().catch(() => {
     // Browser autoplay rules can still require a user gesture.
   })
+}
+
+function openVideoInReels() {
+  openReelsViewer(props.post)
+}
+
+function handleVideoFullscreenChange(event: Event) {
+  if (!import.meta.client || document.fullscreenElement !== event.currentTarget) {
+    return
+  }
+
+  void document.exitFullscreen().finally(openVideoInReels)
 }
 
 onMounted(() => {

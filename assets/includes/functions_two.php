@@ -5554,7 +5554,8 @@ function Wo_ConfirmUser($user_id, $code) {
     if (!is_numeric($user_id) || $user_id <= 0) {
         return false;
     }
-    $query  = mysqli_query($sqlConnect, " SELECT COUNT(`user_id`)  FROM " . T_USERS . "  WHERE `sms_code` = '{$code}' AND `user_id` = '{$user_id}' AND `active` = '0'");
+    $email_code = md5($code);
+    $query  = mysqli_query($sqlConnect, " SELECT COUNT(`user_id`)  FROM " . T_USERS . "  WHERE (`sms_code` = '{$code}' OR `email_code` = '{$email_code}') AND `user_id` = '{$user_id}' AND `active` = '0'");
     $result = Wo_Sql_Result($query, 0);
     if ($result == 1) {
         $email_code = md5(rand(1111, 9999) . time());

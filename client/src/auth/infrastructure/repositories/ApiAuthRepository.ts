@@ -4,6 +4,8 @@ import type { AuthRepository } from "../../domain/repositories/AuthRepository"
 import type {
   ConfirmAccountInput,
   ConfirmAccountResult,
+  ResendAccountCodeInput,
+  ResendAccountCodeResult,
   ConfirmLoginInput,
   ConfirmLoginResult,
   CurrentAuthUser,
@@ -55,6 +57,12 @@ export function createApiAuthRepository(): AuthRepository {
     async confirmAccount(input: ConfirmAccountInput): Promise<ConfirmAccountResult> {
       return await client.post<ConfirmAccountResult, ConfirmAccountInput>(
         apiRoutes.auth.confirmAccount,
+        input,
+      )
+    },
+    async resendAccountCode(input: ResendAccountCodeInput): Promise<ResendAccountCodeResult> {
+      return await client.post<ResendAccountCodeResult, ResendAccountCodeInput>(
+        apiRoutes.auth.resendAccountCode,
         input,
       )
     },

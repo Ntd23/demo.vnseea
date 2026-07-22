@@ -45,9 +45,10 @@ if ($f == 'resned_ac_email') {
             if ($email == 1 && $phone == 0) {
                 $wo['user']             = $_POST;
                 $wo['user']['username'] = $user['username'];
-                $code                   = md5(rand(1111, 9999));
-                $wo['code']             = $code;
-                $body                   = Wo_LoadPage('emails/activate');
+                $activation_code        = (string) random_int(100000, 999999);
+                $code                   = md5($activation_code);
+                $wo['code']             = $activation_code;
+                $body                   = Wo_LoadPage('emails/activate_code');
                 $send_message_data      = array(
                     'from_email' => $wo['config']['siteEmail'],
                     'from_name' => $wo['config']['siteName'],

@@ -109,6 +109,7 @@ if ($type == 'user_registration') {
         	}
         }
         $activate = ($wo['config']['emailValidation'] == '1') ? '0' : '1';
+        $activation_code = (string) random_int(100000, 999999);
         // $device_id = '';
         // if (!empty($_POST['device_id'])) {
         //     $device_id = Wo_Secure($_POST['device_id']);
@@ -117,7 +118,7 @@ if ($type == 'user_registration') {
             'email' => $email,
             'username' => $username,
             'password' => $password,
-            'email_code' => md5($username),
+            'email_code' => md5($activation_code),
             'src' => 'Phone',
             'timezone' => 'UTC',
             'gender' => Wo_Secure($gender),
@@ -160,7 +161,8 @@ if ($type == 'user_registration') {
                 }
             } else {
                 $wo['user']        = $_POST;
-                $body              = Wo_LoadPage('emails/activate');
+                $wo['code']        = $activation_code;
+                $body              = Wo_LoadPage('emails/activate_code');
                 $send_message_data = array(
                     'from_email' => $wo['config']['siteEmail'],
                     'from_name' => $wo['config']['siteName'],

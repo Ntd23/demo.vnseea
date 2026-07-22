@@ -3,7 +3,6 @@
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <p class="auth-form__eyebrow">{{ $t('pages.confirmAccountPage.eyebrow') }}</p>
       <h1 class="auth-form__title">{{ $t('pages.confirmAccountPage.title') }}</h1>
       <p class="auth-form__subtitle">
         {{ $t('pages.confirmAccountPage.subtitle') }}
@@ -28,15 +27,24 @@
       @submit="handleSubmit"
     >
       <UFormField name="code" :label="$t('pages.confirmAccountPage.codeLabel')" required>
-        <UInput
-          v-model="state.code"
-          type="text"
-          autocomplete="one-time-code"
-          size="xl"
-          :placeholder="$t('pages.confirmAccountPage.codePlaceholder')"
-          class="w-full"
+        <UPinInput
+          :model-value="otpDigits"
+          :length="6"
+          type="number"
+          otp
+          required
+          autofocus
+          class="otp-inputs"
+          @update:model-value="updateOtpDigits"
         />
       </UFormField>
+
+      <button type="button" class="auth-resend" :disabled="!canResend" @click="resendCode">
+        <span v-if="resendState === 'loading'">Đang gửi...</span>
+        <span v-else-if="resendRemaining > 0">Gửi lại mã sau {{ resendRemaining }}s</span>
+        <span v-else>Gửi lại mã xác nhận</span>
+      </button>
+      <p v-if="resendMessage" class="auth-resend__message" :class="`auth-resend__message--${resendState}`">{{ resendMessage }}</p>
 
       <UAlert
         v-if="submitState === 'error' && submitMessage"
@@ -48,6 +56,15 @@
         class="rounded-[14px]"
       />
 
+      <UAlert
+        v-if="submitState === 'success' && submitMessage"
+        color="success"
+        variant="subtle"
+        icon="i-ph-check-circle-fill"
+        :description="submitMessage"
+        class="rounded-[14px]"
+      />
+
       <UButton
         type="submit"
         color="primary"
@@ -55,6 +72,7 @@
         block
         size="xl"
         :loading="submitState === 'loading'"
+        :disabled="submitState === 'success'"
         loading-icon="i-lucide-loader-2"
         class="auth-submit"
       >
@@ -81,8 +99,16 @@ const {
   submitMessage,
   validate,
   handleSubmit,
+  resendRemaining, resendState, resendMessage, canResend, resendCode,
   backToWelcome,
 } = useConfirmAccountPageVM()
+
+const otpDigits = ref<number[]>([])
+
+function updateOtpDigits(digits: number[]) {
+  otpDigits.value = digits
+  state.code = digits.join("")
+}
 
 </script>
 
@@ -101,12 +127,50 @@ const {
   gap: 6px;
 }
 
-.auth-form__eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.otp-inputs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.otp-inputs :deep(input) {
+  height: 54px;
+  padding: 0;
+  border-color: #e2e8f0;
+  background: #fafbfe;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.auth-resend {
+  align-self: center;
+  border: 0;
+  background: transparent;
   color: #0000ff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.auth-resend:disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.auth-resend__message {
+  margin: -8px 0 0;
+  text-align: center;
+  font-size: 13px;
+}
+
+.auth-resend__message--success {
+  color: #15803d;
+}
+
+.auth-resend__message--error {
+  color: #dc2626;
 }
 
 .auth-form__title {
