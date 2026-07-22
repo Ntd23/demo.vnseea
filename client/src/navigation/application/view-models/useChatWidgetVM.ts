@@ -239,6 +239,7 @@ export function useChatWidgetVM(
   const miniChatSessions = ref<MiniChatSession[]>([])
   const launchedContacts = ref<MessageContact[]>([])
   const isSendingQuick = ref(false)
+  const isUpdatingTags = ref(false)
   const socket = shallowRef<Socket | null>(null)
   const connectingRealtime = ref(false)
   const socketOwnerId = ref(0)
@@ -1307,6 +1308,86 @@ export function useChatWidgetVM(
     }
   }
 
+  async function createTagLabel(input: { name: string, color: string }) {
+    if (isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.createTagLabel(input)
+      await refreshTagsData()
+      return result.ok
+    }
+    catch {
+      toast.add({
+        title: t("pages.messagesPage.multiNetworkErrorTitle"),
+        description: t("pages.messagesPage.multiNetworkErrorDescription"),
+        color: "error",
+      })
+      return false
+    }
+    finally {
+      isUpdatingTags.value = false
+    }
+  }
+
+  async function deleteTagLabel(tagId: number) {
+    if (tagId <= 0 || isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.deleteTagLabel({ tagId })
+      await refreshTagsData()
+      return result.ok
+    }
+    finally {
+      isUpdatingTags.value = false
+    }
+  }
+
+  async function attachTag(contact: MessageContact, tagId: number) {
+    const userId = contact.userId ?? 0
+
+    if (userId <= 0 || tagId <= 0 || isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.attachTag({ userId, tagId })
+      await refreshTagsData()
+      return result.ok
+    }
+    finally {
+      isUpdatingTags.value = false
+    }
+  }
+
+  async function detachTag(contact: MessageContact, tagId: number) {
+    const userId = contact.userId ?? 0
+
+    if (userId <= 0 || tagId <= 0 || isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.detachTag({ userId, tagId })
+      await refreshTagsData()
+      return result.ok
+    }
+    finally {
+      isUpdatingTags.value = false
+    }
+  }
+
   function onFile(event: Event) {
     const input = event.target as HTMLInputElement
     const nextFile = input.files?.[0] ?? null
@@ -1577,13 +1658,18 @@ export function useChatWidgetVM(
     isLoadingInbox,
     isLoadingThread,
     isSendingQuick,
+    isUpdatingTags,
     isSendingMini,
     canSendQuickMessage,
     canSendMiniMessage,
     buildPresenceLabel,
     buildPreviewLabel,
     messageTagLabels,
+    attachTag,
     clearSendRecipients,
+    createTagLabel,
+    deleteTagLabel,
+    detachTag,
     setSelectedSendRecipientIds,
     toggleAllVisibleSendRecipients,
     toggleSendRecipient,

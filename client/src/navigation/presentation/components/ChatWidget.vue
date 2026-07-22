@@ -39,7 +39,7 @@
     </div>
 
     <div v-show="!collapsed" class="chat-widget__body">
-    <div class="chat-widget__tabs">
+    <div ref="widgetTabsRef" class="chat-widget__tabs">
       <UButton
         v-for="tab in tabs"
         :key="tab.value"
@@ -48,66 +48,25 @@
         variant="ghost"
         class="chat-widget__tab"
         :class="{ 'chat-widget__tab--active': activeTab === tab.value }"
+        :data-chat-widget-tab="tab.value"
+        :aria-label="$t(tab.label)"
+        :title="$t(tab.label)"
         @click="activeTab = tab.value"
       >
         <Icon :name="activeTab === tab.value ? tab.activeIcon : tab.icon" class="h-4 w-4" />
-        <span>{{ $t(tab.label) }}</span>
+        <span class="sr-only">{{ $t(tab.label) }}</span>
       </UButton>
     </div>
 
     <div v-if="activeTab === 'send'" class="chat-widget__content chat-widget__content--send">
-      <div class="chat-widget__send-scroll">
-        <div class="chat-widget__send-card">
-          <div class="chat-widget__field">
-            <label class="chat-widget__field-label">
-              <span class="inline-flex items-center gap-1.5">
-                <Icon name="i-ph-tag-bold" class="h-3.5 w-3.5" />
-                <span>{{ $t("pages.messagesPage.label") }}</span>
-              </span>
-            </label>
-            <USelectMenu
-              v-model="activeSendTagFilterModel"
-              :items="sendTagFilterItems"
-              value-key="value"
-              :placeholder="$t('pages.messagesPage.chooseTag')"
-              :search-input="{ placeholder: $t('pages.messagesPage.chooseTag') }"
-              clear
-              class="w-full"
-              :ui="{
-                base: 'w-full rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] shadow-none',
-              }"
-            />
-          </div>
-
-          <div class="chat-widget__send-actions chat-widget__send-actions--inline">
-            <UButton
-              type="button"
-              variant="solid"
-              icon="i-ph-paper-plane-right-bold"
-              class="chat-widget__send-btn btn-primary"
-              :loading="isSendingQuick"
-              :disabled="!canSendQuickMessage"
-              @click="sendQuickMessage"
-            >
-              {{ $t("navigation.chatWidget.sendMessage") }}
-            </UButton>
-          </div>
-
+      <div ref="sendScrollRef" class="chat-widget__send-scroll">
+        <section class="chat-widget__send-card chat-widget__compose-card">
+          <h2 class="chat-widget__section-title">{{ $t("navigation.chatWidget.content") }}</h2>
           <div class="chat-widget__recipient-heading">
-            <div class="chat-widget__field-label chat-widget__field-label--inline">
-              <Icon name="i-ph-users-three-bold" class="h-3.5 w-3.5" />
-              <span>{{ $t("navigation.chatWidget.sendToLabel") }}</span>
-            </div>
-            <label class="chat-widget__select-all">
-              <input
-                type="checkbox"
-                :checked="allVisibleSendRecipientsSelected"
-                class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
-                :disabled="sendCandidates.length === 0"
-                @change="toggleAllVisibleSendRecipients"
-              >
-              <span>{{ $t("navigation.chatWidget.selectAll") }}</span>
-            </label>
+            <label class="chat-widget__field-label chat-widget__field-label--inline">{{ $t("navigation.chatWidget.sendToLabel") }}</label>
+            <span v-if="selectedSendRecipients.length > 0" class="chat-widget__selected-count">
+              {{ $t("pages.messagesPage.selectedRecipientsCount", { count: selectedSendRecipients.length }) }}
+            </span>
           </div>
 
           <div class="chat-widget__field">
@@ -116,7 +75,7 @@
               :placeholder="$t('navigation.chatWidget.recipientPlaceholder')"
               icon="i-ph-magnifying-glass-bold"
               :ui="{
-                base: 'rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 text-sm shadow-none',
+                base: 'rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 text-sm shadow-none',
               }"
             />
           </div>
@@ -134,39 +93,7 @@
             <span v-else class="chat-widget__recipient-empty">{{ $t("navigation.chatWidget.noRecipientSelected") }}</span>
           </div>
 
-          <div v-if="showSendCandidates" class="chat-widget__suggestions">
-            <button
-              v-for="candidate in sendCandidates"
-              :key="candidate.id"
-              type="button"
-              class="chat-widget__suggestion"
-              :class="{ 'chat-widget__suggestion--selected': selectedSendRecipientIds.includes(candidate.userId ?? 0) }"
-              @click="toggleSendRecipient(candidate)"
-            >
-              <UAvatar
-                v-if="candidate.type === 'user'"
-                :src="candidate.avatarUrl"
-                :alt="candidate.name"
-                size="xs"
-                class="rounded-full"
-              />
-              <div v-else class="chat-widget__group-icon">
-                <Icon name="i-ph-users-three-bold" class="h-4 w-4" />
-              </div>
-              <div class="min-w-0 flex-1 text-left">
-                <p class="chat-widget__suggestion-name">{{ candidate.name }}</p>
-                <p class="chat-widget__suggestion-meta">{{ buildPresenceLabel(candidate) }}</p>
-              </div>
-            </button>
-          </div>
-          <p v-else-if="sendCandidates.length === 0" class="chat-widget__hint">
-            {{ $t("navigation.chatWidget.noMatchingRecipients") }}
-          </p>
-        </div>
-
-        <div class="chat-widget__send-card">
           <div class="chat-widget__field">
-            <label class="chat-widget__field-label">{{ $t("navigation.chatWidget.content") }}</label>
             <UTextarea
               v-model="sendMessage"
               autoresize
@@ -219,19 +146,114 @@
               </template>
             </template>
           </div>
-        </div>
+
+          <label class="chat-widget__select-all">
+            <input
+              type="checkbox"
+              :checked="allVisibleSendRecipientsSelected"
+              class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+              :disabled="sendCandidates.length === 0"
+              @change="toggleAllVisibleSendRecipients"
+            >
+            <span>{{ $t("navigation.chatWidget.selectAll") }}</span>
+          </label>
+
+          <UButton
+            type="button"
+            variant="solid"
+            icon="i-ph-paper-plane-right-bold"
+            class="chat-widget__send-btn btn-primary"
+            :loading="isSendingQuick"
+            :disabled="!canSendQuickMessage"
+            @click="sendQuickMessage"
+          >
+            {{ $t("navigation.chatWidget.sendMessage") }}
+          </UButton>
+
+          <div class="chat-widget__field chat-widget__tag-filter">
+            <USelectMenu
+              v-model="activeSendTagFilterModel"
+              :items="sendTagFilterItems"
+              value-key="value"
+              :placeholder="$t('pages.messagesPage.chooseTag')"
+              :search-input="{ placeholder: $t('pages.messagesPage.chooseTag') }"
+              clear
+              class="w-full"
+              :ui="{
+                base: 'w-full rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white shadow-none',
+              }"
+            />
+          </div>
+        </section>
+
+        <section class="chat-widget__send-card chat-widget__users-card">
+          <h2 class="chat-widget__section-title">{{ $t("pages.messagesPage.users") }}</h2>
+
+          <UListbox
+            v-if="sendCandidates.length > 0"
+            v-model="selectedSendRecipientIdModel"
+            :items="sendCandidateListboxItems"
+            value-key="value"
+            multiple
+            class="chat-widget__users-listbox"
+            :ui="{
+              root: 'gap-2',
+              item: 'min-h-16 rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--color-primary-300)] data-[state=checked]:bg-[var(--bg-surface-active)]',
+              itemWrapper: 'min-w-0',
+              itemLabel: 'truncate text-sm font-semibold text-[var(--text-primary)]',
+              itemTrailing: 'ml-auto gap-2',
+              itemTrailingIcon: 'hidden',
+            }"
+          >
+            <template #item-leading="{ item }">
+              <span class="chat-widget__user-avatar">
+                <UAvatar :src="item.avatarUrl" :alt="item.label" size="sm" />
+                <span v-if="item.online" class="chat-widget__user-online" />
+              </span>
+            </template>
+
+            <template #item-trailing="{ item }">
+              <span class="chat-widget__select-state" aria-hidden="true">
+                <span class="chat-widget__checkbox" :class="{ 'chat-widget__checkbox--checked': isSendRecipientSelected(item.value) }">
+                  <Icon v-if="isSendRecipientSelected(item.value)" name="i-ph-check-bold" class="h-3 w-3" />
+                </span>
+                <span>{{ $t("pages.messagesPage.selectRecipient") }}</span>
+              </span>
+              <UButton
+                type="button"
+                size="xs"
+                class="chat-widget__open-chat btn-primary"
+                @pointerdown.stop
+                @click.stop="openMiniChat(item.contact)"
+              >
+                {{ $t("pages.messagesPage.openChat") }}
+              </UButton>
+            </template>
+          </UListbox>
+
+          <div v-else-if="isLoadingInbox" class="space-y-2" aria-hidden="true">
+            <div v-for="index in 3" :key="index" class="chat-widget__user-skeleton">
+              <USkeleton class="h-9 w-9 shrink-0 rounded-full" />
+              <USkeleton class="h-3 w-24" />
+              <USkeleton class="ml-auto h-7 w-16 rounded-[var(--radius-sm)]" />
+            </div>
+          </div>
+
+          <p v-else class="chat-widget__hint">
+            {{ $t("navigation.chatWidget.noMatchingRecipients") }}
+          </p>
+        </section>
       </div>
 
     </div>
 
-    <div v-else class="chat-widget__content">
+    <div v-else class="chat-widget__content chat-widget__content--directory">
+      <div class="chat-widget__directory-scroll">
       <div v-if="isLoadingInbox" class="chat-widget__list chat-widget__list--loading">
         <div v-for="index in 5" :key="index" class="chat-widget__skeleton-row">
-          <USkeleton class="h-10 w-10 rounded-full" />
-          <div class="min-w-0 flex-1 space-y-2">
-            <USkeleton class="h-3 w-2/3 rounded-full" />
-            <USkeleton class="h-3 w-full rounded-full" />
-          </div>
+          <USkeleton class="h-9 w-9 rounded-full" />
+          <USkeleton class="h-3 w-28 rounded-full" />
+          <USkeleton v-if="activeTab === 'contacts'" class="ml-auto h-7 w-7 rounded-[var(--radius-sm)]" />
         </div>
       </div>
 
@@ -251,30 +273,21 @@
         <p>{{ $t("navigation.chatWidget.emptyGroups") }}</p>
       </div>
       
-      <div v-else class="chat-widget__list">
-        <div v-if="activeTab !== 'send'" class="chat-widget__footer">
-          <UInput
-            v-model="search"
-            :placeholder="$t('navigation.chatWidget.searchPlaceholder')"
-            icon="i-ph-magnifying-glass-bold"
-            class="chat-widget__footer-input"
-            :ui="{
-              base: 'chat-widget__footer-input-control',
-            }"
-          />
-        </div>
-
+      <div v-else class="chat-widget__list chat-widget__directory-list">
         <div
           v-for="contact in activeTab === 'contacts' ? filteredContacts : filteredGroups"
           :key="contact.id"
           class="chat-widget__contact-wrapper"
         >
-          <button
+          <div
             class="chat-widget__contact"
-            type="button"
+            role="button"
+            tabindex="0"
             @pointerenter="prefetchMiniThread(contact)"
             @focus="prefetchMiniThread(contact)"
             @click="openMiniChat(contact)"
+            @keydown.enter.prevent="openMiniChat(contact)"
+            @keydown.space.prevent="openMiniChat(contact)"
           >
             <div class="chat-widget__contact-avatar-wrap">
               <button
@@ -287,41 +300,53 @@
                   :src="contact.avatarUrl"
                   :alt="contact.name"
                   size="md"
-                  class="h-10 w-10 rounded-full"
-                />
-                <div
-                  class="chat-widget__contact-status"
-                  :class="{ 'chat-widget__contact-status--online': contact.isOnline }"
+                  class="h-9 w-9 rounded-full"
                 />
               </button>
+              <UAvatar
+                v-else-if="contact.avatarUrl"
+                :src="contact.avatarUrl"
+                :alt="contact.name"
+                size="md"
+                class="h-9 w-9 rounded-full"
+              />
               <div v-else class="chat-widget__group-icon chat-widget__group-icon--large">
-                <Icon name="i-ph-users-three-bold" class="h-5 w-5" />
+                <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
               </div>
             </div>
 
-            <div class="chat-widget__contact-info">
-              <div class="chat-widget__contact-top">
-                <p class="chat-widget__contact-name">{{ contact.name }}</p>
-                <span class="chat-widget__contact-time">{{ contact.time }}</span>
-              </div>
+            <p class="chat-widget__contact-name">{{ contact.name }}</p>
 
-              <div class="chat-widget__contact-middle">
+            <div v-if="contact.type === 'user'" class="chat-widget__contact-actions">
+              <div class="chat-widget__contact-tags" :aria-label="$t('pages.messagesPage.label')">
                 <span
-                  class="chat-widget__contact-presence"
-                  :class="{ 'chat-widget__contact-presence--online': contact.type === 'user' && contact.isOnline }"
-                >
-                  {{ buildPresenceLabel(contact) }}
-                </span>
-                <span v-if="contact.unreadCount > 0" class="chat-widget__contact-badge">
-                  {{ contact.unreadCount > 99 ? "99+" : contact.unreadCount }}
-                </span>
+                  v-for="tag in contact.tags?.slice(0, 2) || []"
+                  :key="tag.id"
+                  class="chat-widget__contact-tag-color"
+                  :title="tag.name"
+                  :style="{ backgroundColor: tag.color || '#94a3b8' }"
+                />
+                <span
+                  v-if="!contact.tags?.length"
+                  class="chat-widget__contact-presence-dot"
+                  :class="{ 'chat-widget__contact-presence-dot--online': contact.isOnline }"
+                  :title="buildPresenceLabel(contact)"
+                />
               </div>
 
-              <p v-if="buildPreviewLabel(contact)" class="chat-widget__contact-preview">
-                {{ buildPreviewLabel(contact) }}
-              </p>
+              <UButton
+                type="button"
+                icon="i-ph-tag-fill"
+                size="xs"
+                color="primary"
+                class="chat-widget__contact-tag-btn"
+                :aria-label="$t('pages.messagesPage.label')"
+                :title="$t('pages.messagesPage.label')"
+                @pointerdown.stop
+                @click.stop="openContactTags(contact)"
+              />
             </div>
-          </button>
+          </div>
         </div>
 
         <!-- Avatar context menu (Teleport to body to avoid overflow clipping) -->
@@ -407,6 +432,29 @@
           </Transition>
         </Teleport>
       </div>
+      </div>
+
+      <div class="chat-widget__footer">
+        <UInput
+          v-model="search"
+          :placeholder="$t('navigation.chatWidget.searchPlaceholder')"
+          icon="i-ph-magnifying-glass-bold"
+          class="chat-widget__footer-input"
+          :ui="{
+            base: 'chat-widget__footer-input-control',
+          }"
+        />
+      </div>
+
+      <MessagesTagModal
+        v-model:open="contactTagModalOpen"
+        :labels="messageTagLabels"
+        :selected-ids="contactTagModalSelectedIds"
+        :pending="isUpdatingTags"
+        :update-selection="updateContactTagSelection"
+        :create-tag="createTagLabel"
+        :delete-tag="deleteTagLabel"
+      />
       
       <div
         v-for="(miniSession, miniSessionIndex) in openMiniChatSessions"
@@ -810,6 +858,7 @@ import { useMessageCalls } from "../../../messages/application/composables/useMe
 import { useCurrentLocationShare } from "../../../messages/application/composables/useCurrentLocationShare"
 import { useMessageRecorder } from "../../../messages/application/composables/useMessageRecorder"
 import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
+import MessagesTagModal from "../../../messages/presentation/components/MessageTagsModal.vue"
 import type { MessageCallType } from "../../../messages/domain/types/calls.types"
 import type { MessageContact, MessageItem } from "../../../messages/domain/types/messages.types"
 import {
@@ -844,6 +893,9 @@ const tabs = [
 ] as const
 
 const fileInput = ref<HTMLInputElement | null>(null)
+const widgetTabsRef = ref<HTMLElement | null>(null)
+const sendScrollRef = ref<HTMLElement | null>(null)
+let sendPanelResetFrame: number | null = null
 const { t } = useI18n()
 const toast = useToast()
 const miniMessagesViewports = new Map<string, HTMLElement>()
@@ -861,6 +913,8 @@ const defaultMiniReaction = defaultFeedReactionAsset
 type AvatarMenuContact = (typeof filteredContacts)['value'][number]
 const avatarMenuContact = ref<AvatarMenuContact | null>(null)
 const avatarMenuStyle = ref<Record<string, string>>({})
+const contactTagModalOpen = ref(false)
+const contactTagModalContact = ref<MessageContact | null>(null)
 const messageAvatarMenuContact = ref<AvatarMenuContact | null>(null)
 const messageAvatarMenuStyle = ref<Record<string, string>>({})
 const messageAvatarMenuMessageId = ref<number | null>(null)
@@ -903,13 +957,16 @@ const {
   activeMiniContact,
   isLoadingInbox,
   isSendingQuick,
+  isUpdatingTags,
   canSendQuickMessage,
   buildPresenceLabel,
-  buildPreviewLabel,
   messageTagLabels,
+  attachTag,
+  createTagLabel,
+  deleteTagLabel,
+  detachTag,
   setSelectedSendRecipientIds,
   toggleAllVisibleSendRecipients,
-  toggleSendRecipient,
   openMiniChat: openMiniChatVm,
   prefetchMiniThread,
   closeMiniChat: closeMiniChatVm,
@@ -945,6 +1002,15 @@ const activeSendTagFilterModel = computed<string | null>({
   get: () => activeSendTagFilter.value || null,
   set: tagId => { activeSendTagFilter.value = tagId ?? "" },
 })
+const contactTagModalLiveContact = computed(() => {
+  const userId = contactTagModalContact.value?.userId ?? 0
+
+  return filteredContacts.value.find(contact => contact.userId === userId)
+    ?? contactTagModalContact.value
+})
+const contactTagModalSelectedIds = computed(() =>
+  contactTagModalLiveContact.value?.tags?.map(tag => tag.id) ?? [],
+)
 const selectedSendRecipientListboxItems = computed(() => selectedSendRecipients.value.map(recipient => ({
   label: recipient.name,
   description: buildPresenceLabel(recipient),
@@ -954,16 +1020,21 @@ const selectedSendRecipientListboxItems = computed(() => selectedSendRecipients.
     alt: recipient.name,
   },
 })))
+const sendCandidateListboxItems = computed(() => sendCandidates.value
+  .filter(candidate => (candidate.userId ?? 0) > 0)
+  .map(candidate => ({
+    label: candidate.name,
+    value: candidate.userId ?? 0,
+    avatarUrl: candidate.avatarUrl,
+    online: candidate.isOnline,
+    contact: candidate,
+  })))
 const selectedSendRecipientIdModel = computed<number[]>({
   get: () => selectedSendRecipientIds.value,
   set: userIds => setSelectedSendRecipientIds(userIds),
 })
 
 type MiniChatSessionView = (typeof miniChatSessions)["value"][number]
-
-const showSendCandidates = computed(() => {
-  return sendCandidates.value.length > 0
-})
 
 const openMiniChatSessions = computed(() =>
   miniChatSessions.value.filter(session => !session.minimized),
@@ -1047,6 +1118,10 @@ function canSubmitMiniMessage(session: MiniChatSessionView) {
     )
 }
 
+function isSendRecipientSelected(userId: number) {
+  return selectedSendRecipientIds.value.includes(userId)
+}
+
 async function openMiniChat(contact: Parameters<typeof openMiniChatVm>[0]) {
   activeMiniHeaderContactId.value = null
   closeMessageAvatarMenu()
@@ -1113,6 +1188,38 @@ function showMiniHeaderMenuFor(session: MiniChatSessionView) {
 
 function closeMiniHeaderMenu() {
   activeMiniHeaderContactId.value = null
+}
+
+function openContactTags(contact: MessageContact) {
+  contactTagModalContact.value = contact
+  contactTagModalOpen.value = true
+}
+
+async function updateContactTagSelection(nextIds: number[]) {
+  if (isUpdatingTags.value) {
+    return
+  }
+
+  const contact = contactTagModalLiveContact.value
+
+  if (!contact) {
+    return
+  }
+
+  const currentIds = new Set(contactTagModalSelectedIds.value)
+  const selectedIds = new Set(nextIds)
+  const changedTag = messageTagLabels.value.find(tag => currentIds.has(tag.id) !== selectedIds.has(tag.id))
+
+  if (!changedTag) {
+    return
+  }
+
+  if (currentIds.has(changedTag.id)) {
+    await detachTag(contact, changedTag.id)
+    return
+  }
+
+  await attachTag(contact, changedTag.id)
 }
 
 function openAvatarMenu(contact: AvatarMenuContact, event: MouseEvent) {
@@ -1258,12 +1365,34 @@ function closeFloatingMenusOnOutsideClick(event: MouseEvent) {
   }
 }
 
+watch(activeTab, async (tab) => {
+  if (tab !== "send" || !import.meta.client) return
+
+  await nextTick()
+  await nextTick()
+
+  if (sendPanelResetFrame !== null) {
+    window.cancelAnimationFrame(sendPanelResetFrame)
+  }
+
+  sendPanelResetFrame = window.requestAnimationFrame(() => {
+    sendScrollRef.value?.scrollTo({ top: 0, left: 0, behavior: "auto" })
+    widgetTabsRef.value
+      ?.querySelector<HTMLElement>('[data-chat-widget-tab="send"]')
+      ?.focus({ preventScroll: true })
+    sendPanelResetFrame = null
+  })
+})
+
 onMounted(() => {
   document.addEventListener("click", closeFloatingMenusOnOutsideClick)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", closeFloatingMenusOnOutsideClick)
+  if (sendPanelResetFrame !== null) {
+    window.cancelAnimationFrame(sendPanelResetFrame)
+  }
   if (miniHighlightTimer) {
     clearTimeout(miniHighlightTimer)
   }
@@ -2057,6 +2186,31 @@ watch(miniChatAutoOpenVersion, (version) => {
   background: #f8fafc;
 }
 
+.chat-widget__content--directory {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.chat-widget__directory-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.chat-widget__directory-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-widget__directory-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #94a3b8;
+}
+
 .chat-widget__send-scroll {
   min-height: 0;
   flex: 1;
@@ -2079,7 +2233,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__send-card {
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: #ffffff;
   padding: 12px;
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
@@ -2087,6 +2241,27 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__send-card + .chat-widget__send-card {
   margin-top: 12px;
+}
+
+.chat-widget__compose-card,
+.chat-widget__users-card {
+  display: grid;
+  gap: 10px;
+}
+
+.chat-widget__section-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-bold);
+  line-height: 1.35;
+}
+
+.chat-widget__compose-card .chat-widget__field,
+.chat-widget__compose-card .chat-widget__composer-tools,
+.chat-widget__compose-card .chat-widget__recipient-box,
+.chat-widget__compose-card .chat-widget__recipient-heading {
+  margin: 0;
 }
 
 .chat-widget__field + .chat-widget__field,
@@ -2105,9 +2280,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   margin-bottom: 6px;
   font-size: 11px;
   font-weight: 700;
-  color: #64748b;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  color: var(--text-primary);
 }
 
 .chat-widget__field-label--inline {
@@ -2121,6 +2294,21 @@ watch(miniChatAutoOpenVersion, (version) => {
   gap: 10px;
   margin-top: 12px;
   margin-bottom: 8px;
+}
+
+.chat-widget__selected-count {
+  display: inline-flex;
+  min-height: 22px;
+  flex-shrink: 0;
+  align-items: center;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 3px 8px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  line-height: 1;
 }
 
 .chat-widget__select-all {
@@ -2234,12 +2422,98 @@ watch(miniChatAutoOpenVersion, (version) => {
   background: rgba(0, 0, 255, 0.05);
 }
 
+.chat-widget__tag-filter {
+  padding-top: 2px;
+}
+
+.chat-widget__users-listbox {
+  width: 100%;
+  max-height: 286px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.chat-widget__users-listbox::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-widget__users-listbox::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.chat-widget__user-avatar {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.chat-widget__user-online {
+  position: absolute;
+  right: -1px;
+  bottom: 1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--color-success-500, #22c55e);
+}
+
+.chat-widget__select-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.chat-widget__checkbox {
+  display: inline-flex;
+  width: 15px;
+  height: 15px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: #ffffff;
+  color: #ffffff;
+}
+
+.chat-widget__checkbox--checked {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-500);
+}
+
+.chat-widget__open-chat {
+  min-width: 66px;
+  flex: 0 0 auto;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.chat-widget__user-skeleton {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius-md);
+  background: var(--bg-muted);
+  padding: 10px;
+}
+
 .chat-widget__composer-tools {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 12px;
+}
+
+.chat-widget__compose-card .chat-widget__composer-tools {
+  margin-top: 0;
 }
 
 .chat-widget__attach-btn {
@@ -2293,6 +2567,10 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding-block: 11px;
 }
 
+.chat-widget__compose-card .chat-widget__send-btn {
+  margin-top: 0;
+}
+
 .chat-widget__send-actions {
   flex-shrink: 0;
   border-top: 1px solid #e2e8f0;
@@ -2340,6 +2618,11 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding: 6px 0;
 }
 
+.chat-widget__directory-list {
+  gap: 1px;
+  padding: 8px 0;
+}
+
 .chat-widget__list--loading {
   gap: 14px;
   padding: 14px 16px;
@@ -2353,19 +2636,22 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__contact {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  min-height: 48px;
+  align-items: center;
+  gap: 9px;
   width: 100%;
   border: none;
   background: transparent;
-  padding: 10px 16px;
+  padding: 6px 12px;
   text-align: left;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
-.chat-widget__contact:hover {
-  background: #f8fafc;
+.chat-widget__contact:hover,
+.chat-widget__contact:focus-visible {
+  background: var(--bg-muted, #f8fafc);
+  outline: none;
 }
 
 .chat-widget__contact-avatar-wrap {
@@ -2373,84 +2659,56 @@ watch(miniChatAutoOpenVersion, (version) => {
   flex-shrink: 0;
 }
 
-.chat-widget__contact-status {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 11px;
-  height: 11px;
-  border-radius: 999px;
-  border: 2px solid #ffffff;
-  background: #94a3b8;
+.chat-widget__contact-name {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #0f172a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.chat-widget__contact-status--online {
+.chat-widget__contact-actions,
+.chat-widget__contact-tags {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 3px;
+}
+
+.chat-widget__contact-actions {
+  gap: 5px;
+}
+
+.chat-widget__contact-tag-color {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.05);
+  border-radius: 5px;
+}
+
+.chat-widget__contact-presence-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.chat-widget__contact-presence-dot--online {
   background: #22c55e;
 }
 
-.chat-widget__contact-info {
-  min-width: 0;
-  flex: 1;
-}
-
-.chat-widget__contact-top,
-.chat-widget__contact-middle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.chat-widget__contact-name {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 700;
-  color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chat-widget__contact-time {
-  flex-shrink: 0;
-  font-size: 11px;
-  color: #94a3b8;
-}
-
-.chat-widget__contact-presence {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  color: #64748b;
-}
-
-.chat-widget__contact-presence--online {
-  color: #16a34a;
-  font-weight: 700;
-}
-
-.chat-widget__contact-badge {
-  display: inline-flex;
-  min-width: 18px;
-  height: 18px;
-  align-items: center;
+.chat-widget__contact-tag-btn {
+  width: 27px;
+  height: 27px;
+  min-height: 27px;
   justify-content: center;
-  border-radius: 999px;
-  background: #0000ff;
-  padding: 0 5px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.chat-widget__contact-preview {
-  margin: 3px 0 0;
-  font-size: 11.5px;
-  color: #475569;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  border-radius: var(--radius-sm, 6px);
+  padding: 0;
 }
 
 .chat-widget__group-icon {
@@ -2466,9 +2724,14 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__group-icon--large {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+}
+
+.chat-widget__directory-list .chat-widget__group-icon--large {
+  background: #fee2e2;
+  color: #ff5a5f;
 }
 
 .chat-widget__group-icon--selected {
@@ -2484,13 +2747,10 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__footer {
-  position: sticky;
-  top: 0;
-  z-index: 6;
   flex-shrink: 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-top: 1px solid #f1f5f9;
   background: #ffffff;
-  padding: 10px 12px;
+  padding: 8px 10px 10px;
 }
 
 .chat-widget__footer-input {
@@ -2499,10 +2759,10 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 :deep(.chat-widget__footer-input-control) {
   width: 100%;
-  height: 42px;
-  border: 1px solid #dbe3f2 !important;
-  border-radius: 14px !important;
-  background: #f8fafc !important;
+  height: 38px;
+  border: 1px solid var(--border-light, #dbe3f2) !important;
+  border-radius: var(--radius-sm, 6px) !important;
+  background: var(--bg-muted, #f8fafc) !important;
   color: #0f172a;
   font-size: 14px;
   box-shadow: none !important;
