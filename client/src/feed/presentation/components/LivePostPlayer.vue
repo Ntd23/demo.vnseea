@@ -288,6 +288,7 @@ const emit = defineEmits<{
   react: [reaction: FeedStoryReactionType]
   share: []
   comment: []
+  ended: []
 }>()
 
 const repository = createApiLiveRepository()
@@ -314,6 +315,7 @@ const activityItems = ref<import("../../../live/domain/types/live.types").LiveSt
 const knownCommentIds = ref<number[]>([])
 const floatingReactions = ref<{ id: number; src: string; x: number }[]>([])
 let floatingReactionId = 0
+let hasReportedEnded = false
 
 const {
   connecting,
@@ -374,6 +376,7 @@ async function joinLive() {
     liveState.value = session.streamState
 
     if (session.streamState === "offline") {
+      reportEnded()
       return
     }
 
@@ -431,11 +434,18 @@ async function refreshHeartbeat() {
     if (heartbeat.stillLive === "offline") {
       pause()
       disconnect()
+      reportEnded()
     }
   }
   catch {
     liveState.value = "stale"
   }
+}
+
+function reportEnded() {
+  if (hasReportedEnded) return
+  hasReportedEnded = true
+  emit("ended")
 }
 
 function spawnFloatingReactions(count: number) {
@@ -617,9 +627,12 @@ onBeforeUnmount(() => {
 }
 
 .feed-live-player__stage--portrait:not(.feed-live-player__stage--fullscreen) {
-  width: min(100%, 420px, 45dvh);
-  margin-inline: auto;
-  aspect-ratio: 9 / 16;
+  /* On a desktop, a tall phone-shaped player wastes most of the feed width.
+     Keep the player stage comfortable to watch while preserving the source in
+     its natural ratio with object-fit: contain below. */
+  width: 100%;
+  margin-inline: 0;
+  aspect-ratio: 16 / 9;
   background: #020617;
 }
 
@@ -651,6 +664,19 @@ onBeforeUnmount(() => {
   height: 100%;
   object-fit: cover;
   z-index: 1;
+}
+
+.feed-live-player__stage--portrait .feed-live-player__video-host :deep(video) {
+  object-fit: contain;
+  background: #020617;
+}
+
+@media (max-width: 640px) {
+  .feed-live-player__stage--portrait:not(.feed-live-player__stage--fullscreen) {
+    width: min(100%, 420px);
+    margin-inline: auto;
+    aspect-ratio: 9 / 16;
+  }
 }
 
 /* ─── Placeholder ─────────────────────────────── */

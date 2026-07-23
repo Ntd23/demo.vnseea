@@ -48,6 +48,7 @@
           :media-name="msg.isDeleted ? undefined : msg.mediaName"
           :media-type="msg.isDeleted ? undefined : msg.mediaType"
           :product-card="msg.isDeleted ? undefined : getProductMeta(msg)?.card"
+          :story-context="msg.isDeleted ? undefined : msg.story"
           :location="msg.isDeleted ? undefined : getMessageLocationMeta(msg)"
           :is-deleted="msg.isDeleted"
           @retry-call="emit('retry-call', $event)"

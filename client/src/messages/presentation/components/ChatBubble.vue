@@ -40,6 +40,7 @@
         :class="{
           'chat-bubble__wrapper--product': productCard,
           'chat-bubble__wrapper--location': location && !isDeleted,
+          'chat-bubble__wrapper--story': storyContext && !isDeleted,
         }"
         :title="timelineTitle"
       >
@@ -118,12 +119,13 @@
           class="chat-bubble relative whitespace-pre-wrap px-4 py-3 text-[15px] leading-relaxed shadow-sm transition-all duration-300"
           :class="[
             isDeleted ? 'chat-bubble--deleted' : '',
+            storyContext && !isDeleted ? 'chat-bubble--story' : '',
             isMine
               ? 'chat-bubble--mine text-white'
               : 'chat-bubble--theirs text-[var(--text-primary)] border border-slate-100'
           ]"
         >
-          <p v-if="showAuthor && authorName" class="chat-bubble__author">{{ authorName }}</p>
+          <p v-if="showAuthor && authorName && !storyContext" class="chat-bubble__author">{{ authorName }}</p>
           <NuxtLink
             v-if="productCard"
             :to="productCard.href"
@@ -146,7 +148,14 @@
             </span>
             <Icon name="i-ph-arrow-square-out" class="h-4 w-4 shrink-0" />
           </NuxtLink>
-          <p v-if="text" class="chat-bubble__text whitespace-pre-wrap" :class="{ 'mt-2.5': productCard }">{{ text }}</p>
+          <StoryMessageCard
+            v-if="storyContext"
+            :story="storyContext"
+            :is-mine="isMine"
+            :message-author="authorName"
+            :reply-text="text"
+          />
+          <p v-if="text && !storyContext" class="chat-bubble__text whitespace-pre-wrap" :class="{ 'mt-2.5': productCard }">{{ text }}</p>
 
           <div v-if="mediaUrl" :class="text || callLog ? 'mt-2.5' : ''">
             <NuxtImg
@@ -250,10 +259,11 @@
 <script setup lang="ts">
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import type { MessageCallLogAction } from "../../domain/types/calls.types"
-import type { MessageProductCard } from "../../domain/types/messages.types"
+import type { MessageProductCard, MessageStoryContext } from "../../domain/types/messages.types"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessageLocationMeta } from "../../application/utils/message-location"
 import MessageLocationCard from "./MessageLocationCard.vue"
+import StoryMessageCard from "./StoryMessageCard.vue"
 
 type ChatBubbleReactionOption = {
   value: FeedStoryReactionType
@@ -291,6 +301,7 @@ const props = defineProps<{
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
   productCard?: MessageProductCard
+  storyContext?: MessageStoryContext
   location?: MessageLocationMeta | null
   callLog?: {
     type: "audio" | "video"
@@ -703,6 +714,11 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   align-items: flex-start;
 }
 
+.chat-bubble__wrapper.chat-bubble__wrapper--story {
+  width: fit-content;
+  max-width: min(92%, 40rem) !important;
+}
+
 .chat-bubble__text {
   max-width: 100%;
   overflow-wrap: anywhere;
@@ -727,6 +743,10 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 @media (min-width: 640px) {
   .chat-bubble__wrapper {
     max-width: min(80%, 34rem) !important;
+  }
+
+  .chat-bubble__wrapper.chat-bubble__wrapper--story {
+    max-width: min(92%, 40rem) !important;
   }
 
   .chat-bubble__wrapper--location {
@@ -901,6 +921,18 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   padding: 5px 7px;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
   transform: none;
+}
+
+.chat-bubble--story,
+.chat-bubble--story.chat-bubble--mine,
+.chat-bubble--story.chat-bubble--theirs {
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  color: #0f172a;
+  box-shadow: none;
 }
 
 /* Keep the picker inside the scrolling chat viewport instead of letting it

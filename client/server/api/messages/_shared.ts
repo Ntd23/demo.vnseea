@@ -22,6 +22,7 @@ import type {
   MessageGroupDetails,
   MessageItem,
   MessageGroupMember,
+  MessageStoryContext,
   MessageTypingState,
   MessageThread,
   MessageThreadType,
@@ -400,6 +401,72 @@ const inferMediaType = (entity: BackendEntity): MessageItem["mediaType"] | undef
   if (media) return "file"
 
   return undefined
+}
+
+const mapMessageStoryContext = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): MessageStoryContext | undefined => {
+  const storyId = asNumber(entity.story_id)
+    || asNumber(entity.storyId)
+    || asNumber(asRecord(entity.story).id)
+    || asNumber(asRecord(asArray(entity.story)[0]).id)
+
+  if (storyId <= 0) {
+    return undefined
+  }
+
+  const story = Array.isArray(entity.story)
+    ? asRecord(asArray(entity.story)[0])
+    : asRecord(entity.story)
+  const rawAvailable = entity.story_available ?? entity.storyAvailable
+  const available = rawAvailable === undefined
+    ? Object.keys(story).length > 0
+    : isTruthy(rawAvailable)
+
+  if (!available || Object.keys(story).length === 0) {
+    return {
+      id: storyId,
+      available: false,
+      author: "",
+    }
+  }
+
+  const user = asRecord(story.user_data)
+  const storyMedia = asArray(story.story_media)
+  const video = asRecord(asArray(story.videos)[0])
+  const image = asRecord(asArray(story.images)[0])
+  const storyVideo = storyMedia.find(item =>
+    firstString(item, ["type", "media_type"]).toLowerCase() === "video",
+  ) ?? {}
+  const storyImage = storyMedia.find(item =>
+    firstString(item, ["type", "media_type"]).toLowerCase() === "image",
+  ) ?? {}
+  const videoPath = firstString(video, ["filename", "video", "file", "src"])
+    || firstString(storyVideo, ["filename", "video", "file", "src"])
+    || firstString(story, ["video", "story_video", "postFile"])
+  const imagePath = firstString(image, ["filename", "image", "file", "src"])
+    || firstString(storyImage, ["filename", "image", "file", "src"])
+  const thumbnailPath = firstString(story, ["thumbnail"])
+  const mediaUrl = resolveMediaUrl(videoPath || imagePath || thumbnailPath)
+  const posterUrl = resolveMediaUrl(imagePath || thumbnailPath)
+  const postedAt = asNumber(story.posted)
+
+  return {
+    id: storyId,
+    available: Boolean(mediaUrl),
+    ownerId: asNumber(story.user_id) || asNumber(user.user_id) || undefined,
+    author: buildDisplayName(user),
+    avatarUrl: resolveMediaUrl(firstString(user, ["avatar", "avatar_full", "avatar_org"])) || undefined,
+    mediaUrl: mediaUrl || undefined,
+    mediaType: videoPath ? "video" : "image",
+    posterUrl: posterUrl || undefined,
+    title: firstString(story, ["title"]) || undefined,
+    caption: firstString(story, ["description"]) || undefined,
+    createdAt: postedAt > 0
+      ? (postedAt > 1_000_000_000_000 ? postedAt : postedAt * 1000)
+      : undefined,
+  }
 }
 
 const buildDisplayName = (entity: BackendEntity) => {
@@ -889,6 +956,7 @@ const mapThreadMessage = (
     activeGroupCall?.participant_count,
   )
   const systemEvent = mapMessagePinSystemEvent(entity)
+  const story = recalledPayload ? undefined : mapMessageStoryContext(entity, resolveMediaUrl)
 
   return {
     id: asNumber(entity.id),
@@ -908,6 +976,7 @@ const mapThreadMessage = (
     mediaUrl: recalledPayload ? "" : mediaUrl,
     mediaName: recalledPayload ? "" : firstString(entity, ["mediaFileName", "media_file_name", "filename"]),
     mediaType: recalledPayload ? undefined : mediaType,
+    story,
     isDeleted: Boolean(recalledPayload),
     deletedAt: recalledPayload?.deletedAt || undefined,
     deletedTime: recalledPayload?.deletedAt ? formatMessageTime(recalledPayload.deletedAt) : undefined,
