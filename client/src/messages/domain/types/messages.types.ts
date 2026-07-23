@@ -85,6 +85,20 @@ export type MessageProductLaunchContext = {
   suggestions: string[]
 }
 
+export type MessageStoryContext = {
+  id: number
+  available: boolean
+  ownerId?: number
+  author: string
+  avatarUrl?: string
+  mediaUrl?: string
+  mediaType?: "image" | "video"
+  posterUrl?: string
+  title?: string
+  caption?: string
+  createdAt?: number
+}
+
 export type MessageSystemEvent = {
   type: "message_pinned"
   actorId: number
@@ -125,6 +139,7 @@ export type MessageItem = {
   mediaUrl?: string
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
+  story?: MessageStoryContext
   selectedReaction?: FeedStoryReactionType | null
   isDeleted?: boolean
   deletedAt?: number

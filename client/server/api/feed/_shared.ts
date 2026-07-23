@@ -1035,7 +1035,11 @@ export const mapPostRecord = (
   const liveTime = firstNumber(entity, ["live_time", "liveTime"])
   const liveEnded = isTruthy(entity.live_ended)
   const liveHeartbeatAge = liveTime > 0 ? Math.max(0, Math.floor(Date.now() / 1000) - liveTime) : 0
-  const isLive = firstString(entity, ["postType", "post_type", "type"]) === "live" || Boolean(liveStreamName)
+  // Keep the type long enough for the feed to exclude finished broadcasts
+  // instead of rendering them as ordinary empty posts.
+  const isLive = firstString(entity, ["postType", "post_type", "type"]) === "live"
+    || Boolean(liveStreamName)
+    || liveEnded
   const canShare = !audienceSelection.isAnonymous && (
     hasOwn(entity, "can_share")
       ? isTruthy(entity.can_share)

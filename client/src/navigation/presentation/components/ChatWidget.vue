@@ -630,6 +630,7 @@
                 :media-name="message.isDeleted ? undefined : message.mediaName"
                 :media-type="message.isDeleted ? undefined : message.mediaType"
                 :product-card="message.isDeleted ? undefined : getMiniProductMeta(message)?.card"
+                :story-context="message.isDeleted ? undefined : message.story"
                 :location="message.isDeleted ? undefined : getMessageLocationMeta(message)"
                 :call-log="message.isDeleted ? undefined : message.callLog"
                 class="chat-widget__mini-chat-bubble"

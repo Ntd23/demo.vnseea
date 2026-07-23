@@ -1,7 +1,7 @@
 <!-- Description: Renders a normalized feed post with real backend media, like, report, and comment actions instead of mock-local content. -->
 <template>
   <article
-    v-if="!postRealtimeStore.isDeleted(props.post.id)"
+    v-if="!postRealtimeStore.isDeleted(props.post.id) && shouldRenderPost"
     ref="postCardRef"
     :id="postAnchorId"
     class="post-card"
@@ -128,6 +128,7 @@
           @react="reactToPost"
           @comment="handleCommentIntent"
           @share="post.permissions.canShare && (showShare = true)"
+          @ended="liveEndedWhileViewing = true"
         />
       </ClientOnly>
 
@@ -490,6 +491,12 @@ const emit = defineEmits<{
 const postRealtimeStore = usePostRealtimeStore()
 const postCardRef = ref<HTMLElement | null>(null)
 const post = computed(() => postRealtimeStore.snapshotFor(props.post.id) ?? props.post)
+const liveEndedWhileViewing = ref(false)
+const shouldRenderPost = computed(() => !(
+  post.value.isLive
+  && post.value.liveState === "offline"
+  && !liveEndedWhileViewing.value
+))
 let releaseRealtimeWatch: (() => void) | null = null
 let postIsVisible = false
 

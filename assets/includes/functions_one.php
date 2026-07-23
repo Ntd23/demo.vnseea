@@ -4651,13 +4651,17 @@ function VNSEEA_GetMessageStorySnapshot($story_id, $viewer_id = 0)
         'verified' => !empty($user['verified']) ? 1 : 0,
     );
 
+    // Reuse the canonical story thumbnail pipeline so message replies show
+    // the actual story frame. For videos this generates a frame with FFmpeg
+    // when available; otherwise the client falls back to decoding the video.
     $thumbnail = '';
-    if (!empty($story['thumbnail'])) {
-        $thumbnail = Wo_GetMedia($story['thumbnail']);
+    $story_thumb = Wo_GetStoryThumb($story_id, !empty($story['thumbnail']) ? $story['thumbnail'] : '');
+    if (!empty($story_thumb['type']) &&
+        $story_thumb['type'] === 'image' &&
+        !empty($story_thumb['filename'])) {
+        $thumbnail = $story_thumb['filename'];
     } elseif (!empty($images[0]['filename'])) {
         $thumbnail = $images[0]['filename'];
-    } elseif (!empty($publisher['avatar'])) {
-        $thumbnail = $publisher['avatar'];
     }
 
     return array(
