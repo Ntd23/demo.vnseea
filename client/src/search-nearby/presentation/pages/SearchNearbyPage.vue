@@ -2861,8 +2861,8 @@ onBeforeUnmount(() => {
 }
 
 .nearby-map-page__step-badge--desktop {
-  background: linear-gradient(135deg, #60a5fa, #2563eb);
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  background: linear-gradient(135deg, var(--color-primary-400), var(--bg-brand));
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--bg-brand) 25%, transparent);
 }
 
 .nearby-map-page__step-text {

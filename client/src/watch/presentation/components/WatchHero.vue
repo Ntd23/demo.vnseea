@@ -27,7 +27,7 @@ defineProps<{
 <style scoped>
 .watch-hero {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 24px;
@@ -98,8 +98,8 @@ defineProps<{
 }
 
 .watch-stat {
-  background: rgba(0, 0, 255, 0.03);
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 14px;
   padding: 16px;
   display: flex;

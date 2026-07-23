@@ -35,7 +35,7 @@ const { t } = useI18n()
 .public-layout {
   min-height: 100svh;
   background:
-    radial-gradient(circle at top left, rgba(0, 0, 255, 0.08), transparent 34rem),
+    radial-gradient(circle at top left, color-mix(in srgb, var(--bg-brand) 8%, transparent), transparent 34rem),
     var(--surface-app, #f1f4fb);
   color: var(--text-primary, #0f172a);
 }
@@ -74,7 +74,7 @@ const { t } = useI18n()
 }
 
 .public-layout__nav-link:hover {
-  color: var(--color-primary, #0000ff);
+  color: var(--color-primary, var(--bg-brand));
 }
 
 .public-layout__main {

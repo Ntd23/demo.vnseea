@@ -122,7 +122,7 @@ async function handleOfferSaved() {
 
 .offers-page__eyebrow {
   margin: 0 0 6px;
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 800;
 }
@@ -145,7 +145,7 @@ async function handleOfferSaved() {
   width: 54px;
   height: 54px;
   flex: 0 0 54px;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .offers-page__stack {
@@ -171,7 +171,7 @@ async function handleOfferSaved() {
 .offers-page__empty-icon {
   width: 44px;
   height: 44px;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .offers-page__empty h2 {

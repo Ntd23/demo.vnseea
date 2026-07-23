@@ -55,7 +55,7 @@ usePublicSeoMeta(seoMeta)
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xl);
   background:
-    linear-gradient(135deg, rgba(0, 0, 255, 0.9), rgba(30, 58, 138, 0.88)),
+    linear-gradient(135deg, color-mix(in srgb, var(--bg-brand) 90%, transparent), rgba(30, 58, 138, 0.88)),
     var(--bg-brand);
   box-shadow: var(--shadow-lg);
   color: var(--text-inverse);

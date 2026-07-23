@@ -95,7 +95,7 @@ await fetchPokes()
   place-items: center;
   border-radius: 16px;
   background: #eef2ff;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .poke-page__eyebrow {

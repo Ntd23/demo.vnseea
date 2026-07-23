@@ -8,10 +8,10 @@
 
 | Token | Giá trị | Dùng cho |
 |---|---|---|
-| **Brand Primary** | `#0000ff` | Button filled, active states, accent, indicator bars |
-| **Brand Primary Light** | `rgba(0, 0, 255, 0.05)` | Active background, hover tint nhẹ |
-| **Brand Primary Hover** | `rgba(0, 0, 255, 0.03)` | Hover background trên các nav item |
-| **Brand Gradient** | `linear-gradient(180deg, #2233ff 0%, #0000ff 100%)` | Primary button, admin card header |
+| **Brand Primary** | `#b91c1c` | Button filled, active states, accent, indicator bars |
+| **Brand Primary Light** | `rgba(185, 28, 28, 0.05)` | Active background, hover tint nhẹ |
+| **Brand Primary Hover** | `rgba(185, 28, 28, 0.03)` | Hover background trên các nav item |
+| **Brand Gradient** | `linear-gradient(180deg, #991b1b 0%, #b91c1c 100%)` | Primary button, admin card header |
 | **Text Primary** | `#0f172a` | Tiêu đề chính, tên user |
 | **Text Secondary** | `#334155` | Label, body text |
 | **Text Tertiary** | `#64748b` | Metadata, timestamp, helper text |
@@ -143,10 +143,10 @@ box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 box-shadow: 0 12px 44px rgba(0, 0, 0, 0.12);
 
 /* Primary button glow */
-box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+box-shadow: 0 4px 14px rgba(185, 28, 28, 0.2);
 
 /* Active nav item */
-box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
 ```
 
 ### ❌ KHÔNG dùng
@@ -184,11 +184,11 @@ shadow-[-12px_0_40px_rgba(0,0,0,0.5)];
 }
 
 .nav-item:hover {
-  background: rgba(0, 0, 255, 0.03);
+  background: rgba(185, 28, 28, 0.03);
 }
 
 .nav-item--active {
-  background: rgba(0, 0, 255, 0.05);
+  background: rgba(185, 28, 28, 0.05);
 }
 
 /* Icon container */
@@ -205,14 +205,14 @@ shadow-[-12px_0_40px_rgba(0,0,0,0.5)];
 }
 
 .nav-item:hover .nav-item__icon {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: rgba(185, 28, 28, 0.06);
+  color: #b91c1c;
 }
 
 .nav-item__icon--active {
-  background: #0000ff !important;
+  background: #b91c1c !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
 }
 
 /* Label */
@@ -223,7 +223,7 @@ shadow-[-12px_0_40px_rgba(0,0,0,0.5)];
 }
 
 .nav-item--active .nav-item__label {
-  color: #0000ff;
+  color: #b91c1c;
   font-weight: 700;
 }
 ```
@@ -249,13 +249,13 @@ shadow-[-12px_0_40px_rgba(0,0,0,0.5)];
 }
 
 .ghost-btn:hover {
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  background: rgba(185, 28, 28, 0.04);
+  color: #b91c1c;
 }
 
 /* Active state (e.g. liked) */
 .ghost-btn--active {
-  color: #0000ff;
+  color: #b91c1c;
   font-weight: 700;
 }
 ```
@@ -281,17 +281,17 @@ text-transform: uppercase;
   padding: 12px 20px;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, #991b1b 0%, #b91c1c 100%);
   color: #ffffff;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.2);
   transition: all 0.15s ease;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 255, 0.28);
+  box-shadow: 0 6px 20px rgba(185, 28, 28, 0.28);
   transform: translateY(-1px);
 }
 
@@ -309,9 +309,9 @@ text-transform: uppercase;
   gap: 6px;
   padding: 8px 18px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 255, 0.15);
+  border: 1px solid rgba(185, 28, 28, 0.15);
   background: #ffffff;
-  color: #0000ff;
+  color: #b91c1c;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -319,9 +319,9 @@ text-transform: uppercase;
 }
 
 .btn-outline:hover {
-  background: #0000ff;
+  background: #b91c1c;
   color: #ffffff;
-  border-color: #0000ff;
+  border-color: #b91c1c;
 }
 ```
 
@@ -342,7 +342,7 @@ text-transform: uppercase;
 }
 
 .input:focus {
-  border-color: rgba(0, 0, 255, 0.25);
+  border-color: rgba(185, 28, 28, 0.25);
 }
 
 .input::placeholder {
@@ -355,7 +355,7 @@ text-transform: uppercase;
 ```css
 .card {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid rgba(185, 28, 28, 0.04);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   overflow: hidden;
@@ -372,7 +372,7 @@ text-transform: uppercase;
   width: 280px;
   border-radius: 18px;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  border: 1px solid rgba(185, 28, 28, 0.06);
   box-shadow: 0 12px 44px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
@@ -391,7 +391,7 @@ text-transform: uppercase;
 }
 
 .dropdown__item:hover {
-  background: rgba(0, 0, 255, 0.04);
+  background: rgba(185, 28, 28, 0.04);
 }
 ```
 
@@ -416,7 +416,7 @@ text-transform: uppercase;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  background: linear-gradient(145deg, #991b1b 0%, #b91c1c 100%);
   font-size: 11px;
   font-weight: 800;
   color: #ffffff;
@@ -470,8 +470,8 @@ text-transform: uppercase;
 }
 
 .tab--active {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: rgba(185, 28, 28, 0.05);
+  color: #b91c1c;
   font-weight: 700;
 }
 ```
@@ -483,15 +483,15 @@ text-transform: uppercase;
   display: inline-flex;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: rgba(185, 28, 28, 0.06);
+  color: #b91c1c;
   font-size: 12px;
   font-weight: 600;
   transition: background 0.12s ease;
 }
 
 .tag:hover {
-  background: rgba(0, 0, 255, 0.1);
+  background: rgba(185, 28, 28, 0.1);
 }
 ```
 
@@ -503,7 +503,7 @@ text-transform: uppercase;
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px;
-  background: linear-gradient(135deg, #0000ff 0%, #2233ff 100%);
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
   color: #ffffff;
 }
 
@@ -635,8 +635,8 @@ Ví dụ thực tế:
 - [ ] Đổi màu text từ `#000` / `var(--text-primary)` về `#334155` hoặc `#1e293b`
 - [ ] Input/textarea dùng `border: 1px solid #e2e8f0; background: #fafbfe`
 - [ ] Button action (Like, Comment) → ghost style, không border
-- [ ] Active state → `background: rgba(0,0,255,0.05); color: #0000ff`
-- [ ] Hover state → `background: rgba(0,0,255,0.03)`
+- [ ] Active state → `background: rgba(185, 28, 28,0.05); color: #b91c1c`
+- [ ] Hover state → `background: rgba(185, 28, 28,0.03)`
 - [ ] Dùng `transition: all 0.15s ease` cho mọi interactive
 - [ ] Dùng scoped CSS, đặt tên theo BEM
 - [ ] Icon: fill cho active, duotone cho inactive

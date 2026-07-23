@@ -76,7 +76,7 @@ const formattedWithdrawableBalance = computed(() =>
   display: grid;
   gap: 16px;
   padding: 20px;
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
@@ -97,8 +97,8 @@ const formattedWithdrawableBalance = computed(() =>
   align-items: center;
   justify-content: center;
   border-radius: 14px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .wallet-hero__label {

@@ -868,8 +868,8 @@ defineExpose({
 
 .comment-composer__input-wrap:focus-within {
   background: #ffffff;
-  border-color: rgba(0, 0, 255, 0.3);
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.07);
+  border-color: color-mix(in srgb, var(--bg-brand) 30%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent);
 }
 
 .comment-composer__inline-actions {
@@ -897,7 +897,7 @@ defineExpose({
 
 .comment-composer__inline-tool:hover {
   background: #eef2ff;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .comment-composer__editor {
@@ -930,7 +930,7 @@ defineExpose({
 }
 
 .comment-composer__highlight-mention {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .comment-composer__textarea {
@@ -960,7 +960,7 @@ defineExpose({
 
 .comment-composer__mention-popover {
   width: min(360px, 100%);
-  border: 1px solid rgba(20, 32, 255, 0.12);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
   border-radius: 14px;
   background: #ffffff;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
@@ -985,7 +985,7 @@ defineExpose({
 }
 
 .comment-composer__mention-option:hover {
-  background: rgba(20, 32, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
 .comment-composer__mention-state {
@@ -1003,7 +1003,7 @@ defineExpose({
   overflow: hidden;
   border-radius: 999px;
   background: #eef2ff;
-  color: #1420ff;
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 800;
 }
@@ -1236,16 +1236,16 @@ defineExpose({
   justify-content: center;
   border: 0;
   border-radius: var(--radius-full);
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.18);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 18%, transparent);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .comment-composer__send:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 255, 0.24);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--bg-brand) 24%, transparent);
 }
 
 .comment-composer__send:active:not(:disabled) {
@@ -1253,7 +1253,7 @@ defineExpose({
 }
 
 .comment-composer__send:disabled {
-  background: #1420ff;
+  background: var(--bg-brand);
   cursor: not-allowed;
   opacity: 0.4;
   filter: grayscale(1);
@@ -1276,7 +1276,7 @@ defineExpose({
 .comment-composer--lightbox .comment-composer__input-wrap:focus-within {
   border: 0;
   background: #eef1f5;
-  box-shadow: 0 0 0 2px rgba(20, 32, 255, 0.1);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 
 .comment-composer--lightbox .comment-composer__textarea,
@@ -1334,12 +1334,12 @@ defineExpose({
   margin-left: auto;
   order: 6;
   background: transparent;
-  color: #1420ff;
+  color: var(--bg-brand);
   box-shadow: none;
 }
 
 .comment-composer--lightbox .comment-composer__send:hover:not(:disabled) {
-  background: rgba(20, 32, 255, 0.08);
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
   box-shadow: none;
   transform: none;
 }

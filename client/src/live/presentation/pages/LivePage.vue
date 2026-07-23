@@ -778,14 +778,14 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border-radius: 16px;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ── Sidebar ──────────────────────────────────────────── */
 .studio__sidebar {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 18px;
@@ -878,8 +878,8 @@ onBeforeUnmount(() => {
 }
 
 .studio__select:focus {
-  border-color: rgba(0, 0, 255, 0.25);
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
+  border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .studio__select:disabled {
@@ -921,9 +921,9 @@ onBeforeUnmount(() => {
 }
 
 .studio__file-btn:hover {
-  border-color: rgba(0, 0, 255, 0.22);
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 22%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
 }
 
 .studio__fields > .studio__field:nth-of-type(n + 3),
@@ -1010,7 +1010,7 @@ onBeforeUnmount(() => {
 .studio__stage-card {
   position: relative;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   overflow: hidden;
@@ -2152,11 +2152,11 @@ onBeforeUnmount(() => {
     gap: 8px;
     border: 0;
     border-radius: 14px;
-    background: #2563eb;
+    background: var(--bg-brand);
     color: #ffffff;
     font-size: 17px;
     font-weight: 800;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--bg-brand) 30%, transparent);
   }
 
   .studio__mobile-start:disabled {

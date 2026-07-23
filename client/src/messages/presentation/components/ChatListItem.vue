@@ -76,7 +76,7 @@
             :key="tag.id"
             class="cli-tag-dot"
             :title="tag.name"
-            :style="{ backgroundColor: tag.color || '#3b82f6' }"
+            :style="{ backgroundColor: tag.color || 'var(--bg-brand)' }"
           />
         </div>
         <button
@@ -178,7 +178,7 @@ const previewClass = computed(() => ({
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   color: var(--color-primary-600);
 }
 
@@ -383,9 +383,9 @@ const previewClass = computed(() => ({
 }
 
 .cli-tag-btn:hover {
-  border-color: var(--color-primary-500, #3b82f6);
-  color: var(--color-primary-500, #3b82f6);
-  background: #eff6ff;
+  border-color: var(--color-primary-500, var(--bg-brand));
+  color: var(--color-primary-500, var(--bg-brand));
+  background: var(--color-primary-50);
 }
 
 /* Responsive: tighter on small screens */

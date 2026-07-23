@@ -69,19 +69,19 @@ const pillClass = (active: boolean) => [
 }
 
 .filter-choice__pill--active {
-  border-color: #0000ff;
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.12);
+  border-color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
 .filter-choice__pill:hover {
-  background: rgba(0, 0, 255, 0.03);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  color: var(--bg-brand);
 }
 
 .filter-choice__pill--active:hover {
-  background: rgba(0, 0, 255, 0.08);
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 @media (max-width: 640px) {

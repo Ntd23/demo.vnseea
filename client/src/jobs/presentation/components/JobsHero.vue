@@ -32,7 +32,7 @@
             color="neutral"
             :variant="savedOnly ? 'solid' : 'outline'"
             size="lg"
-            class="justify-center rounded-xl border shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-colors font-semibold"
+            class="justify-center rounded-xl border shadow-[0_4px_14px_color-mix(in srgb, var(--bg-brand) 20%, transparent)] transition-colors font-semibold"
             :class="savedOnly
               ? 'border-white/85 bg-white text-[var(--color-primary-700)] hover:bg-white/92'
               : 'border-white/28 bg-white/12 text-white hover:bg-white/18'"

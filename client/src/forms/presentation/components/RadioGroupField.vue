@@ -54,6 +54,6 @@ const radioGroupUi = {
   container: "h-full",
   wrapper: "flex-1",
   label: "text-[0.98rem] font-semibold text-slate-700",
-  base: "size-5 ring-[#cbd9ea] bg-white data-[state=checked]:ring-[#0000ff]",
+  base: "size-5 ring-[#cbd9ea] bg-white data-[state=checked]:ring-[var(--bg-brand)]",
 }
 </script>

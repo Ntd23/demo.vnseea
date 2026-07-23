@@ -499,7 +499,7 @@ useSeoMeta({
 }
 
 .reels-page__action-btn--active {
-  color: #3b82f6;
+  color: var(--bg-brand);
 }
 
 .reels-page__action-label {

@@ -452,13 +452,13 @@ function syncManualAddress() {
 }
 
 .google-place-field__control--open {
-  border-color: rgba(0, 0, 255, 0.25);
+  border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .google-place-field__control--selected {
-  border-color: #bfdbfe;
+  border-color: var(--color-primary-200);
   background: #f8fbff;
 }
 
@@ -497,7 +497,7 @@ function syncManualAddress() {
 }
 
 .google-place-field__icon--selected {
-  color: #2563eb;
+  color: var(--bg-brand);
 }
 
 .google-place-field__clear {

@@ -343,9 +343,9 @@ const tagCount = computed(() =>
 
 .page-settings-basics__view-link:hover,
 .page-settings-basics__suggestion-button:hover {
-  border-color: #93c5fd;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border-color: var(--color-primary-300);
+  background: var(--color-primary-50);
+  color: var(--bg-brand-hover);
   transform: translateY(-1px);
 }
 
@@ -383,7 +383,7 @@ const tagCount = computed(() =>
   flex: 0 0 auto;
   border-radius: 999px;
   background: #eef2ff;
-  color: #1d4ed8;
+  color: var(--bg-brand-hover);
   font-size: 12px;
   font-weight: 800;
   padding: 7px 11px;

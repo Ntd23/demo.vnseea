@@ -483,7 +483,7 @@ const {
 .settings-points__hero,
 .settings-points__stat,
 .settings-points__history {
-  border: 1px solid rgba(0, 0, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -512,9 +512,9 @@ const {
   align-items: center;
   justify-content: center;
   border-radius: 14px;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .settings-points__eyebrow {
@@ -554,7 +554,7 @@ const {
   gap: 8px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
   cursor: pointer;
   font-size: 13px;
@@ -595,9 +595,9 @@ const {
 }
 
 .settings-points__secondary-button:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
 }
 
 .settings-points__secondary-button > * {
@@ -606,7 +606,7 @@ const {
 
 .settings-points__exchange-button:hover,
 .settings-points-modal__primary:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 255, 0.24);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--bg-brand) 24%, transparent);
   transform: translateY(-1px);
 }
 
@@ -648,8 +648,8 @@ const {
 }
 
 .settings-points__stat-icon--blue {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .settings-points__stat-icon--green {
@@ -688,7 +688,7 @@ const {
 }
 
 .settings-points__transfer {
-  border: 1px solid rgba(0, 0, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -738,7 +738,7 @@ const {
 
 .settings-points__recipient-option:hover,
 .settings-points__recipient-option--active {
-  background: rgba(0, 0, 255, 0.04);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
 }
 
 .settings-points__recipient-option img {
@@ -819,9 +819,9 @@ const {
 }
 
 .settings-points__qr-update-button:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
 }
 
 .settings-points__qr-update-button > * {
@@ -876,9 +876,9 @@ const {
   align-items: center;
   gap: 10px;
   margin-top: 12px;
-  border: 1px solid rgba(0, 0, 255, 0.14);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 14%, transparent);
   border-radius: 14px;
-  background: rgba(0, 0, 255, 0.04);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 10px;
 }
 
@@ -1011,7 +1011,7 @@ const {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #0000ff 0%, #0ea5e9 100%);
+  background: linear-gradient(90deg, var(--bg-brand) 0%, #0ea5e9 100%);
 }
 
 .settings-points__refresh-button,
@@ -1034,9 +1034,9 @@ const {
 
 .settings-points__refresh-button:hover,
 .settings-points-modal__close:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
 }
 
 .settings-points__history-list {
@@ -1064,8 +1064,8 @@ const {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .settings-points__history-copy {
@@ -1145,7 +1145,7 @@ const {
   z-index: 1;
   width: min(100%, 460px);
   padding: 18px;
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 18px;
   background: #ffffff;
   box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);
@@ -1189,7 +1189,7 @@ const {
 }
 
 .settings-points-modal__input:focus {
-  border-color: rgba(0, 0, 255, 0.28);
+  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent);
 }
 
 .settings-points-modal__input--textarea {

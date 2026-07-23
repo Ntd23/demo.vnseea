@@ -165,9 +165,9 @@ const sortIcon = (value: string) => {
 
 .blogs-filters__my-articles:hover,
 .blogs-filters__my-articles--active {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .blogs-filters__eyebrow,
@@ -198,7 +198,7 @@ const sortIcon = (value: string) => {
   font-weight: 800;
   pointer-events: auto;
   user-select: none;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
   transition: all 0.15s ease;
 }
 
@@ -226,7 +226,7 @@ const sortIcon = (value: string) => {
 }
 
 .blogs-search-input:focus {
-  border-color: rgba(0, 0, 255, 0.25);
+  border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
   background: #ffffff;
 }
 
@@ -280,9 +280,9 @@ const sortIcon = (value: string) => {
 
 .blogs-filters__chip--active,
 .blogs-filters__sort--active {
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .blogs-filters__chip--idle,
@@ -293,8 +293,8 @@ const sortIcon = (value: string) => {
 
 .blogs-filters__chip--idle:hover,
 .blogs-filters__sort--idle:hover {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .blogs-filters__sort-row {
@@ -309,9 +309,9 @@ const sortIcon = (value: string) => {
 }
 
 .blogs-filters__mine--active {
-  border-color: rgba(0, 0, 255, 0.18);
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .blogs-filters__mine--idle {

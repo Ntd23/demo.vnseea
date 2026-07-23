@@ -51,8 +51,8 @@ const categoryValueToId: Record<string, number> = {
 }
 
 const fallbackGradients = [
-  "linear-gradient(135deg,#1e3a8a 0%,#2563eb 46%,#bfdbfe 100%)",
-  "linear-gradient(135deg,#172554 0%,#1d4ed8 46%,#7dd3fc 100%)",
+  "linear-gradient(135deg,var(--color-primary-900) 0%,var(--bg-brand) 46%,var(--color-primary-200) 100%)",
+  "linear-gradient(135deg,#172554 0%,var(--bg-brand-hover) 46%,#7dd3fc 100%)",
   "linear-gradient(135deg,#111827 0%,#4f46e5 42%,#c4b5fd 100%)",
   "linear-gradient(135deg,#0369a1 0%,#7dd3fc 100%)",
 ]

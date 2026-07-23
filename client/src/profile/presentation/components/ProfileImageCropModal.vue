@@ -501,7 +501,7 @@ onBeforeUnmount(revokeImageUrl)
 
 .profile-crop__zoom input {
   width: 100%;
-  accent-color: #1420ff;
+  accent-color: var(--bg-brand);
 }
 
 .profile-crop__post-text {
@@ -542,8 +542,8 @@ onBeforeUnmount(revokeImageUrl)
 }
 
 .profile-crop__confirm {
-  border: 1px solid #1420ff;
-  background: #1420ff;
+  border: 1px solid var(--bg-brand);
+  background: var(--bg-brand);
   color: #ffffff;
 }
 

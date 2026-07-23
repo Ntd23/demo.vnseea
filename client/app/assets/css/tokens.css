@@ -1,3 +1,5 @@
+/* English description: Defines the shared VNSEEA design tokens and reusable visual utility classes. */
+
 /* ============================================================
    VNSEEA Design Tokens
    Khai báo 1 lần, dùng khắp nơi.
@@ -22,23 +24,31 @@
 
 /* ──────────────────────────────────────────────────────────── 
    2. COLORS
-   Primary   = xanh #0000ff chủ đạo (brand)
+   Primary   = đỏ #B91C1C chủ đạo (brand)
    Secondary = slate tối cho text / neutral
    Accent    = cam/vàng cho highlight
    Status    = success / warning / error / info
    ──────────────────────────────────────────────────────────── */
 :root {
   /* Primary */
-  --color-primary-50: #eef0ff;
-  --color-primary-100: #dfe4ff;
-  --color-primary-200: #c5caff;
-  --color-primary-300: #a1a4ff;
-  --color-primary-400: #7b73ff;
-  --color-primary-500: #0000ff;
-  --color-primary-600: #0000ff;
-  --color-primary-700: #0000cc;
-  --color-primary-800: #0000a3;
-  --color-primary-900: #000080;
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fee2e2;
+  --color-primary-200: #fecaca;
+  --color-primary-300: #fca5a5;
+  --color-primary-400: #ef4444;
+  --color-primary-500: #b91c1c;
+  --color-primary-600: #b91c1c;
+  --color-primary-700: #991b1b;
+  --color-primary-800: #991b1b;
+  --color-primary-900: #7f1d1d;
+  --color-primary-950: #450a0a;
+  --color-primary: var(--color-primary-500);
+  --ui-primary: var(--color-primary-500);
+
+  /* Brand contrast */
+  --color-on-brand: #ffffff;
+  --color-on-brand-secondary: #fee2e2;
+  --border-on-brand: rgba(255, 255, 255, 0.25);
 
   /* Secondary (neutral / slate) */
   --color-secondary-50: #f8fafc;
@@ -63,7 +73,7 @@
   --color-success: #0ea5e9;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
-  --color-info: #3b82f6;
+  --color-info: var(--bg-brand);
 }
 
 /* ──────────────────────────────────────────────────────────── 
@@ -103,9 +113,10 @@
   --text-primary: #000000;;
   --text-secondary: var(--color-secondary-500);    /* #64748b */
   --text-tertiary: var(--color-secondary-400);     /* #94a3b8 */
-  --text-inverse: #ffffff;
-  --text-brand: var(--color-primary-500);           /* #0000ff */
-  --text-link: var(--color-primary-600);            /* #0000e6 */
+  --text-inverse: var(--color-on-brand);
+  --text-on-brand-secondary: var(--color-on-brand-secondary);
+  --text-brand: var(--color-primary-500);           /* #B91C1C */
+  --text-link: var(--color-primary-600);            /* #B91C1C */
   --text-danger: var(--color-error);
   --text-success: var(--color-success);
 }
@@ -126,8 +137,8 @@
   /* Icon colors */
   --icon-primary: #000000;
   --icon-secondary: var(--color-secondary-400);   /* #94a3b8 — nhạt */
-  --icon-brand: var(--color-primary-500);          /* #0000ff */
-  --icon-inverse: #ffffff;
+  --icon-brand: var(--color-primary-500);          /* #B91C1C */
+  --icon-inverse: var(--color-on-brand);
   --icon-danger: var(--color-error);
   --icon-success: var(--color-success);
 }
@@ -138,15 +149,15 @@
 :root {
   --bg-base: #f1f4fb;
   --bg-surface: #ffffff;
-  --bg-surface-hover: #f7f9ff;
-  --bg-surface-active: #edf1ff;
+  --bg-surface-hover: #fff7f7;
+  --bg-surface-active: #fef2f2;
   --bg-muted: var(--color-secondary-100);
   --bg-brand: var(--color-primary-500);
-  --bg-brand-hover: var(--color-primary-600);
+  --bg-brand-hover: var(--color-primary-700);
 
-  --border-light: rgba(0, 0, 255, 0.08);
-  --border-default: rgba(0, 0, 255, 0.12);
-  --border-strong: rgba(0, 0, 255, 0.20);
+  --border-light: rgba(185, 28, 28, 0.08);
+  --border-default: rgba(185, 28, 28, 0.12);
+  --border-strong: rgba(185, 28, 28, 0.20);
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -159,11 +170,11 @@
    6. SHADOWS
    ──────────────────────────────────────────────────────────── */
 :root {
-  --shadow-sm: 0 2px 8px rgba(0, 0, 255, 0.04);
-  --shadow-md: 0 4px 20px rgba(0, 0, 255, 0.06);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 255, 0.09);
-  --shadow-xl: 0 12px 40px rgba(0, 0, 255, 0.13);
-  --shadow-brand: 0 4px 14px rgba(0, 0, 255, 0.28);
+  --shadow-sm: 0 2px 8px rgba(185, 28, 28, 0.04);
+  --shadow-md: 0 4px 20px rgba(185, 28, 28, 0.06);
+  --shadow-lg: 0 8px 32px rgba(185, 28, 28, 0.09);
+  --shadow-xl: 0 12px 40px rgba(185, 28, 28, 0.13);
+  --shadow-brand: 0 4px 14px rgba(185, 28, 28, 0.28);
 }
 
 /* ──────────────────────────────────────────────────────────── 
@@ -208,6 +219,7 @@
 .text-label-primary { font-family: var(--font-primary); font-size: var(--text-label); font-weight: var(--weight-bold); line-height: 1; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-primary); }
 .text-label-secondary { font-family: var(--font-primary); font-size: var(--text-label); font-weight: var(--weight-semibold); line-height: 1; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); }
 .text-brand         { color: var(--text-brand); }
+.text-on-brand-secondary { color: var(--text-on-brand-secondary); }
 .text-link          { color: var(--text-link); }
 .text-link:hover    { text-decoration: underline; }
 
@@ -228,11 +240,11 @@
 .surface-card       { background-color: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
 .surface-card-hover { background-color: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); transition: box-shadow var(--duration-normal) var(--ease-default); }
 .surface-card-hover:hover { box-shadow: var(--shadow-lg); }
-.surface-brand      { background-color: var(--bg-brand); color: var(--text-inverse); }
+.surface-brand      { background-color: var(--bg-brand); color: var(--text-inverse); border-color: var(--border-on-brand); }
 .surface-muted      { background-color: var(--bg-muted); }
 
 /* --- Button Base Utilities --- */
-.btn-primary        { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 20px; background: var(--bg-brand); color: var(--text-inverse); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-semibold); border-radius: var(--radius-full); box-shadow: var(--shadow-brand); border: none; cursor: pointer; }
+.btn-primary        { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 20px; background: var(--bg-brand); color: var(--text-inverse); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-semibold); border-radius: var(--radius-full); box-shadow: var(--shadow-brand); border: 1px solid var(--border-on-brand); cursor: pointer; }
 .btn-primary:hover  { background: var(--bg-brand-hover);}
 .btn-primary:active { transform: scale(0.97); }
 
@@ -247,7 +259,7 @@
 .avatar-md          { width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--text-caption); font-weight: var(--weight-bold); }
 .avatar-lg          { width: 48px; height: 48px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--text-body); font-weight: var(--weight-bold); }
 .avatar-xl          { width: 64px; height: 64px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--text-title); font-weight: var(--weight-bold); }
-.avatar-brand       { background: var(--bg-brand); color: var(--text-inverse); box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2); }
+.avatar-brand       { background: var(--bg-brand); color: var(--text-inverse); box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2); }
 .avatar-muted       { background: var(--color-secondary-200); color: var(--color-secondary-600); }
 
 /* --- Scrollbar hide --- */

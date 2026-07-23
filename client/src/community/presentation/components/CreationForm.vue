@@ -369,7 +369,7 @@ const validateForm = (state: CommunityDraft): CreationFormError[] => {
 .creation-form--page :deep(select),
 .creation-form--page :deep(button[role="combobox"]),
 .creation-form--page :deep(.u-select-button) {
-  border: 1px solid #bfdbfe !important;
+  border: 1px solid var(--color-primary-200) !important;
   border-radius: 12px !important;
   background-color: #ffffff !important;
   color: #0f172a !important;
@@ -380,8 +380,8 @@ const validateForm = (state: CommunityDraft): CreationFormError[] => {
 .creation-form--page :deep(select:focus),
 .creation-form--page :deep(button[role="combobox"]:focus-within),
 .creation-form--page :deep(.u-select-button:focus-within) {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+  border-color: var(--bg-brand) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--bg-brand) 15%, transparent) !important;
 }
 
 /* Make sure UFormField labels are bold, matching the mockup */

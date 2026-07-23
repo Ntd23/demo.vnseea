@@ -25,7 +25,7 @@
       <template v-if="clearable && model" #trailing>
         <button
           type="button"
-          class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[#0000ff]"
+          class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[var(--text-brand)]"
           :aria-label="clearLabel"
           @click="clearValue"
         >

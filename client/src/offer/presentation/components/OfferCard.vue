@@ -125,7 +125,7 @@ const offerTitle = computed(() =>
 .offer-card__image-fallback {
   width: 42px;
   height: 42px;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .offer-card__body {
@@ -202,7 +202,7 @@ const offerTitle = computed(() =>
   justify-content: center;
   border-radius: 999px;
   background: #eef2ff;
-  color: #0000ff;
+  color: var(--bg-brand);
   object-fit: cover;
 }
 

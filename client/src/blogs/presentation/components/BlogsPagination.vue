@@ -141,9 +141,9 @@ const changePage = (page: number) => {
 }
 
 .blogs-pagination__button:not(:disabled):hover {
-  border-color: rgba(0, 0, 255, 0.18);
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
   transform: translateY(-1px);
 }
 
@@ -168,14 +168,14 @@ const changePage = (page: number) => {
 }
 
 .blogs-pagination__button--active {
-  border-color: #0000ff;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  border-color: var(--bg-brand);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
   color: #ffffff;
 }
 
 .blogs-pagination__button--active:not(:disabled):hover {
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
 }
 

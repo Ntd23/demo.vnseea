@@ -139,7 +139,7 @@ type BackendVotePollResponse = {
 }
 
 const accentPalette = [
-  "#2563eb",
+  "var(--bg-brand)",
   "#0369a1",
   "#7c3aed",
   "#0f766e",
@@ -541,7 +541,7 @@ const createAccent = (id: number) =>
   accentPalette[Math.abs(id) % accentPalette.length]
 
 const createGradient = (id: number) =>
-  `linear-gradient(135deg,#0f172a 0%,${createAccent(id)} 58%,#bfdbfe 100%)`
+  `linear-gradient(135deg,#0f172a 0%,${createAccent(id)} 58%,var(--color-primary-200) 100%)`
 
 const inferCategory = (source: string) => {
   const normalized = source.toLowerCase()

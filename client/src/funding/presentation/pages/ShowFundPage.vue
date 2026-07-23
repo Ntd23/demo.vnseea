@@ -245,7 +245,7 @@ const formatDonationDate = (value: string) => {
 .fund-detail__donors,
 .fund-detail__panel {
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
@@ -310,8 +310,8 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__avatar--empty {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
   font-size: 13px;
   font-weight: 900;
 }
@@ -356,7 +356,7 @@ const formatDonationDate = (value: string) => {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .fund-detail__section-title h2 {
@@ -432,8 +432,8 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__donor-avatar--empty {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 900;
 }
@@ -461,7 +461,7 @@ const formatDonationDate = (value: string) => {
 
 .fund-detail__donor-item b {
   grid-column: 1 / -1;
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 14px;
   font-weight: 900;
 }
@@ -530,7 +530,7 @@ const formatDonationDate = (value: string) => {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #0000ff;
+  background: var(--bg-brand);
 }
 
 .fund-progress--completed span {
@@ -543,9 +543,9 @@ const formatDonationDate = (value: string) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid #0000ff;
+  border: 1px solid var(--bg-brand);
   border-radius: 999px;
-  background: #0000ff;
+  background: var(--bg-brand);
   padding: 10px 14px;
   color: #ffffff;
   font-size: 13px;

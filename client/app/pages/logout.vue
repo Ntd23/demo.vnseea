@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto flex min-h-[40vh] max-w-xl items-center justify-center px-6 py-12 text-center">
     <div class="space-y-3">
-      <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0000ff]">Session</p>
+      <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-brand)]">Session</p>
       <h1 class="text-2xl font-black tracking-tight text-slate-900">Signing you out</h1>
       <p class="text-sm leading-6 text-slate-500">
         VNSEEA is handing control back to the backend logout flow so the browser session is cleared in one place.

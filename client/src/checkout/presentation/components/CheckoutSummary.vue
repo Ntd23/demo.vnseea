@@ -157,7 +157,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
-const defaultCardBackground = "linear-gradient(145deg, #dbeafe, #fce7f3)"
+const defaultCardBackground = "linear-gradient(145deg, var(--color-primary-100), #fce7f3)"
 
 const itemCount = computed(() => props.items.reduce((sum, item) => sum + item.quantity, 0))
 const itemCountLabel = computed(() => t("checkout.summary.items", { count: itemCount.value }))

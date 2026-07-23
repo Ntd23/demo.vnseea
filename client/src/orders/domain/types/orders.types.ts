@@ -123,8 +123,8 @@ export const buyerOrderStatusMeta: Record<BuyerOrderStatus, {
   },
   shipping: {
     label: "orders.status.shipping.label",
-    badgeClass: "border-[#cfe0ff] bg-[#eef4ff] text-[#1d4ed8]",
-    panelClass: "bg-[#eef4ff] text-[#1d4ed8]",
+    badgeClass: "border-[#cfe0ff] bg-[#eef4ff] text-[var(--text-brand)]",
+    panelClass: "bg-[#eef4ff] text-[var(--text-brand)]",
     icon: "i-ph-truck-fill",
     progress: 2,
     description: "orders.status.shipping.description",
@@ -173,8 +173,8 @@ export const sellerOrderPayoutStatusMeta: Record<SellerOrderPayoutStatus, {
   },
   processing: {
     label: "orders.payout.processing.label",
-    badgeClass: "border-[#cfe0ff] bg-[#eef4ff] text-[#1d4ed8]",
-    panelClass: "bg-[#eef4ff] text-[#1d4ed8]",
+    badgeClass: "border-[#cfe0ff] bg-[#eef4ff] text-[var(--text-brand)]",
+    panelClass: "bg-[#eef4ff] text-[var(--text-brand)]",
     description: "orders.payout.processing.description",
   },
   released: {

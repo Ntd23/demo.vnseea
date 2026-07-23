@@ -83,7 +83,7 @@ defineEmits<{ like: []; share: [] }>()
 <style scoped>
 .watch-info {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 20px;
@@ -166,16 +166,16 @@ defineEmits<{ like: []; share: [] }>()
 }
 
 .watch-info__action-btn:hover {
-  border-color: #0000ff;
-  color: #0000ff;
-  background: rgba(0, 0, 255, 0.03);
+  border-color: var(--bg-brand);
+  color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .watch-info__action-btn--active {
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
-  border-color: #0000ff;
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
+  border-color: var(--bg-brand);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .watch-info__action-btn--active:hover {
@@ -194,8 +194,8 @@ defineEmits<{ like: []; share: [] }>()
   align-items: center;
   gap: 14px;
   border-radius: 14px;
-  background: rgba(0, 0, 255, 0.03);
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   padding: 14px 16px;
 }
 
@@ -239,17 +239,17 @@ defineEmits<{ like: []; share: [] }>()
   flex-shrink: 0;
   padding: 8px 18px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 255, 0.15);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 15%, transparent);
   background: #ffffff;
   font-size: 13px;
   font-weight: 700;
-  color: #0000ff;
+  color: var(--bg-brand);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .watch-author__follow:hover {
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
 }
 
@@ -277,8 +277,8 @@ defineEmits<{ like: []; share: [] }>()
   display: inline-flex;
   padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 600;
 }
@@ -289,11 +289,11 @@ defineEmits<{ like: []; share: [] }>()
   align-items: center;
   gap: 10px;
   border-radius: 12px;
-  background: rgba(0, 0, 255, 0.05);
-  border: 1px solid rgba(0, 0, 255, 0.1);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 10%, transparent);
   padding: 12px 16px;
   font-size: 13px;
   font-weight: 600;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 </style>

@@ -226,8 +226,8 @@ const {
 
 .create-funding__card :deep(input:not([type="file"]):focus),
 .create-funding__card :deep(textarea:focus) {
-  border-color: #3b82f6 !important; /* primary-500 */
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+  border-color: var(--bg-brand) !important; /* primary-500 */
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--bg-brand) 15%, transparent) !important;
 }
 
 .create-funding__preview {

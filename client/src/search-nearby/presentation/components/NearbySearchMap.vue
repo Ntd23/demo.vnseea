@@ -259,7 +259,7 @@ function createPinIcon(color: string, selected = false): google.maps.Icon {
 function createItemMarkerIcon(item: NearbySearchItem): google.maps.Icon {
   const selected = item.id === props.selectedItemId
 
-  return createPinIcon(item.type === "page" ? "#16a34a" : item.type === "place" ? "#2563eb" : "#ef4444", selected)
+  return createPinIcon(item.type === "page" ? "#16a34a" : item.type === "place" ? "var(--bg-brand)" : "#ef4444", selected)
 }
 
 function createPlaceOverlayMarker(
@@ -379,7 +379,7 @@ function createAvatarOverlayMarker(
     button.setAttribute("aria-label", item.title)
     Object.assign(button.style, {
       alignItems: "center",
-      background: "#2563eb",
+      background: "var(--bg-brand)",
       border: "4px solid #ffffff",
       borderRadius: "999px",
       boxShadow: selected
@@ -458,7 +458,7 @@ function createOriginIcon(selected = false, heading: number | null = null): goog
   return {
     path: "M 0 -18 L 11 15 L 0 9 L -11 15 Z",
     anchor: new window.google.maps.Point(0, 0),
-    fillColor: "#2563eb",
+    fillColor: "var(--bg-brand)",
     fillOpacity: 1,
     rotation: heading ?? 0,
     scale: selected ? 1.16 : 1,
@@ -1166,9 +1166,9 @@ function syncOriginRadiusCircle(force = false) {
       center,
       radius: radiusMeters,
       clickable: false,
-      fillColor: "#2563eb",
+      fillColor: "var(--bg-brand)",
       fillOpacity: 0.08,
-      strokeColor: "#2563eb",
+      strokeColor: "var(--bg-brand)",
       strokeOpacity: 0.45,
       strokeWeight: 2,
       zIndex: 1,
@@ -1180,9 +1180,9 @@ function syncOriginRadiusCircle(force = false) {
       center,
       radius: radiusMeters,
       clickable: false,
-      fillColor: "#2563eb",
+      fillColor: "var(--bg-brand)",
       fillOpacity: 0.08,
-      strokeColor: "#2563eb",
+      strokeColor: "var(--bg-brand)",
       strokeOpacity: 0.45,
       strokeWeight: 2,
       zIndex: 1,
@@ -1640,7 +1640,7 @@ function renderRoute() {
       suppressMarkers: true,
       preserveViewport: true,
       polylineOptions: {
-        strokeColor: isMobileViewport() ? "#3b00ff" : "#2563eb",
+        strokeColor: isMobileViewport() ? "#3b00ff" : "var(--bg-brand)",
         strokeOpacity: 1,
         strokeWeight: isMobileViewport() ? 9 : 5,
       },

@@ -212,15 +212,15 @@ const {
 
 <style scoped>
 .products-page {
-  --product-brand: var(--color-brand, #0000ff);
-  --product-brand-gradient: linear-gradient(180deg, #2233ff 0%, var(--product-brand) 100%);
+  --product-brand: var(--color-brand, var(--bg-brand));
+  --product-brand-gradient: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--product-brand) 100%);
 }
 
 .products-hero {
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 18px;
   background:
-    linear-gradient(90deg, rgba(0, 0, 255, 0.08), rgba(255, 255, 255, 0) 46%),
+    linear-gradient(90deg, color-mix(in srgb, var(--bg-brand) 8%, transparent), rgba(255, 255, 255, 0) 46%),
     #fff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   isolation: isolate;
@@ -241,7 +241,7 @@ const {
   bottom: -112px;
   width: 220px;
   height: 220px;
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 50%;
   content: "";
   pointer-events: none;
@@ -250,7 +250,7 @@ const {
 .products-hero__glow {
   position: absolute;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.05);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 .products-hero__glow--left {
@@ -275,9 +275,9 @@ const {
   height: 46px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(0, 0, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 10%, transparent);
   border-radius: 14px;
-  background: rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   color: var(--product-brand);
 }
 
@@ -302,9 +302,9 @@ const {
   gap: 8px;
   min-height: 44px;
   padding: 10px 16px;
-  border: 1px solid rgba(0, 0, 255, 0.12);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
   border-radius: 12px;
-  background: rgba(0, 0, 255, 0.05);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--product-brand);
   font-size: 13px;
   font-weight: 700;
@@ -341,9 +341,9 @@ const {
   justify-content: center;
   gap: 8px;
   padding: 0 16px;
-  border: 1px solid rgba(0, 0, 255, 0.12);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
   border-radius: 12px;
-  background: rgba(0, 0, 255, 0.05);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--product-brand);
   font-size: 13px;
   font-weight: 700;
@@ -357,7 +357,7 @@ const {
   border-color: var(--product-brand);
   background: var(--product-brand);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.18);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 18%, transparent);
 }
 
 .products-filter__reset-icon {
@@ -367,9 +367,9 @@ const {
   height: 48px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(0, 0, 255, 0.12);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
   border-radius: 12px;
-  background: rgba(0, 0, 255, 0.05);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--product-brand);
   transition: all 0.15s ease;
 }

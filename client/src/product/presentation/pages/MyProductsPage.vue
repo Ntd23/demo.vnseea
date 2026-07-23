@@ -237,7 +237,7 @@ const submitDeleteProduct = async () => {
 
 <style scoped>
 .my-products-page {
-  --product-brand: var(--color-brand, #0000ff);
+  --product-brand: var(--color-brand, var(--bg-brand));
   --product-card: var(--surface-card, #ffffff);
   --product-border: var(--border-light, #e2e8f0);
   --product-text: var(--text-primary, #0f172a);

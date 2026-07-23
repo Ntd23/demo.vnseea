@@ -139,7 +139,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  background: #0000ff;
+  background: var(--bg-brand);
   padding: 10px 16px;
   color: #fff;
   font-size: 13px;
@@ -160,7 +160,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 .ads-chart-page__summary svg {
   height: 24px;
   width: 24px;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .ads-chart-page__summary strong {

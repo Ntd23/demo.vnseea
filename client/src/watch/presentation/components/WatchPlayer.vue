@@ -145,7 +145,7 @@ const noop = () => {}
 .watch-player__play-btn:hover {
   background: rgba(255,255,255,0.28);
   transform: translate(-50%, -50%) scale(1.1);
-  box-shadow: 0 12px 40px rgba(0,0,255,0.2);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .watch-player__play-icon {
@@ -181,8 +181,8 @@ const noop = () => {}
 .watch-player__progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: #0000ff;
-  box-shadow: 0 0 10px rgba(0,0,255,0.5);
+  background: var(--bg-brand);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--bg-brand) 50%, transparent);
   transition: width 0.3s ease;
 }
 

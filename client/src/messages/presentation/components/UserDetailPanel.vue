@@ -40,10 +40,10 @@
               :to="contact.profileUrl"
               class="group flex flex-col items-center gap-1.5 text-decoration-none"
             >
-              <span class="flex h-11 w-11 items-center justify-center rounded-full bg-[#eef2ff] text-[#0000ff] transition-all group-hover:bg-[#0000ff] group-hover:text-white shadow-sm">
+              <span class="flex h-11 w-11 items-center justify-center rounded-full bg-[#eef2ff] text-[var(--text-brand)] transition-all group-hover:bg-[var(--bg-brand)] group-hover:text-white shadow-sm">
                 <Icon name="i-ph-user-bold" class="h-5 w-5" />
               </span>
-              <span class="text-xs font-bold text-[#475569] group-hover:text-[#0000ff]">
+              <span class="text-xs font-bold text-[#475569] group-hover:text-[var(--text-brand)]">
                 {{ $t("pages.messagesPage.viewProfile") || "Trang cá nhân" }}
               </span>
             </NuxtLink>
@@ -107,7 +107,7 @@
 
     <div v-else class="flex flex-1 items-center justify-center px-6 py-8">
       <div class="max-w-[260px] text-center">
-        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[22px] bg-blue-50 text-[#0000ff]">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[22px] bg-blue-50 text-[var(--text-brand)]">
           <Icon name="i-ph-user-circle-bold" class="h-8 w-8" />
         </div>
         <h3 class="mt-5 text-base font-semibold text-[var(--text-primary)]">

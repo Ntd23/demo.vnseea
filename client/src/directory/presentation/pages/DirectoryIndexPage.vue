@@ -687,7 +687,7 @@ async function toggleJoinGroup(group: any) {
   border-radius: 28px;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 255, 0.02);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 2%, transparent);
   box-shadow: 0 4px 20px -2px rgba(0, 0, 100, 0.02), 0 2px 8px -2px rgba(0, 0, 0, 0.01);
   transition: all 0.3s ease;
 }

@@ -3,7 +3,7 @@
   <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
     <!-- Gradient background -->
     <div class="relative">
-      <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f172a_0%,#1e3a8a_45%,#3b82f6_100%)]" />
+      <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f172a_0%,var(--color-primary-900)_45%,var(--bg-brand)_100%)]" />
       <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_50%)]" />
 
       <div class="relative grid gap-5 p-5 sm:p-7 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-center">

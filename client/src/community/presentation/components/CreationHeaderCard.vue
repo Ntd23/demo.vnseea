@@ -1,18 +1,18 @@
 <template>
   <section class="relative overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-[linear-gradient(135deg,#ffffff_0%,#f7f9ff_52%,#eef3ff_100%)] px-5 py-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:px-7">
-    <div class="pointer-events-none absolute right-[-8%] top-[-20%] h-44 w-44 rounded-full bg-[#0000ff]/8 blur-3xl" />
+    <div class="pointer-events-none absolute right-[-8%] top-[-20%] h-44 w-44 rounded-full bg-[var(--bg-brand)]/8 blur-3xl" />
     <div class="pointer-events-none absolute bottom-[-34%] left-[12%] h-40 w-40 rounded-full bg-[#9ad89f]/18 blur-3xl" />
 
     <div class="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div class="flex items-center gap-4">
-        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[#0000ff] text-white shadow-[0_14px_28px_rgba(0,0,255,0.24)]">
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[var(--bg-brand)] text-white shadow-[0_14px_28px_color-mix(in srgb, var(--bg-brand) 24%, transparent)]">
           <Icon :name="icon" class="h-7 w-7" />
         </div>
 
         <div class="min-w-0">
           <p
             v-if="eyebrow"
-            class="text-[11px] font-bold uppercase tracking-[0.24em] text-[#0000ff]/60"
+            class="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--text-brand)]/60"
           >
             {{ $t(eyebrow) }}
           </p>

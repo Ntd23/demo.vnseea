@@ -1,7 +1,7 @@
 <template>
   <article>
     <UCard
-      class="relative flex h-full flex-col overflow-hidden rounded-[18px] border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(37,99,235,0.12)]"
+      class="relative flex h-full flex-col overflow-hidden rounded-[18px] border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_color-mix(in srgb, var(--bg-brand) 12%, transparent)]"
       :class="cardClass"
       :ui="{ body: 'p-5' }"
     >
@@ -92,7 +92,7 @@
         :class="selected
           ? 'bg-emerald-600 text-white hover:bg-emerald-700'
           : plan.highlight
-            ? 'bg-primary-600 text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] hover:bg-primary-700'
+            ? 'bg-primary-600 text-white shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 18%, transparent)] hover:bg-primary-700'
             : 'border border-secondary-200 bg-white text-[var(--text-primary)] hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700'"
         :aria-pressed="selected"
         @click="emit('select', plan)"
@@ -140,7 +140,7 @@ const cardClass = computed(() =>
   props.selected
     ? "border-emerald-300 ring-4 ring-emerald-50 shadow-[0_18px_38px_rgba(16,185,129,0.10)]"
     : props.plan.highlight
-      ? "border-primary-300 ring-4 ring-primary-50 shadow-[0_18px_38px_rgba(37,99,235,0.12)]"
+      ? "border-primary-300 ring-4 ring-primary-50 shadow-[0_18px_38px_color-mix(in srgb, var(--bg-brand) 12%, transparent)]"
       : "border-[#dbe3f2] shadow-[0_10px_28px_rgba(15,35,110,0.04)]",
 )
 </script>

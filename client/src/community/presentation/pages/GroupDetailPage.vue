@@ -147,7 +147,7 @@
             color="primary"
             variant="solid"
             size="xl"
-            class="rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
+            class="rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 24%, transparent)]"
           >
             {{ t("pages.groupDetailPage.backToGroups") }}
           </UButton>
@@ -319,7 +319,7 @@ function handlePostCreated() {
 }
 
 .profile-card__icon--blue {
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
 }
 
@@ -348,7 +348,7 @@ function handlePostCreated() {
 }
 
 .profile-card__invite-row:hover {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .profile-card__invite-row:disabled {

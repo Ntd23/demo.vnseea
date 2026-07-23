@@ -20,12 +20,12 @@
       group: 'search-content-group px-1 py-2',
       label: 'px-3 pb-2 pt-1 text-[11px] font-bold uppercase tracking-[0.05em] text-slate-400',
       item: 'search-content-item min-h-14 cursor-pointer gap-3 rounded-xl px-3 py-2.5 text-slate-700 before:rounded-xl data-highlighted:before:bg-[#f2f4ff]',
-      itemLeadingIcon: 'size-9 rounded-xl bg-slate-100 p-2 text-slate-500 group-data-highlighted:text-[#0000ff]',
+      itemLeadingIcon: 'size-9 rounded-xl bg-slate-100 p-2 text-slate-500 group-data-highlighted:text-[var(--text-brand)]',
       itemLeadingAvatar: 'size-10 rounded-full ring-1 ring-slate-200',
       itemLeadingAvatarSize: 'sm',
       itemWrapper: 'min-w-0 gap-0.5',
       itemLabel: 'text-[13px] font-bold text-slate-800',
-      itemLabelBase: 'text-slate-800 [&>mark]:rounded-sm [&>mark]:bg-[#e8eaff] [&>mark]:text-[#0000ff]',
+      itemLabelBase: 'text-slate-800 [&>mark]:rounded-sm [&>mark]:bg-[#e8eaff] [&>mark]:text-[var(--text-brand)]',
       itemLabelSuffix: 'ms-2 inline-flex rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-500',
       itemDescription: 'truncate text-[12px] font-medium text-slate-500',
       itemTrailing: 'text-[11px] font-semibold text-slate-400',
@@ -206,7 +206,7 @@ function selectSuggestion(href: string) {
 .search-content-item[data-highlighted],
 .search-content-item:hover {
   background: rgba(255, 255, 255, 0.58) !important;
-  color: #0000ff !important;
+  color: var(--bg-brand) !important;
   box-shadow: 0 4px 18px rgba(79, 70, 229, 0.07);
 }
 

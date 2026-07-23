@@ -1684,7 +1684,7 @@ function handleMoreAction(action: string) {
   position: relative;
   height: 280px;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 56%, #bfdbfe 100%);
+  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 .profile-page__cover--viewable {
@@ -1713,7 +1713,7 @@ function handleMoreAction(action: string) {
 .profile-page__cover-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 56%, #bfdbfe 100%);
+  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 .profile-page__cover-shade {
@@ -2014,8 +2014,8 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__tab--active {
-  color: #0000ff;
-  border-bottom-color: #0000ff;
+  color: var(--bg-brand);
+  border-bottom-color: var(--bg-brand);
 }
 
 .profile-page__tab--more {
@@ -2037,7 +2037,7 @@ function handleMoreAction(action: string) {
   flex: 0 0 42px;
   align-items: center;
   justify-content: flex-end;
-  color: #0000ff;
+  color: var(--bg-brand);
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0),
@@ -2280,7 +2280,7 @@ function handleMoreAction(action: string) {
   justify-content: center;
   border-radius: 10px;
   background: #f1f5f9;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .profile-card__intro-label {
@@ -2319,7 +2319,7 @@ function handleMoreAction(action: string) {
   justify-content: center;
   overflow: hidden;
   border-radius: 12px;
-  background: #dbeafe;
+  background: var(--color-primary-100);
 }
 
 .profile-card__friend-img {
@@ -2332,7 +2332,7 @@ function handleMoreAction(action: string) {
 .profile-card__friend-initials {
   font-size: 18px;
   font-weight: 900;
-  color: #1d4ed8;
+  color: var(--bg-brand-hover);
 }
 
 .profile-card__friend-name {
@@ -2451,7 +2451,7 @@ function handleMoreAction(action: string) {
   display: block;
   padding: 2px 8px 8px;
   font-size: 12px;
-  color: #2563eb;
+  color: var(--bg-brand);
 }
 
 .profile-page__media-posts {
@@ -2515,7 +2515,7 @@ function handleMoreAction(action: string) {
   justify-content: center;
   overflow: hidden;
   border-radius: 18px;
-  background: #dbeafe;
+  background: var(--color-primary-100);
 }
 
 .profile-page__friend-img {
@@ -2528,7 +2528,7 @@ function handleMoreAction(action: string) {
 .profile-page__friend-initials {
   font-size: 18px;
   font-weight: 800;
-  color: #1d4ed8;
+  color: var(--bg-brand-hover);
 }
 
 .profile-page__friend-info {
@@ -2816,14 +2816,14 @@ function handleMoreAction(action: string) {
   width: 268px;
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid rgba(0, 0, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   background: #ffffff;
-  box-shadow: 0 12px 40px rgba(0, 0, 255, 0.12);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
 .profile-more-divider {
   height: 1px;
-  background: rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
 .profile-more-item {
@@ -2840,7 +2840,7 @@ function handleMoreAction(action: string) {
 }
 
 .profile-more-item:hover {
-  background: rgba(0, 0, 255, 0.03);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .profile-more-icon {
@@ -2851,8 +2851,8 @@ function handleMoreAction(action: string) {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(0, 0, 255, 0.05);
-  color: rgba(0, 0, 255, 0.6);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: color-mix(in srgb, var(--bg-brand) 60%, transparent);
   margin-top: 2px;
 }
 

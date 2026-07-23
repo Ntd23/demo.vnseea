@@ -145,7 +145,7 @@ const submit = async () => {
 
 .contact-page__eyebrow {
   margin: 0 0 0.4rem;
-  color: var(--color-primary, #0000ff);
+  color: var(--color-primary, var(--bg-brand));
   font-size: 0.8rem;
   font-weight: 850;
   letter-spacing: 0.08em;

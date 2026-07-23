@@ -324,7 +324,7 @@ onBeforeUnmount(() => {
 .verification-panel__hero,
 .verification-panel__features,
 .verification-panel__form {
-  border: 1px solid #dbeafe;
+  border: 1px solid var(--color-primary-100);
   border-radius: 20px;
   background: #ffffff;
   box-shadow: 0 8px 24px rgba(15, 35, 110, 0.06);
@@ -335,7 +335,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 18px;
   padding: 18px;
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, #ffffff 100%);
 }
 
 .verification-panel__avatar-wrap {
@@ -352,8 +352,8 @@ onBeforeUnmount(() => {
   justify-content: center;
   overflow: hidden;
   border-radius: 999px;
-  background: #dbeafe;
-  color: #0000ff;
+  background: var(--color-primary-100);
+  color: var(--bg-brand);
   font-size: 24px;
   font-weight: 900;
   object-fit: cover;
@@ -380,7 +380,7 @@ onBeforeUnmount(() => {
 }
 
 .verification-panel__username {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 15px;
   font-weight: 800;
   text-decoration: none;
@@ -455,8 +455,8 @@ onBeforeUnmount(() => {
 }
 
 .verification-panel__upload-tile:hover {
-  border-color: #93c5fd;
-  background: #eff6ff;
+  border-color: var(--color-primary-300);
+  background: var(--color-primary-50);
   transform: translateY(-1px);
 }
 

@@ -262,7 +262,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   align-items: center;
   gap: 10px;
   padding: 8px;
-  border: 1px solid rgba(0, 0, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
@@ -313,9 +313,9 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   padding: 9px 16px;
   border: 0;
   border-radius: 12px;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #fff;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -366,7 +366,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   justify-content: center;
   border: 2px solid;
   border-radius: 18px;
-  box-shadow: 0 14px 30px rgba(30, 64, 175, 0.1);
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 
 .story-create__illustration-card--back {
@@ -382,15 +382,15 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   bottom: 0;
   left: 20px;
   transform: rotate(-8deg);
-  border-color: #bfdbfe;
-  background: #eff6ff;
-  color: #2563eb;
+  border-color: var(--color-primary-200);
+  background: var(--color-primary-50);
+  color: var(--bg-brand);
 }
 
 .story-create__spark {
   position: absolute;
   z-index: 2;
-  color: #93c5fd;
+  color: var(--color-primary-300);
   font-size: 24px;
 }
 
@@ -450,7 +450,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 
 .story-create__picker-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(0, 0, 255, 0.14);
+  border-color: color-mix(in srgb, var(--bg-brand) 14%, transparent);
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
 }
 
@@ -470,8 +470,8 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 
 .story-create__picker-icon--image,
 .story-create__picker-arrow--image {
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--color-primary-50);
+  color: var(--bg-brand);
 }
 
 .story-create__picker-icon--video,
@@ -520,8 +520,8 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 .story-create__notice-icon {
   width: 44px;
   height: 44px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--color-primary-50);
+  color: var(--bg-brand);
 }
 
 .story-create__notice p {
@@ -545,7 +545,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 .story-create__preview-column,
 .story-create__settings {
   min-width: 0;
-  border: 1px solid rgba(0, 0, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
@@ -615,9 +615,9 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 }
 
 .story-create__change-media:hover {
-  border-color: rgba(0, 0, 255, 0.15);
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 15%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
 }
 
 .story-create__settings {
@@ -665,15 +665,15 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 }
 
 .story-create__audience-option:hover {
-  background: rgba(0, 0, 255, 0.03);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  color: var(--bg-brand);
 }
 
 .story-create__audience-option--active {
-  border-color: rgba(0, 0, 255, 0.5);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
-  box-shadow: 0 3px 10px rgba(0, 0, 255, 0.08);
+  border-color: color-mix(in srgb, var(--bg-brand) 50%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .story-create__field {
@@ -710,8 +710,8 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 
 .story-create__field input:focus,
 .story-create__field textarea:focus {
-  border-color: rgba(0, 0, 255, 0.28);
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.05);
+  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 .story-create__field input::placeholder,
@@ -732,8 +732,8 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--color-primary-50);
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 600;
 }

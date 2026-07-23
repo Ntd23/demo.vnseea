@@ -1,13 +1,13 @@
 <template>
   <UCard
-    class="rounded-[28px] border border-dashed border-[#0000ff]/20 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)] shadow-[0_14px_34px_rgba(15,35,110,0.05)]"
+    class="rounded-[28px] border border-dashed border-[var(--bg-brand)]/20 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)] shadow-[0_14px_34px_rgba(15,35,110,0.05)]"
     :ui="{ body: 'p-4 sm:p-5' }"
     v-bind="attrs"
   >
     <div class="space-y-5">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="min-w-0 flex-1">
-          <p v-if="eyebrow" class="text-[11px] font-bold uppercase tracking-[0.24em] text-[#0000ff]/70">
+          <p v-if="eyebrow" class="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--text-brand)]/70">
             {{ eyebrow }}
           </p>
           <h3 class="mt-1 text-lg font-black tracking-[-0.03em] text-[#243b63]">
@@ -23,7 +23,7 @@
           variant="subtle"
           class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-semibold"
         >
-          <Icon name="i-ph-images-square-fill" class="h-4 w-4 text-[#0000ff]" />
+          <Icon name="i-ph-images-square-fill" class="h-4 w-4 text-[var(--text-brand)]" />
           {{ counterLabel }}
         </UBadge>
       </div>

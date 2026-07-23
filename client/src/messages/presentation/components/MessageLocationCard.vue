@@ -292,7 +292,7 @@ onBeforeUnmount(() => {
   width: 20px;
   height: 20px;
   flex: 0 0 auto;
-  color: #2563eb;
+  color: var(--bg-brand);
 }
 
 @media (max-width: 480px) {

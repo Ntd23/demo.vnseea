@@ -28,7 +28,7 @@ const createMutation = (body: Record<string, unknown>) => {
 
   if (action === "create") {
     const name = asString(body.name)
-    const color = asString(body.color) || "#3b82f6"
+    const color = asString(body.color) || "var(--bg-brand)"
 
     if (!name) {
       throw createError({
@@ -41,7 +41,7 @@ const createMutation = (body: Record<string, unknown>) => {
       endpoint: "create_label",
       body: {
         label_name: name,
-        label_color: /^#[0-9A-Fa-f]{6}$/.test(color) ? color : "#3b82f6",
+        label_color: /^#[0-9A-Fa-f]{6}$/.test(color) ? color : "var(--bg-brand)",
       },
     }
   }

@@ -237,8 +237,8 @@ watch(
 
 .chat__host-badge {
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
   padding: 2px 7px;
   font-size: 10px;
   font-weight: 700;
@@ -322,8 +322,8 @@ watch(
 }
 
 .chat__input:focus {
-  border-color: rgba(0, 0, 255, 0.25);
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
+  border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
 .chat__input:disabled {

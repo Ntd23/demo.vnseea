@@ -374,7 +374,7 @@ const closeProgressHelp = () => {
 .settings-affiliates__link-panel,
 .settings-affiliates__progress-panel,
 .settings-affiliates__list-panel {
-  border: 1px solid rgba(0, 0, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -402,7 +402,7 @@ const closeProgressHelp = () => {
   align-items: center;
   justify-content: center;
   border-radius: 14px;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
 }
 
@@ -463,8 +463,8 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__stat-icon--blue {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .settings-affiliates__stat-icon--amber {
@@ -522,7 +522,7 @@ const closeProgressHelp = () => {
   padding: 0 16px;
   border: none;
   border-radius: 12px;
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
   cursor: pointer;
   font-size: 13px;
@@ -537,7 +537,7 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__progress-heading strong {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 20px;
   font-weight: 900;
 }
@@ -638,8 +638,8 @@ const closeProgressHelp = () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 900;
 }
@@ -695,7 +695,7 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__person-progress-head strong {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .settings-affiliates__person-steps {
@@ -773,7 +773,7 @@ const closeProgressHelp = () => {
   z-index: 1;
   width: min(100%, 460px);
   padding: 18px;
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 18px;
   background: #ffffff;
   box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);

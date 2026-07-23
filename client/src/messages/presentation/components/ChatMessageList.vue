@@ -393,7 +393,7 @@ defineExpose({ scrollToBottom })
     filter: none;
   }
   18%, 55% {
-    filter: drop-shadow(0 0 7px rgba(0, 0, 255, 0.38));
+    filter: drop-shadow(0 0 7px color-mix(in srgb, var(--bg-brand) 38%, transparent));
   }
 }
 

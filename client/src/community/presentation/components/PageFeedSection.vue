@@ -3,7 +3,7 @@
     <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
             {{ t("pages.pageDetailPage.feedEyebrow") }}
           </p>
           <h2 class="mt-2 text-[1.3rem] font-black tracking-[-0.04em] text-[#243b63]">

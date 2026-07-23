@@ -62,7 +62,7 @@ const mapPackage = (
     price: asNumber(item.price),
     currency,
     currencySymbol,
-    color: asString(item.color) || "#0000ff",
+    color: asString(item.color) || "#b91c1c",
     image: asString(item.image),
     nightImage: asString(item.night_image),
     features,

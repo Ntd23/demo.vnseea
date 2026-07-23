@@ -654,7 +654,7 @@ onBeforeUnmount(() => {
   height: 32px;
   border-radius: 999px;
   color: #ffffff;
-  background: linear-gradient(180deg, #2233ff 0%, var(--color-brand, #0000ff) 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--color-brand, var(--bg-brand)) 100%);
 }
 
 .new-product-heading h1 {
@@ -846,8 +846,8 @@ onBeforeUnmount(() => {
 .new-product-submit {
   min-width: 124px;
   color: #ffffff;
-  background: linear-gradient(180deg, #2233ff 0%, var(--color-brand, #0000ff) 100%);
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--color-brand, var(--bg-brand)) 100%);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .new-product-submit:disabled {

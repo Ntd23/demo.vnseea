@@ -118,7 +118,7 @@ const requirementLabel = (key: string) =>
 .settings-money__summary,
 .settings-money__card,
 .settings-money__panel {
-  border: 1px solid rgba(0, 0, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -147,7 +147,7 @@ const requirementLabel = (key: string) =>
   align-items: center;
   justify-content: center;
   border-radius: 14px;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
 }
 

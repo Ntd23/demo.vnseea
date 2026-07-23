@@ -101,7 +101,7 @@ const {
   top: 0;
   z-index: 50;
   height: 3px;
-  background: linear-gradient(90deg, #0000ff, #0ea5e9);
+  background: linear-gradient(90deg, var(--bg-brand), #0ea5e9);
   transition: width 0.1s ease;
 }
 

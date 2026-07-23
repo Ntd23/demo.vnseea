@@ -172,7 +172,7 @@ onMounted(loadArticleForEditing)
 }
 
 .blog-editor-page__back:hover {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .blog-editor-page__header h1 {
@@ -267,9 +267,9 @@ onMounted(loadArticleForEditing)
 .blog-editor-page__field input:focus,
 .blog-editor-page__field select:focus,
 .blog-editor-page__field textarea:focus {
-  border-color: rgba(0, 0, 255, 0.3);
+  border-color: color-mix(in srgb, var(--bg-brand) 30%, transparent);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.07);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent);
 }
 
 .blog-editor-page__field small {
@@ -319,7 +319,7 @@ onMounted(loadArticleForEditing)
   border: 0;
   border-radius: 8px;
   background: #eef2ff;
-  color: #0000ff;
+  color: var(--bg-brand);
   padding: 8px 11px;
   font: inherit;
   font-size: 12px;
@@ -389,8 +389,8 @@ onMounted(loadArticleForEditing)
 }
 
 .blog-editor-page__submit {
-  border: 1px solid #0000ff;
-  background: #0000ff;
+  border: 1px solid var(--bg-brand);
+  background: var(--bg-brand);
   color: #ffffff;
 }
 

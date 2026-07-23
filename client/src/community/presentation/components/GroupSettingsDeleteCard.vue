@@ -90,8 +90,8 @@ async function handleDelete() {
 }
 
 .group-delete__input:focus {
-  border-color: #0000ff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
+  border-color: var(--bg-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .group-delete__actions {
@@ -102,7 +102,7 @@ async function handleDelete() {
 
 .group-delete__button {
   border-radius: 8px;
-  box-shadow: 0 8px 18px rgba(0, 0, 255, 0.24);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--bg-brand) 24%, transparent);
   font-size: 15px;
   font-weight: 800;
   height: 38px;

@@ -4,7 +4,7 @@
       v-if="!items.length"
       class="flex min-h-40 flex-col items-center justify-center rounded-[24px] border border-dashed border-[#dbe3f2] bg-[#f8fbff] px-5 py-8 text-center"
     >
-      <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-white text-[#0000ff] shadow-[0_10px_24px_rgba(15,35,110,0.1)]">
+      <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-white text-[var(--text-brand)] shadow-[0_10px_24px_rgba(15,35,110,0.1)]">
         <Icon name="i-ph-images-square-fill" class="h-7 w-7" />
       </div>
       <p class="mt-4 text-sm font-bold text-[#243b63]">
@@ -40,7 +40,7 @@
             />
             <div
               v-else
-              class="flex h-40 items-center justify-center bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.18),transparent_40%),linear-gradient(135deg,#eff4ff_0%,#f8fbff_100%)] text-[#0000ff]"
+              class="flex h-40 items-center justify-center bg-[radial-gradient(circle_at_top_left,color-mix(in srgb, var(--bg-brand) 18%, transparent),transparent_40%),linear-gradient(135deg,#eff4ff_0%,#f8fbff_100%)] text-[var(--text-brand)]"
             >
               <Icon :name="previewIcon(item)" class="h-10 w-10" />
             </div>

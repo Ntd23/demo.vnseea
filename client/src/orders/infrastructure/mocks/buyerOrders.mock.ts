@@ -38,7 +38,7 @@ export const buyerOrdersMock: BuyerOrder[] = [
           price: 890000,
           imageStyle: [
             "radial-gradient(circle at 75% 16%, rgba(255,255,255,0.26), transparent 20%)",
-            "linear-gradient(140deg, #243b63 0%, #6c8de2 44%, #dbeafe 100%)",
+            "linear-gradient(140deg, #243b63 0%, #6c8de2 44%, var(--color-primary-100) 100%)",
           ].join(", "),
         },
       ],

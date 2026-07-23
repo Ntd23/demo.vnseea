@@ -121,8 +121,8 @@ defineEmits<{
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .blogs-sidebar__title {
@@ -165,8 +165,8 @@ defineEmits<{
 }
 
 .blogs-sidebar__topic:hover {
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
 }
 
 .blogs-sidebar__topic-main {

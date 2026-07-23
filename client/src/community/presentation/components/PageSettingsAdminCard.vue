@@ -96,9 +96,9 @@ function handleRemoveAdmin(id: number) {
 
 .admin-search-input:focus {
   background: #ffffff;
-  border-color: #3b82f6;
+  border-color: var(--bg-brand);
   outline: none;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 
 .admin-add-button {
@@ -142,8 +142,8 @@ function handleRemoveAdmin(id: number) {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--color-primary-50);
+  color: var(--bg-brand);
   border-radius: 10px;
   font-weight: 800;
   overflow: hidden;

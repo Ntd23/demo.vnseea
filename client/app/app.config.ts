@@ -1,7 +1,8 @@
+// English description: Configures the shared Nuxt UI theme and component defaults.
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: "blue",
+      primary: "red",
       secondary: "slate",
       success: "sky",
       info: "blue",

@@ -253,7 +253,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 
 .ads-page__eyebrow {
   margin: 0 0 6px;
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 800;
 }
@@ -287,7 +287,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   justify-content: center;
   gap: 8px;
   border-radius: 999px;
-  background: #0000ff;
+  background: var(--bg-brand);
   padding: 10px 16px;
   color: #fff;
   font-size: 13px;
@@ -314,7 +314,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 .ads-summary-card__icon {
   height: 24px;
   width: 24px;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .ads-summary-card p {

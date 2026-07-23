@@ -34,7 +34,7 @@
 
           <UButton
             size="xl"
-            class="h-14 rounded-xl border-none px-10 text-[11px] font-semibold shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all active:scale-95"
+            class="h-14 rounded-xl border-none px-10 text-[11px] font-semibold shadow-[0_4px_14px_color-mix(in srgb, var(--bg-brand) 20%, transparent)] transition-all active:scale-95"
             :class="theme.secondaryAction"
             @click="$emit('secondaryAction')"
           >

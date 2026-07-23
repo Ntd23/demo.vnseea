@@ -166,7 +166,7 @@ const handleLoginSubmit = async () => {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .auth-form__title {
@@ -236,8 +236,8 @@ const handleLoginSubmit = async () => {
 }
 
 .auth-form__input:focus {
-  border-color: #0000ff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.12);
+  border-color: var(--bg-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
 .auth-form__field--invalid .auth-form__input {
@@ -270,8 +270,8 @@ const handleLoginSubmit = async () => {
 
 .auth-form__password-toggle:hover,
 .auth-form__password-toggle:focus-visible {
-  color: #0000ff;
-  background: #eef2ff;
+  color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
 .auth-form__error {
@@ -294,7 +294,7 @@ const handleLoginSubmit = async () => {
 .auth-form__field-link {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #0000ff;
+  color: var(--bg-brand);
   text-decoration: none;
   transition: opacity 0.12s ease;
 }
@@ -308,27 +308,27 @@ const handleLoginSubmit = async () => {
   justify-content: center;
   gap: 0.5rem;
   border: 0;
-  background: #0000ff !important;
   border-radius: 14px !important;
+  background: var(--bg-brand) !important;
   color: #ffffff !important;
   height: 3.5rem !important;
   font-size: 1rem !important;
   font-weight: 800 !important;
   margin-top: 4px;
-  box-shadow: 0 12px 28px rgba(0, 0, 255, 0.2) !important;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--bg-brand) 20%, transparent) !important;
   transition: all 0.2s ease !important;
+  cursor: pointer;
 }
 
 .auth-submit:hover:not(:disabled) {
-  background: #0000d8 !important;
-  box-shadow: 0 16px 36px rgba(0, 0, 255, 0.28) !important;
+  background: var(--bg-brand-hover) !important;
+  box-shadow: 0 16px 36px color-mix(in srgb, var(--bg-brand) 28%, transparent) !important;
   transform: translateY(-1px);
 }
 
 .auth-submit:disabled {
-  background: #334155 !important;
-  color: #ffffff !important;
-  opacity: 0.78 !important;
+  opacity: 0.7 !important;
+  cursor: not-allowed;
 }
 
 .auth-form__footer-text {
@@ -339,7 +339,7 @@ const handleLoginSubmit = async () => {
 
 .auth-form__footer-link {
   font-weight: 800;
-  color: #0000ff;
+  color: var(--bg-brand);
   text-decoration: none;
 }
 

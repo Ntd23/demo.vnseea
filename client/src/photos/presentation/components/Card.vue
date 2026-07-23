@@ -44,7 +44,7 @@
       <!-- Avatar initials -->
       <div
         class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-black text-white"
-        :style="{ background: `linear-gradient(135deg, #1e3a8a, #3b82f6)` }"
+        :style="{ background: `linear-gradient(135deg, var(--color-primary-900), var(--bg-brand))` }"
       >
         {{ photo.photographer.charAt(0) }}
       </div>

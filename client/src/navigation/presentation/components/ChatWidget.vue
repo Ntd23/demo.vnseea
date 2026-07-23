@@ -2135,8 +2135,8 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__header-btn:hover {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .chat-widget__header-btn:disabled {
@@ -2172,8 +2172,8 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__tab--active {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .chat-widget__content {
@@ -2367,8 +2367,8 @@ watch(miniChatAutoOpenVersion, (version) => {
   gap: 10px;
   margin-top: 10px;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 255, 0.08);
-  background: rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 9px 10px;
 }
 
@@ -2418,12 +2418,12 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__suggestion:hover {
   background: #f8fafc;
-  border-color: rgba(0, 0, 255, 0.12);
+  border-color: color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
 .chat-widget__suggestion--selected {
-  border-color: rgba(0, 0, 255, 0.18);
-  background: rgba(0, 0, 255, 0.05);
+  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 .chat-widget__tag-filter {
@@ -2533,9 +2533,9 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__attach-btn:hover {
-  border-color: rgba(0, 0, 255, 0.14);
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 14%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
 }
 
 .chat-widget__file-name {
@@ -2720,8 +2720,8 @@ watch(miniChatAutoOpenVersion, (version) => {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .chat-widget__group-icon--large {
@@ -2770,9 +2770,9 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 :deep(.chat-widget__footer-input-control:focus) {
-  border-color: rgba(0, 0, 255, 0.26) !important;
+  border-color: color-mix(in srgb, var(--bg-brand) 26%, transparent) !important;
   background: #ffffff !important;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent) !important;
 }
 
 :deep(.chat-widget__footer-input-control::placeholder) {
@@ -2791,7 +2791,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   flex-direction: column;
   overflow: visible;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   background: #ffffff;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
 }
@@ -2934,7 +2934,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__mini-menu-item:hover {
   background: #f2f3f5;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .chat-widget__mini-menu-item--muted {
@@ -3071,7 +3071,7 @@ watch(miniChatAutoOpenVersion, (version) => {
     filter: none;
   }
   18%, 55% {
-    filter: drop-shadow(0 0 7px rgba(0, 0, 255, 0.38));
+    filter: drop-shadow(0 0 7px color-mix(in srgb, var(--bg-brand) 38%, transparent));
   }
 }
 
@@ -3154,7 +3154,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__mini-bubble--sent {
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
   border-bottom-right-radius: 5px;
 }
@@ -3294,7 +3294,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__mini-product-copy span {
-  color: var(--color-primary-600, #0000ff);
+  color: var(--color-primary-600, var(--bg-brand));
   font-size: 12px;
   font-weight: 800;
 }
@@ -3342,9 +3342,9 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__product-suggestion:hover:not(:disabled),
 .chat-widget__product-suggestion:focus-visible:not(:disabled) {
-  border-color: rgba(0, 0, 255, 0.3);
+  border-color: color-mix(in srgb, var(--bg-brand) 30%, transparent);
   background: #f4f5ff;
-  color: #0000ff;
+  color: var(--bg-brand);
   transform: translateY(-1px);
 }
 
@@ -3446,8 +3446,8 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__mini-tool-btn:hover,
 .chat-widget__mini-like-btn:hover {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .chat-widget__mini-like-btn img {
@@ -3492,9 +3492,9 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 :deep(.chat-widget__mini-input-control:focus) {
-  border-color: rgba(0, 0, 255, 0.28) !important;
+  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent) !important;
   background: #ffffff !important;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent) !important;
 }
 
 :deep(.chat-widget__mini-input-control::placeholder) {
@@ -3560,8 +3560,8 @@ watch(miniChatAutoOpenVersion, (version) => {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  color: var(--bg-brand);
 }
 
 /* ── Avatar contact button ── */
@@ -3583,7 +3583,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__contact-avatar-btn:hover {
   transform: scale(1.07);
-  box-shadow: 0 0 0 2.5px rgba(0, 0, 255, 0.22);
+  box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--bg-brand) 22%, transparent);
 }
 
 /* ── Avatar context menu ── */
@@ -3639,7 +3639,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__avatar-menu-item:hover {
   background: #f2f3f5;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .chat-widget__avatar-menu-item--muted {
@@ -3687,9 +3687,9 @@ watch(miniChatAutoOpenVersion, (version) => {
 } */
 
 :deep(.chat-widget__mini-input-control:focus) {
-  border-color: rgba(0, 0, 255, 0.28) !important;
+  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent) !important;
   background: #ffffff !important;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent) !important;
 }
 
 :deep(.chat-widget__mini-input-control::placeholder) {
@@ -3759,8 +3759,8 @@ watch(miniChatAutoOpenVersion, (version) => {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  color: var(--bg-brand);
 }
 
 /* ── Avatar contact button ── */
@@ -3782,7 +3782,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__contact-avatar-btn:hover {
   transform: scale(1.07);
-  box-shadow: 0 0 0 2.5px rgba(0, 0, 255, 0.22);
+  box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--bg-brand) 22%, transparent);
 }
 
 /* ── Avatar context menu ── */
@@ -3865,7 +3865,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__avatar-menu-item:hover {
   background: #f1f5f9;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .chat-widget__avatar-menu-item--danger {

@@ -425,7 +425,7 @@ onBeforeUnmount(() => {
 }
 
 .comment-item__mention {
-  color: #1420ff;
+  color: var(--bg-brand);
   font-weight: 600;
 }
 
@@ -664,7 +664,7 @@ onBeforeUnmount(() => {
 
 .comment-item__footer-action:hover,
 .comment-item__footer-action--active {
-  background: rgba(0, 0, 255, 0.05);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--text-brand);
 }
 
@@ -686,7 +686,7 @@ onBeforeUnmount(() => {
 .comment-item__replies {
   margin-top: 8px;
   padding-left: 12px;
-  border-left: 2px solid rgba(37, 99, 235, 0.12);
+  border-left: 2px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
 .comment-item__reply-loading {

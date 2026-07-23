@@ -47,7 +47,7 @@ defineEmits<{
 <style scoped>
 .watch-filters {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 16px;
@@ -104,7 +104,7 @@ defineEmits<{
 }
 
 .watch-filters__search:focus {
-  border-color: rgba(0, 0, 255, 0.25);
+  border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
 }
 
 .watch-filters__search::placeholder {
@@ -142,17 +142,17 @@ defineEmits<{
 }
 
 .watch-filter-cat:hover {
-  border-color: rgba(0, 0, 255, 0.2);
-  color: #0000ff;
-  background: rgba(0, 0, 255, 0.03);
+  border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
+  color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .watch-filter-cat--active {
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
-  border-color: #0000ff;
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
+  border-color: var(--bg-brand);
   color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
   transform: translateY(-1px);
 }
 

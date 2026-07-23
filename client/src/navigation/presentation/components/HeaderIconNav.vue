@@ -91,12 +91,12 @@ const items = computed(() => [
 }
 
 .icon-nav__item:hover {
-  background: rgba(0, 0, 255, 0.03);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  color: var(--bg-brand);
 }
 
 .icon-nav__item--active {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .icon-nav__icon {
@@ -133,12 +133,12 @@ const items = computed(() => [
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  background: #0000ff;
+  background: var(--bg-brand);
   padding: 0 3px;
   font-size: 9px;
   font-weight: 800;
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 255, 0.25);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--bg-brand) 25%, transparent);
 }
 
 .icon-nav__indicator {
@@ -149,6 +149,6 @@ const items = computed(() => [
   width: 16px;
   height: 2.5px;
   border-radius: 999px;
-  background: #0000ff;
+  background: var(--bg-brand);
 }
 </style>

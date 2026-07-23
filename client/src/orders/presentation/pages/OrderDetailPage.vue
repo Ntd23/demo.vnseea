@@ -255,7 +255,7 @@ useSeoMeta({
 
 <style scoped>
 .order-detail-page {
-  --order-brand: var(--color-primary-500, #0000ff);
+  --order-brand: var(--color-primary-500, var(--bg-brand));
   --order-card: var(--surface-card, #ffffff);
   --order-border: var(--border-light, #e2e8f0);
   --order-soft: var(--surface-muted, #fafbfe);
@@ -492,7 +492,7 @@ useSeoMeta({
   min-height: 30px;
   border-radius: 999px;
   background: var(--order-soft);
-  border: 1px solid rgba(0, 0, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   padding: 0 14px;
   color: var(--order-brand);
   font-size: 11px;
@@ -616,14 +616,14 @@ useSeoMeta({
   background: var(--order-brand);
   border-color: var(--order-brand);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .progress-stepper__marker--active {
   border-color: var(--order-brand);
   color: var(--order-brand);
   background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.1), 0 0 0 4px var(--color-primary-50, rgba(0, 0, 255, 0.05));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 10%, transparent), 0 0 0 4px var(--color-primary-50, color-mix(in srgb, var(--bg-brand) 5%, transparent));
   animation: marker-pulse 2s infinite ease-in-out;
 }
 
@@ -718,8 +718,8 @@ useSeoMeta({
   border-radius: 50%;
   background: #ffffff;
   color: var(--order-brand);
-  border: 1px solid rgba(0, 0, 255, 0.08);
-  box-shadow: 0 2px 6px rgba(0, 0, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 .order-detail-person > div {

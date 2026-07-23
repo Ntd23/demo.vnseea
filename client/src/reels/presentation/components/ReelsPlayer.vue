@@ -263,7 +263,7 @@ onBeforeUnmount(() => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #0000ff;
+  background: var(--bg-brand);
 }
 
 @keyframes ping {
@@ -327,9 +327,9 @@ onBeforeUnmount(() => {
 
 .reel-progress__fill {
   height: 100%;
-  background: #0000ff;
+  background: var(--bg-brand);
   transition: width 0.3s ease;
-  box-shadow: 0 0 8px rgba(0,0,255,0.5);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--bg-brand) 50%, transparent);
 }
 
 /* Swipe hint */

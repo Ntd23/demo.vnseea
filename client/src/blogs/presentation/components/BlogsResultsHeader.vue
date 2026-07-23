@@ -63,8 +63,8 @@ defineEmits<{
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .blogs-results__eyebrow {
@@ -117,9 +117,9 @@ defineEmits<{
 }
 
 .blogs-results__reset:hover {
-  border-color: rgba(0, 0, 255, 0.14);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 14%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 @media (min-width: 640px) {

@@ -57,7 +57,7 @@ defineEmits<{
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 18px;
   background:
-    linear-gradient(120deg, rgba(0, 0, 255, 0.08), transparent 48%),
+    linear-gradient(120deg, color-mix(in srgb, var(--bg-brand) 8%, transparent), transparent 48%),
     #ffffff;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -72,8 +72,8 @@ defineEmits<{
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
   padding: 7px 12px;
   font-size: 12px;
   font-weight: 800;
@@ -129,16 +129,16 @@ defineEmits<{
 
 .blogs-hero__button:hover,
 .blogs-hero__button--active {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .blogs-hero__primary {
-  border: 1px solid #0000ff;
-  background: #0000ff;
+  border: 1px solid var(--bg-brand);
+  background: var(--bg-brand);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .blogs-hero__button:hover,

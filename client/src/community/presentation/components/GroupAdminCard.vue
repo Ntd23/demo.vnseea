@@ -14,7 +14,7 @@
       color="primary"
       variant="solid"
       size="lg"
-      class="mt-4 rounded-[16px] px-4 text-[13px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.22)]"
+      class="mt-4 rounded-[16px] px-4 text-[13px] font-extrabold shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 22%, transparent)]"
     >
       <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
       {{ t("pages.groupDetailPage.adminButton") }}

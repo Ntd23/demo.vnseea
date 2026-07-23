@@ -43,7 +43,7 @@
           class="group flex items-center gap-3 rounded-[16px] border border-secondary-100 bg-secondary-50/60 p-3 transition hover:border-primary-200 hover:bg-white"
         >
           <div
-            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] text-[12px] font-black text-white shadow-[0_10px_18px_rgba(37,99,235,0.14)] transition-transform group-hover:scale-105"
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] text-[12px] font-black text-white shadow-[0_10px_18px_color-mix(in srgb, var(--bg-brand) 14%, transparent)] transition-transform group-hover:scale-105"
             :style="{ background: item.accent }"
           >
             {{ item.initials }}
@@ -72,7 +72,7 @@
           :to="item.to"
           class="group flex items-center gap-3 rounded-[16px] border border-secondary-100 bg-secondary-50/60 p-3 transition hover:border-primary-200 hover:bg-white"
         >
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] text-white shadow-[0_10px_18px_rgba(37,99,235,0.14)] transition-transform group-hover:scale-105" :style="{ background: item.accent }">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] text-white shadow-[0_10px_18px_color-mix(in srgb, var(--bg-brand) 14%, transparent)] transition-transform group-hover:scale-105" :style="{ background: item.accent }">
             <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-bold', '-duotone').replace('-fill', '-duotone')" class="h-5 w-5" />
           </div>
           <div class="min-w-0 flex-1">

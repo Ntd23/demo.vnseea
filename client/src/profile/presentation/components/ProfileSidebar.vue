@@ -48,7 +48,7 @@
       :title="t('pages.profilePage.sidebarProducts')"
       :action-label="t('pages.profilePage.sidebarSeeAll')"
       :items="productTiles"
-      tile-class="bg-gradient-to-br from-[#f5f3ff] to-[#dbeafe]"
+      tile-class="bg-gradient-to-br from-[#f5f3ff] to-[var(--color-primary-100)]"
     />
   </aside>
 </template>
@@ -65,7 +65,7 @@ defineProps<{
 }>()
 
 const infoRows = computed(() => [
-  { label: "online", icon: "i-ph-eye", right: t("pages.profilePage.infoOnlineStatus"), rightClass: "text-[#0000ff]" },
+  { label: "online", icon: "i-ph-eye", right: t("pages.profilePage.infoOnlineStatus"), rightClass: "text-[var(--text-brand)]" },
   { label: "posts", icon: "i-ph-notepad", center: "20", right: t("pages.profilePage.infoPostsCountLabel") },
   { label: "gender", icon: "i-ph-gender-male", right: t("pages.profilePage.infoGenderMale") },
   { label: "location", icon: "i-ph-map-pin", left: t("pages.profilePage.infoLocationValue") },

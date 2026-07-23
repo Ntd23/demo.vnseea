@@ -125,7 +125,7 @@ const displayTime = computed(() => {
 }
 
 .poke-request-card__initials {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 15px;
   font-weight: 800;
 }

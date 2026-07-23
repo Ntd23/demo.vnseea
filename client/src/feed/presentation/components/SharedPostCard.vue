@@ -76,7 +76,7 @@ const authorInitials = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: linear-gradient(135deg, var(--bg-brand), #4f46e5);
   color: #ffffff;
   font-size: 12px;
   font-weight: 800;
