@@ -287,7 +287,7 @@ html.dark,
   --text-primary: #ffffff;
   --text-secondary: #e2e8f0;
   --text-tertiary: #cbd5e1;
-  --text-inverse: #0b1620;
+  --text-inverse: var(--color-on-brand);
   --text-brand: #ef4444;                     /* Bright crimson on dark surface */
   --text-link: #ef4444;
 
@@ -295,12 +295,28 @@ html.dark,
   --icon-primary: #ffffff;
   --icon-secondary: #e2e8f0;
   --icon-brand: #ef4444;
-  --icon-inverse: #0b1620;
+  --icon-inverse: var(--color-on-brand);
 
   /* Borders & Shadows */
   --border-light: rgba(255, 255, 255, 0.08);
   --border-default: rgba(255, 255, 255, 0.12);
   --border-strong: rgba(255, 255, 255, 0.20);
+
+  /* Nuxt UI semantic tokens mapped to the project dark-mode system. */
+  --ui-text-dimmed: var(--text-tertiary);
+  --ui-text-muted: var(--text-secondary);
+  --ui-text-toned: var(--text-secondary);
+  --ui-text: var(--text-primary);
+  --ui-text-highlighted: var(--text-primary);
+  --ui-text-inverted: var(--color-on-brand);
+  --ui-bg: var(--bg-surface);
+  --ui-bg-muted: var(--bg-muted);
+  --ui-bg-elevated: var(--bg-surface-hover);
+  --ui-bg-accented: var(--bg-surface-active);
+  --ui-border: var(--border-light);
+  --ui-border-muted: var(--border-light);
+  --ui-border-accented: var(--border-light);
+
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);

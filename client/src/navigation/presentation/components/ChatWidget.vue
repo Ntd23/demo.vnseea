@@ -198,7 +198,7 @@
             class="chat-widget__users-listbox"
             :ui="{
               root: 'gap-2',
-              item: 'rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--color-primary-300)] data-[state=checked]:bg-[var(--bg-surface-active)]',
+              item: 'rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--border-light)] data-[state=checked]:bg-[var(--bg-surface-active)]',
             }"
           >
             <template #item="{ item }">
@@ -744,7 +744,7 @@
             >
               <UIcon
                 :name="miniSession.isSending ? 'i-ph-circle-notch-bold' : 'i-ph-paper-plane-right-bold'"
-                class="chat-widget__mini-send-icon btn-primary"
+                class="chat-widget__mini-send-icon"
                 :class="{ 'animate-spin': miniSession.isSending }"
               />
             </button>
@@ -2367,7 +2367,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   gap: 10px;
   margin-top: 10px;
   border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  border: 1px solid var(--border-light);
   background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 9px 10px;
 }
@@ -2418,18 +2418,18 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__suggestion:hover {
   background: var(--bg-muted);
-  border-color: color-mix(in srgb, var(--bg-brand) 12%, transparent);
+  border-color: var(--border-light);
 }
 
 .chat-widget__suggestion--selected {
-  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+  border-color: var(--border-light);
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 .chat-widget__select-all-checkbox {
   width: 16px;
   height: 16px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 4px;
   accent-color: var(--color-primary-600);
 }
@@ -2496,7 +2496,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__checkbox--checked {
-  border-color: var(--color-primary-500);
+  border-color: var(--border-light);
   background: var(--color-primary-500);
 }
 
@@ -2546,7 +2546,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__attach-btn:hover {
-  border-color: color-mix(in srgb, var(--bg-brand) 14%, transparent);
+  border-color: var(--border-light);
   background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
   color: var(--bg-brand);
 }
@@ -2783,7 +2783,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 :deep(.chat-widget__footer-input-control:focus) {
-  border-color: color-mix(in srgb, var(--bg-brand) 26%, transparent) !important;
+  border-color: var(--border-light) !important;
   background: var(--bg-surface) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent) !important;
 }
@@ -2804,7 +2804,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   flex-direction: column;
   overflow: visible;
   border-radius: 18px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   box-shadow: var(--shadow-xl);
 }
@@ -3355,7 +3355,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__product-suggestion:hover:not(:disabled),
 .chat-widget__product-suggestion:focus-visible:not(:disabled) {
-  border-color: color-mix(in srgb, var(--bg-brand) 30%, transparent);
+  border-color: var(--border-light);
   background: var(--bg-surface-hover);
   color: var(--bg-brand);
   transform: translateY(-1px);
@@ -3505,7 +3505,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 :deep(.chat-widget__mini-input-control:focus) {
-  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent) !important;
+  border-color: var(--border-light) !important;
   background: var(--bg-surface) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent) !important;
 }
@@ -3688,7 +3688,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   transition: background 0.12s ease;
 }
 :deep(.chat-widget__mini-input-control:focus) {
-  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent) !important;
+  border-color: var(--border-light) !important;
   background: var(--bg-surface) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent) !important;
 }
