@@ -35,7 +35,7 @@
       </div>
 
       <div class="setup-panel__fields">
-        <div class="setup-panel__field">
+        <!-- <div class="setup-panel__field">
           <label class="setup-panel__label">{{ t("pages.livePage.studio.destinationLabel") }}</label>
           <USelect
             :model-value="bootstrap.destination"
@@ -48,7 +48,7 @@
             class="w-full"
             :ui="{ base: 'rounded-2xl bg-white border-slate-200' }"
           />
-        </div>
+        </div> -->
 
         <div class="setup-panel__field">
           <label class="setup-panel__label">{{ t("pages.livePage.studio.privacyLabel") }}</label>

@@ -108,10 +108,10 @@
               </button>
             </div>
           </div>
-          <label v-if="isPersonalComposer" class="publisher__anonymous-toggle">
+          <!-- <label v-if="isPersonalComposer" class="publisher__anonymous-toggle">
             <UCheckbox v-model="draft.isAnonymous" />
             <span>{{ locale === "vi" ? "Đăng ẩn danh" : "Post anonymously" }}</span>
-          </label>
+          </label> -->
         </div>
         <button class="publisher__close" type="button" @click="expanded = false">
           <Icon name="i-ph-x-bold" class="h-4 w-4" />
