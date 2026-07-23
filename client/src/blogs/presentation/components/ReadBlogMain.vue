@@ -182,9 +182,9 @@ defineEmits<{
 
 .read-blog-main__action:hover,
 .read-blog-main__action--active {
-  border-color: rgba(0, 0, 255, 0.18);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .read-blog-main__action-icon,
@@ -195,8 +195,8 @@ defineEmits<{
 
 .read-blog-main__tag {
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 600;
   padding: 5px 10px;
@@ -281,8 +281,8 @@ defineEmits<{
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .read-blog-main__eyebrow {
@@ -374,14 +374,14 @@ defineEmits<{
 
 .read-blog-main__comment-list :deep(.comment-item__footer-action:hover),
 .read-blog-main__comment-list :deep(.comment-item__footer-action--active) {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .read-blog-main__comment-list :deep(.comment-item__replies) {
   margin-top: 10px;
   padding-left: 14px;
-  border-left-color: rgba(0, 0, 255, 0.14);
+  border-left-color: color-mix(in srgb, var(--bg-brand) 14%, transparent);
 }
 
 .read-blog-main__comment-list :deep(.comment-item__replies .comment-composer) {
@@ -394,9 +394,9 @@ defineEmits<{
 }
 
 .read-blog-main__comment-list :deep(.comment-item__replies .comment-composer__input-wrap:focus-within) {
-  border-color: rgba(0, 0, 255, 0.28);
+  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.07);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent);
 }
 
 .read-blog-main__comment-list :deep(.comment-item__replies .comment-composer__textarea) {

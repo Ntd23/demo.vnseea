@@ -59,12 +59,12 @@ export const useProductEditorMeta = () => {
     books: {
       label: t("pages.productEditor.categoryBooks"),
       icon: "i-ph-book-open-text-fill",
-      background: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 38%,#bfdbfe 100%)",
+      background: "linear-gradient(135deg,var(--color-primary-900) 0%,var(--bg-brand) 38%,var(--color-primary-200) 100%)",
     },
     vehicles: {
       label: t("pages.productEditor.categoryVehicles"),
       icon: "i-ph-car-profile-fill",
-      background: "linear-gradient(135deg,#172554 0%,#1d4ed8 48%,#7dd3fc 100%)",
+      background: "linear-gradient(135deg,#172554 0%,var(--bg-brand-hover) 48%,#7dd3fc 100%)",
     },
     food: {
       label: t("pages.productEditor.categoryFood"),

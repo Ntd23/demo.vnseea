@@ -551,8 +551,8 @@ const submitDelete = async () => {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .forum-hero__icon {
@@ -755,7 +755,7 @@ const submitDelete = async () => {
 
 .forum-sidebar__sections button:hover,
 .forum-sidebar__forum--active {
-  border-color: rgba(0, 0, 255, 0.12) !important;
+  border-color: color-mix(in srgb, var(--bg-brand) 12%, transparent) !important;
   background: #fafbfe !important;
 }
 
@@ -849,12 +849,12 @@ const submitDelete = async () => {
 }
 
 .forum-section-card__forum:hover {
-  border-color: rgba(0, 0, 255, 0.16);
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
   background: #fafbfe;
 }
 
 .forum-section-card__forum em {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 12px;
   font-style: normal;
   font-weight: 700;

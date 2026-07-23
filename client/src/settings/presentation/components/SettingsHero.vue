@@ -34,7 +34,7 @@ defineProps<{
   overflow: hidden;
   border-radius: 16px;
   background: linear-gradient(135deg, #f8faff 0%, #eef3ff 60%, #f0f4ff 100%);
-  border: 1px solid rgba(0, 0, 255, 0.07);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 7%, transparent);
   padding: 28px 32px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
@@ -50,14 +50,14 @@ defineProps<{
   right: -48px;
   width: 200px;
   height: 200px;
-  background: rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 .settings-hero__orb--left {
   bottom: -24px;
   left: 25%;
   width: 140px;
   height: 140px;
-  background: rgba(0, 0, 255, 0.04);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
 }
 
 .settings-hero__inner {
@@ -77,7 +77,7 @@ defineProps<{
 .settings-hero__eyebrow {
   font-size: 10px;
   font-weight: 700;
-  color: #0000ff;
+  color: var(--bg-brand);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 6px;

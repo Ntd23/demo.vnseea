@@ -249,7 +249,7 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 
 <style scoped>
 .withdrawal-history {
-  border: 1px solid rgba(0, 0, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 16px;
   background: #ffffff;
   padding: 18px;
@@ -321,14 +321,14 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 }
 
 .withdrawal-history__filter--active {
-  border-color: rgba(0, 0, 255, 0.22);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 22%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .withdrawal-history__filter--active strong {
-  background: rgba(0, 0, 255, 0.1);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 10%, transparent);
+  color: var(--bg-brand);
 }
 
 .withdrawal-history__list {
@@ -347,7 +347,7 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 }
 
 .withdrawal-history__item:hover {
-  background: rgba(0, 0, 255, 0.03);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .withdrawal-history__icon {
@@ -479,8 +479,8 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 }
 
 .withdrawal-history__page--active {
-  border-color: #0000ff;
-  background: #0000ff;
+  border-color: var(--bg-brand);
+  background: var(--bg-brand);
   color: #ffffff;
 }
 

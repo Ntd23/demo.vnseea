@@ -271,8 +271,8 @@ onBeforeUnmount(revokeObjectPreview)
 }
 
 .settings-field__pill:hover {
-  border-color: rgba(0, 0, 255, 0.2);
-  background: rgba(0, 0, 255, 0.02);
+  border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 2%, transparent);
 }
 
 .settings-field__pills--disabled {
@@ -281,8 +281,8 @@ onBeforeUnmount(revokeObjectPreview)
 }
 
 .settings-field__pill--active {
-  border-color: #0000ff;
-  background: rgba(0, 0, 255, 0.04);
+  border-color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
 }
 
 /* visually hide the radio but keep it accessible */
@@ -303,7 +303,7 @@ onBeforeUnmount(revokeObjectPreview)
 }
 
 .settings-field__pill--active .settings-field__pill-label {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-weight: 600;
 }
 
@@ -330,8 +330,8 @@ onBeforeUnmount(revokeObjectPreview)
 }
 
 .settings-field__verify-btn:hover {
-  border-color: rgba(0, 0, 255, 0.2);
-  background: rgba(0, 0, 255, 0.02);
+  border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 2%, transparent);
   color: #000000;
 }
 
@@ -341,9 +341,9 @@ onBeforeUnmount(revokeObjectPreview)
 }
 
 .settings-field__verify-btn--active {
-  border-color: #0000ff;
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
 }
 
 .settings-field__file {

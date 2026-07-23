@@ -558,7 +558,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 .cl-search:focus {
   border-color: var(--border-strong);
   background: var(--bg-surface);
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 .cl-search::placeholder { color: var(--text-secondary); }
 

@@ -1,14 +1,14 @@
 <template>
   <NuxtLink
     :to="result.href"
-    class="group flex h-full flex-col rounded-[18px] border border-secondary-100 bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-primary-200 hover:shadow-[0_12px_32px_rgba(37,99,235,0.12)]"
+    class="group flex h-full flex-col rounded-[18px] border border-secondary-100 bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-primary-200 hover:shadow-[0_12px_32px_color-mix(in srgb, var(--bg-brand) 12%, transparent)]"
   >
     <div class="flex items-start gap-4">
       <UAvatar
         :text="result.kind === 'posts' ? '' : result.initials"
         :icon="result.kind === 'posts' ? 'i-ph-newspaper-clipping-fill' : undefined"
         size="xl"
-        class="font-extrabold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)]"
+        class="font-extrabold text-white shadow-[0_4px_14px_color-mix(in srgb, var(--bg-brand) 20%, transparent)]"
         :ui="{ background: 'bg-primary-500', rounded: 'rounded-2xl' }"
         :style="{ background: avatarBackground }"
       />
@@ -93,7 +93,7 @@ const sectionIcon = computed(() => {
 })
 
 const avatarBackground = computed(() =>
-  `linear-gradient(135deg, ${props.result.accent} 0%, #0000ff 100%)`,
+  `linear-gradient(135deg, ${props.result.accent} 0%, var(--bg-brand) 100%)`,
 )
 
 const badgeColor = computed(() => {

@@ -159,7 +159,7 @@ const bannerBackgroundStyle = computed(() => {
 
   // Modern Soft Gradient
   return {
-    background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+    background: "linear-gradient(135deg, var(--bg-brand) 0%, var(--bg-brand) 100%)",
   }
 })
 

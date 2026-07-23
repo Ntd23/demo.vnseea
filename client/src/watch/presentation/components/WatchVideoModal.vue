@@ -469,12 +469,12 @@ onBeforeUnmount(() => {
 .watch-modal__play-btn {
   width: 72px;
   height: 72px;
-  background: #0000ff;
+  background: var(--bg-brand);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px rgba(0, 0, 255, 0.4);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--bg-brand) 40%, transparent);
   transition: transform 0.2s ease;
 }
 
@@ -643,7 +643,7 @@ onBeforeUnmount(() => {
 .watch-modal__playing-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 255, 0.3);
+  background: color-mix(in srgb, var(--bg-brand) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -746,12 +746,12 @@ onBeforeUnmount(() => {
 
 .watch-modal__interaction-btn:hover {
   background: #f1f3f4;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .watch-modal__interaction-btn--active {
-  color: #0000ff;
-  background: rgba(0, 0, 255, 0.05);
+  color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 .watch-modal__reaction-tray {
@@ -856,7 +856,7 @@ onBeforeUnmount(() => {
 }
 
 .watch-modal__comment-stats:hover {
-  color: #0000ff;
+  color: var(--bg-brand);
   text-decoration: underline;
 }
 

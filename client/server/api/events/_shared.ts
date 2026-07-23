@@ -42,7 +42,7 @@ type BackendEventAttendeesResponse = {
   }
 }
 
-const accentPalette = ["#2563eb", "#0ea5e9", "#0891b2", "#1d4ed8", "#7c3aed"] as const
+const accentPalette = ["var(--bg-brand)", "#0ea5e9", "#0891b2", "var(--bg-brand-hover)", "#7c3aed"] as const
 
 const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number" ? String(value).trim() : ""
@@ -82,7 +82,7 @@ const normalizeImagePath = (path: string, baseUrl: string) => {
 
 const createFallback = (id: number) => {
   const accent = accentPalette[Math.abs(id) % accentPalette.length]
-  return `linear-gradient(135deg,#0f172a 0%,${accent} 58%,#bfdbfe 100%)`
+  return `linear-gradient(135deg,#0f172a 0%,${accent} 58%,var(--color-primary-200) 100%)`
 }
 
 const resolveEventCover = (entity: BackendEntity, baseUrl: string) =>

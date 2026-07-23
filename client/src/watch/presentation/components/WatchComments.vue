@@ -68,7 +68,7 @@ const submit = () => {
 <style scoped>
 .watch-comments {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 20px;
@@ -110,11 +110,11 @@ const submit = () => {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   padding: 0 10px;
   font-size: 12px;
   font-weight: 700;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 /* Form */
@@ -138,7 +138,7 @@ const submit = () => {
 }
 
 .watch-comments__input:focus {
-  border-color: rgba(0, 0, 255, 0.25);
+  border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
 }
 
 .watch-comments__input::placeholder {
@@ -154,15 +154,15 @@ const submit = () => {
   justify-content: center;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
   transition: all 0.15s ease;
 }
 
 .watch-comments__submit:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 255, 0.28);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--bg-brand) 28%, transparent);
   transform: translateY(-1px);
 }
 
@@ -184,14 +184,14 @@ const submit = () => {
   display: flex;
   gap: 14px;
   border-radius: 14px;
-  background: rgba(0, 0, 255, 0.02);
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  background: color-mix(in srgb, var(--bg-brand) 2%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 14px;
   transition: background 0.12s ease;
 }
 
 .watch-comment:hover {
-  background: rgba(0, 0, 255, 0.04);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
 }
 
 .watch-comment__avatar {
@@ -202,7 +202,7 @@ const submit = () => {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  background: linear-gradient(145deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   font-size: 11px;
   font-weight: 800;
   color: #ffffff;

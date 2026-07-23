@@ -1,6 +1,6 @@
 <!-- English description: Renders account settings sections without duplicating the global navigation locale control. -->
 <template>
-  <div class="settings-page pb-10">
+  <div class="settings-page pb-10 mt-1.5">
     <!-- Two-column layout -->
     <div class="settings-page__layout">
       <!-- Left nav sidebar -->
@@ -13,16 +13,6 @@
 
       <!-- Main content -->
       <main class="settings-page__main">
-        <!-- Active page header (compact, not a full card) -->
-        <div class="settings-page__page-header">
-          <div class="settings-page__page-icon" aria-hidden="true">
-            <Icon :name="activePage.icon" class="h-5 w-5" />
-          </div>
-          <div>
-            <h1 class="settings-page__page-title">{{ activePage.label }}</h1>
-          </div>
-        </div>
-
         <!-- Sections -->
         <SettingsMyPointsPanel
           v-if="activePage.slug === 'myPoints'"
@@ -98,8 +88,6 @@ const isVerificationPage = computed(() =>
   flex-direction: column;
   gap: 16px;
   max-width: 1200px;
-  margin: 0 auto;
-  /* padding: 0 12px; */
 }
 
 /* ─── Two-column layout ───────────────── */
@@ -134,7 +122,7 @@ const isVerificationPage = computed(() =>
   gap: 12px;
   padding: 16px;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }

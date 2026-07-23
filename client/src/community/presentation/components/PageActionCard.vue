@@ -1,6 +1,6 @@
 <template>
   <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
-    <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+    <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
       {{ t("pages.pageDetailPage.actionEyebrow") }}
     </p>
     <h3 class="mt-2 text-[1.15rem] font-black tracking-[-0.04em] text-[#243b63]">
@@ -17,7 +17,7 @@
         size="lg"
         :loading="followState === 'loading'"
         :disabled="followState === 'loading' || isFollowing"
-        class="justify-center rounded-[16px] px-4 text-[13px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.22)]"
+        class="justify-center rounded-[16px] px-4 text-[13px] font-extrabold shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 22%, transparent)]"
         @click="emit('follow')"
       >
         <Icon name="i-ph-bell-simple-ringing-bold" class="mr-2 h-4 w-4" />
@@ -40,11 +40,11 @@
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.followStat") }}</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.pageDetailPage.followStat") }}</p>
         <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ followerCountLabel }}</p>
       </div>
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.likeStat") }}</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.pageDetailPage.likeStat") }}</p>
         <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ likeCountLabel }}</p>
       </div>
     </div>
@@ -55,7 +55,7 @@
         {{ t("pages.pageDetailPage.manageDescription") }}
       </p>
       <NuxtLink
-        class="mt-3 inline-flex h-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[12px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+        class="mt-3 inline-flex h-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[12px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[var(--text-brand)]"
         :to="pageSettingsPath"
       >
         <Icon name="i-ph-gear-six-bold" class="mr-1.5 h-4 w-4" />

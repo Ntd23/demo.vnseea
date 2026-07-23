@@ -23,7 +23,7 @@
           <div class="min-w-0">
             <NuxtLink
               :to="user.href"
-              class="block truncate text-[1.1rem] font-black tracking-[-0.03em] text-[#243b63] transition hover:text-[#0000ff]"
+              class="block truncate text-[1.1rem] font-black tracking-[-0.03em] text-[#243b63] transition hover:text-[var(--text-brand)]"
             >
               {{ user.name }}
             </NuxtLink>
@@ -44,7 +44,7 @@
 
       <div class="grid gap-3 sm:grid-cols-2" role="list">
         <div role="listitem" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">
             {{ t("pages.explorePage.signalLabel") }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
@@ -53,7 +53,7 @@
         </div>
 
         <div role="listitem" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">
             {{ t("pages.explorePage.statusLabel") }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
@@ -76,7 +76,7 @@
       <div class="flex flex-col gap-2 sm:flex-row">
         <NuxtLink
           :to="messageTo"
-          class="inline-flex h-11 items-center justify-center rounded-full px-4 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)]"
+          class="inline-flex h-11 items-center justify-center rounded-full px-4 text-[13px] font-bold text-white shadow-[0_10px_20px_color-mix(in srgb, var(--bg-brand) 18%, transparent)]"
           :style="{ background: accentBackground }"
         >
           {{ t("pages.pokePage.openMessages") }}
@@ -84,7 +84,7 @@
 
         <NuxtLink
           :to="user.href"
-          class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0000ff]"
+          class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[var(--text-brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bg-brand)]"
         >
           {{ t("pages.explorePage.viewProfile") }}
         </NuxtLink>
@@ -103,7 +103,7 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const accentBackground = computed(() =>
-  `linear-gradient(135deg, ${props.user.accent} 0%, #0000ff 100%)`,
+  `linear-gradient(135deg, ${props.user.accent} 0%, var(--bg-brand) 100%)`,
 )
 
 const profileLabel = computed(() =>

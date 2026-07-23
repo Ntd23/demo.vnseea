@@ -825,7 +825,7 @@ watch(() => props.open, (val) => {
   border-color: var(--color-primary-300);
   background: var(--color-primary-50);
   color: var(--color-primary-700);
-  box-shadow: 0 10px 28px rgba(0, 0, 255, 0.08);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .share-modal__target-panel {
@@ -883,7 +883,7 @@ watch(() => props.open, (val) => {
 
 .share-modal__target-card--selected {
   border-color: var(--color-primary-300);
-  background: rgba(0, 0, 255, 0.04);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
 }
 
 .share-modal__target-avatar,
@@ -980,7 +980,7 @@ watch(() => props.open, (val) => {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
-  color: #3b82f6;
+  color: var(--bg-brand);
 }
 
 .share-modal__footer {

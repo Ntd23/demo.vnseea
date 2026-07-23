@@ -65,8 +65,8 @@ type CommunityListFetch =
   | "liked_pages"
 
 const accentPalette = [
-  "#1d4ed8",
-  "#2563eb",
+  "var(--bg-brand-hover)",
+  "var(--bg-brand)",
   "#0f766e",
   "#0369a1",
   "#7c3aed",
@@ -215,7 +215,7 @@ const createBannerBackground = (imageUrl: string, id: number) => {
   }
 
   const accent = createAccent(id)
-  return `linear-gradient(135deg,#0f172a 0%,${accent} 56%,#bfdbfe 100%)`
+  return `linear-gradient(135deg,#0f172a 0%,${accent} 56%,var(--color-primary-200) 100%)`
 }
 
 const extractGroupsFromResponse = (response: BackendCommunityResponse, fetch: CommunityListFetch) => {

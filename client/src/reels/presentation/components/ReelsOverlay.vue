@@ -132,7 +132,7 @@ const actionItems = computed(() => [
   height: 44px;
   border-radius: 50%;
   flex-shrink: 0;
-  border: 2px solid #0000ff;
+  border: 2px solid var(--bg-brand);
   overflow: hidden;
 }
 

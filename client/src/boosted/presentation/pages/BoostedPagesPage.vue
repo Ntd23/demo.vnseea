@@ -142,7 +142,7 @@ const copy = computed(() => ({
 
 .boosted-page__eyebrow {
   margin: 0 0 6px;
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -167,7 +167,7 @@ const copy = computed(() => ({
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  background: #0000ff;
+  background: var(--bg-brand);
   padding: 10px 16px;
   color: #fff;
   font-size: 13px;
@@ -204,7 +204,7 @@ const copy = computed(() => ({
 }
 
 .boosted-page__notice--info {
-  background: #dbeafe;
+  background: var(--color-primary-100);
   color: #1d8cf8;
 }
 
@@ -263,7 +263,7 @@ const copy = computed(() => ({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #fff;
   font-weight: 900;
 }
@@ -297,9 +297,9 @@ const copy = computed(() => ({
   display: inline-flex;
   margin-top: 14px;
   border-radius: 999px;
-  background: #eff6ff;
+  background: var(--color-primary-50);
   padding: 8px 13px;
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;

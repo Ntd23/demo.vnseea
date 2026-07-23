@@ -177,7 +177,7 @@ async function handleSubmit() {
 
 .offer-form__eyebrow {
   margin: 0;
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 800;
 }

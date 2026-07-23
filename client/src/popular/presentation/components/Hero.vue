@@ -36,7 +36,7 @@
 
           <NuxtLink
             :to="secondaryTo"
-            class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:bg-primary-700 active:scale-95"
+            class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_color-mix(in srgb, var(--bg-brand) 20%, transparent)] transition hover:bg-primary-700 active:scale-95"
           >
             <Icon name="i-ph-magnifying-glass-duotone" class="mr-2 h-5 w-5 shrink-0" />
             {{ secondaryLabel }}

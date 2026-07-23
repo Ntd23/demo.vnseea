@@ -26,7 +26,7 @@
       <template #trailing>
         <button
           type="button"
-          class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[#0000ff]"
+          class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[var(--text-brand)]"
           :aria-label="show ? hideLabel : showLabel"
           @click="show = !show"
         >

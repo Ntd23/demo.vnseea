@@ -110,7 +110,7 @@ const copy = computed(() => ({
 
 .boosted-page__eyebrow {
   margin: 0 0 6px;
-  color: #0000ff;
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -135,7 +135,7 @@ const copy = computed(() => ({
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  background: #0000ff;
+  background: var(--bg-brand);
   padding: 10px 16px;
   color: #fff;
   font-size: 13px;
@@ -173,7 +173,7 @@ const copy = computed(() => ({
 }
 
 .boosted-page__notice--info {
-  background: #dbeafe;
+  background: var(--color-primary-100);
   color: #1d8cf8;
 }
 

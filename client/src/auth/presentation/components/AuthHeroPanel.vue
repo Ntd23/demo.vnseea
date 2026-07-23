@@ -43,7 +43,7 @@
             </div>
             <!-- Orbiting Nodes -->
             <div class="hero-widget__node hero-widget__node--orbit-1">
-              <Icon name="i-ph-chat-circle-dots-duotone" class="w-5 h-5 text-blue-300" />
+              <Icon name="i-ph-chat-circle-dots-duotone" class="w-5 h-5 text-rose-300" />
             </div>
             <div class="hero-widget__node hero-widget__node--orbit-2">
               <Icon name="i-ph-heart-duotone" class="w-5 h-5 text-rose-300" />
@@ -62,7 +62,7 @@
           <!-- Widget A: Connections & Sharing -->
           <div class="hero-widget hero-widget--glass hero-widget--a">
             <div class="widget-header">
-              <Icon name="i-ph-share-network-duotone" class="w-6 h-6 text-blue-400" />
+              <Icon name="i-ph-share-network-duotone" class="w-6 h-6 text-red-400" />
               <div class="widget-status-dot" />
             </div>
             <div class="widget-avatars">
@@ -112,7 +112,7 @@
       </div>
 
       <!-- Right side: Authentication Form Card (Slot) -->
-      <main class="auth-hero__form-container mt-[-37.5!important]"> <!-- Negative top margin to counteract padding and prevent scrollbar -->
+      <main class="auth-hero__form-container"> <!-- Negative top margin to counteract padding and prevent scrollbar -->
         <div class="auth-hero__form-card">
           <slot />
         </div>
@@ -191,7 +191,7 @@
             <Icon
               v-if="item.code === activeLocale"
               name="i-ph-check-circle-fill"
-              class="h-5 w-5 text-[#0000ff]"
+              class="h-5 w-5 text-[var(--text-brand)]"
             />
           </button>
         </div>
@@ -319,14 +319,14 @@ onBeforeUnmount(() => {
   min-height: 100svh;
   overflow-x: hidden; /* Block horizontal scrollbar completely */
   color: #ffffff;
-  background: linear-gradient(160deg, #1e3c72 0%, #1d2b64 50%, #0f2027 100%);
+  background: linear-gradient(160deg, #1a0507 0%, #2b0b0e 50%, #0f0304 100%);
 }
 
 @media (min-width: 1024px) {
   .auth-hero {
-    padding: 2rem 3rem;
-    height: 100vh; /* Lock height on desktop */
-    overflow-y: hidden; /* Hide vertical scrollbar completely on desktop */
+    padding: 1.5rem 3rem;
+    min-height: 100vh;
+    overflow-y: auto;
   }
 }
 
@@ -358,7 +358,7 @@ onBeforeUnmount(() => {
   top: 20%;
   width: 26rem;
   height: 26rem;
-  background: rgba(20, 80, 255, 0.22);
+  background: rgba(185, 28, 28, 0.35);
 }
 
 .auth-hero__orb--c {
@@ -497,13 +497,15 @@ onBeforeUnmount(() => {
 
 @media (min-width: 1024px) {
   .auth-hero__form-container {
-    transform: translateY(-95px); /* Cleanly pulls the form upwards on desktop */
+    align-self: center;
   }
 }
 
 .auth-hero__form-card {
   width: 100%;
-  max-width: 26rem; /* Sleeker, more compact width */
+  max-width: 26rem;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto; /* Sleeker, more compact width */
   background: rgba(255, 255, 255, 0.96);
   border: 1.5px solid rgba(255, 255, 255, 0.85);
   border-radius: var(--radius-xl);
@@ -634,8 +636,8 @@ onBeforeUnmount(() => {
 
 .auth-language-modal__close:hover,
 .auth-language-modal__close:focus-visible {
-  color: #0000ff;
-  border-color: rgba(0, 0, 255, 0.24);
+  color: var(--bg-brand);
+  border-color: color-mix(in srgb, var(--bg-brand) 24%, transparent);
 }
 
 .auth-hero__language-list {
@@ -663,8 +665,8 @@ onBeforeUnmount(() => {
 
 .auth-hero__language-option:hover,
 .auth-hero__language-option--active {
-  border-color: rgba(0, 0, 255, 0.26);
-  background: rgba(0, 0, 255, 0.04);
+  border-color: color-mix(in srgb, var(--bg-brand) 26%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
   box-shadow: var(--shadow-xs);
 }
 

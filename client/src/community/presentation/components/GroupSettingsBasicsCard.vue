@@ -149,7 +149,7 @@ const suggestedSlug = computed(() =>
 }
 
 .group-settings-basic__hint-action {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-weight: 900;
 }
 
@@ -169,8 +169,8 @@ const suggestedSlug = computed(() =>
 }
 
 .group-settings-basic__textarea:focus {
-  border-color: #0000ff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
+  border-color: var(--bg-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 @media (min-width: 768px) {

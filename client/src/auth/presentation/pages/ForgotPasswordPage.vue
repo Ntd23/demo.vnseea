@@ -52,7 +52,7 @@
           />
           <div class="auth-captcha__brand">
             <div class="auth-captcha__shield">
-              <Icon name="i-ph-shield-check-fill" class="h-4 w-4 text-[#0000ff]" />
+              <Icon name="i-ph-shield-check-fill" class="h-4 w-4 text-[var(--text-brand)]" />
             </div>
             <span class="auth-captcha__brand-text">{{ $t('pages.forgotPasswordPage.captchaBrand') }}</span>
           </div>
@@ -126,7 +126,7 @@ const checkboxUi = {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .auth-form__title {
@@ -183,8 +183,8 @@ const checkboxUi = {
 }
 
 .auth-captcha:focus-within {
-  border-color: #0000ff;
-  box-shadow: 0 0 0 4px rgba(0, 0, 255, 0.07);
+  border-color: var(--bg-brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--bg-brand) 7%, transparent);
 }
 
 .auth-captcha__brand {
@@ -215,20 +215,35 @@ const checkboxUi = {
 
 /* Submit */
 .auth-submit {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
   border-radius: 14px !important;
+  background: var(--bg-brand) !important;
+  color: #ffffff !important;
   height: 3.5rem !important;
   font-size: 1rem !important;
   font-weight: 800 !important;
   margin-top: 4px;
-  box-shadow: 0 12px 28px rgba(0, 0, 255, 0.2) !important;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--bg-brand) 20%, transparent) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
 }
 
 .auth-submit:hover:not(:disabled) {
-  box-shadow: 0 16px 36px rgba(0, 0, 255, 0.28) !important;
+  background: var(--bg-brand-hover) !important;
+  box-shadow: 0 16px 36px color-mix(in srgb, var(--bg-brand) 28%, transparent) !important;
   transform: translateY(-1px);
 }
 
-/* Footer */
+.auth-submit:disabled {
+  opacity: 0.7 !important;
+  cursor: not-allowed;
+}
+
 .auth-form__footer-text {
   text-align: center;
   font-size: 0.9rem;
@@ -237,7 +252,7 @@ const checkboxUi = {
 
 .auth-form__footer-link {
   font-weight: 800;
-  color: #0000ff;
+  color: var(--bg-brand);
   text-decoration: none;
 }
 </style>

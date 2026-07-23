@@ -315,11 +315,11 @@ function handleMenuAction(item: { key: string }) {
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  background: linear-gradient(145deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
   font-size: 13px;
   font-weight: 800;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.18);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 18%, transparent);
 }
 
 .post-header__avatar-image {
@@ -351,7 +351,7 @@ function handleMenuAction(item: { key: string }) {
 
 .post-header__name:hover,
 .post-header__event-link:hover {
-  color: #0000ff;
+  color: var(--bg-brand);
   text-decoration: underline;
 }
 
@@ -418,8 +418,8 @@ function handleMenuAction(item: { key: string }) {
 
 .post-header__menu-btn:hover,
 .post-header__menu-btn--open {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .post-header__dropdown {
@@ -431,9 +431,9 @@ function handleMenuAction(item: { key: string }) {
   width: 260px;
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid rgba(0, 0, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   background: #ffffff;
-  box-shadow: 0 12px 40px rgba(0, 0, 255, 0.1);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 
 .post-header__dropdown-item {
@@ -450,7 +450,7 @@ function handleMenuAction(item: { key: string }) {
 }
 
 .post-header__dropdown-item:hover {
-  background: rgba(0, 0, 255, 0.03);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .post-header__dropdown-icon-wrap {
@@ -461,15 +461,15 @@ function handleMenuAction(item: { key: string }) {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(0, 0, 255, 0.05);
-  color: rgba(0, 0, 255, 0.6);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: color-mix(in srgb, var(--bg-brand) 60%, transparent);
   margin-top: 2px;
   transition: all 0.12s ease;
 }
 
 .post-header__dropdown-item:hover .post-header__dropdown-icon-wrap {
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  color: var(--bg-brand);
 }
 
 .post-header__dropdown-label {

@@ -116,7 +116,7 @@ const handleImageError = () => {
 }
 
 const categoryColorMap: Record<string, string> = {
-  business: "linear-gradient(90deg,#3b82f6,#06b6d4)",
+  business: "linear-gradient(90deg,var(--bg-brand),#06b6d4)",
   vehicles: "linear-gradient(90deg,#64748b,#334155)",
   education: "linear-gradient(90deg,#8b5cf6,#6366f1)",
   movies: "linear-gradient(90deg,#f59e0b,#ef4444)",
@@ -148,7 +148,7 @@ const categoryAccentColor = computed(() =>
 }
 
 .blog-card:hover {
-  border-color: rgba(0, 0, 255, 0.12);
+  border-color: color-mix(in srgb, var(--bg-brand) 12%, transparent);
   box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
   transform: translateY(-2px);
 }
@@ -209,10 +209,10 @@ const categoryAccentColor = computed(() =>
   width: 28px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(0, 0, 255, 0.14);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 14%, transparent);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.94);
-  color: #0000ff;
+  color: var(--bg-brand);
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
   text-decoration: none;
   transition: background 0.15s ease, transform 0.15s ease;

@@ -111,8 +111,8 @@ const {
 
 .create-blog-content-editor__tool:hover,
 .create-blog-content-editor__tool--active {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .create-blog-content-editor__tool:disabled {
@@ -136,9 +136,9 @@ const {
 }
 
 .create-blog-content-editor__surface:focus-within {
-  border-color: rgba(0, 0, 255, 0.25);
+  border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
 .create-blog-content-editor__placeholder {
@@ -198,7 +198,7 @@ const {
 
 .create-blog-content-editor__surface :deep(blockquote) {
   margin-left: 0;
-  border-left: 4px solid rgba(0, 0, 255, 0.24);
+  border-left: 4px solid color-mix(in srgb, var(--bg-brand) 24%, transparent);
   color: #475569;
   padding-left: 14px;
 }

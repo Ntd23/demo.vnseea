@@ -144,9 +144,9 @@ const toggleItems = computed(() => [
 }
 
 .cta-card--active {
-  border-color: #2563eb;
+  border-color: var(--bg-brand);
   background: #f0f7ff;
-  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.1), 0 8px 10px -6px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 10px 25px -5px color-mix(in srgb, var(--bg-brand) 10%, transparent), 0 8px 10px -6px color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 
 .cta-card--inactive:hover {
@@ -169,8 +169,8 @@ const toggleItems = computed(() => [
 }
 
 .cta-card--active .cta-card__icon-wrap {
-  color: #2563eb;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+  color: var(--bg-brand);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--bg-brand) 15%, transparent);
 }
 
 .cta-card__title {
@@ -195,8 +195,8 @@ const toggleItems = computed(() => [
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--color-primary-50);
+  color: var(--bg-brand-hover);
   padding: 8px 14px;
   font-size: 12px;
   font-weight: 800;
@@ -205,10 +205,10 @@ const toggleItems = computed(() => [
 .page-settings-controls__info {
   display: flex;
   gap: 12px;
-  border: 1px solid #bfdbfe;
+  border: 1px solid var(--color-primary-200);
   border-radius: 16px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--color-primary-50);
+  color: var(--bg-brand-hover);
   padding: 14px 16px;
 }
 

@@ -289,7 +289,7 @@ const fallbackPlanColor = (id: string) => {
     "4": "#3f4bb8",
   }
 
-  return colors[id] || "#0000ff"
+  return colors[id] || "var(--bg-brand)"
 }
 
 const planIcon = (id: string) => {

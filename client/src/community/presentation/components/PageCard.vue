@@ -295,8 +295,8 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__tag {
-  border: 1px solid rgba(0, 0, 255, 0.12);
-  color: #0000ff;
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
+  color: var(--bg-brand);
   padding: 5px 10px;
 }
 
@@ -356,20 +356,20 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__action--secondary:hover {
-  border-color: #93c5fd;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border-color: var(--color-primary-300);
+  background: var(--color-primary-50);
+  color: var(--bg-brand-hover);
 }
 
 .page-card__action--primary {
-  background: var(--color-primary-500, #3b82f6);
+  background: var(--color-primary-500, var(--bg-brand));
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 30%, transparent);
   border: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
 .page-card__action--primary:hover {
-  background: var(--color-primary-600, #2563eb);
+  background: var(--color-primary-600, var(--bg-brand));
 }
 </style>

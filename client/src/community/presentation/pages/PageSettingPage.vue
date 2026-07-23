@@ -134,7 +134,7 @@
 
       <div class="mt-6 flex justify-center">
         <NuxtLink to="/pages"
-          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]">
+          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[var(--bg-brand)] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 24%, transparent)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]">
           {{ $t("community.pageSettings.empty.back") }}
         </NuxtLink>
       </div>
@@ -342,10 +342,10 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__nav-step-circle--active {
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
-  border-color: #0000ff;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+  border-color: var(--bg-brand);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .page-settings__nav-step-label-container {
@@ -374,12 +374,12 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__nav-step-item--active {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.05);
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 .page-settings__nav-step-item--active .page-settings__nav-step-label {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-weight: 800;
 }
 
@@ -388,13 +388,13 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__nav-step-item:hover {
-  border-color: rgba(0, 0, 255, 0.12);
-  background: rgba(0, 0, 255, 0.03);
+  border-color: color-mix(in srgb, var(--bg-brand) 12%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .page-settings__nav-step-item:hover .page-settings__nav-step-circle:not(.page-settings__nav-step-circle--active) {
-  border-color: rgba(0, 0, 255, 0.12);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 12%, transparent);
+  color: var(--bg-brand);
 }
 
 @media (min-width: 768px) {
@@ -433,9 +433,9 @@ function onDeletePage(pageId: number, password: string) {
 
   .page-settings__nav-step-circle--active {
     background: #ffffff;
-    color: #0000ff;
-    border-color: rgba(0, 0, 255, 0.18);
-    box-shadow: 0 4px 12px rgba(0, 0, 255, 0.14);
+    color: var(--bg-brand);
+    border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 14%, transparent);
   }
 
   .page-settings__nav-step-label-container {
@@ -451,7 +451,7 @@ function onDeletePage(pageId: number, password: string) {
     text-decoration: underline;
     text-underline-offset: 6px;
     text-decoration-thickness: 2px;
-    text-decoration-color: #2563eb;
+    text-decoration-color: var(--bg-brand);
   }
 
   .page-settings__nav-step-item:hover {
@@ -460,9 +460,9 @@ function onDeletePage(pageId: number, password: string) {
   }
 
   .page-settings__nav-step-item:hover .page-settings__nav-step-circle:not(.page-settings__nav-step-circle--active) {
-    border-color: rgba(0, 0, 255, 0.18);
-    color: #0000ff;
-    background: rgba(0, 0, 255, 0.04);
+    border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+    color: var(--bg-brand);
+    background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
   }
 }
 
@@ -493,10 +493,10 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__alert {
   display: flex;
   gap: 12px;
-  border: 1px solid #bfdbfe;
+  border: 1px solid var(--color-primary-200);
   border-radius: 16px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--color-primary-50);
+  color: var(--bg-brand-hover);
   padding: 14px 16px;
 }
 
@@ -551,20 +551,20 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__button--secondary:hover {
-  border-color: #93c5fd;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border-color: var(--color-primary-300);
+  background: var(--color-primary-50);
+  color: var(--bg-brand-hover);
 }
 
 .page-settings__button--primary {
-  border: 1px solid #2563eb;
-  background: #0000ff;
+  border: 1px solid var(--bg-brand);
+  background: var(--bg-brand);
   color: #ffffff;
-  box-shadow: 0 10px 22px rgba(0, 0, 255, 0.18);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--bg-brand) 18%, transparent);
 }
 
 .page-settings__button--primary:hover {
-  background: #0000d8;
+  background: var(--bg-brand-hover);
 }
 
 .page-settings__button:disabled,
@@ -666,6 +666,6 @@ function onDeletePage(pageId: number, password: string) {
 
 .page-settings-sidebar :deep(progress),
 .page-settings-sidebar :deep([role="progressbar"]) {
-  background-color: #dbeafe;
+  background-color: var(--color-primary-100);
 }
 </style>

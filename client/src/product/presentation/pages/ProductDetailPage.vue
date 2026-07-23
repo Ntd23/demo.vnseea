@@ -133,11 +133,11 @@
               <strong>{{ product.location }}</strong>
             </li>
             <li>
-              <span><Icon name="i-ph-package-fill" class="text-[#0000ff]" /> {{ $t("pages.productDetailPage.stockStatus") }}</span>
+              <span><Icon name="i-ph-package-fill" class="text-[var(--text-brand)]" /> {{ $t("pages.productDetailPage.stockStatus") }}</span>
               <strong>{{ stockLabel }}</strong>
             </li>
             <li>
-              <span><Icon name="i-ph-tag-fill" class="text-[#2563eb]" /> {{ $t("pages.productDetailPage.condition") }}</span>
+              <span><Icon name="i-ph-tag-fill" class="text-[var(--text-brand)]" /> {{ $t("pages.productDetailPage.condition") }}</span>
               <strong>{{ conditionLabel }}</strong>
             </li>
                       </ul>
@@ -462,7 +462,7 @@ useSeoMeta({
 }
 
 .product-detail-thumb--active {
-  border-color: var(--color-brand, #0000ff);
+  border-color: var(--color-brand, var(--bg-brand));
 }
 
 .product-detail-thumb img {
@@ -486,7 +486,7 @@ useSeoMeta({
 
 .product-detail-price {
   margin-top: 12px;
-  color: var(--color-brand, #0000ff);
+  color: var(--color-brand, var(--bg-brand));
   font-size: 24px;
   font-weight: 800;
 }
@@ -528,7 +528,7 @@ useSeoMeta({
   height: 42px;
   border-radius: 999px;
   color: #ffffff;
-  background: linear-gradient(180deg, #2233ff 0%, var(--color-brand, #0000ff) 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--color-brand, var(--bg-brand)) 100%);
   font-weight: 800;
 }
 
@@ -702,7 +702,7 @@ useSeoMeta({
 .product-detail-related-card span {
   display: block;
   margin-top: 4px;
-  color: var(--color-brand, #0000ff);
+  color: var(--color-brand, var(--bg-brand));
   font-size: 13px;
   font-weight: 900;
 }

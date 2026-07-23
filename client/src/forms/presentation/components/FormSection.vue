@@ -10,7 +10,7 @@
           <div v-if="eyebrow || badge" class="flex flex-wrap items-center gap-2">
             <p
               v-if="eyebrow"
-              class="text-[11px] font-bold uppercase tracking-[0.24em] text-[#0000ff]/70"
+              class="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--text-brand)]/70"
             >
               {{ eyebrow }}
             </p>
@@ -28,7 +28,7 @@
           <div class="mt-1 flex flex-wrap items-center gap-3">
             <div
               v-if="icon"
-              class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#eef4ff] text-[#0000ff]"
+              class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#eef4ff] text-[var(--text-brand)]"
             >
               <Icon :name="icon" class="h-5 w-5" />
             </div>

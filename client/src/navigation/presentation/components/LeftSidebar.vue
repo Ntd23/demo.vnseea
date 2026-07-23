@@ -181,7 +181,7 @@ const isItemActive = (to: string) => {
 }
 
 .left-sidebar__toggle:hover {
-  background: rgba(0, 0, 255, 0.03);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .left-sidebar__toggle-icon {
@@ -198,8 +198,8 @@ const isItemActive = (to: string) => {
 }
 
 .left-sidebar__toggle:hover .left-sidebar__toggle-icon {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .left-sidebar__toggle-label {
@@ -210,7 +210,7 @@ const isItemActive = (to: string) => {
 }
 
 .left-sidebar__toggle:hover .left-sidebar__toggle-label {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .scrollbar-hide {

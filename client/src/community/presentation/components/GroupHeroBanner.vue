@@ -175,7 +175,7 @@ const inviteButtonLabel = computed(() => {
   position: relative;
   height: 280px;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 56%, #bfdbfe 100%);
+  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 .profile-page__cover--viewable {
@@ -204,7 +204,7 @@ const inviteButtonLabel = computed(() => {
 .profile-page__cover-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 56%, #bfdbfe 100%);
+  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 .profile-page__cover-shade {

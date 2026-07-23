@@ -148,7 +148,7 @@ const props = defineProps<{
 
 const toneClassMap = {
   amber: "border-[#fde7b2] bg-[#fff8ea] text-[#9a5b00]",
-  blue: "border-[#cfe0ff] bg-[#eef4ff] text-[#1d4ed8]",
+  blue: "border-[#cfe0ff] bg-[#eef4ff] text-[var(--text-brand)]",
   green: "border-[#c7ebd0] bg-[#effaf3] text-[#1f7a38]",
   rose: "border-[#fecdd3] bg-[#fff1f3] text-[#be123c]",
 } as const

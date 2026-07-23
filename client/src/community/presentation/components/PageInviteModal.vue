@@ -191,9 +191,9 @@ function closeModal() {
 }
 
 .search-input:focus {
-  border-color: #0000ff;
+  border-color: var(--bg-brand);
   background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(0, 0, 255, 0.06);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
 .search-input::placeholder {
@@ -231,8 +231,8 @@ function closeModal() {
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(0, 0, 255, 0.1);
-  border-top-color: #0000ff;
+  border: 3px solid color-mix(in srgb, var(--bg-brand) 10%, transparent);
+  border-top-color: var(--bg-brand);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -330,7 +330,7 @@ function closeModal() {
 .verified-icon {
   width: 14px;
   height: 14px;
-  color: #0000ff;
+  color: var(--bg-brand);
   flex-shrink: 0;
 }
 
@@ -347,7 +347,7 @@ function closeModal() {
   padding: 0 16px;
   border-radius: 999px;
   border: none;
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
   font-size: 13px;
   font-weight: 700;
@@ -357,7 +357,7 @@ function closeModal() {
 }
 
 .invite-btn:hover:not(:disabled) {
-  background: #0000cc;
+  background: var(--bg-brand-hover);
   transform: translateY(-1px);
 }
 

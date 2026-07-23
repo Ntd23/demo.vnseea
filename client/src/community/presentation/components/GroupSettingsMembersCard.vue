@@ -21,7 +21,7 @@
 
     <!-- Members list -->
     <div v-if="loading" class="mt-6 flex flex-col items-center justify-center py-10 space-y-3">
-      <Icon name="i-ph-spinner-gap-bold" class="h-8 w-8 animate-spin text-[#1d4ed8]" />
+      <Icon name="i-ph-spinner-gap-bold" class="h-8 w-8 animate-spin text-[var(--text-brand)]" />
       <p class="text-[13px] text-slate-400 font-medium">Đang tải danh sách thành viên...</p>
     </div>
 
@@ -41,13 +41,13 @@
             />
             <div
               v-else
-              class="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#dbeafe_0%,#eef2ff_100%)] text-[13px] font-black text-[#1d4ed8] shadow-sm"
+              class="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-primary-100)_0%,#eef2ff_100%)] text-[13px] font-black text-[var(--text-brand)] shadow-sm"
             >
               {{ getInitials(user.name) }}
             </div>
             <span
               v-if="user.verified"
-              class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#1d4ed8] text-white ring-2 ring-white"
+              class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--bg-brand-hover)] text-white ring-2 ring-white"
             >
               <Icon name="i-ph-seal-check-fill" class="h-3 w-3" />
             </span>
@@ -55,7 +55,7 @@
 
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
-              <p class="truncate text-[13.5px] font-bold text-[#243b63] transition-colors group-hover:text-[#1d4ed8]">
+              <p class="truncate text-[13.5px] font-bold text-[#243b63] transition-colors group-hover:text-[var(--text-brand)]">
                 {{ user.name }}
               </p>
               <!-- Owner Badge -->

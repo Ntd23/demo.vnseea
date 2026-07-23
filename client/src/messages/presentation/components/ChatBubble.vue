@@ -522,7 +522,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 .chat-bubble__product-card:hover {
-  border-color: var(--bg-brand, #0000ff);
+  border-color: var(--bg-brand, var(--bg-brand));
   box-shadow: 0 5px 16px rgba(15, 23, 42, 0.12);
 }
 
@@ -574,7 +574,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 .chat-bubble__product-copy span {
-  color: var(--bg-brand, #0000ff);
+  color: var(--bg-brand, var(--bg-brand));
   font-size: 14px;
   font-weight: 800;
 }
@@ -755,7 +755,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__reply--clickable:hover .chat-bubble__reply-quote,
 .chat-bubble__reply--clickable:focus-visible .chat-bubble__reply-quote {
-  outline: 2px solid color-mix(in srgb, var(--bg-brand, #0000ff) 28%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--bg-brand, var(--bg-brand)) 28%, transparent);
   outline-offset: 1px;
 }
 
@@ -877,8 +877,8 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 .chat-bubble__message-tool:hover {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .chat-bubble__message-tool--danger:hover {

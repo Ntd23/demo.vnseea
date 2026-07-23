@@ -239,7 +239,7 @@ const formatOrderCurrency = (value: number) =>
 
 <style scoped>
 .market-orders-page {
-  --wowonder-blue: #0000ff;
+  --wowonder-blue: var(--bg-brand);
   --wowonder-card: #ffffff;
   --wowonder-border: #dbe3f2;
   --wowonder-text: #111827;
@@ -348,7 +348,7 @@ const formatOrderCurrency = (value: number) =>
 
 .market-orders-tab:hover {
   color: var(--wowonder-blue);
-  background: rgba(0, 0, 255, 0.04);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
 }
 
 .market-orders-tab--active {

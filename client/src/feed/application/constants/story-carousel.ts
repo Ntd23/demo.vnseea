@@ -38,7 +38,7 @@ export const feedStoryPreviewProgressWidths = {
   ready: "76%",
 } as const
 
-export const feedStoryViewerFallbackGradient = "linear-gradient(135deg,#0f172a 0%,#1d4ed8 58%,#38bdf8 100%)"
+export const feedStoryViewerFallbackGradient = "linear-gradient(135deg,#0f172a 0%,var(--bg-brand-hover) 58%,#38bdf8 100%)"
 
 export const feedStoryCarouselScrollDistance = 220
 

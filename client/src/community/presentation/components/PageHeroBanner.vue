@@ -53,7 +53,7 @@
               size="xl"
               :loading="followState === 'loading'"
               :disabled="followState === 'loading' || isFollowing"
-              class="rounded-[16px] bg-white px-5 text-[14px] font-extrabold text-[#1d4ed8] shadow-[0_12px_24px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
+              class="rounded-[16px] bg-white px-5 text-[14px] font-extrabold text-[var(--text-brand)] shadow-[0_12px_24px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
               @click="emit('follow')"
             >
               <Icon name="i-ph-bell-simple-ringing-bold" class="mr-2 h-4 w-4" />

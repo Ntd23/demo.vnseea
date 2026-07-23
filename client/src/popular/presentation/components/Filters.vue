@@ -19,7 +19,7 @@
             :key="category.value"
             class="inline-flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-[14px] px-3.5 text-[12px] font-extrabold transition active:scale-95 sm:h-11 sm:px-4"
             :class="selectedCategory === category.value
-              ? 'bg-primary-600 text-white shadow-[0_10px_20px_rgba(37,99,235,0.16)]'
+              ? 'bg-primary-600 text-white shadow-[0_10px_20px_color-mix(in srgb, var(--bg-brand) 16%, transparent)]'
               : 'bg-secondary-50 text-[var(--text-primary)] ring-1 ring-secondary-100 hover:bg-white hover:text-primary-700 hover:ring-primary-200'"
             :aria-pressed="selectedCategory === category.value"
             type="button"

@@ -414,8 +414,8 @@ onBeforeUnmount(() => {
 }
 
 .profile-crop__confirm {
-  border: 1px solid #1420ff;
-  background: #1420ff;
+  border: 1px solid var(--bg-brand);
+  background: var(--bg-brand);
   color: #ffffff;
 }
 

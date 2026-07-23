@@ -849,7 +849,7 @@ onBeforeUnmount(() => {
 }
 
 .lightbox-modal__stats-right button:hover {
-  color: var(--text-brand, #1420ff);
+  color: var(--text-brand, var(--bg-brand));
   text-decoration: underline;
 }
 

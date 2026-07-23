@@ -578,7 +578,7 @@ async function handleOfferSaved() {
   position: relative;
   height: 280px;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 56%, #bfdbfe 100%);
+  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 @media (min-width: 640px) { .page-detail__cover { height: 350px; } }
@@ -849,7 +849,7 @@ async function handleOfferSaved() {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
 }
 

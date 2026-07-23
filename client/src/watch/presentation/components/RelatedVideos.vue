@@ -62,7 +62,7 @@ defineEmits<{ select: [id: string] }>()
 <style scoped>
 .related {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 20px;
@@ -104,11 +104,11 @@ defineEmits<{ select: [id: string] }>()
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   padding: 0 10px;
   font-size: 12px;
   font-weight: 700;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .related__list {
@@ -130,14 +130,14 @@ defineEmits<{ select: [id: string] }>()
 }
 
 .related-item:hover {
-  border-color: rgba(0, 0, 255, 0.2);
-  background: rgba(0, 0, 255, 0.02);
+  border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 2%, transparent);
 }
 
 .related-item--active {
-  border-color: #0000ff;
-  background: rgba(0, 0, 255, 0.03);
-  box-shadow: 0 0 0 1px #0000ff;
+  border-color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  box-shadow: 0 0 0 1px var(--bg-brand);
 }
 
 .related-item__grid {
@@ -210,7 +210,7 @@ defineEmits<{ select: [id: string] }>()
 }
 
 .related-item:hover .related-item__name {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .related-item__author {
@@ -237,9 +237,9 @@ defineEmits<{ select: [id: string] }>()
   align-self: flex-start;
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   font-size: 10px;
   font-weight: 700;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 </style>

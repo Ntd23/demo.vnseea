@@ -217,13 +217,13 @@ function submit() {
 }
 
 .wallet-topup-form__method:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.03);
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .wallet-topup-form__method--active {
-  border-color: rgba(0, 0, 255, 0.22);
-  background: rgba(0, 0, 255, 0.05);
+  border-color: color-mix(in srgb, var(--bg-brand) 22%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 .wallet-topup-form__method-icon {
@@ -235,6 +235,6 @@ function submit() {
   justify-content: center;
   border-radius: 12px;
   background: #f1f5f9;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 </style>

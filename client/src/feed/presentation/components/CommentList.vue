@@ -162,8 +162,8 @@ function loadMoreComments() {
 
 .comment-list__sort-button:hover,
 .comment-list__sort-button--active {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .comment-list__sort-icon {
@@ -194,8 +194,8 @@ function loadMoreComments() {
   min-width: 150px;
   border: 0;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
   padding: 8px 12px;
   font-size: 13px;
   font-weight: 700;
@@ -221,6 +221,6 @@ function loadMoreComments() {
 }
 
 .comment-list__more:hover {
-  background: rgba(0, 0, 255, 0.1);
+  background: color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 </style>

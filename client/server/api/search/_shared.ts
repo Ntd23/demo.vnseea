@@ -143,7 +143,7 @@ export function mapUsers(users: BackendSearchEntity[] = [], resolveMediaUrl: (va
       metaLabel: firstString(user, ["lastseen_time_text", "gender_text"]),
       tags: ["user", username].filter(Boolean),
       searchableText: createSearchableText([firstName, lastName, name, username, about]),
-      accent: "#0000ff",
+      accent: "#b91c1c",
       popularityScore: Number(followers || 0),
       recentScore: 100 - index,
       isFollowing: Number(user.is_following ?? 0) === 1 || user.is_following === "yes" || user.is_following === true || Number(user.is_friend ?? 0) === 1 || user.is_friend === "yes",
@@ -172,7 +172,7 @@ export function mapPages(pages: BackendSearchEntity[] = [], resolveMediaUrl: (va
       metaLabel: firstString(page, ["category", "category_name"]),
       tags: ["page", slug].filter(Boolean),
       searchableText: createSearchableText([title, slug, about]),
-      accent: "#1d4ed8",
+      accent: "var(--bg-brand-hover)",
       popularityScore: Number(firstString(page, ["likes", "likes_count"]) || 0),
       recentScore: 90 - index,
     }

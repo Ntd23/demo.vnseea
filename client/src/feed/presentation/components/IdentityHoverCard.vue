@@ -273,7 +273,7 @@ onBeforeUnmount(cancelClose)
 .identity-hover__close { position: absolute; right: 12px; top: 12px; display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: #f1f5f9; color: #334155; cursor: pointer; }
 .identity-hover__close :deep(svg) { width: 15px; height: 15px; }
 .identity-hover__profile { display: flex; min-width: 0; align-items: center; gap: 13px; padding-right: 34px; }
-.identity-hover__avatar { display: flex; width: 72px; height: 72px; flex: 0 0 72px; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: #eef2ff; color: #0000ff; font-weight: 800; text-decoration: none; }
+.identity-hover__avatar { display: flex; width: 72px; height: 72px; flex: 0 0 72px; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: #eef2ff; color: var(--bg-brand); font-weight: 800; text-decoration: none; }
 .identity-hover__avatar img { width: 100%; height: 100%; object-fit: cover; }
 .identity-hover__copy { display: grid; min-width: 0; gap: 5px; }
 .identity-hover__name { overflow: hidden; color: #0f172a; font-size: 18px; font-weight: 850; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
@@ -283,9 +283,9 @@ onBeforeUnmount(cancelClose)
 .identity-hover__loading { display: flex; align-items: center; gap: 7px; margin-top: 14px; color: #64748b; font-size: 12px; font-weight: 700; }
 .identity-hover__loading :deep(svg) { width: 16px; height: 16px; }
 .identity-hover__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 15px; }
-.identity-hover__action { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 7px; border: 1px solid #0000ff; border-radius: 10px; background: #0000ff; color: #fff; font-size: 12.5px; font-weight: 800; cursor: pointer; }
+.identity-hover__action { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--bg-brand); border-radius: 10px; background: var(--bg-brand); color: #fff; font-size: 12.5px; font-weight: 800; cursor: pointer; }
 .identity-hover__action :deep(svg) { width: 16px; height: 16px; }
-.identity-hover__action--message { background: #2563eb; border-color: #2563eb; }
+.identity-hover__action--message { background: var(--bg-brand); border-color: var(--bg-brand); }
 .identity-hover__action--following { border-color: #dbe3ef; background: #f1f5f9; color: #334155; }
 .identity-hover__action:disabled { cursor: wait; opacity: .65; }
 .identity-hover-card-enter-active, .identity-hover-card-leave-active { transition: opacity .14s ease, transform .14s ease; transform-origin: left top; }

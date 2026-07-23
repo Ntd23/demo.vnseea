@@ -151,8 +151,8 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 }
 
 .read-blog-hero__chip {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
   padding: 7px 11px;
 }
 

@@ -3,7 +3,7 @@
     <!-- Header with count badge and Approve All button -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
           {{ t("community.settings.defaultEyebrow") }}
         </p>
         <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.03em] text-[#243b63]">
@@ -43,7 +43,7 @@
 
     <!-- Requests list -->
     <div v-if="loading" class="mt-6 flex flex-col items-center justify-center py-10 space-y-3">
-      <Icon name="i-ph-spinner-gap-bold" class="h-8 w-8 animate-spin text-[#1d4ed8]" />
+      <Icon name="i-ph-spinner-gap-bold" class="h-8 w-8 animate-spin text-[var(--text-brand)]" />
       <p class="text-[13px] text-slate-400 font-medium">Đang tải danh sách...</p>
     </div>
 
@@ -51,7 +51,7 @@
       <div
         v-for="user in visibleRequests"
         :key="user.id"
-        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[20px] bg-[#fbfcff] border border-slate-100/50 p-4 transition-all hover:border-[#dbeafe] hover:bg-[#f6f9ff]"
+        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[20px] bg-[#fbfcff] border border-slate-100/50 p-4 transition-all hover:border-[var(--color-primary-100)] hover:bg-[#f6f9ff]"
       >
         <!-- User Info -->
         <div class="flex items-center gap-3.5 min-w-0">
@@ -63,20 +63,20 @@
             />
             <div
               v-else
-              class="flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,#dbeafe_0%,#eef2ff_100%)] text-[14px] font-black text-[#1d4ed8] shadow-sm"
+              class="flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-primary-100)_0%,#eef2ff_100%)] text-[14px] font-black text-[var(--text-brand)] shadow-sm"
             >
               {{ getInitials(user.name) }}
             </div>
             <span
               v-if="user.verified"
-              class="absolute -bottom-1 -right-1 flex h-5.5 w-5.5 items-center justify-center rounded-full bg-[#1d4ed8] text-white ring-2 ring-white"
+              class="absolute -bottom-1 -right-1 flex h-5.5 w-5.5 items-center justify-center rounded-full bg-[var(--bg-brand-hover)] text-white ring-2 ring-white"
             >
               <Icon name="i-ph-seal-check-fill" class="h-3.5 w-3.5" />
             </span>
           </div>
 
           <div class="min-w-0">
-            <p class="truncate text-[14px] font-extrabold text-[#243b63] transition-colors group-hover:text-[#1d4ed8]">
+            <p class="truncate text-[14px] font-extrabold text-[#243b63] transition-colors group-hover:text-[var(--text-brand)]">
               {{ user.name }}
             </p>
             <p class="mt-0.5 truncate text-[12px] text-slate-400">
@@ -154,7 +154,7 @@
       v-else
       class="mt-6 flex flex-col items-center justify-center rounded-[20px] bg-slate-50/50 border border-dashed border-slate-200 py-10 px-4 text-center transition-all hover:bg-slate-50"
     >
-      <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#1d4ed8] shadow-sm mb-4">
+      <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[var(--text-brand)] shadow-sm mb-4">
         <Icon name="i-ph-users-four-bold" class="h-8 w-8" />
       </div>
       <h4 class="text-[14px] font-black text-[#243b63]">

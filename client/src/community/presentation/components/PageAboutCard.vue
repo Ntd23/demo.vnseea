@@ -2,7 +2,7 @@
   <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
     <div class="flex items-start justify-between gap-3">
       <div>
-        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
           {{ compact ? t("pages.pageDetailPage.aboutCompactEyebrow") : t("pages.pageDetailPage.aboutEyebrow") }}
         </p>
         <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
@@ -10,7 +10,7 @@
         </h3>
       </div>
 
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[#eef3ff] text-[#0000ff]">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[#eef3ff] text-[var(--text-brand)]">
         <Icon :name="compact ? 'i-ph-info-bold' : 'i-ph-megaphone-simple-bold'" class="h-5 w-5" />
       </div>
     </div>
@@ -21,12 +21,12 @@
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.categoryTitle") }}</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.pageDetailPage.categoryTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ categoryLabel }}</p>
         <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ ownerLabel }}</p>
       </div>
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.interactionTitle") }}</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.pageDetailPage.interactionTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ responseLabel }}</p>
         <p class="mt-1 text-[12px] leading-5 text-slate-500">
           {{
@@ -41,14 +41,14 @@
 
     <div class="mt-4 space-y-2 text-[13px] text-slate-500">
       <div v-if="page.locationLabel" class="flex items-start gap-2">
-        <Icon name="i-ph-map-pin-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <Icon name="i-ph-map-pin-bold" class="mt-0.5 h-4 w-4 text-[var(--text-brand)]/70" />
         <span>{{ locationLabel }}</span>
       </div>
       <div v-if="page.website" class="flex items-start gap-2">
-        <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[var(--text-brand)]/70" />
         <a
           :href="websiteHref"
-          class="break-all text-[#1d4ed8] underline decoration-[#bfdbfe] underline-offset-4 transition hover:text-[#0000ff]"
+          class="break-all text-[var(--text-brand)] underline decoration-[var(--color-primary-200)] underline-offset-4 transition hover:text-[var(--text-brand)]"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -56,17 +56,17 @@
         </a>
       </div>
       <div v-if="page.foundedLabel" class="flex items-start gap-2">
-        <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[var(--text-brand)]/70" />
         <span>{{ foundedLabel }}</span>
       </div>
       <div v-if="showFollowerCount" class="flex items-start gap-2">
-        <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[var(--text-brand)]/70" />
         <span>{{ followerCountLabel }}</span>
       </div>
     </div>
 
     <div v-if="!compact" class="mt-5">
-      <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+      <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
         {{ t("pages.pageDetailPage.mainTopicsTitle") }}
       </p>
       <div class="mt-3 flex flex-wrap gap-2">

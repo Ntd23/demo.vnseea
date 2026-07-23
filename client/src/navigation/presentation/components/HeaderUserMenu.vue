@@ -261,7 +261,7 @@ const logoutAction = {
 }
 
 .user-menu__trigger:hover {
-  border-color: rgba(0, 0, 255, 0.18);
+  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
 }
 
 .user-menu__avatar {
@@ -272,7 +272,7 @@ const logoutAction = {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  background: linear-gradient(145deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   font-size: 11px;
   font-weight: 800;
   color: #ffffff;
@@ -347,7 +347,7 @@ const logoutAction = {
   overflow: hidden;
   border: 2px solid #ffffff;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  background: linear-gradient(145deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
   font-size: 11px;
   font-weight: 800;
@@ -368,7 +368,7 @@ const logoutAction = {
 }
 
 .user-menu__summary-name:hover {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .user-menu__summary-name:hover .user-menu__summary-name-text {
@@ -404,7 +404,7 @@ const logoutAction = {
 
 a.user-menu__stat:hover {
   background: #eef2ff;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .user-menu__stat-icon {

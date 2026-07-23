@@ -180,7 +180,7 @@ const strength = computed(() => {
   max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.25rem;
 }
 
 .auth-form__head {
@@ -194,7 +194,7 @@ const strength = computed(() => {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .auth-form__title {
@@ -216,7 +216,7 @@ const strength = computed(() => {
 .auth-form__body {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 0.85rem;
 }
 
 /* Row grids */
@@ -260,7 +260,7 @@ const strength = computed(() => {
 }
 
 .auth-strength__bar--strong {
-  background: #0000ff;
+  background: var(--bg-brand);
 }
 
 .auth-checklist {
@@ -277,7 +277,7 @@ const strength = computed(() => {
 }
 
 .auth-check__link {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-weight: 700;
   text-decoration: none;
 }
@@ -302,13 +302,13 @@ const strength = computed(() => {
 }
 
 .auth-gender__option:hover {
-  border-color: rgba(0, 0, 255, 0.2);
-  background: rgba(0, 0, 255, 0.02);
+  border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 2%, transparent);
 }
 
 .auth-gender__option--active {
-  border-color: #0000ff;
-  background: rgba(0, 0, 255, 0.04);
+  border-color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
 }
 
 .auth-gender__label {
@@ -320,26 +320,41 @@ const strength = computed(() => {
 .auth-gender__radio {
   width: 15px;
   height: 15px;
-  accent-color: #0000ff;
+  accent-color: var(--bg-brand);
   cursor: pointer;
 }
 
 /* Submit button */
 .auth-submit {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
   border-radius: 14px !important;
+  background: var(--bg-brand) !important;
+  color: #ffffff !important;
   height: 3.5rem !important;
   font-size: 1rem !important;
   font-weight: 800 !important;
   margin-top: 4px;
-  box-shadow: 0 12px 28px rgba(0, 0, 255, 0.2) !important;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--bg-brand) 20%, transparent) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
 }
 
-.auth-submit:hover {
-  box-shadow: 0 16px 36px rgba(0, 0, 255, 0.28) !important;
+.auth-submit:hover:not(:disabled) {
+  background: var(--bg-brand-hover) !important;
+  box-shadow: 0 16px 36px color-mix(in srgb, var(--bg-brand) 28%, transparent) !important;
   transform: translateY(-1px);
 }
 
-/* Footer */
+.auth-submit:disabled {
+  opacity: 0.7 !important;
+  cursor: not-allowed;
+}
+
 .auth-form__footer-text {
   text-align: center;
   font-size: 0.9rem;
@@ -348,7 +363,7 @@ const strength = computed(() => {
 
 .auth-form__footer-link {
   font-weight: 800;
-  color: #0000ff;
+  color: var(--bg-brand);
   text-decoration: none;
 }
 </style>

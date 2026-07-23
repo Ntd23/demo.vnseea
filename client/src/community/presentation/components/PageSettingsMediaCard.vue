@@ -197,7 +197,7 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
   border: 8px solid #ffffff;
   border-radius: 999px;
 
-  background: #3b82f6;
+  background: var(--bg-brand);
 
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
 

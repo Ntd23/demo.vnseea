@@ -13,9 +13,9 @@
 
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-6 scale-[0.97]" enter-to-class="opacity-100 translate-y-0 scale-100">
           <section v-if="open" class="relative z-10 flex w-full max-w-2xl flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-8px_40px_rgba(15,23,42,0.10)] sm:max-h-[90vh] sm:rounded-[28px]">
-            <div class="flex shrink-0 items-center justify-between border-b border-[#0000ff]/8 px-5 py-4">
+            <div class="flex shrink-0 items-center justify-between border-b border-[var(--bg-brand)]/8 px-5 py-4">
               <div class="flex items-center gap-2.5">
-                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-[#0000ff]/8 text-[#0000ff]">
+                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--bg-brand)]/8 text-[var(--text-brand)]">
                   <Icon name="i-ph-sliders-horizontal-bold" class="h-[18px] w-[18px]" />
                 </div>
                 <div>
@@ -39,7 +39,7 @@
               />
 
               <div>
-                <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/50">{{ t("feed.publisherBox.audienceTitle") }}</p>
+                <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-brand)]/50">{{ t("feed.publisherBox.audienceTitle") }}</p>
                 <div class="grid gap-2 sm:grid-cols-3">
                   <UButton
                     v-for="option in audienceOptions"
@@ -56,7 +56,7 @@
               </div>
 
               <div>
-                <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/50">{{ t("feed.publisherBox.advancedActionTitle") }}</p>
+                <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-brand)]/50">{{ t("feed.publisherBox.advancedActionTitle") }}</p>
                 <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   <UButton
                     v-for="item in actions"
@@ -73,7 +73,7 @@
               </div>
 
               <div>
-                <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/50">{{ t("feed.publisherBox.advancedChipTitle") }}</p>
+                <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-brand)]/50">{{ t("feed.publisherBox.advancedChipTitle") }}</p>
                 <div class="flex flex-wrap gap-2">
                   <UButton
                     v-for="item in chips"
@@ -91,7 +91,7 @@
               </div>
             </div>
 
-            <div class="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-[#0000ff]/8 px-5 py-4">
+            <div class="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-[var(--bg-brand)]/8 px-5 py-4">
               <UButton color="neutral" variant="outline" class="rounded-xl" @click="emit('reset')">
                 {{ t("feed.publisherBox.resetOptions") }}
               </UButton>

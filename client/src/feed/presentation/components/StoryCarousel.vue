@@ -409,7 +409,7 @@ async function handleCreateStory() {
   height: 100dvh;
   overflow: hidden;
   outline: none;
-  background: var(--story-viewer-gradient, linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #38bdf8 100%));
+  background: var(--story-viewer-gradient, linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 58%, #38bdf8 100%));
 }
 
 @media (min-width: 1024px) {
@@ -447,7 +447,7 @@ async function handleCreateStory() {
   justify-content: center;
   gap: 14px;
   padding: 24px;
-  background: var(--story-viewer-gradient, linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #38bdf8 100%));
+  background: var(--story-viewer-gradient, linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 58%, #38bdf8 100%));
   color: #ffffff;
   text-align: center;
 }
@@ -529,7 +529,7 @@ async function handleCreateStory() {
   overflow: hidden;
   border-radius: 999px;
   border: 2px solid #ffffff;
-  background: #0000ff;
+  background: var(--bg-brand);
   font-size: 12px;
   font-weight: 800;
 }
@@ -710,8 +710,8 @@ async function handleCreateStory() {
 }
 
 .story-viewer__bar-react--active {
-  border-color: rgba(59, 130, 246, 0.58);
-  background: rgba(37, 99, 235, 0.2);
+  border-color: color-mix(in srgb, var(--bg-brand) 58%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .story-viewer__bar-react-symbol {
@@ -841,7 +841,7 @@ async function handleCreateStory() {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #fff;
   border: none;
   cursor: pointer;
@@ -849,7 +849,7 @@ async function handleCreateStory() {
 }
 
 .story-viewer__bar-send:hover {
-  background: #2233ff;
+  background: var(--bg-brand-hover);
   transform: scale(1.08);
 }
 
@@ -1007,13 +1007,13 @@ async function handleCreateStory() {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  color: var(--bg-brand);
   transition: all 0.15s ease;
 }
 
 .story-card--create:hover .story-card__create-icon {
-  background: rgba(0, 0, 255, 0.12);
+  background: color-mix(in srgb, var(--bg-brand) 12%, transparent);
   transform: scale(1.05);
 }
 
@@ -1036,7 +1036,7 @@ async function handleCreateStory() {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   background: #ffffff;
   color: #475569;
   cursor: pointer;
@@ -1051,9 +1051,9 @@ async function handleCreateStory() {
 }
 
 .story-rail__arrow:hover {
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
-  box-shadow: 0 4px 16px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .story-rail__arrow--left {

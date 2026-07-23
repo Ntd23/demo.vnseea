@@ -1,7 +1,7 @@
 <!-- English description: Hosts the root Nuxt app shell, global route loading, error boundary, and toaster. -->
 <template>
   <component :is="appShellComponent" class="min-h-screen">
-    <NuxtLoadingIndicator color="#0000ff" :height="3" :duration="2500" :throttle="0" />
+    <NuxtLoadingIndicator color="var(--color-primary-500)" :height="3" :duration="2500" :throttle="0" />
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtErrorBoundary :key="runtimeBoundaryKey" @error="handleRuntimePageError">
@@ -9,8 +9,8 @@
 
         <template #error="{ error: runtimeError, clearError: clearBoundaryError }">
           <div class="px-4 py-6 sm:px-6">
-            <div class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_18px_40px_rgba(15,35,110,0.08)]">
-              <div class="bg-[linear-gradient(135deg,#0000ff_0%,#1e293b_100%)] px-6 py-6 text-white sm:px-8">
+            <div class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-xl)]">
+              <div class="bg-[linear-gradient(135deg,var(--color-primary-500)_0%,var(--color-primary-700)_100%)] px-6 py-6 text-white sm:px-8">
                 <p class="text-[10px] font-black uppercase tracking-[0.32em] text-white/70">
                   Runtime Page Error
                 </p>
@@ -23,15 +23,15 @@
               </div>
 
               <div class="space-y-5 px-6 py-6 sm:px-8">
-                <div class="rounded-[22px] border border-[#dbe3f2] bg-[#f8fbff] p-4">
-                  <p class="text-[11px] font-black uppercase tracking-[0.24em] text-[#0000ff]">
+                <div class="rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.24em] text-[var(--text-brand)]">
                     Route
                   </p>
-                  <p class="mt-2 break-all text-sm font-semibold text-[#243b63]">
+                  <p class="mt-2 break-all text-sm font-semibold text-[var(--text-primary)]">
                     {{ route.fullPath }}
                   </p>
 
-                  <p class="mt-4 text-[11px] font-black uppercase tracking-[0.24em] text-[#0000ff]">
+                  <p class="mt-4 text-[11px] font-black uppercase tracking-[0.24em] text-[var(--text-brand)]">
                     Error
                   </p>
                   <p class="mt-2 text-sm leading-6 text-slate-600">
@@ -42,14 +42,14 @@
                 <div class="flex flex-col gap-3 sm:flex-row">
                   <button
                     type="button"
-                    class="justify-center rounded-2xl bg-[#0000ff] px-6 py-4 font-black uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(0,0,255,0.2)] hover:bg-[#0000d8]"
+                    class="justify-center rounded-2xl border border-[var(--border-on-brand)] bg-[var(--bg-brand)] px-6 py-4 font-black uppercase tracking-[0.16em] text-white shadow-[var(--shadow-brand)] hover:bg-[var(--bg-brand-hover)]"
                     @click="retryCurrentPage(clearBoundaryError)"
                   >
                     Thu lai trang nay
                   </button>
                   <button
                     type="button"
-                    class="justify-center rounded-2xl bg-white px-6 py-4 font-black uppercase tracking-[0.16em] text-slate-700 ring-1 ring-[#dbe3f2] hover:ring-[#0000ff]"
+                    class="justify-center rounded-2xl bg-white px-6 py-4 font-black uppercase tracking-[0.16em] text-slate-700 ring-1 ring-[var(--border-default)] hover:ring-[var(--color-primary-500)]"
                     @click="goToSafePage(clearBoundaryError)"
                   >
                     Ve trang on dinh

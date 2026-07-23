@@ -5,12 +5,6 @@
     <!-- Section header -->
     <div class="settings-section__header-row">
       <div class="settings-section__header-main">
-        <div class="settings-section__badge-row">
-          <span class="settings-section__badge-icon">
-            <Icon :name="sectionIcon" class="h-3.5 w-3.5" />
-          </span>
-          <span class="settings-section__badge-text">{{ kindLabel }}</span>
-        </div>
         <h2 :id="`section-title-${sectionId}`" class="settings-section__title">
           {{ section.title }}
         </h2>
@@ -87,7 +81,7 @@
             <UBadge
               v-if="item.meta"
               variant="soft"
-              class="rounded-full text-[10px] font-semibold px-2.5 py-0.5 bg-[rgba(0,0,255,0.07)] text-[#0000ff] border-0 ring-0"
+              class="rounded-full text-[10px] font-semibold px-2.5 py-0.5 bg-[color-mix(in srgb, var(--bg-brand) 7%, transparent)] text-[var(--text-brand)] border-0 ring-0"
             >
               {{ item.meta }}
             </UBadge>
@@ -99,7 +93,7 @@
           v-if="item.action"
           size="sm"
           variant="outline"
-          class="rounded-[10px] text-[12px] font-semibold border-[rgba(0,0,255,0.2)] text-[#0000ff] bg-white hover:bg-[#0000ff] hover:text-white hover:border-[#0000ff] active:scale-[0.98] transition-all shrink-0"
+          class="rounded-[10px] text-[12px] font-semibold border-[color-mix(in srgb, var(--bg-brand) 20%, transparent)] text-[var(--text-brand)] bg-white hover:bg-[var(--bg-brand)] hover:text-white hover:border-[var(--bg-brand)] active:scale-[0.98] transition-all shrink-0"
           @click="onAction?.(item)"
         >
           {{ item.action }}
@@ -144,7 +138,7 @@
         v-if="savedMessage"
         icon="i-ph-check-circle-bold"
         :title="savedMessage"
-        class="rounded-[10px] border border-[rgba(0,0,255,0.12)] bg-[rgba(0,0,255,0.05)]"
+        class="rounded-[10px] border border-[color-mix(in srgb, var(--bg-brand) 12%, transparent)] bg-[color-mix(in srgb, var(--bg-brand) 5%, transparent)]"
       />
     </Transition>
 
@@ -382,20 +376,20 @@ const sectionIcon = computed(() => {
 
 .settings-section__save-button {
   border-radius: 10px !important;
-  background: #1420ff !important;
+  background: var(--bg-brand) !important;
   color: #ffffff !important;
   font-size: 12px !important;
   font-weight: 700 !important;
   padding: 10px 20px !important;
   height: auto !important;
-  box-shadow: 0 4px 12px rgba(20, 32, 255, 0.22) !important;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 22%, transparent) !important;
   transition: all 0.2s ease !important;
 }
 
 .settings-section__save-button:hover {
-  background: #1018d8 !important;
+  background: var(--bg-brand-hover) !important;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(20, 32, 255, 0.32) !important;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--bg-brand) 32%, transparent) !important;
 }
 
 /* ─── Divider ─────────────────────────── */

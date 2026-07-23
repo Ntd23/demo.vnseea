@@ -161,7 +161,7 @@
 import UListbox from "@nuxt/ui/components/Listbox.vue"
 import type { MessageUserTag } from "../../domain/types/messages.types"
 
-const defaultTagColor = "#3b82f6"
+const defaultTagColor = "var(--bg-brand)"
 const open = defineModel<boolean>("open", { default: false })
 const props = defineProps<{
   labels: MessageUserTag[]
@@ -252,8 +252,8 @@ async function submitCreateTag() {
 }
 
 .messages-tag-modal__tab--active {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
+  color: var(--bg-brand);
+  border-bottom-color: var(--bg-brand);
 }
 
 .messages-tag-modal__panel {

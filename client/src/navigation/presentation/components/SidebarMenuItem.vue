@@ -56,11 +56,11 @@ const isActive = computed(() => {
 }
 
 .sidebar-item:hover {
-  background: rgba(0, 0, 255, 0.03);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .sidebar-item--active {
-  background: rgba(0, 0, 255, 0.05);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
 /* Active left accent bar */
@@ -72,7 +72,7 @@ const isActive = computed(() => {
   bottom: 8px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: #0000ff;
+  background: var(--bg-brand);
 }
 
 .sidebar-item__icon {
@@ -89,14 +89,14 @@ const isActive = computed(() => {
 }
 
 .sidebar-item:hover .sidebar-item__icon {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .sidebar-item__icon--active {
-  background: #0000ff !important;
+  background: var(--bg-brand) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .sidebar-item__label {
@@ -109,12 +109,12 @@ const isActive = computed(() => {
 }
 
 .sidebar-item--active .sidebar-item__label {
-  color: #0000ff;
+  color: var(--bg-brand);
   font-weight: 700;
 }
 
 .sidebar-item:hover .sidebar-item__label {
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .sidebar-item__badge {
@@ -129,12 +129,12 @@ const isActive = computed(() => {
   padding: 0 6px;
   font-size: 10px;
   font-weight: 700;
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  color: var(--bg-brand);
 }
 
 .sidebar-item__badge--active {
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
 }
 </style>

@@ -159,7 +159,7 @@ const chartOption = computed<EChartsOption>(() => {
   const values = chartPoints.value.map(point => point.likes)
 
   return {
-    color: ["#2563eb"],
+    color: ["var(--bg-brand)"],
     grid: {
       top: 18,
       right: 18,
@@ -224,11 +224,11 @@ const chartOption = computed<EChartsOption>(() => {
       showSymbol: values.length <= 31,
       lineStyle: {
         width: 3,
-        color: "#2563eb",
+        color: "var(--bg-brand)",
       },
       itemStyle: {
         color: "#ffffff",
-        borderColor: "#2563eb",
+        borderColor: "var(--bg-brand)",
         borderWidth: 2,
       },
       areaStyle: {
@@ -239,8 +239,8 @@ const chartOption = computed<EChartsOption>(() => {
           x2: 0,
           y2: 1,
           colorStops: [
-            { offset: 0, color: "rgba(37, 99, 235, 0.22)" },
-            { offset: 1, color: "rgba(37, 99, 235, 0.02)" },
+            { offset: 0, color: "color-mix(in srgb, var(--bg-brand) 22%, transparent)" },
+            { offset: 1, color: "color-mix(in srgb, var(--bg-brand) 2%, transparent)" },
           ],
         },
       },
@@ -362,7 +362,7 @@ const chartOption = computed<EChartsOption>(() => {
 
 .analytics-period-button--active {
   background: #ffffff;
-  color: #0000ff;
+  color: var(--bg-brand);
   box-shadow: 0 1px 5px rgba(15, 23, 42, 0.08);
 }
 
@@ -402,8 +402,8 @@ const chartOption = computed<EChartsOption>(() => {
 
 .analytics-summary span {
   border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--color-primary-50);
+  color: var(--bg-brand-hover);
   padding: 6px 10px;
   font-size: 11px;
   font-weight: 900;

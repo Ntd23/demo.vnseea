@@ -273,7 +273,7 @@ const pageTitle = computed(() =>
 
 <style scoped>
 .customer-order-page {
-  --order-brand: var(--color-primary-500, #0000ff);
+  --order-brand: var(--color-primary-500, var(--bg-brand));
   --order-card: var(--surface-card, #ffffff);
   --order-border: var(--border-light, #e2e8f0);
   --order-soft: var(--surface-muted, #f8fafc);
@@ -481,7 +481,7 @@ const pageTitle = computed(() =>
   flex: 0 0 38px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(0, 0, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   border-radius: 12px;
   color: var(--order-brand);
   background: #ffffff;
@@ -560,7 +560,7 @@ const pageTitle = computed(() =>
   max-width: 100%;
   padding: 8px 11px;
   color: var(--order-brand);
-  background: rgba(0, 0, 255, 0.05);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   overflow-wrap: anywhere;
   white-space: normal;
 }

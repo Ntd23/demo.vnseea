@@ -42,7 +42,7 @@ export const sellerOrdersMock: SellerOrder[] = [
           price: 250000,
           imageStyle: [
             "radial-gradient(circle at 20% 18%, rgba(255,255,255,0.28), transparent 18%)",
-            "linear-gradient(150deg, #1f2937 0%, #64748b 40%, #dbeafe 100%)",
+            "linear-gradient(150deg, #1f2937 0%, #64748b 40%, var(--color-primary-100) 100%)",
           ].join(", "),
         },
       ],
@@ -134,7 +134,7 @@ export const sellerOrdersMock: SellerOrder[] = [
           price: 480000,
           imageStyle: [
             "radial-gradient(circle at 72% 12%, rgba(255,255,255,0.24), transparent 18%)",
-            "linear-gradient(140deg, #0f172a 0%, #2563eb 42%, #7dd3fc 100%)",
+            "linear-gradient(140deg, #0f172a 0%, var(--bg-brand) 42%, #7dd3fc 100%)",
           ].join(", "),
         },
       ],

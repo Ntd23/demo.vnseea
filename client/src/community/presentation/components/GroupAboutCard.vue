@@ -2,7 +2,7 @@
   <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
     <div class="flex items-start justify-between gap-3">
       <div>
-        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
           {{ compact ? t("pages.groupDetailPage.aboutCompactEyebrow") : t("pages.groupDetailPage.aboutEyebrow") }}
         </p>
         <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
@@ -10,7 +10,7 @@
         </h3>
       </div>
 
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[#eef3ff] text-[#0000ff]">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[#eef3ff] text-[var(--text-brand)]">
         <Icon :name="compact ? 'i-ph-info-bold' : 'i-ph-identification-card-bold'" class="h-5 w-5" />
       </div>
     </div>
@@ -21,12 +21,12 @@
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.groupDetailPage.privacyTitle") }}</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.groupDetailPage.privacyTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ privacyLabel }}</p>
         <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ privacyDescription }}</p>
       </div>
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.groupDetailPage.categoryTitle") }}</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.groupDetailPage.categoryTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ categoryLabel }}</p>
         <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ locationLabel }}</p>
       </div>
@@ -35,16 +35,16 @@
     <div v-if="!compact || group.website" class="mt-4 space-y-2 text-[13px] text-slate-500">
       <!-- Founded Date: Only show in the full about card (not compact) -->
       <div v-if="!compact" class="flex items-start gap-2">
-        <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[var(--text-brand)]/70" />
         <span>{{ foundedLabel }}</span>
       </div>
 
       <!-- Website: Show if available -->
       <div v-if="group.website" class="flex items-start gap-2">
-        <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[var(--text-brand)]/70" />
         <a
           :href="websiteHref"
-          class="break-all text-[#1d4ed8] underline decoration-[#bfdbfe] underline-offset-4 transition hover:text-[#0000ff]"
+          class="break-all text-[var(--text-brand)] underline decoration-[var(--color-primary-200)] underline-offset-4 transition hover:text-[var(--text-brand)]"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -54,7 +54,7 @@
     </div>
 
     <div v-if="!compact && group.guidelines?.length" class="mt-5">
-      <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+      <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
         {{ t("pages.groupDetailPage.guidelinesTitle") }}
       </p>
       <div class="mt-3 space-y-2.5">

@@ -218,7 +218,7 @@ const viewsLabel = computed(() =>
 
 .movie-overview__back:hover,
 .movie-overview__facts a {
-  color: var(--color-accent-700, #0000ff);
+  color: var(--color-accent-700, var(--bg-brand));
 }
 
 .movie-overview__title {
@@ -275,7 +275,7 @@ const viewsLabel = computed(() =>
   border: 0;
   background: transparent;
   padding: 0;
-  color: var(--color-accent-700, #0000ff);
+  color: var(--color-accent-700, var(--bg-brand));
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
@@ -332,8 +332,8 @@ const viewsLabel = computed(() =>
 }
 
 .movie-overview__share a:hover {
-  border-color: var(--color-accent-700, #0000ff);
-  background: rgba(0, 0, 255, 0.05);
+  border-color: var(--color-accent-700, var(--bg-brand));
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   transform: translateY(-1px);
 }
 

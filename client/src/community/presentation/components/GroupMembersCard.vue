@@ -2,7 +2,7 @@
   <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
           {{ t("pages.groupDetailPage.membersEyebrow") }}
         </p>
         <h3 class="mt-2 text-[1.15rem] font-black tracking-[-0.04em] text-[#243b63]">
@@ -31,7 +31,7 @@
         class="flex items-center gap-3 rounded-[18px] bg-[#fbfcff] px-3.5 py-3"
       >
         <div class="relative shrink-0">
-          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#dbeafe_0%,#eef2ff_100%)] text-[13px] font-black text-[#1d4ed8]">
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-primary-100)_0%,#eef2ff_100%)] text-[13px] font-black text-[var(--text-brand)]">
             {{ member.initials }}
           </div>
           <span

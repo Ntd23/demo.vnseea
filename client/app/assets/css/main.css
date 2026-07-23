@@ -81,7 +81,7 @@ a {
 .mock-image {
   background:
     radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.28), transparent 24%),
-    linear-gradient(180deg, rgba(0, 0, 255, 0.08) 0%, #f0f4ff 50%, #e8eeff 100%);
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-brand) 8%, transparent) 0%, #f0f4ff 50%, #e8eeff 100%);
 }
 
 .app-icon-shell {
@@ -100,24 +100,24 @@ a {
 }
 
 .app-icon-shell:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.12);
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
 .app-icon-shell:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 3px rgba(0, 0, 255, 0.12),
-    0 10px 22px rgba(0, 0, 255, 0.08);
+    0 0 0 3px color-mix(in srgb, var(--bg-brand) 12%, transparent),
+    0 10px 22px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .app-icon-shell--active {
-  border-color: #0000ff;
-  background: #0000ff;
+  border-color: var(--bg-brand);
+  background: var(--bg-brand);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .app-icon-shell--active:hover {

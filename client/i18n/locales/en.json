@@ -629,7 +629,7 @@
           "meta": "Recently updated profiles",
           "count": "128 profiles",
           "href": "/search",
-          "accent": "linear-gradient(135deg,#0f172a 0%,#2563eb 52%,#7dd3fc 100%)",
+          "accent": "linear-gradient(135deg,#0f172a 0%,var(--bg-brand) 52%,#7dd3fc 100%)",
           "tags": [
             "Creator",
             "Expert",
@@ -748,7 +748,7 @@
           "meta": "Campaigns receiving support",
           "count": "7 campaigns",
           "href": "/funding",
-          "accent": "linear-gradient(135deg,#172554 0%,#2563eb 48%,#bfdbfe 100%)",
+          "accent": "linear-gradient(135deg,#172554 0%,var(--bg-brand) 48%,var(--color-primary-200) 100%)",
           "tags": [
             "Support",
             "Campaign",
@@ -799,7 +799,7 @@
           "meta": "New playable items",
           "count": "11 games",
           "href": "/games",
-          "accent": "linear-gradient(135deg,#1f2937 0%,#2563eb 48%,#93c5fd 100%)",
+          "accent": "linear-gradient(135deg,#1f2937 0%,var(--bg-brand) 48%,var(--color-primary-300) 100%)",
           "tags": [
             "Arcade",
             "Mini Game",
@@ -1716,7 +1716,7 @@
           "count": 48,
           "badge": "Highlight",
           "to": "/events",
-          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+          "accent": "linear-gradient(135deg, #b91c1c 0%, #991b1b 100%)"
         },
         {
           "title": "Weekend workshop diary",
@@ -1750,7 +1750,7 @@
           "likes": 18200,
           "comments": 624,
           "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
-          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)",
+          "accent": "linear-gradient(135deg, #b91c1c 0%, #991b1b 100%)",
           "tags": [
             "#community",
             "#workshop",
@@ -1771,7 +1771,7 @@
           "likes": 26100,
           "comments": 840,
           "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
-          "accent": "linear-gradient(135deg,#172554 0%,#2563eb 100%)",
+          "accent": "linear-gradient(135deg,#172554 0%,var(--bg-brand) 100%)",
           "tags": [
             "#event",
             "#summit",
@@ -1834,7 +1834,7 @@
           "likes": 9800,
           "comments": 201,
           "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
-          "accent": "linear-gradient(135deg,#4338ca 0%,#60a5fa 100%)",
+          "accent": "linear-gradient(135deg,#4338ca 0%,var(--color-primary-400) 100%)",
           "tags": [
             "#education",
             "#makerspace",
@@ -1913,7 +1913,7 @@
           "description": "Compare trending photo sets with the highest-engagement posts in the popular ranking board.",
           "to": "/popular",
           "icon": "i-ph-fire-fill",
-          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+          "accent": "linear-gradient(135deg, #b91c1c 0%, #991b1b 100%)"
         },
         {
           "title": "Jump to memories",
@@ -2670,7 +2670,7 @@
           "description": "Jump to Watch and continue with the sessions drawing attention now.",
           "to": "/watch",
           "icon": "i-ph-play-circle-bold",
-          "accent": "linear-gradient(135deg,#2563eb 0%,#60a5fa 100%)"
+          "accent": "linear-gradient(135deg,var(--bg-brand) 0%,var(--color-primary-400) 100%)"
         },
         {
           "title": "Follow live streams",

@@ -592,15 +592,15 @@ async function toggleCreateMenu() {
 }
 
 .desktop-pill--active {
-  background: linear-gradient(180deg, #2749ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, #2749ff 0%, var(--bg-brand) 100%);
   color: #fff;
-  box-shadow: 0 8px 18px rgba(0, 0, 255, 0.22);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--bg-brand) 22%, transparent);
 }
 
 .desktop-pill--inactive { color: #000000; }
 
 .desktop-pill--inactive:hover {
-  color: #0000ff;
+  color: var(--bg-brand);
   background: #f5f8ff;
 }
 
@@ -650,16 +650,16 @@ async function toggleCreateMenu() {
 }
 
 .header-action-btn:hover {
-  border-color: rgba(0, 0, 255, 0.2);
-  color: #0000ff;
-  background: rgba(0, 0, 255, 0.03);
-  box-shadow: 0 2px 8px rgba(0, 0, 255, 0.08);
+  border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
+  color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .header-action-btn--active {
-  border-color: #0000ff;
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  border-color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .header-action-badge {
@@ -672,7 +672,7 @@ async function toggleCreateMenu() {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #0000ff;
+  background: var(--bg-brand);
   border: 2px solid #ffffff;
   padding: 0 4px;
   font-size: 9px;
@@ -753,9 +753,9 @@ async function toggleCreateMenu() {
 }
 
 .create-menu-item:hover {
-  border-color: rgba(0, 0, 255, 0.18);
-  background: rgba(0, 0, 255, 0.04);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  color: var(--bg-brand);
   transform: translateY(-1px);
 }
 
@@ -787,7 +787,7 @@ async function toggleCreateMenu() {
 .mobile-bar {
   background: #ffffff;
   border-bottom: 1px solid #f1f5f9;
-  box-shadow: 0 2px 12px rgba(0, 0, 255, 0.04);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 8px 16px;
 }
 
@@ -823,16 +823,16 @@ async function toggleCreateMenu() {
 }
 
 .mobile-icon-btn:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .mobile-icon-btn--active {
-  border-color: #0000ff;
-  background: #0000ff;
+  border-color: var(--bg-brand);
+  background: var(--bg-brand);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.22);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 22%, transparent);
 }
 
 .mobile-icon-btn--avatar {
@@ -853,7 +853,7 @@ async function toggleCreateMenu() {
   padding: 8px 12px 10px;
   background: #ffffff;
   border-bottom: 1px solid #f1f5f9;
-  box-shadow: 0 4px 16px rgba(0, 0, 255, 0.06);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
 .mobile-search :deep(> *:first-child) {
@@ -877,9 +877,9 @@ async function toggleCreateMenu() {
 }
 
 .mobile-search__close:hover {
-  background: rgba(0, 0, 255, 0.05);
-  border-color: rgba(0, 0, 255, 0.15);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border-color: color-mix(in srgb, var(--bg-brand) 15%, transparent);
+  color: var(--bg-brand);
 }
 
 @media (max-width: 1279.98px) {

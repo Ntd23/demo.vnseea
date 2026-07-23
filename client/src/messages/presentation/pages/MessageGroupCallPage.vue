@@ -314,7 +314,7 @@ const {
 }
 
 .group-call-page__spinner {
-  color: #93c5fd !important;
+  color: var(--color-primary-300) !important;
   animation: group-call-spin 1s linear infinite;
 }
 

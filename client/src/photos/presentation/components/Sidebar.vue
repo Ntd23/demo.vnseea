@@ -68,7 +68,7 @@
 
     <!-- Quick Links — branded dark -->
     <section class="overflow-hidden rounded-[24px] border border-[var(--border-default)] shadow-[var(--shadow-md)]">
-      <div class="bg-[linear-gradient(135deg,#0f172a_0%,#1e3a8a_55%,#3b82f6_100%)] p-4 text-white">
+      <div class="bg-[linear-gradient(135deg,#0f172a_0%,var(--color-primary-900)_55%,var(--bg-brand)_100%)] p-4 text-white">
         <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/55">{{ linksEyebrow }}</p>
         <h3 class="mt-1 text-[1.05rem] font-extrabold leading-snug">{{ linksTitle }}</h3>
 

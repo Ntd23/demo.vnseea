@@ -79,10 +79,10 @@ type BackendCurrentUserResponse = {
 }
 
 const categoryVisuals: Record<ProductListingCategory, { icon: string; background: string }> = {
-  vehicles: { icon: "i-ph-car-profile", background: "linear-gradient(135deg,#172554 0%,#1d4ed8 48%,#7dd3fc 100%)" },
+  vehicles: { icon: "i-ph-car-profile", background: "linear-gradient(135deg,#172554 0%,var(--bg-brand-hover) 48%,#7dd3fc 100%)" },
   home: { icon: "i-ph-armchair", background: "linear-gradient(135deg,#78350f 0%,#b45309 38%,#f59e0b 100%)" },
   beauty: { icon: "i-ph-drop", background: "linear-gradient(135deg,#0369a1 0%,#38bdf8 45%,#bae6fd 100%)" },
-  books: { icon: "i-ph-book-open-text", background: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 38%,#bfdbfe 100%)" },
+  books: { icon: "i-ph-book-open-text", background: "linear-gradient(135deg,var(--color-primary-900) 0%,var(--bg-brand) 38%,var(--color-primary-200) 100%)" },
   tech: { icon: "i-ph-device-mobile-camera", background: "linear-gradient(135deg,#111827 0%,#4f46e5 42%,#c4b5fd 100%)" },
   food: { icon: "i-ph-bowl-food", background: "linear-gradient(135deg,#7c2d12 0%,#ea580c 40%,#fdba74 100%)" },
 }

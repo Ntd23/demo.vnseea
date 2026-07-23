@@ -319,7 +319,7 @@ const logoutAction = {
   justify-content: space-between;
   gap: 12px;
   padding: 20px 20px 12px;
-  background: linear-gradient(135deg, #0000ff 0%, #2233ff 100%);
+  background: linear-gradient(135deg, var(--bg-brand) 0%, var(--bg-brand-hover) 100%);
   color: #ffffff;
 }
 
@@ -421,14 +421,14 @@ const logoutAction = {
 }
 
 .mm__stat:hover {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .mm__stat-icon {
   width: 14px;
   height: 14px;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .mm__content {
@@ -461,12 +461,12 @@ const logoutAction = {
   transition: background 0.12s ease, color 0.12s ease;
 }
 
-.mm__item:hover { background: rgba(0, 0, 255, 0.04); color: #0000ff; }
-.mm__item--active { background: rgba(0, 0, 255, 0.06); color: #0000ff; }
+.mm__item:hover { background: color-mix(in srgb, var(--bg-brand) 4%, transparent); color: var(--bg-brand); }
+.mm__item--active { background: color-mix(in srgb, var(--bg-brand) 6%, transparent); color: var(--bg-brand); }
 .mm__item--danger:hover { background: rgba(220, 38, 38, 0.05); }
 
 .mm__item-icon { width: 18px; height: 18px; flex-shrink: 0; color: #000000; }
-.mm__item-icon--active { color: #0000ff; }
+.mm__item-icon--active { color: var(--bg-brand); }
 .mm__item-icon--danger { color: #dc2626; }
 
 .mm__item-label { font-size: 14px; font-weight: 500; }

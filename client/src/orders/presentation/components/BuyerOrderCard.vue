@@ -1,5 +1,5 @@
 <template>
-  <article class="surface-card group overflow-hidden p-6 sm:p-8 ring-1 ring-secondary-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_12px_32px_rgba(37,99,235,0.12)]">
+  <article class="surface-card group overflow-hidden p-6 sm:p-8 ring-1 ring-secondary-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_12px_32px_color-mix(in srgb, var(--bg-brand) 12%, transparent)]">
     <div class="flex flex-col gap-6 border-b border-secondary-50 pb-6 xl:flex-row xl:items-start xl:justify-between">
       <div class="space-y-1">
         <div class="flex flex-wrap items-center gap-3">
@@ -121,7 +121,7 @@
         :to="appRoutes.orderDetail(order.id)"
         size="xl"
         icon="i-ph-arrow-square-out-duotone"
-        class="rounded-xl bg-primary-600 px-8 text-xs font-semibold uppercase tracking-[0.06em] text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all hover:bg-primary-700 active:scale-95"
+        class="rounded-xl bg-primary-600 px-8 text-xs font-semibold uppercase tracking-[0.06em] text-white shadow-[0_4px_14px_color-mix(in srgb, var(--bg-brand) 20%, transparent)] transition-all hover:bg-primary-700 active:scale-95"
       >
         {{ $t("orders.card.viewDetail") }}
       </UButton>

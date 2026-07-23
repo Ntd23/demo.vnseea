@@ -172,7 +172,7 @@ const formatFilterLabel = (value: string) =>
   align-items: center;
   justify-content: center;
   border-radius: 9px;
-  background: var(--color-accent-700, #0000ff);
+  background: var(--color-accent-700, var(--bg-brand));
   color: #ffffff;
 }
 

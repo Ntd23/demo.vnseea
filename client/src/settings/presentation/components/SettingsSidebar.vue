@@ -1,18 +1,5 @@
 <template>
   <aside class="settings-sidebar" aria-label="Settings navigation">
-    <!-- User mini-profile -->
-    <div class="settings-sidebar__profile">
-      <div class="settings-sidebar__avatar" aria-hidden="true">
-        <span v-if="userInitials">{{ userInitials }}</span>
-        <Icon v-else name="i-ph-user-circle-bold" class="h-5 w-5" />
-      </div>
-      <div class="settings-sidebar__profile-info">
-        <p class="settings-sidebar__profile-name">{{ t("settings.sidebar.title") }}</p>
-        <p class="settings-sidebar__profile-meta">
-          {{ t("settings.sidebar.subPages", { count: pages.length }) }}
-        </p>
-      </div>
-    </div>
 
     <div class="settings-sidebar__divider" />
 
@@ -139,7 +126,7 @@ onClickOutside(dropdownRef, () => {
 <style scoped>
 .settings-sidebar {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 14px;
@@ -163,7 +150,7 @@ onClickOutside(dropdownRef, () => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  background: linear-gradient(145deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,7 +158,7 @@ onClickOutside(dropdownRef, () => {
   font-weight: 800;
   color: #ffffff;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .settings-sidebar__profile-name {
@@ -224,13 +211,13 @@ onClickOutside(dropdownRef, () => {
 }
 
 .settings-sidebar__item:hover {
-  background: rgba(0, 0, 255, 0.03);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  color: var(--bg-brand);
 }
 
 .settings-sidebar__item--active {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 /* ─── Icon container ──────────────────── */
@@ -255,7 +242,7 @@ onClickOutside(dropdownRef, () => {
 }
 
 .settings-sidebar__icon--active {
-  background: #0000ff !important;
+  background: var(--bg-brand) !important;
   color: #ffffff !important;
 }
 
@@ -298,7 +285,7 @@ onClickOutside(dropdownRef, () => {
   right: 0;
   margin-top: 8px;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   border-radius: 12px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   padding: 8px;
@@ -324,12 +311,12 @@ onClickOutside(dropdownRef, () => {
 
 .settings-sidebar__dropdown-item:hover {
   background: #f8fafc;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .settings-sidebar__dropdown-item--active {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
   font-weight: 700;
 }
 
@@ -382,8 +369,8 @@ onClickOutside(dropdownRef, () => {
   }
 
   .settings-sidebar__item--active {
-    background: #eff6ff;
-    border-color: #bfdbfe;
+    background: var(--color-primary-50);
+    border-color: var(--color-primary-200);
   }
   
   .settings-sidebar__label {
@@ -404,7 +391,7 @@ onClickOutside(dropdownRef, () => {
   
   .settings-sidebar__icon--active {
     background: transparent !important;
-    color: #0000ff !important;
+    color: var(--bg-brand) !important;
     box-shadow: none !important;
   }
   

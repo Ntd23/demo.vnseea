@@ -3,7 +3,7 @@
     <!-- Grid: Strictly matching GoProHero padding and columns -->
     <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
       <!-- Left Content Box: Matching GoProHero structure but with Funding theme -->
-      <div class="relative flex min-w-0 flex-col justify-between gap-8 overflow-hidden rounded-[24px] bg-[linear-gradient(135deg,#0f172a_0%,#1e3a8a_45%,#2563eb_100%)] p-5 ring-1 ring-white/10 sm:p-7">
+      <div class="relative flex min-w-0 flex-col justify-between gap-8 overflow-hidden rounded-[24px] bg-[linear-gradient(135deg,#0f172a_0%,var(--color-primary-900)_45%,var(--bg-brand)_100%)] p-5 ring-1 ring-white/10 sm:p-7">
         <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent)]" />
 
         <div class="relative z-10 space-y-4">

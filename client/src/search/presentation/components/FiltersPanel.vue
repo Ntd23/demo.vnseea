@@ -203,10 +203,10 @@ const filterButtonLabel = computed(() =>
 )
 
 const selectUi = {
-  base: "h-11 w-full rounded-xl border border-[#e2e8f0] bg-white px-3 text-[14px] font-bold text-[#334155] shadow-none ring-0 hover:border-[#cbd5e1] focus-visible:border-[rgba(0,0,255,0.45)] focus-visible:ring-[3px] focus-visible:ring-[rgba(0,0,255,0.08)]",
+  base: "h-11 w-full rounded-xl border border-[#e2e8f0] bg-white px-3 text-[14px] font-bold text-[#334155] shadow-none ring-0 hover:border-[#cbd5e1] focus-visible:border-[color-mix(in srgb, var(--bg-brand) 45%, transparent)] focus-visible:ring-[3px] focus-visible:ring-[color-mix(in srgb, var(--bg-brand) 8%, transparent)]",
   content: "z-[70] min-w-[var(--reka-select-trigger-width)] rounded-2xl border border-[#e2e8f0] bg-white shadow-[0_12px_44px_rgba(0,0,0,0.12)]",
   viewport: "p-1",
-  item: "rounded-xl px-3 py-2 text-[13px] font-semibold text-[#334155] data-[highlighted]:bg-[rgba(0,0,255,0.05)] data-[highlighted]:text-[#0000ff] data-[state=checked]:text-[#0000ff]",
+  item: "rounded-xl px-3 py-2 text-[13px] font-semibold text-[#334155] data-[highlighted]:bg-[color-mix(in srgb, var(--bg-brand) 5%, transparent)] data-[highlighted]:text-[var(--text-brand)] data-[state=checked]:text-[var(--text-brand)]",
   trailingIcon: "size-5 text-[#64748b]",
 }
 
@@ -313,8 +313,8 @@ function resetFilters() {
 }
 
 .search-filters__keyword:focus {
-  border-color: rgba(0, 0, 255, 0.45);
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
+  border-color: color-mix(in srgb, var(--bg-brand) 45%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .search-filters__controls {
@@ -341,8 +341,8 @@ function resetFilters() {
 }
 
 .search-filters__filter-trigger:focus-visible {
-  border-color: rgba(0, 0, 255, 0.45);
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
+  border-color: color-mix(in srgb, var(--bg-brand) 45%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .search-filters__filter-trigger {
@@ -364,10 +364,10 @@ function resetFilters() {
 .search-filters__submit,
 .search-filters__panel-submit {
   border: 0;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .search-filters__submit {
@@ -376,7 +376,7 @@ function resetFilters() {
 
 .search-filters__submit:hover,
 .search-filters__panel-submit:hover {
-  background: #0000ff;
+  background: var(--bg-brand);
 }
 
 .search-filters__panel {
@@ -423,20 +423,20 @@ function resetFilters() {
 }
 
 .search-filters__pill--active {
-  border-color: #0000ff;
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.12);
+  border-color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
 .search-filters__pill:hover {
-  background: rgba(0, 0, 255, 0.03);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  color: var(--bg-brand);
 }
 
 .search-filters__pill--active:hover {
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  color: var(--bg-brand);
 }
 
 .search-filters__age-grid {
@@ -481,8 +481,8 @@ function resetFilters() {
 }
 
 .search-filters__reset:hover {
-  background: rgba(0, 0, 255, 0.03);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
+  color: var(--bg-brand);
 }
 
 .search-filters__tabs {
@@ -511,8 +511,8 @@ function resetFilters() {
 }
 
 .search-filters__tab--active {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  color: var(--bg-brand);
 }
 
 .search-filters__tab-icon {

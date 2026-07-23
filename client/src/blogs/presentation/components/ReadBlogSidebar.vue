@@ -43,7 +43,7 @@
           role="listitem"
         >
           <span class="read-blog-sidebar__thumb">
-            <span class="read-blog-sidebar__thumb-fallback" :style="{ background: item.imageFallback ?? 'linear-gradient(135deg,#1e3a8a,#38bdf8)' }" />
+            <span class="read-blog-sidebar__thumb-fallback" :style="{ background: item.imageFallback ?? 'linear-gradient(135deg,var(--color-primary-900),#38bdf8)' }" />
             <NuxtImg
               v-if="item.image"
               :src="item.image"
@@ -176,7 +176,7 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__author-band {
   height: 62px;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
 }
 
 .read-blog-sidebar__author-body {
@@ -224,8 +224,8 @@ const openBlogCategory = (category: string) => navigateTo({
   display: inline-flex;
   margin-top: 8px;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
   font-size: 12px;
   font-weight: 700;
   padding: 6px 10px;
@@ -328,9 +328,9 @@ const openBlogCategory = (category: string) => navigateTo({
 }
 
 .read-blog-sidebar__search input:focus {
-  border-color: rgba(0, 0, 255, 0.28);
+  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.07), 0 10px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent), 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .read-blog-sidebar__search button {
@@ -351,12 +351,12 @@ const openBlogCategory = (category: string) => navigateTo({
 }
 
 .read-blog-sidebar__search button:hover {
-  background: rgba(0, 0, 255, 0.07);
-  color: #0000ff;
+  background: color-mix(in srgb, var(--bg-brand) 7%, transparent);
+  color: var(--bg-brand);
 }
 
 .read-blog-sidebar__search button:not(:disabled) {
-  background: #0000ff;
+  background: var(--bg-brand);
   color: #ffffff;
 }
 
@@ -410,9 +410,9 @@ const openBlogCategory = (category: string) => navigateTo({
 }
 
 .read-blog-sidebar__category-filter:hover {
-  border-color: rgba(0, 0, 255, 0.18);
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  color: var(--bg-brand);
 }
 
 .read-blog-sidebar__related {
@@ -431,7 +431,7 @@ const openBlogCategory = (category: string) => navigateTo({
 }
 
 .read-blog-sidebar__related:hover {
-  background: rgba(0, 0, 255, 0.03);
+  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
 }
 
 .read-blog-sidebar__thumb {

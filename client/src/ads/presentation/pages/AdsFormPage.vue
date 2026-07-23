@@ -317,7 +317,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 
 .ads-form-nav__item--active {
   background: #eef2ff;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .ads-preview__head {
@@ -334,7 +334,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   place-items: center;
   border-radius: 999px;
   background: #eef2ff;
-  color: #0000ff;
+  color: var(--bg-brand);
 }
 
 .ads-preview__head strong,
@@ -406,8 +406,8 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 }
 
 .ads-steps button.active {
-  border-color: #0000ff;
-  background: #0000ff;
+  border-color: var(--bg-brand);
+  background: var(--bg-brand);
   color: #fff;
 }
 
@@ -461,11 +461,11 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   width: max-content;
   align-items: center;
   gap: 8px;
-  border: 1px dashed #93c5fd;
+  border: 1px dashed var(--color-primary-300);
   border-radius: 14px;
-  background: #eff6ff;
+  background: var(--color-primary-50);
   padding: 12px 16px;
-  color: #0000ff;
+  color: var(--bg-brand);
   font-weight: 800;
 }
 
