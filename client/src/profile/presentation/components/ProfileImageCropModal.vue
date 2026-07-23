@@ -254,7 +254,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 22px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 28px 80px rgba(15, 23, 42, 0.34);
 }
 
@@ -273,7 +273,7 @@ onBeforeUnmount(() => {
 }
 
 .profile-crop__header h2 {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 800;
 }
@@ -287,8 +287,8 @@ onBeforeUnmount(() => {
   justify-content: center;
   border: 0;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
@@ -302,7 +302,7 @@ onBeforeUnmount(() => {
   position: relative;
   width: 100%;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .profile-crop__viewport-shell--avatar {
@@ -312,7 +312,7 @@ onBeforeUnmount(() => {
   margin-inline: auto;
   overflow: hidden;
   border: 1px solid #d8dee8;
-  background: #f8fafc;
+  background: var(--bg-muted);
 }
 
 .profile-crop__viewport--avatar {
@@ -336,7 +336,7 @@ onBeforeUnmount(() => {
 }
 
 :deep(.cropper-modal) {
-  background: #ffffff;
+  background: var(--bg-surface);
   opacity: 0.55;
 }
 
@@ -383,7 +383,7 @@ onBeforeUnmount(() => {
 }
 
 .profile-crop__post-text > span {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -409,8 +409,8 @@ onBeforeUnmount(() => {
 
 .profile-crop__cancel {
   border: 1px solid #dbe3ee;
-  background: #ffffff;
-  color: #475569;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
 }
 
 .profile-crop__confirm {

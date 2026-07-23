@@ -174,7 +174,7 @@ const handleLoginSubmit = async () => {
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.06em;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 @media (min-width: 640px) {
@@ -184,7 +184,7 @@ const handleLoginSubmit = async () => {
 .auth-form__subtitle {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
@@ -208,7 +208,7 @@ const handleLoginSubmit = async () => {
 }
 
 .auth-form__label {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 800;
 }
@@ -222,8 +222,8 @@ const handleLoginSubmit = async () => {
   height: 3rem;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 0.95rem;
   font-weight: 600;
   outline: none;
@@ -232,7 +232,7 @@ const handleLoginSubmit = async () => {
 }
 
 .auth-form__input::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .auth-form__input:focus {
@@ -263,7 +263,7 @@ const handleLoginSubmit = async () => {
   justify-content: center;
   border: 0;
   border-radius: 10px;
-  color: #475569;
+  color: var(--text-secondary);
   background: transparent;
   transform: translateY(-50%);
 }
@@ -334,7 +334,7 @@ const handleLoginSubmit = async () => {
 .auth-form__footer-text {
   text-align: center;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .auth-form__footer-link {

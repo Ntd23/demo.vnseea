@@ -379,7 +379,7 @@ function submitMessage() {
 .chat-input-shell {
   border-radius: 24px;
   border: 1px solid var(--border-light);
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 12px;
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
 }

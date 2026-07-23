@@ -246,7 +246,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   gap: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 22px;
   box-shadow: 0 12px 32px rgba(15, 35, 110, 0.08);
 }
@@ -262,7 +262,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 .ads-page__section-head h2,
 .ads-page__empty h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
@@ -274,7 +274,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 .ads-page__section-head p,
 .ads-page__empty p {
   margin: 6px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.55;
 }
@@ -307,7 +307,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   gap: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 18px;
 }
 
@@ -319,12 +319,12 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 
 .ads-summary-card p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .ads-summary-card strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 800;
 }
@@ -349,7 +349,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   gap: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 14px;
   box-shadow: 0 10px 26px rgba(15, 35, 110, 0.06);
 }
@@ -361,13 +361,13 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   width: 88px;
   place-items: center;
   border-radius: 14px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .ads-card__media-fallback {
   height: 30px;
   width: 30px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .ads-card__title-row {
@@ -379,7 +379,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 
 .ads-card h3 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 800;
 }
@@ -388,7 +388,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 .ads-card__meta,
 .ads-card__stats p {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -400,7 +400,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 
 .ads-card__meta span {
   border-radius: 999px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   padding: 5px 9px;
 }
 
@@ -432,13 +432,13 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 
 .ads-card__stats div {
   border-radius: 14px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 10px;
   text-align: center;
 }
 
 .ads-card__stats span {
-  color: #0f172a;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
@@ -455,8 +455,8 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   place-items: center;
   border: 1px solid #dbe4f0;
   border-radius: 999px;
-  background: #fff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .ads-page__load-more {
@@ -468,7 +468,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 .ads-page__empty {
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 36px 20px;
   text-align: center;
 }
@@ -477,7 +477,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   margin: 0 auto 10px;
   height: 42px;
   width: 42px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .ads-page__empty-link {

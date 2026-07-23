@@ -132,8 +132,8 @@ const suggestedSlug = computed(() =>
   justify-content: center;
   border-right: 1px solid #e2e8f0;
   border-radius: 10px 0 0 10px;
-  background: #f8fafc;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -143,7 +143,7 @@ const suggestedSlug = computed(() =>
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -159,8 +159,8 @@ const suggestedSlug = computed(() =>
   resize: vertical;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 15px;
   line-height: 1.65;
   outline: none;

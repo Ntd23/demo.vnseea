@@ -5,12 +5,12 @@
 @import "@nuxt/ui";
 @import "./tokens.css";
 
-html,
-html.dark {
+html {
   color-scheme: light;
 }
 
 html.dark {
+  color-scheme: dark;
   background: var(--bg-base);
   color: var(--text-primary);
 }
@@ -29,6 +29,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 .border {
   border-width: 0px;
 }
@@ -37,7 +38,6 @@ body {
 }
 a {
   text-decoration: none;
-  /* color: inherit; */
 }
 
 /* Guest layout helpers */
@@ -71,7 +71,6 @@ a {
   pointer-events: none;
 }
 
-/* Mock media / image placeholder */
 .mock-media {
   background:
     linear-gradient(140deg, rgba(20, 48, 194, 0.95), rgba(15, 27, 94, 0.92)),
@@ -90,7 +89,7 @@ a {
   justify-content: center;
   border: 1px solid #e2e8f0;
   background: #f8fafc;
-  color: #475569;
+  color: var(--text-secondary);
   transition:
     border-color 0.18s ease,
     background-color 0.18s ease,

@@ -207,7 +207,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   height: 64px;
   align-items: center;
   gap: 10px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 900;
 }
@@ -218,7 +218,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
 
 .movies-page__backdrop {
   height: 24px;
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .movies-page__filters {
@@ -411,8 +411,8 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   justify-content: center;
   gap: 12px;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #ffffff;
-  color: #64748b;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-weight: 800;
   text-align: center;
 }
@@ -436,9 +436,9 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   align-items: center;
   gap: 8px;
   border: 1px solid #dbe1ea;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 10px 22px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;

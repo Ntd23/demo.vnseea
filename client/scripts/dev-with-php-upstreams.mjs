@@ -1,6 +1,5 @@
-// English description: Starts optional local PHP-CGI upstream watchdog before launching Nuxt dev.
+// English description: Starts the local PHP-CGI upstream watchdog when needed before launching Nuxt dev.
 
-import { existsSync } from "node:fs"
 import { dirname, join, resolve } from "node:path"
 import { spawn } from "node:child_process"
 import { createServer } from "node:net"
@@ -78,8 +77,26 @@ process.once("SIGTERM", () => {
   process.exit(143)
 })
 
-const phpCgiBin = String(process.env.PHP_CGI_BIN || "").trim()
-const shouldStartPhpWatchdog = phpCgiBin && existsSync(phpCgiBin)
+const backendApiBase = String(process.env.NUXT_BACKEND_API_BASE || "").trim()
+const watchdogMode = String(process.env.PHP_UPSTREAM_WATCHDOG || "auto").trim().toLowerCase()
+
+const isLocalBackend = () => {
+  try {
+    const hostname = new URL(backendApiBase).hostname.toLowerCase()
+    return hostname === "localhost"
+      || hostname === "127.0.0.1"
+      || hostname.endsWith(".test")
+  }
+  catch {
+    return false
+  }
+}
+
+const shouldStartPhpWatchdog = process.platform === "win32"
+  && watchdogMode !== "0"
+  && watchdogMode !== "off"
+  && watchdogMode !== "false"
+  && (watchdogMode === "1" || watchdogMode === "on" || watchdogMode === "true" || isLocalBackend())
 
 try {
   await assertDevPortAvailable()
@@ -91,9 +108,6 @@ catch (error) {
 
 if (shouldStartPhpWatchdog) {
   spawnChild("node", [join("realtime", "php-upstream-watchdog.mjs")])
-}
-else if (phpCgiBin) {
-  console.warn(`[vnseea-dev] PHP_CGI_BIN does not exist: ${phpCgiBin}`)
 }
 
 const nuxt = spawnChild("nuxt", ["dev", "--host", devHost, "--port", String(devPort)])

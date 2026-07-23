@@ -54,6 +54,7 @@ This file governs all work inside `client/`.
 - Avoid one-off page styling.
 - Reuse established page shells, card styles, form styles, and navigation patterns.
 - Take the UI of the Group and Page directories as the canonical visual and structural standard for tabs, buttons, forms, and general layout across all other contexts (e.g. Funding Page, etc.).
+- Component inner borders and card outlines must consistently use `var(--border-light)` for smooth, subtle UI lines across Light and Dark modes.
 
 ## UX Rules
 

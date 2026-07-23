@@ -20,8 +20,8 @@
 
         <!-- Group Identity -->
         <div class="space-y-1">
-          <h3 class="text-xl font-black tracking-tight text-slate-800">{{ groupName }}</h3>
-          <p class="flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
+          <h3 class="text-xl font-black tracking-tight text-[var(--text-primary)]">{{ groupName }}</h3>
+          <p class="flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-tertiary)]">
             <Icon name="i-ph-link-bold" class="h-3.5 w-3.5" />
             vnseea.vn/g/{{ group.slug }}
           </p>
@@ -29,15 +29,15 @@
 
         <!-- Minimal Badges -->
         <div class="mt-4 flex flex-wrap gap-2">
-          <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+          <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
             {{ privacyLabel }}
           </span>
-          <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+          <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
             {{ categoryLabel }}
           </span>
         </div>
 
-        <p class="mt-4 text-[14px] font-medium leading-relaxed text-slate-500 line-clamp-2 italic">
+        <p class="mt-4 text-[14px] font-medium leading-relaxed text-[var(--text-secondary)] line-clamp-2 italic">
           "{{ groupSummary }}"
         </p>
 
@@ -47,24 +47,24 @@
         <!-- Compact Stats Row (Strict Horizontal) -->
         <div class="flex items-center justify-around rounded-2xl bg-slate-50/80 py-4 ring-1 ring-slate-100">
           <div class="flex flex-col items-center px-2 text-center">
-            <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-widest text-slate-400">{{ $t('community.settings.basics.stats.tagCount') }}</p>
+            <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">{{ $t('community.settings.basics.stats.tagCount') }}</p>
             <p class="mt-1 text-base font-black text-primary-600">{{ (group.tags || []).length }}</p>
           </div>
           <div class="h-8 w-px bg-slate-200/60" />
           <div class="flex flex-col items-center px-2 text-center">
-            <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-widest text-slate-400">{{ $t('community.settings.basics.stats.guidelinesCount') }}</p>
+            <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">{{ $t('community.settings.basics.stats.guidelinesCount') }}</p>
             <p class="mt-1 text-base font-black text-primary-600">{{ group.guidelines?.length || 0 }}</p>
           </div>
           <div class="h-8 w-px bg-slate-200/60" />
           <div class="flex flex-col items-center px-2 text-center">
-            <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-widest text-slate-400">STATUS</p>
+            <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">STATUS</p>
             <p class="mt-1 text-base font-black text-green-500">Active</p>
           </div>
         </div>
 
         <!-- Integrated Progress Bar (Minimal) -->
         <div class="mt-6 space-y-2">
-          <div class="flex items-center justify-between text-[11px] font-black uppercase tracking-widest text-slate-500">
+          <div class="flex items-center justify-between text-[11px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
             <span>Policies Enabled</span>
             <span class="text-primary-600">{{ enabledPolicies }}/{{ totalPolicies }}</span>
           </div>
@@ -91,7 +91,7 @@
         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
           <Icon name="i-ph-info-bold" class="h-6 w-6" />
         </div>
-        <p class="text-[12px] font-black uppercase tracking-widest text-slate-700">
+        <p class="text-[12px] font-black uppercase tracking-widest text-[var(--text-primary)]">
           {{ $t('community.settings.sidebar.notes') }}
         </p>
       </div>
@@ -99,15 +99,15 @@
         <div class="flex gap-4">
           <div class="h-1.5 w-1.5 mt-1.5 shrink-0 rounded-full bg-primary-500" />
           <div>
-            <p class="text-[13px] font-bold text-slate-700">{{ $t('community.settings.sidebar.tip1Title') }}</p>
-            <p class="mt-1 text-[12px] text-slate-500">{{ $t('community.settings.sidebar.tip1Desc') }}</p>
+            <p class="text-[13px] font-bold text-[var(--text-primary)]">{{ $t('community.settings.sidebar.tip1Title') }}</p>
+            <p class="mt-1 text-[12px] text-[var(--text-secondary)]">{{ $t('community.settings.sidebar.tip1Desc') }}</p>
           </div>
         </div>
         <div class="flex gap-4">
           <div class="h-1.5 w-1.5 mt-1.5 shrink-0 rounded-full bg-primary-500" />
           <div>
-            <p class="text-[13px] font-bold text-slate-700">{{ $t('community.settings.sidebar.tip2Title') }}</p>
-            <p class="mt-1 text-[12px] text-slate-500">{{ $t('community.settings.sidebar.tip2Desc') }}</p>
+            <p class="text-[13px] font-bold text-[var(--text-primary)]">{{ $t('community.settings.sidebar.tip2Title') }}</p>
+            <p class="mt-1 text-[12px] text-[var(--text-secondary)]">{{ $t('community.settings.sidebar.tip2Desc') }}</p>
           </div>
         </div>
       </div>

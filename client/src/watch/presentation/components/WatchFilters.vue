@@ -46,7 +46,7 @@ defineEmits<{
 
 <style scoped>
 .watch-filters {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -85,7 +85,7 @@ defineEmits<{
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   pointer-events: none;
 }
 
@@ -97,7 +97,7 @@ defineEmits<{
   background: #fafbfe;
   font-size: 13px;
   font-weight: 500;
-  color: #000000;
+  color: var(--text-primary);
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s ease;
@@ -108,7 +108,7 @@ defineEmits<{
 }
 
 .watch-filters__search::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 /* Category pills */
@@ -132,10 +132,10 @@ defineEmits<{
   padding: 8px 18px;
   border-radius: 999px;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
+  background: var(--bg-surface);
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-secondary);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s ease;

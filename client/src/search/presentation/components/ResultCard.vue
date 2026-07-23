@@ -29,7 +29,7 @@
           />
         </div>
 
-        <p class="mt-1 text-[12px] font-medium text-slate-500">
+        <p class="mt-1 text-[12px] font-medium text-[var(--text-secondary)]">
           {{ result.subtitle }}
         </p>
       </div>

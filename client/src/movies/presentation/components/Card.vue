@@ -79,7 +79,7 @@ defineProps<{
 .movie-card__title {
   margin: 10px 0 0;
   overflow: hidden;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
   line-height: 1.35;

@@ -101,7 +101,7 @@ const offerTitle = computed(() =>
   gap: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 20px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 14px;
   box-shadow: 0 12px 30px rgba(15, 35, 110, 0.08);
 }
@@ -148,7 +148,7 @@ const offerTitle = computed(() =>
   align-items: center;
   gap: 6px;
   margin: 0 0 4px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -175,7 +175,7 @@ const offerTitle = computed(() =>
   display: -webkit-box;
   margin: 0;
   overflow: hidden;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.45;
   -webkit-box-orient: vertical;
@@ -187,7 +187,7 @@ const offerTitle = computed(() =>
   min-width: 0;
   align-items: center;
   gap: 8px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;

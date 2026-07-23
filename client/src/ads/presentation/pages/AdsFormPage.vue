@@ -268,7 +268,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 .ads-form-nav {
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-surface);
 }
 
 .ads-form-page__sidebar {
@@ -289,12 +289,12 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 .ads-preview__label,
 .ads-form-panel__head p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .ads-form-wallet strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 800;
 }
@@ -310,7 +310,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   gap: 10px;
   border-radius: 12px;
   padding: 11px 12px;
-  color: #000000;
+  color: var(--text-primary);
   font-weight: 700;
   text-decoration: none;
 }
@@ -340,13 +340,13 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 .ads-preview__head strong,
 .ads-preview h2 {
   display: block;
-  color: #0f172a;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
 .ads-preview__head span,
 .ads-preview p {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -356,7 +356,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   min-height: 160px;
   place-items: center;
   border-radius: 14px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .ads-preview__media img {
@@ -368,7 +368,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 .ads-preview__media svg {
   height: 42px;
   width: 42px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .ads-form-panel {
@@ -386,7 +386,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 .ads-form-panel__head h1,
 .ads-form-section h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
@@ -400,8 +400,8 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   width: 34px;
   border: 1px solid #dbe4f0;
   border-radius: 999px;
-  background: #fff;
-  color: #64748b;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-weight: 800;
 }
 
@@ -429,7 +429,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   display: flex;
   flex-direction: column;
   gap: 7px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -440,9 +440,9 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   width: 100%;
   border: 1px solid #dbe4f0;
   border-radius: 14px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 11px 12px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
 }
@@ -452,7 +452,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 }
 
 .ads-field small {
-  color: #64748b;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 

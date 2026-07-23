@@ -147,13 +147,13 @@ const {
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.06em;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .auth-form__subtitle {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 

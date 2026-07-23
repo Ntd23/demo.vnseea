@@ -27,7 +27,7 @@
         :key="item.label"
         class="surface-card p-6 border-secondary-100 flex flex-col justify-center"
       >
-        <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
           {{ item.label }}
         </p>
         <div class="mt-2 flex items-baseline gap-2">
@@ -112,7 +112,7 @@
       <section class="surface-card border-secondary-100/50 p-6 sm:p-8">
         <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div class="space-y-1">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
               {{ $t('community.search.results.label') }}
             </p>
             <h2 class="text-2xl font-extrabold text-[var(--text-primary)] leading-tight">
@@ -143,7 +143,7 @@
       >
         <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-secondary-100/50 pb-6">
           <div class="space-y-1">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
               {{ $t(`community.search.tabs.${section.kind}.label`) }}
             </p>
             <p class="text-body-secondary text-sm">

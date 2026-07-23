@@ -109,7 +109,7 @@ const {
 .read-blog-page__alert {
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -119,7 +119,7 @@ const {
   justify-content: center;
   gap: 10px;
   min-height: 240px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }

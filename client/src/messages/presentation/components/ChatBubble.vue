@@ -500,7 +500,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .chat-bubble__product-card {
@@ -514,9 +514,9 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   box-sizing: border-box;
   border: 1px solid #dbe3ef;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 7px;
-  color: #0f172a;
+  color: var(--text-primary);
   text-decoration: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -802,7 +802,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   overflow: hidden;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-  background: #f8fafc;
+  background: var(--bg-muted);
   object-fit: cover;
 }
 
@@ -817,7 +817,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 3px;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
 }
@@ -866,7 +866,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   justify-content: center;
   border-radius: 999px;
   background: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   transition: all 0.15s ease;
 }
@@ -897,7 +897,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   gap: 2px;
   border: 1px solid rgba(226, 232, 240, 0.9);
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 5px 7px;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
   transform: none;
@@ -928,7 +928,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 .chat-bubble__reaction-option:hover {
-  background: #f8fafc;
+  background: var(--bg-muted);
   transform: translateY(-2px) scale(1.08);
 }
 

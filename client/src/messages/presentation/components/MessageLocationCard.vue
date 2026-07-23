@@ -174,8 +174,8 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border: 1px solid #d8e1ee;
   border-radius: 18px;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   text-decoration: none;
   box-shadow: 0 5px 18px rgba(15, 23, 42, 0.12);
   transition: box-shadow 0.16s ease, transform 0.16s ease;

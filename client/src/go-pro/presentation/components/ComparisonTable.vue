@@ -3,7 +3,7 @@
     <div class="border-b border-secondary-100 p-5">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <p class="text-[11px] font-extrabold uppercase text-slate-500">
+          <p class="text-[11px] font-extrabold uppercase text-[var(--text-secondary)]">
             {{ t("pages.goProPage.comparisonEyebrow") }}
           </p>
           <h2 class="mt-1 text-[24px] font-black text-[var(--text-primary)]">
@@ -19,7 +19,7 @@
       <table class="w-full min-w-[760px] text-left">
         <thead class="bg-secondary-50/70">
           <tr>
-            <th class="px-5 py-4 text-[11px] font-black uppercase text-slate-500">
+            <th class="px-5 py-4 text-[11px] font-black uppercase text-[var(--text-secondary)]">
               {{ t("pages.goProPage.featureColumn") }}
             </th>
             <th
@@ -30,7 +30,7 @@
             >
               <div class="space-y-1.5">
                 <div class="flex items-center gap-2">
-                  <p class="text-[12px] font-black uppercase text-slate-500">
+                  <p class="text-[12px] font-black uppercase text-[var(--text-secondary)]">
                     {{ plan.name }}
                   </p>
                   <span

@@ -23,7 +23,7 @@
       >
         {{ brandEyebrow }}
       </p>
-      <p class="text-sm font-extrabold leading-none" :class="inverted ? 'text-white' : 'text-slate-900'">
+      <p class="text-sm font-extrabold leading-none" :class="inverted ? 'text-white' : 'text-[var(--text-primary)]'">
         {{ brandName }}
       </p>
     </div>

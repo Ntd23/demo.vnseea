@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <p class="mt-4 text-[14px] leading-7 text-slate-600">
+    <p class="mt-4 text-[14px] leading-7 text-[var(--text-secondary)]">
       {{ pageSummary }}
     </p>
 
@@ -23,12 +23,12 @@
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.pageDetailPage.categoryTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ categoryLabel }}</p>
-        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ ownerLabel }}</p>
+        <p class="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">{{ ownerLabel }}</p>
       </div>
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.pageDetailPage.interactionTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ responseLabel }}</p>
-        <p class="mt-1 text-[12px] leading-5 text-slate-500">
+        <p class="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">
           {{
             [
               showFollowerCount ? followerCountLabel : "",
@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <div class="mt-4 space-y-2 text-[13px] text-slate-500">
+    <div class="mt-4 space-y-2 text-[13px] text-[var(--text-secondary)]">
       <div v-if="page.locationLabel" class="flex items-start gap-2">
         <Icon name="i-ph-map-pin-bold" class="mt-0.5 h-4 w-4 text-[var(--text-brand)]/70" />
         <span>{{ locationLabel }}</span>

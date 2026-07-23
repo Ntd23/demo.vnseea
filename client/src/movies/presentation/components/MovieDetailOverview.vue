@@ -210,7 +210,7 @@ const viewsLabel = computed(() =>
   align-items: center;
   gap: 6px;
   margin-bottom: 9px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
@@ -223,7 +223,7 @@ const viewsLabel = computed(() =>
 
 .movie-overview__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 34px;
   font-weight: 800;
   line-height: 1.16;
@@ -234,7 +234,7 @@ const viewsLabel = computed(() =>
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -250,7 +250,7 @@ const viewsLabel = computed(() =>
 }
 
 .movie-overview__description {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -294,7 +294,7 @@ const viewsLabel = computed(() =>
 }
 
 .movie-overview__facts dt {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -302,7 +302,7 @@ const viewsLabel = computed(() =>
 .movie-overview__facts dd {
   min-width: 0;
   margin: 0;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
   overflow-wrap: anywhere;
@@ -325,8 +325,8 @@ const viewsLabel = computed(() =>
   justify-content: center;
   border: 1px solid #dbe3ef;
   border-radius: 10px;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 18px;
   transition: 0.15s ease;
 }

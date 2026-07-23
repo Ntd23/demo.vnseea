@@ -13,7 +13,7 @@
           <h3 class="mt-1 text-lg font-black tracking-[-0.03em] text-[#243b63]">
             {{ title }}
           </h3>
-          <p v-if="description" class="mt-1 text-sm leading-6 text-slate-500">
+          <p v-if="description" class="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
             {{ description }}
           </p>
         </div>

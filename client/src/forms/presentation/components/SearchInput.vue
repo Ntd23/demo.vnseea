@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-2">
-    <label v-if="label" :for="inputId" class="block text-sm font-semibold text-slate-700">
+    <label v-if="label" :for="inputId" class="block text-sm font-semibold text-[var(--text-primary)]">
       {{ label }}
     </label>
 
-    <p v-if="description" class="text-sm text-slate-500">
+    <p v-if="description" class="text-sm text-[var(--text-secondary)]">
       {{ description }}
     </p>
 
@@ -25,7 +25,7 @@
       <template v-if="clearable && model" #trailing>
         <button
           type="button"
-          class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[var(--text-brand)]"
+          class="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-tertiary)] transition hover:bg-[#eef3ff] hover:text-[var(--text-brand)]"
           :aria-label="clearLabel"
           @click="clearValue"
         >
@@ -37,7 +37,7 @@
     <p v-if="error" class="text-sm font-medium text-rose-600">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="text-sm text-slate-500">
+    <p v-else-if="hint" class="text-sm text-[var(--text-secondary)]">
       {{ hint }}
     </p>
   </div>

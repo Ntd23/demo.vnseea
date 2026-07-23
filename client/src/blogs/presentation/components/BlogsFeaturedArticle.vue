@@ -135,7 +135,7 @@ watch(() => props.article.authorAvatarUrl, () => {
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -144,7 +144,7 @@ watch(() => props.article.authorAvatarUrl, () => {
   display: block;
   min-height: 260px;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .blogs-featured__fallback,
@@ -237,8 +237,8 @@ watch(() => props.article.authorAvatarUrl, () => {
 }
 
 .blogs-featured__mine {
-  background: #f1f5f9;
-  color: #000000;
+  background: var(--bg-muted);
+  color: var(--text-primary);
   padding: 7px 11px;
 }
 
@@ -250,7 +250,7 @@ watch(() => props.article.authorAvatarUrl, () => {
 
 .blogs-featured__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -263,7 +263,7 @@ watch(() => props.article.authorAvatarUrl, () => {
   -webkit-line-clamp: 3;
   overflow: hidden;
   margin: 10px 0 0;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.65;
@@ -289,8 +289,8 @@ watch(() => props.article.authorAvatarUrl, () => {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .blogs-featured__avatar-image {
@@ -306,7 +306,7 @@ watch(() => props.article.authorAvatarUrl, () => {
 
 .blogs-featured__author-name {
   overflow: hidden;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -315,7 +315,7 @@ watch(() => props.article.authorAvatarUrl, () => {
 
 .blogs-featured__date {
   margin-top: 2px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -326,8 +326,8 @@ watch(() => props.article.authorAvatarUrl, () => {
 }
 
 .blogs-featured__stats > span {
-  background: #f8fafc;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   padding: 7px 9px;
 }
 

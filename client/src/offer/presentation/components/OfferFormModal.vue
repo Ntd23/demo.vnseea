@@ -156,7 +156,7 @@ async function handleSubmit() {
   gap: 18px;
   overflow: auto;
   border-radius: 24px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 22px;
 }
 
@@ -197,7 +197,7 @@ async function handleSubmit() {
   border: 1px solid #cbd5e1;
   border-radius: 14px;
   padding: 10px 12px;
-  color: #000000;
+  color: var(--text-primary);
 }
 
 @media (max-width: 640px) {

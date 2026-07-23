@@ -115,7 +115,7 @@ async function handleOfferSaved() {
   gap: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 22px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 22px;
   box-shadow: 0 12px 32px rgba(15, 35, 110, 0.08);
 }
@@ -137,7 +137,7 @@ async function handleOfferSaved() {
 
 .offers-page__hero p:last-child {
   margin: 8px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 15px;
 }
 
@@ -163,7 +163,7 @@ async function handleOfferSaved() {
 .offers-page__empty {
   border: 1px dashed #cbd5e1;
   border-radius: 22px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 32px 18px;
   text-align: center;
 }
@@ -183,6 +183,6 @@ async function handleOfferSaved() {
 
 .offers-page__empty p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 </style>

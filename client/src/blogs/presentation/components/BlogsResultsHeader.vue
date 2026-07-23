@@ -44,7 +44,7 @@ defineEmits<{
   gap: 12px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 14px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
@@ -69,7 +69,7 @@ defineEmits<{
 
 .blogs-results__eyebrow {
   margin: 0;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -78,7 +78,7 @@ defineEmits<{
 
 .blogs-results__heading {
   margin: 2px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -86,7 +86,7 @@ defineEmits<{
 
 .blogs-results__meta {
   margin: 3px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12.5px;
   font-weight: 600;
 }
@@ -101,8 +101,8 @@ defineEmits<{
   gap: 7px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #000000;
+  background: var(--bg-muted);
+  color: var(--text-primary);
   padding: 9px 12px;
   font-size: 12.5px;
   font-weight: 800;

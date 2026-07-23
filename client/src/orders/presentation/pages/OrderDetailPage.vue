@@ -622,7 +622,7 @@ useSeoMeta({
 .progress-stepper__marker--active {
   border-color: var(--order-brand);
   color: var(--order-brand);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 10%, transparent), 0 0 0 4px var(--color-primary-50, color-mix(in srgb, var(--bg-brand) 5%, transparent));
   animation: marker-pulse 2s infinite ease-in-out;
 }
@@ -716,7 +716,7 @@ useSeoMeta({
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--bg-surface);
   color: var(--order-brand);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   box-shadow: 0 2px 6px color-mix(in srgb, var(--bg-brand) 5%, transparent);
@@ -796,7 +796,7 @@ useSeoMeta({
   margin-top: 20px;
   border: 1px solid var(--order-border);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 32px 24px;
 }
 

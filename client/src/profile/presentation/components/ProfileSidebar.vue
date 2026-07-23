@@ -27,7 +27,7 @@
             }"
           />
           <p class="mt-2 truncate text-xs font-extrabold text-[var(--text-primary)]">{{ item.name }}</p>
-          <p class="text-[10px] font-medium text-slate-500">{{ item.meta }}</p>
+          <p class="text-[10px] font-medium text-[var(--text-secondary)]">{{ item.meta }}</p>
         </div>
       </div>
     </div>

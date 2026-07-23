@@ -54,7 +54,7 @@ const authorInitials = computed(() => {
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .shared-post-card__header {
@@ -89,7 +89,7 @@ const authorInitials = computed(() => {
 .shared-post-card__author {
   display: block;
   overflow: hidden;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -98,14 +98,14 @@ const authorInitials = computed(() => {
 
 .shared-post-card__time {
   margin-top: 2px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 600;
 }
 
 .shared-post-card__text {
   padding: 10px 12px 0;
-  color: #000000;;
+  color: var(--text-primary);;
   font-size: 13.5px;
   line-height: 1.65;
   white-space: pre-line;

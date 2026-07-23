@@ -13,7 +13,7 @@
         class="comment-composer__avatar-img"
       >
       <span v-else-if="currentUserInitials">{{ currentUserInitials }}</span>
-      <Icon v-else name="i-ph-user-circle-duotone" class="h-5 w-5 text-blue-600" />
+      <Icon v-else name="i-ph-user-circle-duotone" class="h-5 w-5 text-[var(--text-brand)]" />
     </div>
 
     <div class="comment-composer__shell">
@@ -823,8 +823,8 @@ defineExpose({
   justify-content: center;
   overflow: hidden;
   border-radius: var(--radius-full);
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
 }
@@ -860,14 +860,14 @@ defineExpose({
   min-width: 0;
   display: flex;
   align-items: flex-end;
-  background: #f8fafc;
-  border: 1px solid #dbe3ef;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-default);
   border-radius: 24px;
   transition: all 0.2s ease;
 }
 
 .comment-composer__input-wrap:focus-within {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-color: color-mix(in srgb, var(--bg-brand) 30%, transparent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent);
 }
@@ -890,7 +890,7 @@ defineExpose({
   border: 0;
   border-radius: var(--radius-full);
   background: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -948,13 +948,13 @@ defineExpose({
   font-family: inherit;
   font-size: var(--text-body);
   line-height: 20px;
-  color: #0f172a;
+  color: var(--text-primary);
   outline: none;
   box-shadow: none;
 }
 
 .comment-composer__textarea::placeholder {
-  color: #64748b;
+  color: var(--text-secondary);
   opacity: 1;
 }
 
@@ -962,7 +962,7 @@ defineExpose({
   width: min(360px, 100%);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
   overflow: hidden;
 }
@@ -975,8 +975,8 @@ defineExpose({
   gap: 10px;
   padding: 9px 12px;
   border: 0;
-  background: #ffffff;
-  color: #475569;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   text-align: left;
 }
 
@@ -1021,13 +1021,13 @@ defineExpose({
 }
 
 .comment-composer__mention-name {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
 
 .comment-composer__mention-username {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }

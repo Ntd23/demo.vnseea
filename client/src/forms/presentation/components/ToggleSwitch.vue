@@ -15,7 +15,7 @@
     <p v-if="error" class="text-sm font-medium text-rose-600">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="text-sm text-slate-500">
+    <p v-else-if="hint" class="text-sm text-[var(--text-secondary)]">
       {{ hint }}
     </p>
   </div>

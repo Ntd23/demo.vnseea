@@ -344,7 +344,7 @@ function handleMenuAction(item: { key: string }) {
 .post-header__event-link {
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
   text-decoration: none;
   transition: color 0.15s ease;
 }
@@ -360,14 +360,14 @@ function handleMenuAction(item: { key: string }) {
   width: 13px;
   height: 13px;
   flex: 0 0 auto;
-  color: #111827;
+  color: var(--text-primary);
   vertical-align: -1px;
 }
 
 .post-header__feeling-text,
 .post-header__feeling-label,
 .post-header__profile-update {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -390,7 +390,7 @@ function handleMenuAction(item: { key: string }) {
   gap: 5px;
   margin-top: 2px;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .post-header__dot {
@@ -411,7 +411,7 @@ function handleMenuAction(item: { key: string }) {
   border-radius: 50%;
   border: none;
   background: transparent;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -432,7 +432,7 @@ function handleMenuAction(item: { key: string }) {
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 12px 40px color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 
@@ -475,13 +475,13 @@ function handleMenuAction(item: { key: string }) {
 .post-header__dropdown-label {
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary);
   line-height: 1.3;
 }
 
 .post-header__dropdown-desc {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin-top: 2px;
   line-height: 1.3;
 }

@@ -34,7 +34,7 @@
                   <p class="mt-4 text-[11px] font-black uppercase tracking-[0.24em] text-[var(--text-brand)]">
                     Error
                   </p>
-                  <p class="mt-2 text-sm leading-6 text-slate-600">
+                  <p class="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
                     {{ formatRuntimeError(runtimeError) }}
                   </p>
                 </div>
@@ -49,7 +49,7 @@
                   </button>
                   <button
                     type="button"
-                    class="justify-center rounded-2xl bg-white px-6 py-4 font-black uppercase tracking-[0.16em] text-slate-700 ring-1 ring-[var(--border-default)] hover:ring-[var(--color-primary-500)]"
+                    class="justify-center rounded-2xl bg-white px-6 py-4 font-black uppercase tracking-[0.16em] text-[var(--text-primary)] ring-1 ring-[var(--border-default)] hover:ring-[var(--color-primary-500)]"
                     @click="goToSafePage(clearBoundaryError)"
                   >
                     Ve trang on dinh

@@ -355,7 +355,7 @@ const submitDeleteProduct = async () => {
   overflow: hidden;
   border: 1px solid var(--product-border);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   text-decoration: none;
 }

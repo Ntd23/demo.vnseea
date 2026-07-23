@@ -341,7 +341,19 @@ NUXT_PUBLIC_SCRIPTS_GOOGLE_MAPS_MAP_ID=<map-id-hoac-de-trong>
 NUXT_SCRIPTS_PROXY_SECRET=<secret-local-thu-hai>
 ```
 
-Không cấu hình `PHP_CGI_BIN` nếu PHP FastCGI đã do Laragon quản lý. Nếu cấu hình biến này, `pnpm dev` sẽ khởi động watchdog PHP-CGI và có thể tạo worker trùng với Laragon.
+Khi backend trỏ tới host local (`localhost`, `127.0.0.1` hoặc `.test`), `pnpm dev` tự khởi động watchdog cho pool PHP FastCGI `9003-9010`. Watchdog chỉ tạo lại cổng đang ngừng nên không tạo worker trùng với Laragon. Có thể tùy chỉnh bằng các biến sau:
+
+```dotenv
+# Tắt watchdog nếu muốn Laragon tự quản lý hoàn toàn.
+PHP_UPSTREAM_WATCHDOG=0
+
+# Ghi đè khi Nginx dùng pool cổng khác.
+PHP_UPSTREAM_PORTS=9003,9004,9005,9006,9007,9008,9009,9010
+
+# Chỉ cần khai báo nếu php-cgi.exe không có trong PATH.
+PHP_CGI_BIN=D:\Duong\src\laragon\bin\php\php-8.3.26-Win32-vs16-x64\php-cgi.exe
+PHP_INI_PATH=D:\Duong\src\laragon\bin\php\php-8.3.26-Win32-vs16-x64\php.ini
+```
 
 ### 5.5. Chạy realtime và Nuxt
 

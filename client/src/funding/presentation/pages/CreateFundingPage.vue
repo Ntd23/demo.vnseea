@@ -171,7 +171,7 @@ const {
 }
 
 .create-funding__header h1 {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -186,7 +186,7 @@ const {
 
 .create-funding__description-meta {
   margin-top: 8px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 15px;
   line-height: 1.6;
 }

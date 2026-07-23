@@ -21,7 +21,7 @@
           </h1>
           <p
             v-if="description"
-            class="mt-1 text-[14px] leading-6 text-slate-500"
+            class="mt-1 text-[14px] leading-6 text-[var(--text-secondary)]"
           >
             {{ $t(description) }}
           </p>
@@ -34,7 +34,7 @@
           :key="highlight"
           color="neutral"
           variant="soft"
-          class="rounded-full border border-[#dbe3f2] bg-white/85 px-3.5 py-2 text-[12px] font-semibold text-slate-600 shadow-[0_8px_18px_rgba(15,35,110,0.04)] backdrop-blur-[8px]"
+          class="rounded-full border border-[#dbe3f2] bg-white/85 px-3.5 py-2 text-[12px] font-semibold text-[var(--text-secondary)] shadow-[0_8px_18px_rgba(15,35,110,0.04)] backdrop-blur-[8px]"
         >
           {{ $t(highlight) }}
         </UBadge>

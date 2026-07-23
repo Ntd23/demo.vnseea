@@ -225,8 +225,8 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
   border: none;
   border-radius: 999px;
 
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 
   cursor: pointer;
 

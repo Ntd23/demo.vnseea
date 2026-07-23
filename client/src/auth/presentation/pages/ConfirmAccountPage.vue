@@ -173,7 +173,7 @@ function updateOtpDigits(digits: number[]) {
 }
 
 .auth-resend:disabled {
-  color: #94a3b8;
+  color: var(--text-tertiary);
   cursor: not-allowed;
 }
 
@@ -196,13 +196,13 @@ function updateOtpDigits(digits: number[]) {
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.06em;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .auth-form__subtitle {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
@@ -245,7 +245,7 @@ function updateOtpDigits(digits: number[]) {
 .auth-form__footer-text {
   text-align: center;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .auth-form__footer-link {

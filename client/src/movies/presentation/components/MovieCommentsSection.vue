@@ -104,7 +104,7 @@ const submitComment = () => {
   gap: 14px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 18px;
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
 }
@@ -130,7 +130,7 @@ const submitComment = () => {
 
 .movie-comments__header h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
 }
@@ -141,7 +141,7 @@ const submitComment = () => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -184,9 +184,9 @@ const submitComment = () => {
   height: 44px;
   border: 1px solid #dbe3ef;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 0 14px;
-  color: #000000;
+  color: var(--text-primary);
   font: inherit;
   font-size: 13px;
   outline: none;

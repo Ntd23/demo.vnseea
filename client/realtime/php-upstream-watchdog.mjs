@@ -1,4 +1,4 @@
-// English description: Keeps the local PHP-CGI upstream ports alive for the Nginx proxy by auto-starting php-cgi workers when 9003 or 9004 are down.
+// English description: Keeps the local PHP-CGI upstream pool alive for the Nginx proxy by replacing unavailable php-cgi workers.
 
 import { existsSync } from "node:fs"
 import { dirname, join } from "node:path"
@@ -6,7 +6,7 @@ import { spawn, spawnSync } from "node:child_process"
 import net from "node:net"
 
 const host = String(process.env.PHP_UPSTREAM_HOST || "127.0.0.1").trim()
-const ports = String(process.env.PHP_UPSTREAM_PORTS || "9003,9004")
+const ports = String(process.env.PHP_UPSTREAM_PORTS || "9003,9004,9005,9006,9007,9008,9009,9010")
   .split(",")
   .map(value => Number(value.trim()))
   .filter(value => Number.isInteger(value) && value > 0)

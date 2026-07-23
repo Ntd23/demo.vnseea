@@ -122,7 +122,7 @@ function loadMoreComments() {
 
 .comment-list__title {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -146,7 +146,7 @@ function loadMoreComments() {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
   padding: 6px 10px;
   font-size: 12px;
   font-weight: 700;

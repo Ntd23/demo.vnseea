@@ -4,7 +4,7 @@
     <section class="group-settings__hero border-b border-slate-100">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="group-settings__title text-2xl font-black text-slate-900">
+          <h1 class="group-settings__title text-2xl font-black text-[var(--text-primary)]">
             {{ $t('community.settings.title', { name: translatedGroupName }) }}
           </h1>
         </div>
@@ -234,7 +234,7 @@ function onTabClick(tabId: string) {
 .group-settings__nav-card {
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -244,7 +244,7 @@ function onTabClick(tabId: string) {
 
 .group-settings__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 900;
   letter-spacing: -0.03em;
@@ -254,7 +254,7 @@ function onTabClick(tabId: string) {
 .group-settings__desc {
   margin: 0;
   max-width: 760px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -281,7 +281,7 @@ function onTabClick(tabId: string) {
   gap: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   cursor: pointer;
   padding: 10px 12px;
   text-align: left;
@@ -297,8 +297,8 @@ function onTabClick(tabId: string) {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #94a3b8;
+  background: var(--bg-muted);
+  color: var(--text-tertiary);
   font-size: 14px;
   font-weight: 800;
   border: 2px solid #f1f5f9;
@@ -321,7 +321,7 @@ function onTabClick(tabId: string) {
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-secondary);
   transition: color 0.2s ease;
 }
 
@@ -376,11 +376,11 @@ function onTabClick(tabId: string) {
     height: 34px;
     flex: 0 0 34px;
     border-radius: 50%;
-    background: #ffffff;
+    background: var(--bg-surface);
   }
 
   .group-settings__nav-step-circle--active {
-    background: #ffffff;
+    background: var(--bg-surface);
     color: var(--bg-brand);
     border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
     box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 14%, transparent);
@@ -391,7 +391,7 @@ function onTabClick(tabId: string) {
   }
 
   .group-settings__nav-step-item--active .group-settings__nav-step-label {
-    color: #0f172a;
+    color: var(--text-primary);
     text-decoration: underline;
     text-underline-offset: 6px;
     text-decoration-thickness: 2px;
@@ -422,7 +422,7 @@ function onTabClick(tabId: string) {
 
 .group-settings__alert p {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 900;
 }
@@ -430,7 +430,7 @@ function onTabClick(tabId: string) {
 .group-settings__alert span {
   display: block;
   margin-top: 3px;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -466,8 +466,8 @@ function onTabClick(tabId: string) {
 
 .group-settings__button--secondary {
   border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .group-settings__button--secondary:hover {

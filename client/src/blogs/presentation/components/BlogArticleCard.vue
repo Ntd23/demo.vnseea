@@ -142,7 +142,7 @@ const categoryAccentColor = computed(() =>
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
@@ -158,7 +158,7 @@ const categoryAccentColor = computed(() =>
   display: block;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .blog-card__fallback,
@@ -219,14 +219,14 @@ const categoryAccentColor = computed(() =>
 }
 
 .blog-card__edit:hover {
-  background: #ffffff;
+  background: var(--bg-surface);
   transform: translateY(-1px);
 }
 
 .blog-card__category,
 .blog-card__mine {
   background: rgba(255, 255, 255, 0.92);
-  color: #000000;
+  color: var(--text-primary);
   padding: 6px 9px;
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
 }
@@ -253,7 +253,7 @@ const categoryAccentColor = computed(() =>
   -webkit-line-clamp: 2;
   overflow: hidden;
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -267,7 +267,7 @@ const categoryAccentColor = computed(() =>
   overflow: hidden;
   min-height: 42px;
   margin: 8px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.55;
@@ -305,8 +305,8 @@ const categoryAccentColor = computed(() =>
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .blog-card__avatar-image {
@@ -328,22 +328,22 @@ const categoryAccentColor = computed(() =>
 }
 
 .blog-card__author-name {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 800;
 }
 
 .blog-card__date {
   margin-top: 1px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 600;
 }
 
 .blog-card__read {
   flex: 0 0 auto;
-  background: #f8fafc;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   padding: 7px 9px;
 }
 </style>

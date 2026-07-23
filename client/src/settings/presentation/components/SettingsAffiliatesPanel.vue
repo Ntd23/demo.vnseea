@@ -2,7 +2,7 @@
   <section class="settings-affiliates" aria-labelledby="settings-affiliates-title">
     <div class="settings-affiliates__summary">
       <div class="settings-affiliates__summary-main">
-        <span class="settings-affiliates__icon text-black" aria-hidden="true">
+        <span class="settings-affiliates__icon text-[var(--text-primary)]" aria-hidden="true">
           <Icon name="i-ph-gift-bold" class="h-6 w-6" />
         </span>
         <div>
@@ -376,7 +376,7 @@ const closeProgressHelp = () => {
 .settings-affiliates__list-panel {
   border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -409,7 +409,7 @@ const closeProgressHelp = () => {
 .settings-affiliates__eyebrow,
 .settings-affiliates__label {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -418,7 +418,7 @@ const closeProgressHelp = () => {
 
 .settings-affiliates__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 22px;
   font-weight: 800;
 }
@@ -428,7 +428,7 @@ const closeProgressHelp = () => {
 .settings-affiliates__item-meta,
 .settings-affiliates__empty {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.5;
@@ -474,7 +474,7 @@ const closeProgressHelp = () => {
 
 .settings-affiliates__stat-label {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
 }
@@ -482,7 +482,7 @@ const closeProgressHelp = () => {
 .settings-affiliates__stat-value {
   display: block;
   margin-top: 3px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 900;
 }
@@ -508,7 +508,7 @@ const closeProgressHelp = () => {
   border-radius: 12px;
   outline: none;
   background: #fafbfe;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -544,7 +544,7 @@ const closeProgressHelp = () => {
 
 .settings-affiliates__section-title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
 }
@@ -578,7 +578,7 @@ const closeProgressHelp = () => {
   padding: 10px;
   border-radius: 12px;
   background: #fafbfe;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 800;
 }
@@ -614,8 +614,8 @@ const closeProgressHelp = () => {
   justify-content: center;
   border: 1px solid #dbe4ef;
   border-radius: 10px;
-  background: #ffffff;
-  color: #64748b;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -652,7 +652,7 @@ const closeProgressHelp = () => {
 .settings-affiliates__item-title {
   overflow: hidden;
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -665,8 +665,8 @@ const closeProgressHelp = () => {
   align-items: center;
   padding: 0 10px;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
@@ -689,7 +689,7 @@ const closeProgressHelp = () => {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
 }
@@ -712,7 +712,7 @@ const closeProgressHelp = () => {
   padding: 0 8px;
   border-radius: 999px;
   background: #eef2f7;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
 }
@@ -731,7 +731,7 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__item-side strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 900;
   white-space: nowrap;
@@ -775,7 +775,7 @@ const closeProgressHelp = () => {
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);
 }
 
@@ -788,7 +788,7 @@ const closeProgressHelp = () => {
 
 .settings-affiliates-modal__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 900;
   line-height: 1.25;
@@ -803,14 +803,14 @@ const closeProgressHelp = () => {
   justify-content: center;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background: #ffffff;
-  color: #64748b;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
 .settings-affiliates-modal__description {
   margin: 12px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   line-height: 1.55;
@@ -840,7 +840,7 @@ const closeProgressHelp = () => {
   justify-content: center;
   border-radius: 10px;
   background: #eef2f7;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .settings-affiliates-modal__step-icon--done {
@@ -849,14 +849,14 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates-modal__step strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 900;
 }
 
 .settings-affiliates-modal__step p {
   margin: 3px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.5;

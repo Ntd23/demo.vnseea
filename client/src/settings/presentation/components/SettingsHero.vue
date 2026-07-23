@@ -86,7 +86,7 @@ defineProps<{
 .settings-hero__title {
   font-size: 22px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
@@ -95,7 +95,7 @@ defineProps<{
   margin-top: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.55;
   max-width: 520px;
 }
@@ -106,9 +106,9 @@ defineProps<{
   gap: 6px;
   padding: 7px 14px;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid #e2e8f0;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 600;
   flex-shrink: 0;

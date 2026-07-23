@@ -465,8 +465,8 @@ onBeforeUnmount(() => {
 .message-call__sound-button {
   min-height: 42px;
   border-radius: 999px;
-  background: #ffffff;
-  color: #111827;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   padding: 0 18px;
   font-size: 14px;
   font-weight: 800;
@@ -502,7 +502,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   place-items: center;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 28px;
 }
 
@@ -559,8 +559,8 @@ onBeforeUnmount(() => {
 }
 
 .message-call__control--sound {
-  background: #ffffff;
-  color: #111827;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 @media (max-width: 640px) {

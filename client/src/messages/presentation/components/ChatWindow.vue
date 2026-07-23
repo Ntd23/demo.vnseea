@@ -8,7 +8,7 @@
             <UButton
               variant="ghost"
               color="neutral"
-              class="-ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-black md:hidden"
+              class="-ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-[var(--text-primary)] md:hidden"
               @click="$emit('back')"
             >
               <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />
@@ -61,7 +61,7 @@
                   color="neutral"
                   variant="ghost"
                   icon="i-ph-phone-bold"
-                  class="h-10 w-10 justify-center rounded-full text-black"
+                  class="h-10 w-10 justify-center rounded-full text-[var(--text-primary)]"
                   :loading="callActionPending"
                   :disabled="callActionPending"
                   @click="handleStartCall('audio')"
@@ -74,7 +74,7 @@
                   color="neutral"
                   variant="ghost"
                   icon="i-ph-video-camera-bold"
-                  class="h-10 w-10 justify-center rounded-full text-black"
+                  class="h-10 w-10 justify-center rounded-full text-[var(--text-primary)]"
                   :loading="callActionPending"
                   :disabled="callActionPending"
                   @click="handleStartCall('video')"
@@ -88,7 +88,7 @@
                   color="neutral"
                   variant="ghost"
                   icon="i-ph-video-camera-bold"
-                  class="h-10 w-10 justify-center rounded-full text-black"
+                  class="h-10 w-10 justify-center rounded-full text-[var(--text-primary)]"
                   :loading="callActionPending"
                   :disabled="callActionPending"
                   @click="handleStartCall('video')"
@@ -102,7 +102,7 @@
                 color="neutral"
                 variant="ghost"
                 icon="i-ph-info-bold"
-                class="h-10 w-10 justify-center rounded-full text-black"
+                class="h-10 w-10 justify-center rounded-full text-[var(--text-primary)]"
                 :class="userDetailDocked && contact.type === 'user' ? 'xl:hidden' : ''"
                 @click="handleToggleInfo"
               />
@@ -479,7 +479,7 @@ function handleStartCall(type: MessageCallType) {
 }
 
 .chat-window-reply__title {
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 750;
   line-height: 1.2;
@@ -487,7 +487,7 @@ function handleStartCall(type: MessageCallType) {
 
 .chat-window-reply__text {
   overflow: hidden;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -524,7 +524,7 @@ function handleStartCall(type: MessageCallType) {
   overflow: hidden;
   border: 1px solid #dfe6f1;
   border-radius: 14px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: 0 4px 14px rgb(15 23 42 / 5%);
 }
 
@@ -590,7 +590,7 @@ function handleStartCall(type: MessageCallType) {
 .chat-window-product-card__external {
   width: 18px;
   height: 18px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .chat-window-product-card__close {
@@ -611,7 +611,7 @@ function handleStartCall(type: MessageCallType) {
 
 .chat-window-product-suggestions__label {
   margin-bottom: 6px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 750;
   letter-spacing: 0.02em;
@@ -631,9 +631,9 @@ function handleStartCall(type: MessageCallType) {
   max-width: min(78vw, 300px);
   border: 1px solid #dbe4f2;
   border-radius: 999px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 7px 11px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 650;
   line-height: 1.25;
@@ -653,7 +653,7 @@ function handleStartCall(type: MessageCallType) {
   gap: 10px;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 8px;
 }
 

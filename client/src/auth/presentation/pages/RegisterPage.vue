@@ -202,14 +202,14 @@ const strength = computed(() => {
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.06em;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 
 .auth-form__subtitle {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
@@ -273,7 +273,7 @@ const strength = computed(() => {
 .auth-check__text {
   font-size: 0.92rem;
   line-height: 1.65;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .auth-check__link {
@@ -314,7 +314,7 @@ const strength = computed(() => {
 .auth-gender__label {
   font-size: 13px;
   font-weight: 500;
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .auth-gender__radio {
@@ -358,7 +358,7 @@ const strength = computed(() => {
 .auth-form__footer-text {
   text-align: center;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .auth-form__footer-link {

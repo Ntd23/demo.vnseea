@@ -694,8 +694,8 @@ function handleMediaOpen(index: number) {
 <style scoped>
 .post-card {
   border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 20px color-mix(in srgb, var(--bg-brand) 3%, transparent);
   transition: box-shadow 0.2s ease;
 }
@@ -711,7 +711,7 @@ function handleMediaOpen(index: number) {
 .post-card__text {
   font-size: 14.5px;
   line-height: 1.75;
-  color: #000000;
+  color: var(--text-primary);
   margin: 0 10px;
 }
 
@@ -759,7 +759,7 @@ function handleMediaOpen(index: number) {
   width: 100%;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 10px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -798,7 +798,7 @@ function handleMediaOpen(index: number) {
 .post-card__poll-meta {
   font-size: 13px;
   font-weight: 700;
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .post-card__poll-meta {
@@ -817,7 +817,7 @@ function handleMediaOpen(index: number) {
 }
 
 .post-card__poll-meta small {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 600;
   line-height: 1.2;
@@ -825,7 +825,7 @@ function handleMediaOpen(index: number) {
 
 .post-card__poll-summary {
   margin: 2px 0 0;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -837,7 +837,7 @@ function handleMediaOpen(index: number) {
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.09);
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   color: inherit;
   text-decoration: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
@@ -913,7 +913,7 @@ function handleMediaOpen(index: number) {
 .post-card__attachment-title {
   display: -webkit-box;
   overflow: hidden;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 800;
   line-height: 1.35;
@@ -924,7 +924,7 @@ function handleMediaOpen(index: number) {
 .post-card__attachment-description {
   display: -webkit-box;
   overflow: hidden;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.55;
   -webkit-box-orient: vertical;
@@ -940,7 +940,7 @@ function handleMediaOpen(index: number) {
 .post-card__attachment-progress-top {
   justify-content: space-between;
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .post-card__attachment-progress-top strong {
@@ -986,7 +986,7 @@ function handleMediaOpen(index: number) {
   gap: 8px;
   margin: 10px;
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .post-card__stats-left {
@@ -1021,7 +1021,7 @@ function handleMediaOpen(index: number) {
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.9);
-  background: #ffffff;
+  background: var(--bg-surface);
   transition: transform 0.15s ease;
 }
 
@@ -1046,7 +1046,7 @@ function handleMediaOpen(index: number) {
   align-items: center;
   gap: 12px;
   font-size: 12.5px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .post-card__comments-link {
@@ -1060,7 +1060,7 @@ function handleMediaOpen(index: number) {
 
 .post-card__comments-link:hover,
 .post-card__comments-link:focus-visible {
-  color: #475569;
+  color: var(--text-secondary);
   text-decoration: underline;
 }
 
@@ -1083,7 +1083,7 @@ function handleMediaOpen(index: number) {
   flex-direction: column;
   overflow: hidden;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.26);
 }
 
@@ -1192,7 +1192,7 @@ function handleMediaOpen(index: number) {
   width: 18px;
   height: 18px;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--bg-surface);
   object-fit: contain;
 }
 
@@ -1304,7 +1304,7 @@ function handleMediaOpen(index: number) {
   font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
-  color: #000000;
+  color: var(--text-primary);
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
@@ -1539,7 +1539,7 @@ function handleMediaOpen(index: number) {
   background: #e2e8f0;
   font-size: 9px;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-secondary);
   overflow: hidden;
 }
 
@@ -1553,20 +1553,20 @@ function handleMediaOpen(index: number) {
 .post-card__comment-bubble {
   min-width: 0;
   border-radius: 14px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   padding: 8px 12px;
 }
 
 .post-card__comment-author {
   font-size: 12.5px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
 .post-card__comment-text {
   font-size: 12.5px;
   line-height: 1.6;
-  color: #475569;
+  color: var(--text-secondary);
   margin-top: 2px;
 }
 
@@ -1611,7 +1611,7 @@ function handleMediaOpen(index: number) {
 
 /* Colored post specific styles */
 .post-card--colored {
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .post-card--colored .post-card__content {
