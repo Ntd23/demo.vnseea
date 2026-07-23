@@ -408,7 +408,7 @@ onBeforeUnmount(() => {
 
 .comment-item__role {
   overflow: hidden;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -444,7 +444,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: var(--space-2);
   margin-top: var(--space-2);
-  color-scheme: light;
+  
   border: 1px solid var(--border-default);
   border-radius: var(--radius-full);
   background: var(--bg-surface);
@@ -536,7 +536,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 10px;
   margin: 4px 0 0 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11.5px;
   font-weight: 600;
 }
@@ -648,7 +648,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
   padding: 5px 8px;
   font-size: 11.5px;
   font-weight: 700;
@@ -680,7 +680,7 @@ onBeforeUnmount(() => {
 }
 
 .comment-item__footer-count {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .comment-item__replies {

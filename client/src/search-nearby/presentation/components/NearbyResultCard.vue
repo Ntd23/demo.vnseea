@@ -313,8 +313,8 @@ async function shareResult() {
   justify-content: center;
   border: 1px solid var(--border-default);
   border-radius: 18px;
-  background: var(--color-secondary-50);
-  color: var(--color-secondary-800);
+  background: var(--bg-muted);
+  color: var(--text-primary);
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;

@@ -6,7 +6,7 @@
     :class="{ 'header-bar--hidden': isHeaderHidden }"
   >
     <!-- ─── Desktop header ────────────────────────────────── -->
-    <div class="hidden px-[7.5] rounded-b-3xl border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)] xl:block">
+    <div class="hidden px-[7.5] rounded-b-3xl border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[0_12px_28px_rgba(13,38,76,0.05)] xl:block">
       <div class="mx-auto flex h-16 w-full max-w-[1880px] items-center gap-4 px-2.5">
         <NuxtLink
           :to="appRoutes.feed"
@@ -597,7 +597,7 @@ async function toggleCreateMenu() {
   box-shadow: 0 8px 18px color-mix(in srgb, var(--bg-brand) 22%, transparent);
 }
 
-.desktop-pill--inactive { color: #000000; }
+.desktop-pill--inactive { color: var(--text-primary); }
 
 .desktop-pill--inactive:hover {
   color: var(--bg-brand);
@@ -642,8 +642,8 @@ async function toggleCreateMenu() {
   justify-content: center;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   cursor: pointer;
   text-decoration: none;
   transition: all 0.15s ease;
@@ -742,7 +742,7 @@ async function toggleCreateMenu() {
   gap: 8px;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  background: #ffffff;
+  background: var(--bg-surface);
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
@@ -785,7 +785,7 @@ async function toggleCreateMenu() {
 
 /* ─── Mobile bar ───────────────────────────────────────── */
 .mobile-bar {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-bottom: 1px solid #f1f5f9;
   box-shadow: 0 2px 12px color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 8px 16px;
@@ -815,8 +815,8 @@ async function toggleCreateMenu() {
   justify-content: center;
   border-radius: 12px;
   border: 1px solid #e8edf5;
-  background: #f8fafc;
-  color: #000000;
+  background: var(--bg-muted);
+  color: var(--text-primary);
   cursor: pointer;
   text-decoration: none;
   transition: all 0.15s ease;
@@ -836,13 +836,13 @@ async function toggleCreateMenu() {
 }
 
 .mobile-icon-btn--avatar {
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .mobile-avatar-fallback {
   font-size: 11px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 /* ─── Mobile search — inline, directly below header ───── */
@@ -851,7 +851,7 @@ async function toggleCreateMenu() {
   align-items: center;
   gap: 10px;
   padding: 8px 12px 10px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-bottom: 1px solid #f1f5f9;
   box-shadow: 0 4px 16px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
@@ -870,8 +870,8 @@ async function toggleCreateMenu() {
   justify-content: center;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  color: #000000;
+  background: var(--bg-muted);
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.12s ease;
 }

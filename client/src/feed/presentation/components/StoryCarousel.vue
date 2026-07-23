@@ -498,7 +498,7 @@ async function handleCreateStory() {
   width: 0;
   height: 100%;
   border-radius: inherit;
-  background: #ffffff;
+  background: var(--bg-surface);
   transition: width 0.25s ease;
 }
 
@@ -990,7 +990,7 @@ async function handleCreateStory() {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 2px dashed var(--border-default);
   text-decoration: none;
 }
@@ -1020,7 +1020,7 @@ async function handleCreateStory() {
 .story-card__create-label {
   font-size: 11px;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-primary);
   text-align: center;
   line-height: 1.3;
 }
@@ -1037,8 +1037,8 @@ async function handleCreateStory() {
   justify-content: center;
   border-radius: 50%;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
-  background: #ffffff;
-  color: #475569;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   transition: all 0.15s ease;

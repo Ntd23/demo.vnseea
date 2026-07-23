@@ -1878,7 +1878,7 @@ onBeforeUnmount(() => {
   gap: 14px;
   border: 1px solid var(--border-default);
   border-radius: 28px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: var(--shadow-xl);
   padding: 34px 28px;
   text-align: center;
@@ -1987,7 +1987,7 @@ onBeforeUnmount(() => {
   gap: 10px;
   border: 1px solid var(--border-default);
   border-radius: 999px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: var(--shadow-lg);
   padding: 0 18px;
 }
@@ -2033,7 +2033,7 @@ onBeforeUnmount(() => {
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--border-default);
   border-radius: 22px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: var(--shadow-xl);
   padding: 8px;
 }
@@ -2155,7 +2155,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   border: 1px solid var(--border-default);
   border-radius: 999px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: var(--shadow-lg);
   color: var(--text-primary);
   cursor: pointer;
@@ -2195,7 +2195,7 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   border: 1px solid var(--border-default);
   border-radius: 20px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: var(--shadow-xl);
   color: var(--text-primary);
   padding: 16px;
@@ -2613,7 +2613,7 @@ onBeforeUnmount(() => {
     min-height: 48px;
     padding: 0;
     border-radius: 999px;
-    background: #fff;
+    background: var(--bg-surface);
   }
 
   .nearby-map-page__location-button span {
@@ -2810,14 +2810,14 @@ onBeforeUnmount(() => {
 }
 
 .nearby-map-page__guide-tab--active {
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: var(--shadow-sm);
   color: var(--text-link);
 }
 
 /* iOS active style override */
 .nearby-map-page__guide-tab--active:has(.i-ph-apple-logo-fill) {
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 /* Android active style override */

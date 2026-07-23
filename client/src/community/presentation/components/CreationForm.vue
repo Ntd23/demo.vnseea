@@ -3,10 +3,10 @@
   <div class="space-y-6" :class="{ 'creation-form--page': isPage || isGroup }">
     <div class="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
       <div class="mb-10">
-        <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">
+        <h1 class="text-2xl font-bold text-[var(--text-primary)] sm:text-3xl">
           {{ title || $t("community.creation.common.fillInfo", { entity: entityText }) }}
         </h1>
-        <p v-if="!hideDescription" class="mt-2 text-[15px] text-slate-500">
+        <p v-if="!hideDescription" class="mt-2 text-[15px] text-[var(--text-secondary)]">
           {{ $t("community.creation.common.fillDesc", { entity: entityText }) }}
         </p>
       </div>
@@ -41,17 +41,17 @@
         >
           <div v-if="isPage || isGroup" class="w-full">
             <div class="flex w-full items-center rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20">
-              <div class="flex items-center justify-center bg-slate-50 border-r border-slate-200 px-4 h-12 text-slate-500 text-[14px] font-medium whitespace-nowrap select-none">
+              <div class="flex items-center justify-center bg-slate-50 border-r border-slate-200 px-4 h-12 text-[var(--text-secondary)] text-[14px] font-medium whitespace-nowrap select-none">
                 {{ urlPrefix }}
               </div>
               <input
                 v-model="model.slug"
                 type="text"
                 :placeholder="slugPlaceholder"
-                class="flex-1 h-12 px-4 text-[15px] text-slate-900 placeholder-slate-400 focus:outline-none border-none bg-transparent"
+                class="flex-1 h-12 px-4 text-[15px] text-[var(--text-primary)] placeholder-slate-400 focus:outline-none border-none bg-transparent"
               />
             </div>
-            <span class="text-[13px] text-slate-500 mt-2 block">
+            <span class="text-[13px] text-[var(--text-secondary)] mt-2 block">
               {{ isPage ? 'Link trang' : 'Link nhóm' }}: {{ urlPrefix }}{{ model.slug || '' }}
             </span>
           </div>
@@ -65,7 +65,7 @@
             :ui="{ base: 'h-12 rounded-xl' }"
           />
           <template #hint>
-            <span v-if="!(isPage || isGroup)" class="text-[11px] font-medium text-slate-400">
+            <span v-if="!(isPage || isGroup)" class="text-[11px] font-medium text-[var(--text-tertiary)]">
               {{ urlPrefix }}{{ model.slug || '...' }}
             </span>
           </template>

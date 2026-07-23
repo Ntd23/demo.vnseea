@@ -453,7 +453,7 @@ function syncManualAddress() {
 
 .google-place-field__control--open {
   border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
@@ -473,7 +473,7 @@ function syncManualAddress() {
   border: 0;
   outline: 0;
   background: transparent;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
   overflow: hidden;
@@ -482,14 +482,14 @@ function syncManualAddress() {
 }
 
 .google-place-field__input::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .google-place-field__icon {
   height: 18px;
   width: 18px;
   flex-shrink: 0;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .google-place-field__icon--spin {
@@ -508,13 +508,13 @@ function syncManualAddress() {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  color: #64748b;
+  color: var(--text-secondary);
   transition: background 0.18s ease, color 0.18s ease;
 }
 
 .google-place-field__clear:hover {
   background: #e2e8f0;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .google-place-field__clear-icon {
@@ -531,7 +531,7 @@ function syncManualAddress() {
   overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: 0 18px 46px rgba(15, 23, 42, 0.14);
   padding: 6px;
 }
@@ -544,7 +544,7 @@ function syncManualAddress() {
   gap: 10px;
   border-radius: 10px;
   padding: 8px 10px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
   text-align: left;
@@ -552,14 +552,14 @@ function syncManualAddress() {
 
 .google-place-field__option:hover,
 .google-place-field__option--active {
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .google-place-field__option-icon {
   height: 16px;
   width: 16px;
   flex-shrink: 0;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .google-place-field__option span {
@@ -571,7 +571,7 @@ function syncManualAddress() {
 
 .google-place-field__empty {
   padding: 8px 10px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -584,7 +584,7 @@ function syncManualAddress() {
 }
 
 .google-place-field__help {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .google-place-field__error {

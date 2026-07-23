@@ -107,7 +107,7 @@ function closeModal() {
 
 <style scoped>
 .invite-card {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 20px rgba(0, 0, 0, 0.02);
   margin-bottom: 16px;
@@ -133,14 +133,14 @@ function closeModal() {
   border-radius: 50%;
   border: none;
   background: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .invite-card__back-btn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--bg-muted);
+  color: var(--text-primary);
 }
 
 .icon-svg {
@@ -152,7 +152,7 @@ function closeModal() {
   margin: 0;
   font-size: 16px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
@@ -172,7 +172,7 @@ function closeModal() {
   left: 14px;
   width: 18px;
   height: 18px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   pointer-events: none;
 }
 
@@ -184,7 +184,7 @@ function closeModal() {
   border: 1.5px solid #e2e8f0;
   background: #fafafa;
   font-size: 14px;
-  color: #1e293b;
+  color: var(--text-primary);
   outline: none;
   transition: all 0.2s;
   box-sizing: border-box;
@@ -192,12 +192,12 @@ function closeModal() {
 
 .search-input:focus {
   border-color: var(--bg-brand);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
 .search-input::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 /* Content */
@@ -212,7 +212,7 @@ function closeModal() {
   justify-content: center;
   text-align: center;
   padding: 40px 20px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .invite-card__status--empty p {
@@ -271,7 +271,7 @@ function closeModal() {
 }
 
 .invite-item:hover {
-  background: #f8fafc;
+  background: var(--bg-muted);
   border-color: #f1f5f9;
 }
 
@@ -286,7 +286,7 @@ function closeModal() {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -304,7 +304,7 @@ function closeModal() {
 
 .invite-item__avatar span {
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 18px;
 }
 
@@ -321,7 +321,7 @@ function closeModal() {
 .invite-item__name {
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -337,7 +337,7 @@ function closeModal() {
 .invite-item__username {
   display: block;
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -362,8 +362,8 @@ function closeModal() {
 }
 
 .invite-btn--invited {
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   cursor: default;
 }
 

@@ -592,7 +592,7 @@ onBeforeUnmount(() => {
   width: min(100%, 420px);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: var(--shadow-lg);
   padding: 1.25rem;
 }
@@ -629,7 +629,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  background: #ffffff;
+  background: var(--bg-surface);
   color: var(--text-secondary);
   cursor: pointer;
 }
@@ -653,7 +653,7 @@ onBeforeUnmount(() => {
   gap: 1rem;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 0.9rem 1rem;
   color: var(--text-primary);
   text-align: left;

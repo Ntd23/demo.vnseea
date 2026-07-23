@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-3">
-    <p v-if="label" class="text-sm font-semibold text-slate-700">
+    <p v-if="label" class="text-sm font-semibold text-[var(--text-primary)]">
       {{ label }}
     </p>
 
-    <p v-if="description" class="text-sm text-slate-500">
+    <p v-if="description" class="text-sm text-[var(--text-secondary)]">
       {{ description }}
     </p>
 
@@ -24,7 +24,7 @@
     <p v-if="error" class="text-sm font-medium text-rose-600">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="text-sm text-slate-500">
+    <p v-else-if="hint" class="text-sm text-[var(--text-secondary)]">
       {{ hint }}
     </p>
   </div>
@@ -53,7 +53,7 @@ const radioGroupUi = {
   item: "min-h-[4.4rem] items-center rounded-[1.15rem] border px-4 py-4 transition hover:border-[#c8d9ef]",
   container: "h-full",
   wrapper: "flex-1",
-  label: "text-[0.98rem] font-semibold text-slate-700",
+  label: "text-[0.98rem] font-semibold text-[var(--text-primary)]",
   base: "size-5 ring-[#cbd9ea] bg-white data-[state=checked]:ring-[var(--bg-brand)]",
 }
 </script>

@@ -364,7 +364,7 @@ function stripRepeatedTitle(body: string, title: string) {
 }
 
 .notification-dropdown__header h2 {
-  color: #111827;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 800;
   line-height: 1.12;
@@ -379,14 +379,14 @@ function stripRepeatedTitle(body: string, title: string) {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .notification-dropdown__menu:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--bg-muted);
+  color: var(--text-primary);
 }
 
 .notification-dropdown__options {
@@ -398,7 +398,7 @@ function stripRepeatedTitle(body: string, title: string) {
   overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
   padding: 6px;
 }
@@ -411,7 +411,7 @@ function stripRepeatedTitle(body: string, title: string) {
   border: 0;
   border-radius: 10px;
   background: transparent;
-  color: #1f2937;
+  color: var(--text-primary);
   cursor: pointer;
   font: inherit;
   font-size: 14px;
@@ -422,8 +422,8 @@ function stripRepeatedTitle(body: string, title: string) {
 }
 
 .notification-dropdown__option:hover {
-  background: #f1f5f9;
-  color: #2563d6;
+  background: var(--bg-muted);
+  color: var(--text-brand);
 }
 
 .notification-dropdown__tabs {
@@ -437,7 +437,7 @@ function stripRepeatedTitle(body: string, title: string) {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #0f172a;
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 14px;
   font-weight: 700;
@@ -447,8 +447,8 @@ function stripRepeatedTitle(body: string, title: string) {
 
 .notification-dropdown__tab:hover,
 .notification-dropdown__tab--active {
-  background: #eaf3ff;
-  color: #2563d6;
+  background: var(--color-primary-50);
+  color: var(--text-brand);
 }
 
 .notification-dropdown__list {
@@ -473,7 +473,7 @@ function stripRepeatedTitle(body: string, title: string) {
 }
 
 .notification-dropdown__section h3 {
-  color: #111827;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 800;
   line-height: 1.2;
@@ -482,7 +482,7 @@ function stripRepeatedTitle(body: string, title: string) {
 .notification-dropdown__see-all {
   border: 0;
   background: transparent;
-  color: #2563d6;
+  color: var(--text-brand);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -501,7 +501,7 @@ function stripRepeatedTitle(body: string, title: string) {
 }
 
 .notification-dropdown__item:hover {
-  background: #f8fafc;
+  background: var(--bg-muted);
 }
 
 .notification-dropdown__link {
@@ -546,7 +546,7 @@ function stripRepeatedTitle(body: string, title: string) {
   min-width: 0;
   flex-direction: column;
   gap: 3px;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 1.35;
   padding-top: 1px;
@@ -560,7 +560,7 @@ function stripRepeatedTitle(body: string, title: string) {
 }
 
 .notification-dropdown__message-title {
-  color: #111827;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
@@ -569,14 +569,14 @@ function stripRepeatedTitle(body: string, title: string) {
 }
 
 .notification-dropdown__content small {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.2;
 }
 
 .notification-dropdown__item--unread .notification-dropdown__content small {
-  color: #2563d6;
+  color: var(--text-brand);
   font-weight: 700;
 }
 
@@ -591,7 +591,7 @@ function stripRepeatedTitle(body: string, title: string) {
   justify-content: center;
   border: 3px solid #ffffff;
   border-radius: 999px;
-  background: #2563d6;
+  background: var(--bg-brand);
   color: #ffffff;
 }
 
@@ -600,7 +600,7 @@ function stripRepeatedTitle(body: string, title: string) {
 }
 
 .notification-dropdown__type-badge--reaction {
-  background: #2f7be7;
+  background: var(--bg-brand);
 }
 
 .notification-dropdown__type-badge--video {
@@ -614,7 +614,7 @@ function stripRepeatedTitle(body: string, title: string) {
   width: 11px;
   height: 11px;
   border-radius: 999px;
-  background: #2563d6;
+  background: var(--bg-brand);
   transform: translateY(-50%);
 }
 

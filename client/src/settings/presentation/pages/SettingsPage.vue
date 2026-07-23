@@ -121,7 +121,7 @@ const isVerificationPage = computed(() =>
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -134,16 +134,16 @@ const isVerificationPage = computed(() =>
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   border: 1px solid #e2e8f0;
-  color: #000000;
+  color: var(--text-primary);
   flex-shrink: 0;
 }
 
 .settings-page__page-title {
   font-size: 17px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
@@ -151,6 +151,6 @@ const isVerificationPage = computed(() =>
   margin-top: 2px;
   font-size: 12px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 </style>

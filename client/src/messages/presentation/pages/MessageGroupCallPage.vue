@@ -507,7 +507,7 @@ const {
 }
 
 .group-call-page__empty {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 

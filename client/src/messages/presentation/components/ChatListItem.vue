@@ -311,7 +311,7 @@ const previewClass = computed(() => ({
   height: 18px;
   border-radius: 5px;
   border: 1.5px solid var(--border-default);
-  background: #fff;
+  background: var(--bg-surface);
   display: inline-flex;
   align-items: center;
   justify-content: center;

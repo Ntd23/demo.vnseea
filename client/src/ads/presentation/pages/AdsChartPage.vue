@@ -106,7 +106,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 .ads-chart-page__summary article {
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-surface);
 }
 
 .ads-chart-page__hero {
@@ -122,7 +122,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 .ads-chart-panel__head p,
 .ads-chart-page__summary p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -130,7 +130,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 .ads-chart-panel h2,
 .ads-chart-page__empty h2 {
   margin: 4px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
@@ -164,7 +164,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 }
 
 .ads-chart-page__summary strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 800;
 }
@@ -192,7 +192,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 }
 
 .ads-bars__date {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
@@ -223,7 +223,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 }
 
 .ads-bars strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
 }
 
@@ -236,11 +236,11 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
   margin: 0 auto 10px;
   height: 42px;
   width: 42px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .ads-chart-page__empty p {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 820px) {

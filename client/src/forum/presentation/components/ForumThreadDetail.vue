@@ -240,7 +240,7 @@ async function submit() {
 
 .forum-thread-detail__header p,
 .forum-thread-detail__reply-head p {
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -250,7 +250,7 @@ async function submit() {
 .forum-thread-detail__header h2 {
   margin-top: 5px;
   overflow-wrap: anywhere;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 800;
   line-height: 1.35;
@@ -259,14 +259,14 @@ async function submit() {
 .forum-thread-detail__header span {
   display: block;
   margin-top: 5px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
 }
 
 .forum-thread-detail__body {
   margin-top: 12px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.6;
@@ -287,7 +287,7 @@ async function submit() {
   min-width: 0;
   align-items: center;
   gap: 7px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
@@ -313,7 +313,7 @@ async function submit() {
 
 .forum-thread-detail__reply-head h3 {
   margin-top: 4px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 800;
 }
@@ -380,7 +380,7 @@ async function submit() {
 }
 
 .forum-thread-detail__reply-meta a {
-  color: #1e293b;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
@@ -392,7 +392,7 @@ async function submit() {
 
 .forum-thread-detail__reply-meta span,
 .forum-thread-detail__reply-content time {
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 600;
 }
@@ -406,7 +406,7 @@ async function submit() {
 .forum-thread-detail__reply-content p {
   margin-top: 5px;
   overflow-wrap: anywhere;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.55;
@@ -434,7 +434,7 @@ async function submit() {
 }
 
 .forum-thread-detail__actions p {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
 }

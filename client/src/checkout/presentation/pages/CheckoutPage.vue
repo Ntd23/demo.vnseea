@@ -342,7 +342,7 @@ async function confirmPurchase() {
 .summary-skeleton {
   border: 1px solid #dfe6f3;
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: 0 4px 14px rgb(31 51 92 / 7%);
 }
 

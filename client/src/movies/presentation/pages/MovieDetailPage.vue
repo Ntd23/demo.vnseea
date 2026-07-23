@@ -149,7 +149,7 @@ const formatFilterLabel = (value: string) =>
 .movie-detail-page__state {
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
 }
 
@@ -178,7 +178,7 @@ const formatFilterLabel = (value: string) =>
 
 .movie-detail-page__section-header h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
 }
@@ -197,7 +197,7 @@ const formatFilterLabel = (value: string) =>
   align-content: center;
   gap: 10px;
   padding: 28px;
-  color: #64748b;
+  color: var(--text-secondary);
   text-align: center;
 }
 
@@ -207,7 +207,7 @@ const formatFilterLabel = (value: string) =>
 }
 
 .movie-detail-page__state h1 {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 22px;
   font-weight: 800;
 }
@@ -236,7 +236,7 @@ const formatFilterLabel = (value: string) =>
   grid-template-columns: 180px 1fr;
   gap: 24px;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 20px;
 }
 

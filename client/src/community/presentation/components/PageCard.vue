@@ -104,7 +104,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
@@ -238,7 +238,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13.5px;
   line-height: 1.55;
 }
@@ -313,7 +313,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   align-items: center;
   gap: 8px;
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -349,7 +349,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 
 .page-card__action--secondary {
   background: rgba(255, 255, 255, 0.9);
-  color: #000000;
+  color: var(--text-primary);
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   transition: all 0.2s ease;

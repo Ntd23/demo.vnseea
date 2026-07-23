@@ -84,7 +84,7 @@ const isActive = computed(() => {
   justify-content: center;
   border-radius: 10px;
   background: transparent;
-  color: #000000;
+  color: var(--icon-primary);
   transition: all 0.15s ease;
 }
 
@@ -102,7 +102,7 @@ const isActive = computed(() => {
 .sidebar-item__label {
   font-size: 16px;
   font-weight: 600;
-  color: #000000;
+  color: var(--icon-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

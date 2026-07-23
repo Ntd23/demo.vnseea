@@ -24,9 +24,9 @@
 
       <div class="space-y-4">
         <div class="space-y-2">
-          <label class="text-[13px] font-bold text-slate-700">Mật khẩu xác nhận</label>
+          <label class="text-[13px] font-bold text-[var(--text-primary)]">Mật khẩu xác nhận</label>
           <div class="relative">
-            <Icon name="i-ph-lock-bold" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Icon name="i-ph-lock-bold" class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
             <input
               v-model="password"
               type="password"
@@ -90,7 +90,7 @@ async function handleDelete() {
   height: 44px;
   padding-left: 40px;
   padding-right: 16px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   font-size: 14px;
@@ -98,7 +98,7 @@ async function handleDelete() {
 }
 
 .password-input:focus {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-color: #ef4444;
   outline: none;
   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);

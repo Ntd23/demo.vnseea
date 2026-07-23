@@ -86,7 +86,7 @@ const items = computed(() => [
   padding: 8px 4px 10px;
   border-radius: 12px;
   text-decoration: none;
-  color: #000000;
+  color: var(--text-primary);
   transition: all 0.15s ease;
 }
 

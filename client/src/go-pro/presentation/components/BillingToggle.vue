@@ -6,7 +6,7 @@
           <Icon name="i-ph-currency-circle-dollar-duotone" class="h-5 w-5" />
         </div>
         <div>
-          <p class="text-[11px] font-extrabold uppercase text-slate-500">
+          <p class="text-[11px] font-extrabold uppercase text-[var(--text-secondary)]">
             {{ t("pages.goProPage.billingShortTitle") }}
           </p>
           <p class="text-[14px] font-black text-[var(--text-primary)]">
@@ -22,7 +22,7 @@
           class="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] px-4 text-[13px] font-black transition active:scale-95"
           :class="model === item.value
             ? 'bg-white text-primary-700 shadow-[0_8px_18px_rgba(15,35,110,0.08)]'
-            : 'text-slate-500 hover:text-[var(--text-primary)]'"
+            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'"
           :aria-pressed="model === item.value"
           type="button"
           @click="model = item.value"
@@ -37,7 +37,7 @@
         </button>
       </div>
 
-      <p class="hidden max-w-[300px] truncate px-2 text-right text-[12px] font-semibold text-slate-500 lg:block">
+      <p class="hidden max-w-[300px] truncate px-2 text-right text-[12px] font-semibold text-[var(--text-secondary)] lg:block">
         {{ statusLabel }}
       </p>
     </div>

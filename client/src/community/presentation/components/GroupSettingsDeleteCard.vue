@@ -73,7 +73,7 @@ async function handleDelete() {
 }
 
 .group-delete label {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 800;
 }
@@ -81,7 +81,7 @@ async function handleDelete() {
 .group-delete__input {
   border: 1px solid #cbd5e1;
   border-radius: 10px;
-  color: #000000;
+  color: var(--text-primary);
   height: 56px;
   outline: none;
   padding: 0 16px;

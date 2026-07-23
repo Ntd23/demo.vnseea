@@ -98,7 +98,7 @@ const displayTime = computed(() => {
   gap: 14px;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 14px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
@@ -121,7 +121,7 @@ const displayTime = computed(() => {
   overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #f8fafc;
+  background: var(--bg-muted);
 }
 
 .poke-request-card__initials {
@@ -138,7 +138,7 @@ const displayTime = computed(() => {
 
 .poke-request-card__name {
   overflow: hidden;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -147,7 +147,7 @@ const displayTime = computed(() => {
 
 .poke-request-card__meta {
   overflow: hidden;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -168,9 +168,9 @@ const displayTime = computed(() => {
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 6px 10px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }

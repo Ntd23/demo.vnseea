@@ -1,5 +1,7 @@
 /* English description: Defines the shared VNSEEA design tokens and reusable visual utility classes. */
 
+
+
 /* ============================================================
    VNSEEA Design Tokens
    Khai báo 1 lần, dùng khắp nơi.
@@ -55,10 +57,10 @@
   --color-secondary-100: #f1f5f9;
   --color-secondary-200: #e2e8f0;
   --color-secondary-300: #cbd5e1;
-  --color-secondary-400: #ffffff;
+  --color-secondary-400: #94a3b8;
   --color-secondary-500: #64748b;
   --color-secondary-600: #475569;
-  --color-secondary-700: #000000;
+  --color-secondary-700: #334155;
   --color-secondary-800: #1e293b;
   --color-secondary-900: #0f172a;
 
@@ -110,9 +112,9 @@
   --leading-relaxed: 1.75;
 
   /* Text colors: primary = chính, secondary = phụ */
-  --text-primary: #000000;;
+  --text-primary: #0f172a;
   --text-secondary: var(--color-secondary-500);    /* #64748b */
-  --text-tertiary: var(--color-secondary-400);     /* #94a3b8 */
+  --text-tertiary: #94a3b8;     /* #94a3b8 */
   --text-inverse: var(--color-on-brand);
   --text-on-brand-secondary: var(--color-on-brand-secondary);
   --text-brand: var(--color-primary-500);           /* #B91C1C */
@@ -265,3 +267,67 @@
 /* --- Scrollbar hide --- */
 .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+
+/* ──────────────────────────────────────────────────────────── 
+   9. DARK MODE TOKENS (#0b1620 Slate Tech)
+   ──────────────────────────────────────────────────────────── */
+html.dark,
+.dark {
+  /* Surface & Page Backgrounds */
+  --bg-base: #0b1620;
+  --bg-surface: #142230;
+  --bg-surface-hover: #1e3246;
+  --bg-surface-active: #243b52;
+  --bg-muted: #1a2b3c;
+  --bg-brand: var(--color-primary-500);      /* #B91C1C */
+  --bg-brand-hover: var(--color-primary-700);/* #991B1B */
+
+  /* Text Colors — Pure White & Bright Silver Tones for Dark Mode */
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-tertiary: #cbd5e1;
+  --text-inverse: #0b1620;
+  --text-brand: #ef4444;                     /* Bright crimson on dark surface */
+  --text-link: #ef4444;
+
+  /* Icon Colors */
+  --icon-primary: #ffffff;
+  --icon-secondary: #e2e8f0;
+  --icon-brand: #ef4444;
+  --icon-inverse: #0b1620;
+
+  /* Borders & Shadows */
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.20);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.55);
+
+  /* Tailwind Slate / Gray / Neutral text color overrides for Dark Mode */
+  --color-slate-950: #ffffff;
+  --color-slate-900: #ffffff;
+  --color-slate-800: #f8fafc;
+  --color-slate-700: #f1f5f9;
+  --color-slate-600: #e2e8f0;
+  --color-slate-500: #cbd5e1;
+  --color-slate-400: #94a3b8;
+
+  --color-gray-950: #ffffff;
+  --color-gray-900: #ffffff;
+  --color-gray-800: #f8fafc;
+  --color-gray-700: #f1f5f9;
+  --color-gray-600: #e2e8f0;
+  --color-gray-500: #cbd5e1;
+  --color-gray-400: #94a3b8;
+
+  --color-secondary-950: #ffffff;
+  --color-secondary-900: #ffffff;
+  --color-secondary-800: #f8fafc;
+  --color-secondary-700: #f1f5f9;
+  --color-secondary-600: #e2e8f0;
+  --color-secondary-500: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+}

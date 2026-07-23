@@ -78,7 +78,7 @@ const {
   overflow: hidden;
   border-radius: 18px;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 

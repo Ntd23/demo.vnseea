@@ -44,7 +44,7 @@ const pillClass = (active: boolean) => [
 }
 
 .filter-choice__title {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   line-height: 1.2;
@@ -61,7 +61,7 @@ const pillClass = (active: boolean) => [
   border: 1px solid transparent;
   border-radius: 999px;
   background: #f1f5f9;
-  color: #000000;
+  color: var(--text-primary);
   padding: 0 14px;
   font-size: 13px;
   font-weight: 700;

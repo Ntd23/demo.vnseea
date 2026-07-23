@@ -4,7 +4,7 @@
     <section class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
       <div class="flex items-start justify-between gap-4">
         <div class="min-w-0 space-y-1">
-          <p class="text-[11px] font-extrabold uppercase text-slate-500">{{ hashtagsEyebrow }}</p>
+          <p class="text-[11px] font-extrabold uppercase text-[var(--text-secondary)]">{{ hashtagsEyebrow }}</p>
           <h2 class="text-[18px] font-black leading-tight text-[var(--text-primary)]">{{ hashtagsTitle }}</h2>
         </div>
         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-primary-50 text-primary-700 ring-1 ring-primary-100">
@@ -20,7 +20,7 @@
           class="group flex items-center justify-between gap-3 rounded-[14px] border border-secondary-100 bg-secondary-50/60 px-3 py-2.5 transition hover:border-primary-200 hover:bg-white"
         >
           <span class="min-w-0 truncate text-[13px] font-extrabold text-[var(--text-primary)] group-hover:text-primary-700">{{ item.label }}</span>
-          <span class="shrink-0 rounded-full bg-white px-2.5 py-1 text-[11px] font-black text-slate-600 ring-1 ring-secondary-100">{{ item.score }}</span>
+          <span class="shrink-0 rounded-full bg-white px-2.5 py-1 text-[11px] font-black text-[var(--text-secondary)] ring-1 ring-secondary-100">{{ item.score }}</span>
         </NuxtLink>
       </div>
     </section>
@@ -28,7 +28,7 @@
     <section class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
       <div class="flex items-start justify-between gap-4">
         <div class="min-w-0 space-y-1">
-          <p class="text-[11px] font-extrabold uppercase text-slate-500">{{ creatorsEyebrow }}</p>
+          <p class="text-[11px] font-extrabold uppercase text-[var(--text-secondary)]">{{ creatorsEyebrow }}</p>
           <h2 class="text-[18px] font-black leading-tight text-[var(--text-primary)]">{{ creatorsTitle }}</h2>
         </div>
         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-orange-50 text-orange-700 ring-1 ring-orange-100">
@@ -50,7 +50,7 @@
           </div>
           <div class="min-w-0 flex-1">
             <p class="truncate text-[13px] font-extrabold text-[var(--text-primary)]">{{ item.name }}</p>
-            <p class="truncate text-[12px] font-medium text-slate-500">{{ item.role }}</p>
+            <p class="truncate text-[12px] font-medium text-[var(--text-secondary)]">{{ item.role }}</p>
           </div>
           <span class="shrink-0 rounded-full bg-white px-2.5 py-1 text-[11px] font-black text-[var(--text-primary)] ring-1 ring-secondary-100">
             {{ item.score }}
@@ -61,7 +61,7 @@
 
     <section class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
       <div class="space-y-1">
-        <p class="text-[11px] font-extrabold uppercase text-slate-500">{{ linksEyebrow }}</p>
+        <p class="text-[11px] font-extrabold uppercase text-[var(--text-secondary)]">{{ linksEyebrow }}</p>
         <h3 class="text-[18px] font-black leading-tight text-[var(--text-primary)]">{{ linksTitle }}</h3>
       </div>
 
@@ -77,9 +77,9 @@
           </div>
           <div class="min-w-0 flex-1">
             <p class="truncate text-[13px] font-extrabold text-[var(--text-primary)] group-hover:text-primary-700">{{ item.title }}</p>
-            <p class="line-clamp-1 text-[12px] font-medium text-slate-500">{{ item.description }}</p>
+            <p class="line-clamp-1 text-[12px] font-medium text-[var(--text-secondary)]">{{ item.description }}</p>
           </div>
-          <Icon name="i-ph-arrow-up-right-duotone" class="h-4 w-4 shrink-0 text-slate-400 transition group-hover:text-primary-600" />
+          <Icon name="i-ph-arrow-up-right-duotone" class="h-4 w-4 shrink-0 text-[var(--text-tertiary)] transition group-hover:text-primary-600" />
         </NuxtLink>
       </div>
     </section>

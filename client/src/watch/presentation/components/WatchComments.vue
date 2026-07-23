@@ -67,7 +67,7 @@ const submit = () => {
 
 <style scoped>
 .watch-comments {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -93,14 +93,14 @@ const submit = () => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .watch-comments__title {
   margin-top: 4px;
   font-size: 16px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .watch-comments__count {
@@ -131,7 +131,7 @@ const submit = () => {
   background: #fafbfe;
   font-size: 13px;
   font-weight: 500;
-  color: #000000;
+  color: var(--text-primary);
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s ease;
@@ -142,7 +142,7 @@ const submit = () => {
 }
 
 .watch-comments__input::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .watch-comments__submit {
@@ -223,14 +223,14 @@ const submit = () => {
 .watch-comment__author {
   font-size: 13px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
 .watch-comment__role {
   font-size: 10px;
   font-weight: 700;
-  color: #64748b;
-  background: #f1f5f9;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
   padding: 2px 8px;
   border-radius: 999px;
 }
@@ -238,7 +238,7 @@ const submit = () => {
 .watch-comment__time {
   font-size: 12px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .watch-comment__text {
@@ -246,6 +246,6 @@ const submit = () => {
   font-size: 13px;
   font-weight: 500;
   line-height: 1.55;
-  color: #475569;
+  color: var(--text-secondary);
 }
 </style>

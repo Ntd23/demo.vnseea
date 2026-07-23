@@ -10,7 +10,7 @@
           class="relative shrink-0 rounded-full px-4 py-2.5 text-[13px] font-semibold transition"
           :class="modelValue === tab.key
             ? 'bg-[var(--bg-brand)] text-white shadow-[0_8px_24px_color-mix(in srgb, var(--bg-brand) 18%, transparent)]'
-            : 'text-slate-500 hover:bg-[var(--bg-brand)]/5 hover:text-[var(--text-brand)]'"
+            : 'text-[var(--text-secondary)] hover:bg-[var(--bg-brand)]/5 hover:text-[var(--text-brand)]'"
           type="button"
           @click="$emit('update:modelValue', tab.key)"
         >
@@ -21,7 +21,7 @@
       <!-- More trigger button (outside overflow container) -->
       <button
         ref="triggerRef"
-        class="flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-semibold text-slate-500 transition hover:bg-[var(--bg-brand)]/5 hover:text-[var(--text-brand)]"
+        class="flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-semibold text-[var(--text-secondary)] transition hover:bg-[var(--bg-brand)]/5 hover:text-[var(--text-brand)]"
         :class="{ 'bg-[var(--bg-brand)]/5 text-[var(--text-brand)]': moreOpen }"
         type="button"
         @click="toggleDropdown"
@@ -191,7 +191,7 @@ function handleAction(action: string) {
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 12px 40px color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
@@ -233,13 +233,13 @@ function handleAction(action: string) {
 .profile-more-label {
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary);
   line-height: 1.3;
 }
 
 .profile-more-desc {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin-top: 2px;
   line-height: 1.3;
 }

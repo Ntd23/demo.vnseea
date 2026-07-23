@@ -2,7 +2,7 @@
   <section class="settings-money" aria-labelledby="settings-money-title">
     <div class="settings-money__summary">
       <div class="settings-money__summary-main">
-        <span class="settings-money__icon text-black" aria-hidden="true">
+        <span class="settings-money__icon text-[var(--text-primary)]" aria-hidden="true">
           <Icon name="i-ph-currency-circle-dollar-bold" class="h-6 w-6" />
         </span>
         <div>
@@ -120,7 +120,7 @@ const requirementLabel = (key: string) =>
 .settings-money__panel {
   border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -154,7 +154,7 @@ const requirementLabel = (key: string) =>
 .settings-money__eyebrow,
 .settings-money__card-label {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -163,7 +163,7 @@ const requirementLabel = (key: string) =>
 
 .settings-money__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 22px;
   font-weight: 800;
 }
@@ -173,7 +173,7 @@ const requirementLabel = (key: string) =>
 .settings-money__plan-description,
 .settings-money__empty {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.5;
@@ -186,8 +186,8 @@ const requirementLabel = (key: string) =>
   min-height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
@@ -211,7 +211,7 @@ const requirementLabel = (key: string) =>
 .settings-money__card-value {
   display: block;
   margin-top: 4px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 800;
 }
@@ -228,7 +228,7 @@ const requirementLabel = (key: string) =>
 
 .settings-money__section-title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
 }
@@ -261,7 +261,7 @@ const requirementLabel = (key: string) =>
   justify-content: center;
   border-radius: 10px;
   background: rgba(100, 116, 139, 0.1);
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .settings-money__requirement-icon--done {
@@ -275,7 +275,7 @@ const requirementLabel = (key: string) =>
 
 .settings-money__plan-title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 800;
 }
@@ -285,7 +285,7 @@ const requirementLabel = (key: string) =>
   flex-direction: column;
   align-items: flex-end;
   gap: 6px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }

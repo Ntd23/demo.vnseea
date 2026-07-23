@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <div v-else-if="messages.length === 0" class="rounded-[20px] border border-dashed border-[#dbe3f2] bg-white/80 px-5 py-8 text-center text-sm text-slate-500">
+      <div v-else-if="messages.length === 0" class="rounded-[20px] border border-dashed border-[#dbe3f2] bg-white/80 px-5 py-8 text-center text-sm text-[var(--text-secondary)]">
         {{ emptyLabel }}
       </div>
 

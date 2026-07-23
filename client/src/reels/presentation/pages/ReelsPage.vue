@@ -370,7 +370,7 @@ useSeoMeta({
   align-items: center;
   justify-content: center;
   position: relative;
-  background-color: #000;
+  background-color: var(--text-primary);
 }
 
 .reels-page__stage {
@@ -386,7 +386,7 @@ useSeoMeta({
 .reels-page__player-box {
   height: 100%;
   width: 100%;
-  background-color: #000;
+  background-color: var(--text-primary);
   position: relative;
   display: flex;
   align-items: center;
@@ -632,7 +632,7 @@ useSeoMeta({
 .reels-page__sheet-title {
   font-size: 16px;
   font-weight: 800;
-  color: #000;
+  color: var(--text-primary);
 }
 
 .reels-page__sheet-close {
@@ -643,7 +643,7 @@ useSeoMeta({
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #000;
+  color: var(--text-primary);
 }
 
 .reels-page__sheet-content {
@@ -698,7 +698,7 @@ useSeoMeta({
 }
 
 .reels-page__option-text small {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.35;
@@ -753,7 +753,7 @@ useSeoMeta({
   top: 0;
   left: 0;
   height: 100%;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
   transition: width 0.1s linear;
 }

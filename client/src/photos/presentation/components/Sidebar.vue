@@ -45,7 +45,7 @@
           <!-- Rank -->
           <span
             class="w-4 shrink-0 text-center text-[11px] font-black"
-            :class="index === 0 ? 'text-amber-400' : index === 1 ? 'text-slate-400' : index === 2 ? 'text-orange-400' : 'text-[var(--text-tertiary)]'"
+            :class="index === 0 ? 'text-amber-400' : index === 1 ? 'text-[var(--text-tertiary)]' : index === 2 ? 'text-orange-400' : 'text-[var(--text-tertiary)]'"
           >{{ index + 1 }}</span>
 
           <!-- Avatar -->

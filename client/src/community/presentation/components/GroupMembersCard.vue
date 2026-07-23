@@ -42,8 +42,8 @@
 
         <div class="min-w-0 flex-1">
           <p class="truncate text-[13px] font-semibold text-[#243b63]">{{ member.name }}</p>
-          <p class="mt-0.5 text-[12px] text-slate-500">{{ translateText(member.role) }}</p>
-          <p class="mt-0.5 truncate text-[11px] text-slate-400">{{ translateText(member.meta) }}</p>
+          <p class="mt-0.5 text-[12px] text-[var(--text-secondary)]">{{ translateText(member.role) }}</p>
+          <p class="mt-0.5 truncate text-[11px] text-[var(--text-tertiary)]">{{ translateText(member.meta) }}</p>
         </div>
 
         <UBadge

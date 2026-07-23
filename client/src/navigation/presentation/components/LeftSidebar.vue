@@ -192,8 +192,8 @@ const isItemActive = (to: string) => {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   transition: all 0.15s ease;
 }
 
@@ -205,7 +205,7 @@ const isItemActive = (to: string) => {
 .left-sidebar__toggle-label {
   font-size: 16px;
   font-weight: 600;
-  color: #000000;
+  color: var(--text-primary);
   transition: color 0.15s ease;
 }
 

@@ -548,7 +548,7 @@ onBeforeUnmount(() => {
 
 /* Sidebar */
 .watch-modal__sidebar {
-  background: white;
+  background: var(--bg-surface);
   display: flex;
   flex-direction: column;
   border-left: 1px solid rgba(0, 0, 0, 0.08);
@@ -760,7 +760,7 @@ onBeforeUnmount(() => {
   left: 0; /* Shift to the right from the left edge of the sidebar */
   display: flex;
   gap: 6px;
-  background: white;
+  background: var(--bg-surface);
   padding: 5px;
   border-radius: 999px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -813,7 +813,7 @@ onBeforeUnmount(() => {
   height: 18px;
   border-radius: 50%;
   border: 1.5px solid white;
-  background: white;
+  background: var(--bg-surface);
   margin-left: -4px;
 }
 

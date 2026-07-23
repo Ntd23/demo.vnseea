@@ -444,7 +444,7 @@ onBeforeUnmount(() => {
 .message-call-modal__copy h3 {
   max-width: min(320px, 76vw);
   overflow: hidden;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 850;
   line-height: 1.08;
@@ -462,7 +462,7 @@ onBeforeUnmount(() => {
 }
 
 .message-call-modal__subtitle {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 15px;
   font-weight: 600;
   line-height: 1.35;
@@ -492,7 +492,7 @@ onBeforeUnmount(() => {
 
 .message-call-modal__hint {
   max-width: 300px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 650;
   line-height: 1.4;

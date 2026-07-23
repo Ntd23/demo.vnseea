@@ -22,7 +22,7 @@
       <div class="profile-page__avatar-wrap">
         <img v-if="group.avatar" :src="group.avatar" class="profile-page__avatar rounded-full" />
         <div v-else class="profile-page__avatar rounded-full bg-slate-800 flex items-center justify-center border-4 border-white shadow-md">
-          <Icon name="i-ph-users-three-fill" class="h-16 w-16 text-slate-400 sm:h-20 sm:w-20" />
+          <Icon name="i-ph-users-three-fill" class="h-16 w-16 text-[var(--text-tertiary)] sm:h-20 sm:w-20" />
         </div>
       </div>
 
@@ -86,7 +86,7 @@
           color="neutral"
           variant="ghost"
           size="xl"
-          class="h-12 w-12 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 justify-center"
+          class="h-12 w-12 rounded-full bg-slate-100 hover:bg-slate-200 text-[var(--text-primary)] justify-center"
         >
           <Icon name="i-ph-gear-six-bold" class="h-6 w-6" />
         </UButton>
@@ -156,7 +156,7 @@ const inviteButtonLabel = computed(() => {
 <style scoped>
 /* ── Hero ─────────────────────────────────────────────── */
 .profile-page__hero {
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
   border-radius: 16px;
@@ -285,7 +285,7 @@ const inviteButtonLabel = computed(() => {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 900;
   letter-spacing: -0.03em;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -303,12 +303,12 @@ const inviteButtonLabel = computed(() => {
   display: inline-flex;
   gap: 4px;
   font-size: 14px;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .profile-page__stat-chip strong {
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 /* Hero actions */

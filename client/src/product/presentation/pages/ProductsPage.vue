@@ -12,7 +12,7 @@
             <h1 class="products-hero__title truncate text-slate-950">
               {{ $t("pages.productsPage.marketTitle") }}
             </h1>
-            <p class="products-hero__description mt-1.5 line-clamp-2 max-w-3xl text-slate-500">
+            <p class="products-hero__description mt-1.5 line-clamp-2 max-w-3xl text-[var(--text-secondary)]">
               {{ $t("pages.productsPage.marketDescription") }}
             </p>
           </div>
@@ -47,12 +47,12 @@
           :ui="categorySelectUi" />
 
         <div class="products-filter__distance">
-          <div class="flex items-center justify-between gap-3 text-[12px] font-semibold text-slate-600">
+          <div class="flex items-center justify-between gap-3 text-[12px] font-semibold text-[var(--text-secondary)]">
             <span class="inline-flex min-w-0 items-center gap-1.5">
               <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 shrink-0 text-primary-600" />
               <span class="truncate">{{ $t("pages.productsPage.locationDistance") }}</span>
             </span>
-            <span class="shrink-0 text-slate-900">{{ distanceRange }} km</span>
+            <span class="shrink-0 text-[var(--text-primary)]">{{ distanceRange }} km</span>
           </div>
           <input v-model.number="distanceRange" type="range" min="0" max="300"
             class="products-filter__range mt-2 w-full" @change="applyDistance">
@@ -103,12 +103,12 @@
 
           <div class="market-product-actions">
             <NuxtLink v-if="product.mine"
-              class="market-product-action-btn market-product-action-muted inline-flex items-center justify-center text-slate-900 transition"
+              class="market-product-action-btn market-product-action-muted inline-flex items-center justify-center text-[var(--text-primary)] transition"
               :to="product.href" :title="$t('pages.productsPage.moreInfo')" @pointerdown.stop @click.stop>
               <Icon name="i-ph-info-fill" class="h-[29px] w-[29px]" />
             </NuxtLink>
             <button v-if="!product.mine" type="button"
-              class="market-product-action-btn market-product-action-muted inline-flex items-center justify-center text-slate-900 transition disabled:opacity-60"
+              class="market-product-action-btn market-product-action-muted inline-flex items-center justify-center text-[var(--text-primary)] transition disabled:opacity-60"
               :title="$t('pages.productsPage.messageSeller')" :disabled="!product.canContactSeller"
               @pointerdown.stop @click.stop="openSellerChat(product)">
               <Icon name="i-ph-chat-text-fill" class="h-[29px] w-[29px]" />
@@ -125,19 +125,19 @@
 
         <div class="market-product-body">
           <NuxtLink :to="product.href"
-            class="line-clamp-2 min-h-[40px] text-[14px] font-semibold leading-5 text-slate-900 hover:text-primary-600"
+            class="line-clamp-2 min-h-[40px] text-[14px] font-semibold leading-5 text-[var(--text-primary)] hover:text-primary-600"
             :title="product.title">
             {{ product.title }}
           </NuxtLink>
           <div class="market-product-price mt-2 text-[18px] font-bold">
             {{ formatProductCurrency(product) }}
           </div>
-          <div class="mt-2 flex items-center justify-between gap-2 text-[12px] font-medium text-slate-500">
+          <div class="mt-2 flex items-center justify-between gap-2 text-[12px] font-medium text-[var(--text-secondary)]">
             <span class="truncate">{{ product.seller }}</span>
             <span>{{ product.condition }}</span>
           </div>
           <div v-if="product.location || formatDistance(product.distanceKm)"
-            class="mt-2 flex items-center gap-1 text-[12px] text-slate-500">
+            class="mt-2 flex items-center gap-1 text-[12px] text-[var(--text-secondary)]">
             <Icon name="i-ph-map-pin" class="h-4 w-4 shrink-0" />
             <span class="truncate">{{ product.location }}</span>
             <span v-if="formatDistance(product.distanceKm)" class="shrink-0">· {{ formatDistance(product.distanceKm)
@@ -147,7 +147,7 @@
       </article>
     </div>
 
-    <div v-else class="mt-4 rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center text-slate-500">
+    <div v-else class="mt-4 rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center text-[var(--text-secondary)]">
       <Icon name="i-ph-shopping-bag-open" class="mx-auto h-10 w-10" />
       <p class="mt-3 text-[15px] font-semibold">
         {{ $t("pages.productsPage.emptyTitle") }}
@@ -504,7 +504,7 @@ const {
 
 .market-product-more:hover {
   background-color: #fff;
-  color: #000;
+  color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 

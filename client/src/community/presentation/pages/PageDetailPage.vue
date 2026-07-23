@@ -103,7 +103,7 @@
             <button
               v-if="page.canManage"
               type="button"
-              class="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-white hover:bg-slate-100 text-slate-700 transition-all shadow-md border border-slate-200 cursor-pointer z-10"
+              class="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-white hover:bg-slate-100 text-[var(--text-primary)] transition-all shadow-md border border-slate-200 cursor-pointer z-10"
               @click="triggerAvatarUpload"
             >
               <Icon name="i-ph-camera-bold" class="h-4 w-4" />
@@ -263,10 +263,10 @@
                   :post="post"
                 />
               </div>
-              <div v-else class="rounded-[20px] bg-white p-8 text-center text-slate-500 shadow-sm border border-slate-200">
-                <Icon name="i-ph-magnifying-glass-duotone" class="mx-auto h-12 w-12 text-slate-400 mb-2" />
-                <p class="font-semibold text-slate-700">Không tìm thấy bài viết nào phù hợp</p>
-                <p class="text-sm text-slate-400 mt-1">Thử lại với từ khóa khác</p>
+              <div v-else class="rounded-[20px] bg-white p-8 text-center text-[var(--text-secondary)] shadow-sm border border-slate-200">
+                <Icon name="i-ph-magnifying-glass-duotone" class="mx-auto h-12 w-12 text-[var(--text-tertiary)] mb-2" />
+                <p class="font-semibold text-[var(--text-primary)]">Không tìm thấy bài viết nào phù hợp</p>
+                <p class="text-sm text-[var(--text-tertiary)] mt-1">Thử lại với từ khóa khác</p>
               </div>
             </div>
             <UAlert
@@ -566,7 +566,7 @@ async function handleOfferSaved() {
 
 /* ── Hero ────────────────────────────────────────────── */
 .page-detail__hero {
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
   border-bottom-left-radius: 18px;
@@ -616,13 +616,13 @@ async function handleOfferSaved() {
   font-size: 12px;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.9);
-  color: #1e293b;
+  color: var(--text-primary);
   text-decoration: none;
   backdrop-filter: blur(4px);
   transition: background 0.15s;
 }
 
-.page-detail__manage-link:hover { background: #ffffff; }
+.page-detail__manage-link:hover { background: var(--bg-surface); }
 
 /* Identity bar */
 .page-detail__identity-bar {
@@ -703,7 +703,7 @@ async function handleOfferSaved() {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 900;
   letter-spacing: -0.03em;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -723,15 +723,15 @@ async function handleOfferSaved() {
   align-items: center;
   gap: 4px;
   font-size: 14px;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .page-detail__stat-chip strong {
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
-.page-detail__stat-label { color: #64748b; }
+.page-detail__stat-label { color: var(--text-secondary); }
 
 /* Hero actions */
 .page-detail__hero-actions {
@@ -797,7 +797,7 @@ async function handleOfferSaved() {
   overflow: hidden;
   border: 1px solid #dbe3f2;
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
@@ -805,7 +805,7 @@ async function handleOfferSaved() {
 .profile-card {
   overflow: hidden;
   border: 1px solid #dbe3f2;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   padding: 16px;
@@ -838,7 +838,7 @@ async function handleOfferSaved() {
   margin: 0;
   font-size: 16px;
   font-weight: 900;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .profile-card__section-icon {
@@ -958,7 +958,7 @@ async function handleOfferSaved() {
 .suggested-page__name {
   margin: 0;
   overflow: hidden;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -967,7 +967,7 @@ async function handleOfferSaved() {
 
 .suggested-page__meta {
   margin: 3px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -982,7 +982,7 @@ async function handleOfferSaved() {
 
 /* ── Skeleton ────────────────────────────────────────── */
 .page-detail__hero-skeleton {
-  background: #ffffff;
+  background: var(--bg-surface);
   margin-bottom: 12px;
   border-bottom-left-radius: 18px;
   border-bottom-right-radius: 18px;

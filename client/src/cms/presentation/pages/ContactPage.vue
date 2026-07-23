@@ -135,7 +135,7 @@ const submit = async () => {
 .contact-page__form {
   border: 1px solid var(--border-light, #dbe3f2);
   border-radius: var(--radius-xl, 1.5rem);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: var(--shadow-sm, 0 12px 28px rgba(13, 38, 76, 0.05));
 }
 

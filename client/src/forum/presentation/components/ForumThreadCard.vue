@@ -167,17 +167,17 @@ const statusLabel = computed(() => {
 
 .forum-thread-card__status {
   background: #f1f5f9;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .forum-thread-card__selected {
   background: #eef2ff;
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .forum-thread-card h3 {
   overflow-wrap: anywhere;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
   line-height: 1.35;
@@ -187,7 +187,7 @@ const statusLabel = computed(() => {
   display: -webkit-box;
   overflow: hidden;
   margin-top: 6px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.55;
@@ -200,13 +200,13 @@ const statusLabel = computed(() => {
   flex-wrap: wrap;
   gap: 5px;
   margin-top: 9px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 500;
 }
 
 .forum-thread-card__author strong {
-  color: #1e293b;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -215,7 +215,7 @@ const statusLabel = computed(() => {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }

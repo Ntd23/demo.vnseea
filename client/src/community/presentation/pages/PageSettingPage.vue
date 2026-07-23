@@ -4,10 +4,10 @@
     <section class="page-settings__hero border-b border-slate-100">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="page-settings__title text-2xl font-black text-slate-900">
+          <h1 class="page-settings__title text-2xl font-black text-[var(--text-primary)]">
             {{ $t("community.pageSettings.title") }}
           </h1>
-          <p class="mt-1 text-sm text-slate-500">
+          <p class="mt-1 text-sm text-[var(--text-secondary)]">
             {{ $t("community.pageSettings.desc") }}
           </p>
         </div>
@@ -207,7 +207,7 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__nav-card {
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -228,7 +228,7 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__eyebrow,
 .settings-section-card__eyebrow {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -237,7 +237,7 @@ function onDeletePage(pageId: number, password: string) {
 
 .settings-section-card__title {
   margin: 4px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 800;
   line-height: 1.2;
@@ -245,14 +245,14 @@ function onDeletePage(pageId: number, password: string) {
 
 .settings-section-card__desc {
   margin: 4px 0 0;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 13.5px;
   line-height: 1.5;
 }
 
 .page-settings__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 900;
   letter-spacing: -0.03em;
@@ -262,7 +262,7 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__desc {
   margin: 0;
   max-width: 760px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -277,9 +277,9 @@ function onDeletePage(pageId: number, password: string) {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   padding: 6px 12px;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -289,7 +289,7 @@ function onDeletePage(pageId: number, password: string) {
 .settings-section-card {
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
@@ -317,7 +317,7 @@ function onDeletePage(pageId: number, password: string) {
   gap: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   cursor: pointer;
   padding: 10px 12px;
   text-align: left;
@@ -333,8 +333,8 @@ function onDeletePage(pageId: number, password: string) {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #94a3b8;
+  background: var(--bg-muted);
+  color: var(--text-tertiary);
   font-size: 14px;
   font-weight: 800;
   border: 2px solid #f1f5f9;
@@ -357,7 +357,7 @@ function onDeletePage(pageId: number, password: string) {
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-secondary);
   transition: color 0.2s ease;
 }
 
@@ -365,7 +365,7 @@ function onDeletePage(pageId: number, password: string) {
   display: block;
   margin-top: 2px;
   overflow: hidden;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 500;
   line-height: 1.35;
@@ -384,7 +384,7 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__nav-step-item--active .page-settings__nav-step-desc {
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .page-settings__nav-step-item:hover {
@@ -428,11 +428,11 @@ function onDeletePage(pageId: number, password: string) {
     height: 34px;
     flex: 0 0 34px;
     border-radius: 50%;
-    background: #ffffff;
+    background: var(--bg-surface);
   }
 
   .page-settings__nav-step-circle--active {
-    background: #ffffff;
+    background: var(--bg-surface);
     color: var(--bg-brand);
     border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
     box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 14%, transparent);
@@ -447,7 +447,7 @@ function onDeletePage(pageId: number, password: string) {
   }
 
   .page-settings__nav-step-item--active .page-settings__nav-step-label {
-    color: #0f172a;
+    color: var(--text-primary);
     text-decoration: underline;
     text-underline-offset: 6px;
     text-decoration-thickness: 2px;
@@ -483,8 +483,8 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__finish-note {
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #f8fafc;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   padding: 13px 16px;
   font-size: 13px;
   line-height: 1.6;
@@ -502,7 +502,7 @@ function onDeletePage(pageId: number, password: string) {
 
 .page-settings__alert p {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 900;
 }
@@ -510,7 +510,7 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__alert span {
   display: block;
   margin-top: 3px;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -546,8 +546,8 @@ function onDeletePage(pageId: number, password: string) {
 
 .page-settings__button--secondary {
   border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .page-settings__button--secondary:hover {
@@ -586,7 +586,7 @@ function onDeletePage(pageId: number, password: string) {
   gap: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 14px 16px;
 }
 
@@ -626,7 +626,7 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__admin-name {
   overflow: hidden;
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -635,7 +635,7 @@ function onDeletePage(pageId: number, password: string) {
 
 .page-settings__admin-role {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -649,15 +649,15 @@ function onDeletePage(pageId: number, password: string) {
   justify-content: center;
   border: 1px solid #e2e8f0;
   border-radius: 999px;
-  background: #ffffff;
-  color: #475569;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .page-settings__admin-menu:hover {
   border-color: #cbd5e1;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--bg-muted);
+  color: var(--text-primary);
 }
 
 .page-settings__admins-placeholder {

@@ -221,7 +221,7 @@ const chartOption = computed<EChartsOption>(() => {
   align-items: center;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  color: #475569;
+  color: var(--text-secondary);
   display: flex;
   font-size: 13px;
   font-weight: 800;
@@ -242,7 +242,7 @@ const chartOption = computed<EChartsOption>(() => {
 }
 
 .group-analytics__timezone {
-  color: #111827;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 900;
   margin: 0;
@@ -256,7 +256,7 @@ const chartOption = computed<EChartsOption>(() => {
 
 .group-analytics__legend {
   align-items: center;
-  color: #000000;
+  color: var(--text-primary);
   display: flex;
   font-size: 11px;
   font-weight: 700;

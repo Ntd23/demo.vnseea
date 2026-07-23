@@ -96,7 +96,7 @@ defineEmits<{
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -127,7 +127,7 @@ defineEmits<{
 
 .blogs-sidebar__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 800;
   letter-spacing: 0;
@@ -149,7 +149,7 @@ defineEmits<{
   border: 0;
   border-radius: 12px;
   background: transparent;
-  color: #000000;
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
@@ -182,8 +182,8 @@ defineEmits<{
 
 .blogs-sidebar__count {
   border-radius: 999px;
-  background: #f8fafc;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   padding: 4px 8px;
@@ -204,8 +204,8 @@ defineEmits<{
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .blogs-sidebar__avatar-image {
@@ -227,14 +227,14 @@ defineEmits<{
 }
 
 .blogs-sidebar__author-name {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
 
 .blogs-sidebar__author-meta {
   margin-top: 2px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 600;
 }

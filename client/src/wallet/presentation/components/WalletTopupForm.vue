@@ -203,7 +203,7 @@ function submit() {
   gap: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 12px 14px;
   cursor: pointer;
   pointer-events: auto;
@@ -234,7 +234,7 @@ function submit() {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   color: var(--bg-brand);
 }
 </style>

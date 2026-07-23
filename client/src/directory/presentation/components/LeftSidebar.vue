@@ -77,7 +77,7 @@ function selectCategory(category: any) {
   padding: 8px 12px;
   border-radius: 14px;
   font-weight: 800;
-  color: #64748b;
+  color: var(--text-secondary);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -85,8 +85,8 @@ function selectCategory(category: any) {
 }
 
 .sidebar-nav-item:hover {
-  background: #f8fafc;
-  color: #000000;
+  background: var(--bg-muted);
+  color: var(--text-primary);
   transform: translateX(2px);
 }
 
@@ -97,14 +97,14 @@ function selectCategory(category: any) {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #f1f5f9;
-  color: #94a3b8;
+  background: var(--bg-muted);
+  color: var(--text-tertiary);
   transition: all 0.25s ease;
 }
 
 .sidebar-nav-item:hover .sidebar-icon-box {
   background: #e2e8f0;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 /* Dynamic Active states matching original icons theme coloring */

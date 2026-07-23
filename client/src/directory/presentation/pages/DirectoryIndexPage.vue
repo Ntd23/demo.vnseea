@@ -9,10 +9,10 @@
           <Icon :name="activeCategory.icon" class="h-7 w-7 text-white" />
         </span>
         <div class="min-w-0">
-          <h1 class="text-2xl font-black text-slate-900 tracking-tight leading-tight">
+          <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight leading-tight">
             {{ activeCategory.headerTitle }}
           </h1>
-          <p class="text-[13px] font-semibold text-slate-500 mt-1.5 leading-relaxed max-w-3xl">
+          <p class="text-[13px] font-semibold text-[var(--text-secondary)] mt-1.5 leading-relaxed max-w-3xl">
             {{ activeCategory.longDescription }}
           </p>
         </div>
@@ -35,7 +35,7 @@
           'px-4 py-2 rounded-full font-bold text-xs shrink-0 transition-all border',
           activeTab === category.value 
             ? 'bg-primary text-white border-primary shadow-sm' 
-            : 'bg-white text-slate-600 border-[var(--border-default)] hover:bg-slate-50'
+            : 'bg-white text-[var(--text-secondary)] border-[var(--border-default)] hover:bg-slate-50'
         ]"
         @click="selectCategory(category)"
       >
@@ -82,14 +82,14 @@
               <div class="card-inner p-4 pt-12 flex flex-col items-center text-center">
                 <UAvatar :src="user.avatarUrl" :alt="user.title" size="xl" class="border-4 border-white shadow-md relative z-10 hover-avatar" />
                 
-                <NuxtLink :to="user.href" class="font-extrabold text-slate-800 hover:text-blue-600 mt-3 text-base truncate max-w-full">
+                <NuxtLink :to="user.href" class="font-extrabold text-[var(--text-primary)] hover:text-blue-600 mt-3 text-base truncate max-w-full">
                   {{ user.title }}
                 </NuxtLink>
-                <span class="text-[11px] font-semibold text-slate-400 mt-0.5 truncate max-w-full">
+                <span class="text-[11px] font-semibold text-[var(--text-tertiary)] mt-0.5 truncate max-w-full">
                   {{ user.subtitle }}
                 </span>
                 
-                <span class="text-xs font-bold text-slate-500 mt-2 bg-slate-100 rounded-full px-3 py-1">
+                <span class="text-xs font-bold text-[var(--text-secondary)] mt-2 bg-slate-100 rounded-full px-3 py-1">
                   {{ user.metricLabel || "Profile" }}
                 </span>
 
@@ -124,10 +124,10 @@
               <div class="card-inner p-4 pt-12 flex flex-col items-center text-center">
                 <UAvatar :src="page.avatarUrl" :alt="page.title" size="xl" class="border-4 border-white shadow-md relative z-10 hover-avatar" />
                 
-                <NuxtLink :to="page.href" class="font-extrabold text-slate-800 hover:text-indigo-600 mt-3 text-base truncate max-w-full">
+                <NuxtLink :to="page.href" class="font-extrabold text-[var(--text-primary)] hover:text-indigo-600 mt-3 text-base truncate max-w-full">
                   {{ page.title }}
                 </NuxtLink>
-                <span class="text-[11px] font-semibold text-slate-400 mt-0.5 truncate max-w-full">
+                <span class="text-[11px] font-semibold text-[var(--text-tertiary)] mt-0.5 truncate max-w-full">
                   {{ page.subtitle }}
                 </span>
                 
@@ -166,10 +166,10 @@
               <div class="card-inner p-4 pt-12 flex flex-col items-center text-center">
                 <UAvatar :src="group.avatarUrl" :alt="group.title" size="xl" class="border-4 border-white shadow-md relative z-10 hover-avatar" />
                 
-                <NuxtLink :to="group.href" class="font-extrabold text-slate-800 hover:text-emerald-600 mt-3 text-base truncate max-w-full">
+                <NuxtLink :to="group.href" class="font-extrabold text-[var(--text-primary)] hover:text-emerald-600 mt-3 text-base truncate max-w-full">
                   {{ group.title }}
                 </NuxtLink>
-                <span class="text-[11px] font-semibold text-slate-400 mt-0.5 truncate max-w-full">
+                <span class="text-[11px] font-semibold text-[var(--text-tertiary)] mt-0.5 truncate max-w-full">
                   {{ group.subtitle }}
                 </span>
                 
@@ -234,16 +234,16 @@
               </div>
               <div class="p-4 flex-1 flex flex-col justify-between">
                 <div>
-                  <NuxtLink :to="product.href" class="line-clamp-2 text-sm font-extrabold text-slate-800 hover:text-orange-600 leading-tight">
+                  <NuxtLink :to="product.href" class="line-clamp-2 text-sm font-extrabold text-[var(--text-primary)] hover:text-orange-600 leading-tight">
                     {{ product.title }}
                   </NuxtLink>
                   <div class="mt-2 text-base font-black text-orange-600">
                     {{ product.priceFormat || (product.price + ' ' + (product.currency || 'VND')) }}
                   </div>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-xs text-slate-400 font-bold border-t border-slate-50 pt-3">
+                <div class="mt-3 flex items-center justify-between text-xs text-[var(--text-tertiary)] font-bold border-t border-slate-50 pt-3">
                   <span class="truncate max-w-[120px]">{{ product.seller }}</span>
-                  <span class="px-2 py-0.5 bg-slate-100 rounded text-slate-500 font-extrabold uppercase text-[10px]">{{ product.condition }}</span>
+                  <span class="px-2 py-0.5 bg-slate-100 rounded text-[var(--text-secondary)] font-extrabold uppercase text-[10px]">{{ product.condition }}</span>
                 </div>
               </div>
             </article>
@@ -284,8 +284,8 @@
           <div v-if="forumSections.length" class="space-y-4 animate-grid w-full">
             <article v-for="section in forumSections" :key="section.id" class="border border-slate-100 rounded-2xl bg-white overflow-hidden shadow-sm">
               <header class="bg-slate-50 border-b border-slate-100 p-4">
-                <h3 class="font-extrabold text-slate-800 text-sm tracking-wide">{{ section.title }}</h3>
-                <p v-if="section.description" class="text-xs text-slate-400 mt-0.5">{{ section.description }}</p>
+                <h3 class="font-extrabold text-[var(--text-primary)] text-sm tracking-wide">{{ section.title }}</h3>
+                <p v-if="section.description" class="text-xs text-[var(--text-tertiary)] mt-0.5">{{ section.description }}</p>
               </header>
               <div class="divide-y divide-slate-50">
                 <NuxtLink v-for="forum in section.forums" :key="forum.id" :to="forum.url" class="flex items-center justify-between p-4 hover:bg-slate-50 transition">
@@ -294,11 +294,11 @@
                       <Icon name="i-ph-chat-centered-text-duotone" class="h-5 w-5" />
                     </span>
                     <div>
-                      <h4 class="font-bold text-slate-700 text-sm hover:text-blue-600 transition">{{ forum.title }}</h4>
-                      <p class="text-xs text-slate-400 mt-0.5 line-clamp-1">{{ forum.description }}</p>
+                      <h4 class="font-bold text-[var(--text-primary)] text-sm hover:text-blue-600 transition">{{ forum.title }}</h4>
+                      <p class="text-xs text-[var(--text-tertiary)] mt-0.5 line-clamp-1">{{ forum.description }}</p>
                     </div>
                   </div>
-                  <span class="text-xs font-bold text-slate-400 px-3 py-1 bg-slate-100 rounded-full shrink-0">
+                  <span class="text-xs font-bold text-[var(--text-tertiary)] px-3 py-1 bg-slate-100 rounded-full shrink-0">
                     {{ forum.posts }} bài viết
                   </span>
                 </NuxtLink>
@@ -745,7 +745,7 @@ async function toggleJoinGroup(group: any) {
 
 .wo_directory_head.jobs { background: linear-gradient(to right, #f8fafc, #f1f5f9); }
 .wo_directory_head.jobs .head-icon-box { background: linear-gradient(135deg, #94a3b8 0%, #475569 100%); }
-.wo_directory_head.jobs h1 { color: #1e293b; }
+.wo_directory_head.jobs h1 { color: var(--text-primary); }
 
 .wo_directory_head.funding { background: linear-gradient(to right, #fdf2f8, #fce7f3); }
 .wo_directory_head.funding .head-icon-box { background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%); }
@@ -762,7 +762,7 @@ async function toggleJoinGroup(group: any) {
 
 /* ── Content Grid Cards ───────────────────────────── */
 .directory-card {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 28px;
   box-shadow: 0 4px 18px -2px rgba(0, 0, 100, 0.02), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
@@ -798,7 +798,7 @@ async function toggleJoinGroup(group: any) {
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: 28px;
   text-align: center;
@@ -808,13 +808,13 @@ async function toggleJoinGroup(group: any) {
   margin-top: 16px;
   font-size: 16px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
 .empty-state p {
   margin-top: 6px;
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   max-width: 24rem;
   line-height: 1.6;
 }

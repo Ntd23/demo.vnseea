@@ -11,7 +11,7 @@
       <!-- Add Admin Section -->
       <div class="flex flex-col gap-3 sm:flex-row">
         <div class="relative flex-1">
-          <Icon name="i-ph-magnifying-glass-bold" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Icon name="i-ph-magnifying-glass-bold" class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
           <input
             v-model="searchQuery"
             type="text"
@@ -87,7 +87,7 @@ function handleRemoveAdmin(id: number) {
   height: 44px;
   padding-left: 40px;
   padding-right: 16px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   font-size: 14px;
@@ -95,7 +95,7 @@ function handleRemoveAdmin(id: number) {
 }
 
 .admin-search-input:focus {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-color: var(--bg-brand);
   outline: none;
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--bg-brand) 10%, transparent);
@@ -131,7 +131,7 @@ function handleRemoveAdmin(id: number) {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid #f1f5f9;
   border-radius: 16px;
 }
@@ -152,13 +152,13 @@ function handleRemoveAdmin(id: number) {
 .admin-name {
   font-size: 14px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .admin-role {
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .admin-remove-btn {
@@ -167,7 +167,7 @@ function handleRemoveAdmin(id: number) {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   border-radius: 8px;
   transition: all 0.2s ease;
 }

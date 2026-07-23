@@ -569,7 +569,7 @@ const submitDelete = async () => {
 .forum-hero__copy p,
 .forum-sidebar header p,
 .forum-section-card header p {
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -578,7 +578,7 @@ const submitDelete = async () => {
 
 .forum-hero__copy h1 {
   margin-top: 4px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 22px;
   font-weight: 800;
   line-height: 1.25;
@@ -587,7 +587,7 @@ const submitDelete = async () => {
 .forum-hero__copy span {
   display: block;
   margin-top: 6px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -611,13 +611,13 @@ const submitDelete = async () => {
 }
 
 .forum-hero__stats strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 22px;
   font-weight: 800;
 }
 
 .forum-hero__stats span {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -717,7 +717,7 @@ const submitDelete = async () => {
 
 .forum-sidebar header h2 {
   margin-top: 3px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 800;
 }
@@ -736,7 +736,7 @@ const submitDelete = async () => {
 }
 
 .forum-sidebar__sections h3 {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -774,7 +774,7 @@ const submitDelete = async () => {
 
 .forum-sidebar__sections strong,
 .forum-section-card__forum strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -782,7 +782,7 @@ const submitDelete = async () => {
 .forum-sidebar__sections small,
 .forum-section-card__forum small {
   margin-top: 2px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
 }
 
@@ -813,7 +813,7 @@ const submitDelete = async () => {
 
 .forum-section-card h2 {
   margin-top: 3px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 800;
 }
@@ -822,14 +822,14 @@ const submitDelete = async () => {
   border-radius: 999px;
   background: #fafbfe;
   padding: 5px 9px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
 
 .forum-section-card > p {
   margin-top: 6px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.55;
 }
@@ -843,7 +843,7 @@ const submitDelete = async () => {
   margin-top: 10px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 10px;
   text-align: left;
 }
@@ -873,19 +873,19 @@ const submitDelete = async () => {
 .forum-empty :deep(svg) {
   width: 42px;
   height: 42px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .forum-empty h2 {
   margin-top: 10px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 800;
 }
 
 .forum-empty p {
   margin-top: 6px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -902,7 +902,7 @@ const submitDelete = async () => {
 }
 
 .forum-delete-copy {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
 }

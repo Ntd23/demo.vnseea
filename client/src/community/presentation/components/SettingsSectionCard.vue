@@ -53,7 +53,7 @@ withDefaults(defineProps<{
 .settings-section-card {
   border: 1px solid #e2e8f0;
   border-radius: 32px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
@@ -78,13 +78,13 @@ withDefaults(defineProps<{
   align-items: center;
   justify-content: center;
   border-radius: 16px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .settings-section-card__eyebrow {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -93,7 +93,7 @@ withDefaults(defineProps<{
 
 .settings-section-card__title {
   margin: 4px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 800;
   line-height: 1.2;
@@ -101,7 +101,7 @@ withDefaults(defineProps<{
 
 .settings-section-card__desc {
   margin: 4px 0 0;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 13.5px;
   line-height: 1.5;
 }

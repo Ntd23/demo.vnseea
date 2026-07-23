@@ -46,7 +46,7 @@
             <p class="break-words text-[30px] font-extrabold leading-none text-[var(--text-primary)]">
               {{ formatProCurrency(price, locale) }}
             </p>
-            <p class="mt-1 text-[12px] font-bold text-slate-500">
+            <p class="mt-1 text-[12px] font-bold text-[var(--text-secondary)]">
               {{ billingCycle === "monthly" ? t("pages.goProPage.billedMonthly") : t("pages.goProPage.billedYearly") }}
             </p>
           </div>
@@ -59,7 +59,7 @@
           </span>
         </div>
 
-        <p v-if="billingCycle === 'yearly'" class="mt-3 text-[12px] font-semibold text-slate-500">
+        <p v-if="billingCycle === 'yearly'" class="mt-3 text-[12px] font-semibold text-[var(--text-secondary)]">
           {{ t("pages.goProPage.perMonthEquivalent", { amount: formatProCurrency(monthlyEquivalent, locale) }) }}
         </p>
       </div>
@@ -81,7 +81,7 @@
           :key="item.label"
           class="flex items-center justify-between gap-3 rounded-[16px] bg-secondary-50 px-3 py-2"
         >
-          <span class="truncate text-[12px] font-medium text-slate-500">{{ item.label }}</span>
+          <span class="truncate text-[12px] font-medium text-[var(--text-secondary)]">{{ item.label }}</span>
           <span class="shrink-0 text-[12px] font-semibold text-[var(--text-primary)]">{{ item.value }}</span>
         </div>
       </div>

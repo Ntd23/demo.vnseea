@@ -22,7 +22,7 @@
             <h1 class="max-w-[680px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]">
               {{ t("pages.goProPage.heroShortTitle") }}
             </h1>
-            <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
+            <p class="max-w-xl text-[15px] font-medium leading-7 text-[var(--text-secondary)]">
               {{ t("pages.goProPage.heroShortDescription") }}
             </p>
           </div>
@@ -48,7 +48,7 @@
 
           <button
             v-if="hasActiveSelection"
-            class="inline-flex h-12 items-center justify-center rounded-[12px] px-4 text-[13px] font-semibold text-slate-500 transition hover:bg-white hover:text-primary-700 active:scale-95"
+            class="inline-flex h-12 items-center justify-center rounded-[12px] px-4 text-[13px] font-semibold text-[var(--text-secondary)] transition hover:bg-white hover:text-primary-700 active:scale-95"
             type="button"
             @click="emit('reset')"
           >
@@ -104,7 +104,7 @@
             :key="item.label"
             class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
           >
-              <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
               {{ item.label }}
             </p>
               <p class="mt-2 text-[26px] font-extrabold leading-none text-[var(--text-primary)]">

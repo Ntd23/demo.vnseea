@@ -128,7 +128,7 @@ watch(
   min-width: 0;
   height: 100%;
   min-height: 0;
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .chat__head {
@@ -147,14 +147,14 @@ watch(
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .chat__title {
   margin: 4px 0 0;
   font-size: 16px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .chat__state-badge {
@@ -183,9 +183,9 @@ watch(
 }
 
 .chat__state-badge--offline {
-  background: #f8fafc;
+  background: var(--bg-muted);
   border-color: #e2e8f0;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .chat__state-dot {
@@ -213,13 +213,13 @@ watch(
   align-items: flex-start;
   padding: 12px;
   border-radius: 14px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   border: 1px solid #f1f5f9;
   transition: background 0.15s;
 }
 
 .chat__item:hover {
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .chat__item-meta {
@@ -246,7 +246,7 @@ watch(
 
 .chat__item-text {
   font-size: 14px;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 3px 0 0;
   line-height: 1.5;
   word-break: break-word;
@@ -268,7 +268,7 @@ watch(
   width: 56px;
   height: 56px;
   border-radius: 18px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -283,7 +283,7 @@ watch(
 
 .chat__empty-desc {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   line-height: 1.6;
   max-width: 220px;
   margin: 0;
@@ -297,7 +297,7 @@ watch(
   gap: 6px;
   padding: 10px 12px 12px;
   border-top: 1px solid #f1f5f9;
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .chat__input {
@@ -306,9 +306,9 @@ watch(
   height: 38px;
   border: 1px solid #dbe3f2;
   border-radius: 13px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 0 12px;
-  color: #000000;
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -318,7 +318,7 @@ watch(
 }
 
 .chat__input::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .chat__input:focus {
@@ -327,7 +327,7 @@ watch(
 }
 
 .chat__input:disabled {
-  background: #f8fafc;
+  background: var(--bg-muted);
   cursor: not-allowed;
 }
 

@@ -263,7 +263,7 @@ async function submitCreateTag() {
 }
 
 .messages-tag-modal__title {
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 800;
 }
@@ -287,7 +287,7 @@ async function submitCreateTag() {
 
 .messages-tag-modal__hint,
 .messages-tag-modal__empty {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
 }

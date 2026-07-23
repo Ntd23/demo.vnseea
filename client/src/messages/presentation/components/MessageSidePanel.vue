@@ -277,7 +277,7 @@
 
       <div v-else-if="contact.tags?.length" class="space-y-5 py-5">
         <section>
-          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{{ $t("pages.messagesPage.label") }}</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-secondary)]">{{ $t("pages.messagesPage.label") }}</p>
           <div class="mt-3 flex flex-wrap gap-2">
             <UBadge
               v-for="tag in contact.tags"
@@ -301,7 +301,7 @@
         <h3 class="mt-5 text-base font-black text-[var(--text-primary)]">
           {{ emptyTitle }}
         </h3>
-        <p class="mt-2 text-sm leading-6 text-slate-500">
+        <p class="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
           {{ emptyDescription }}
         </p>
       </div>
@@ -748,7 +748,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-bottom: 1px solid #d9dde5;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 18px;
 }
 
@@ -792,7 +792,7 @@ onBeforeUnmount(() => {
 .group-sub-panel__body,
 .group-storage,
 .group-manage {
-  background: #fff;
+  background: var(--bg-surface);
 }
 
 .group-info-panel__hero {
@@ -1084,7 +1084,7 @@ onBeforeUnmount(() => {
   gap: 12px;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 10px 12px;
   box-shadow: 0 1px 4px rgb(15 23 42 / 6%);
 }
@@ -1291,7 +1291,7 @@ onBeforeUnmount(() => {
   gap: 12px;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 10px 12px;
   box-shadow: 0 1px 4px rgb(15 23 42 / 6%);
   transition: border-color 0.15s ease, background-color 0.15s ease;

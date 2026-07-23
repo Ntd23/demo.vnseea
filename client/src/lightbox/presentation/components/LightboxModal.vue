@@ -918,7 +918,7 @@ onBeforeUnmount(() => {
   padding: 6px;
   border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: 9999px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
   -webkit-touch-callout: none;
   -webkit-user-select: none;

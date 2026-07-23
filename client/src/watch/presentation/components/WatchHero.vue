@@ -26,7 +26,7 @@ defineProps<{
 
 <style scoped>
 .watch-hero {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -63,14 +63,14 @@ defineProps<{
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .watch-hero__title {
   font-size: 2.25rem;
   font-weight: 800;
   line-height: 1.1;
-  color: #0f172a;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
@@ -82,7 +82,7 @@ defineProps<{
   font-size: 15px;
   font-weight: 500;
   line-height: 1.6;
-  color: #64748b;
+  color: var(--text-secondary);
   max-width: 640px;
 }
 
@@ -112,19 +112,19 @@ defineProps<{
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .watch-stat__value {
   font-size: 1.75rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .watch-stat__desc {
   font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 </style>

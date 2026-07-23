@@ -22,7 +22,7 @@
             color="primary"
             size="lg"
             :loading="joining || connecting"
-            :ui="{ base: 'rounded-full px-8 font-bold shadow-xl shadow-blue-500/30 mt-2' }"
+            :ui="{ base: 'rounded-full px-8 font-bold shadow-xl shadow-[var(--bg-brand)]/30 mt-2' }"
             @click="joinLive"
           >
             {{ t("pages.livePage.viewer.joinLive") }}
@@ -212,7 +212,7 @@
             :loading="commentSubmitting"
             :disabled="!commentDraft.trim()"
             :ui="{
-              base: 'w-11 h-11 rounded-full flex-shrink-0 shadow-lg shadow-blue-500/30 flex items-center justify-center transition-all active:scale-90',
+              base: 'w-11 h-11 rounded-full flex-shrink-0 shadow-lg shadow-[var(--bg-brand)]/30 flex items-center justify-center transition-all active:scale-90',
             }"
           />
         </form>
@@ -788,7 +788,7 @@ onBeforeUnmount(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-surface);
   animation: flp-pulse-dot 1.6s infinite ease-in-out;
   flex-shrink: 0;
 }

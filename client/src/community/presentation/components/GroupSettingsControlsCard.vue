@@ -93,7 +93,7 @@ watch(
 }
 
 .group-settings-controls__row label {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 800;
   line-height: 1.45;

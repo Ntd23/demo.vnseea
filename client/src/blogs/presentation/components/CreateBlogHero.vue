@@ -94,7 +94,7 @@ defineEmits<{
 .create-blog-hero__title {
   max-width: 720px;
   margin: 14px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -104,7 +104,7 @@ defineEmits<{
 .create-blog-hero__description {
   max-width: 640px;
   margin: 12px 0 0;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 15px;
   font-weight: 500;
   line-height: 1.7;
@@ -146,8 +146,8 @@ defineEmits<{
 
 .create-blog-hero__button--secondary {
   border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .create-blog-hero__button--secondary:hover {
@@ -182,14 +182,14 @@ defineEmits<{
 }
 
 .create-blog-hero__stat-label {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
 }
 
 .create-blog-hero__stat strong {
   margin-top: 7px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 800;
   line-height: 1;
@@ -197,7 +197,7 @@ defineEmits<{
 
 .create-blog-hero__stat small {
   margin-top: 6px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.4;

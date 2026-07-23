@@ -5754,6 +5754,10 @@
     }
   },
   "navigation": {
+    "theme": {
+      "darkMode": "Dark Mode",
+      "darkModeDescription": "Switch to Slate Tech dark mode"
+    },
     "headerBar": {
       "home": "Home",
       "friendRequests": "Friend requests",
