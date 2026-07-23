@@ -33,7 +33,7 @@
           :key="item.label"
           class="bg-white p-3"
         >
-          <p class="truncate text-[10px] font-extrabold uppercase text-slate-500">
+          <p class="truncate text-[10px] font-extrabold uppercase text-[var(--text-secondary)]">
             {{ item.label }}
           </p>
           <p class="mt-1 truncate text-[15px] font-black text-[var(--text-primary)]">
@@ -43,10 +43,10 @@
       </div>
 
       <div class="p-4">
-        <p class="text-[11px] font-extrabold uppercase text-slate-500">
+        <p class="text-[11px] font-extrabold uppercase text-[var(--text-secondary)]">
           {{ t("pages.goProPage.selectionStatusTitle") }}
         </p>
-        <p class="mt-1 line-clamp-2 text-[13px] font-semibold leading-5 text-slate-600">
+        <p class="mt-1 line-clamp-2 text-[13px] font-semibold leading-5 text-[var(--text-secondary)]">
           {{ statusLabel }}
         </p>
       </div>
@@ -55,7 +55,7 @@
     <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-4 shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <p class="text-[11px] font-extrabold uppercase text-slate-500">
+          <p class="text-[11px] font-extrabold uppercase text-[var(--text-secondary)]">
             {{ t("pages.goProPage.perksEyebrow") }}
           </p>
           <h2 class="mt-1 text-[20px] font-black text-[var(--text-primary)]">
@@ -82,7 +82,7 @@
     <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-4 shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <p class="text-[11px] font-extrabold uppercase text-slate-500">
+          <p class="text-[11px] font-extrabold uppercase text-[var(--text-secondary)]">
             {{ t("pages.goProPage.recentPaymentsLabel") }}
           </p>
           <h2 class="mt-1 text-[18px] font-black text-[var(--text-primary)]">
@@ -106,13 +106,13 @@
               {{ item.amount }}
             </p>
           </div>
-          <p class="mt-1 truncate text-[11px] font-semibold text-slate-500">
+          <p class="mt-1 truncate text-[11px] font-semibold text-[var(--text-secondary)]">
             {{ item.method }} · {{ item.time }}
           </p>
         </div>
       </div>
 
-      <p v-else class="mt-4 rounded-[16px] bg-secondary-50 px-3 py-3 text-[12px] font-bold leading-5 text-slate-500">
+      <p v-else class="mt-4 rounded-[16px] bg-secondary-50 px-3 py-3 text-[12px] font-bold leading-5 text-[var(--text-secondary)]">
         {{ t("pages.goProPage.emptyPaymentsTitle") }}
       </p>
     </section>

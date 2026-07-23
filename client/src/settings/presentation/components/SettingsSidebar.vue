@@ -125,7 +125,7 @@ onClickOutside(dropdownRef, () => {
 
 <style scoped>
 .settings-sidebar {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -164,21 +164,21 @@ onClickOutside(dropdownRef, () => {
 .settings-sidebar__profile-name {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
 .settings-sidebar__profile-meta {
   font-size: 11px;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin-top: 2px;
 }
 
 /* ─── Divider ─────────────────────────── */
 .settings-sidebar__divider {
   height: 1px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   margin: 0 4px 8px;
 }
 
@@ -204,7 +204,7 @@ onClickOutside(dropdownRef, () => {
   padding: 9px 10px;
   border-radius: 12px;
   text-decoration: none;
-  color: #000000;
+  color: var(--text-primary);
   transition: all 0.15s ease;
   white-space: nowrap;
   cursor: pointer;
@@ -228,17 +228,17 @@ onClickOutside(dropdownRef, () => {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid #e2e8f0;
-  color: #000000;
+  color: var(--text-primary);
   flex-shrink: 0;
   transition: all 0.15s ease;
 }
 
 .settings-sidebar__item:hover .settings-sidebar__icon {
-  background: #f8fafc;
-  border-color: #000000;
-  color: #000000;
+  background: var(--bg-muted);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .settings-sidebar__icon--active {
@@ -264,7 +264,7 @@ onClickOutside(dropdownRef, () => {
 .settings-sidebar__caret {
   width: 11px;
   height: 11px;
-  color: #000000;
+  color: var(--text-primary);
   opacity: 0.7;
   flex-shrink: 0;
 }
@@ -284,7 +284,7 @@ onClickOutside(dropdownRef, () => {
   top: 100%;
   right: 0;
   margin-top: 8px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   border-radius: 12px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
@@ -303,14 +303,14 @@ onClickOutside(dropdownRef, () => {
   padding: 10px 12px;
   border-radius: 8px;
   text-decoration: none;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
   transition: all 0.15s ease;
 }
 
 .settings-sidebar__dropdown-item:hover {
-  background: #f8fafc;
+  background: var(--bg-muted);
   color: var(--bg-brand);
 }
 

@@ -211,7 +211,7 @@ onBeforeUnmount(() => {
   margin-top: 4px;
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 20px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
 }
 

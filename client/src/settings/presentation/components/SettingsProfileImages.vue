@@ -12,7 +12,7 @@
       @keydown.space.prevent="openCoverSelector"
     >
       <div v-if="!coverPreview" class="profile-images__cover-placeholder">
-        <Icon name="i-ph-image-bold" class="h-8 w-8 text-black" />
+        <Icon name="i-ph-image-bold" class="h-8 w-8 text-[var(--text-primary)]" />
         <span>{{ coverField?.label }}</span>
       </div>
       <div class="profile-images__edit-btn profile-images__edit-btn--cover">
@@ -41,7 +41,7 @@
         @keydown.space.prevent="openAvatarSelector"
       >
         <div v-if="!avatarPreview" class="profile-images__avatar-placeholder">
-          <Icon name="i-ph-user-bold" class="h-10 w-10 text-black" />
+          <Icon name="i-ph-user-bold" class="h-10 w-10 text-[var(--text-primary)]" />
         </div>
         <div class="profile-images__edit-btn profile-images__edit-btn--avatar">
           <Icon name="i-ph-camera-bold" class="h-4 w-4" />
@@ -137,7 +137,7 @@ function handleFileChange(key: 'avatar' | 'cover', event: Event) {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 13px;
   font-weight: 500;
   gap: 8px;
@@ -183,7 +183,7 @@ function handleFileChange(key: 'avatar' | 'cover', event: Event) {
   justify-content: center;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.95);
-  color: #0f172a;
+  color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   pointer-events: none; /* Let clicks pass to the container */
 }

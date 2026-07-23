@@ -269,24 +269,24 @@ onBeforeUnmount(cancelClose)
 
 <style scoped>
 .identity-hover { position: relative; }
-.identity-hover__card { position: absolute; left: 0; top: calc(100% + 8px); z-index: 1200; width: min(370px, calc(100vw - 32px)); border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; padding: 16px; box-shadow: 0 16px 42px rgba(15, 23, 42, 0.2); }
-.identity-hover__close { position: absolute; right: 12px; top: 12px; display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: #f1f5f9; color: #334155; cursor: pointer; }
+.identity-hover__card { position: absolute; left: 0; top: calc(100% + 8px); z-index: 1200; width: min(370px, calc(100vw - 32px)); border: 1px solid #e2e8f0; border-radius: 16px; background: var(--bg-surface); padding: 16px; box-shadow: 0 16px 42px rgba(15, 23, 42, 0.2); }
+.identity-hover__close { position: absolute; right: 12px; top: 12px; display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: var(--bg-muted); color: var(--text-primary); cursor: pointer; }
 .identity-hover__close :deep(svg) { width: 15px; height: 15px; }
 .identity-hover__profile { display: flex; min-width: 0; align-items: center; gap: 13px; padding-right: 34px; }
 .identity-hover__avatar { display: flex; width: 72px; height: 72px; flex: 0 0 72px; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: #eef2ff; color: var(--bg-brand); font-weight: 800; text-decoration: none; }
 .identity-hover__avatar img { width: 100%; height: 100%; object-fit: cover; }
 .identity-hover__copy { display: grid; min-width: 0; gap: 5px; }
-.identity-hover__name { overflow: hidden; color: #0f172a; font-size: 18px; font-weight: 850; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
-.identity-hover__kind, .identity-hover__followers { display: flex; min-width: 0; align-items: center; gap: 6px; color: #64748b; font-size: 12px; font-weight: 650; }
+.identity-hover__name { overflow: hidden; color: var(--text-primary); font-size: 18px; font-weight: 850; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
+.identity-hover__kind, .identity-hover__followers { display: flex; min-width: 0; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 12px; font-weight: 650; }
 .identity-hover__kind :deep(svg), .identity-hover__followers :deep(svg) { width: 15px; height: 15px; flex: 0 0 auto; }
-.identity-hover__description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 12px 0 0; color: #475569; font-size: 12.5px; line-height: 1.55; }
-.identity-hover__loading { display: flex; align-items: center; gap: 7px; margin-top: 14px; color: #64748b; font-size: 12px; font-weight: 700; }
+.identity-hover__description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 12px 0 0; color: var(--text-secondary); font-size: 12.5px; line-height: 1.55; }
+.identity-hover__loading { display: flex; align-items: center; gap: 7px; margin-top: 14px; color: var(--text-secondary); font-size: 12px; font-weight: 700; }
 .identity-hover__loading :deep(svg) { width: 16px; height: 16px; }
 .identity-hover__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 15px; }
 .identity-hover__action { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--bg-brand); border-radius: 10px; background: var(--bg-brand); color: #fff; font-size: 12.5px; font-weight: 800; cursor: pointer; }
 .identity-hover__action :deep(svg) { width: 16px; height: 16px; }
 .identity-hover__action--message { background: var(--bg-brand); border-color: var(--bg-brand); }
-.identity-hover__action--following { border-color: #dbe3ef; background: #f1f5f9; color: #334155; }
+.identity-hover__action--following { border-color: #dbe3ef; background: var(--bg-muted); color: var(--text-primary); }
 .identity-hover__action:disabled { cursor: wait; opacity: .65; }
 .identity-hover-card-enter-active, .identity-hover-card-leave-active { transition: opacity .14s ease, transform .14s ease; transform-origin: left top; }
 .identity-hover-card-enter-from, .identity-hover-card-leave-to { opacity: 0; transform: translateY(-4px) scale(.98); }

@@ -312,7 +312,7 @@ const pageTitle = computed(() =>
   border: 1px solid var(--order-border);
   border-radius: 12px;
   color: var(--order-text);
-  background: #ffffff;
+  background: var(--bg-surface);
   transition: all 0.16s ease;
 }
 
@@ -427,7 +427,7 @@ const pageTitle = computed(() =>
 
 .customer-order-pill--bordered {
   border: 1px solid currentColor;
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .customer-order-hero__title {
@@ -484,7 +484,7 @@ const pageTitle = computed(() =>
   border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
   border-radius: 12px;
   color: var(--order-brand);
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .customer-order-fact > div,

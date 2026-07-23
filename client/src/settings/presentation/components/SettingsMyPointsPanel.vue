@@ -2,7 +2,7 @@
   <section class="settings-points" aria-labelledby="settings-points-title">
     <div class="settings-points__hero">
       <div class="settings-points__hero-main">
-        <span class="settings-points__hero-icon text-black" aria-hidden="true">
+        <span class="settings-points__hero-icon text-[var(--text-primary)]" aria-hidden="true">
           <Icon name="i-ph-star-bold" class="h-6 w-6" />
         </span>
         <div>
@@ -485,7 +485,7 @@ const {
 .settings-points__history {
   border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -519,7 +519,7 @@ const {
 
 .settings-points__eyebrow {
   margin: 0 0 4px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -528,7 +528,7 @@ const {
 
 .settings-points__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 800;
   line-height: 1.15;
@@ -537,7 +537,7 @@ const {
 .settings-points__description {
   max-width: 520px;
   margin: 6px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.55;
@@ -584,9 +584,9 @@ const {
   gap: 8px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 0 16px;
-  color: #000000;
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
@@ -666,14 +666,14 @@ const {
 .settings-points__preview-row span,
 .settings-points-modal__field span,
 .settings-points-modal__summary span {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
 
 .settings-points__stat-value {
   margin: 2px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
 }
@@ -690,7 +690,7 @@ const {
 .settings-points__transfer {
   border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -717,7 +717,7 @@ const {
   overflow-y: auto;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 6px;
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
 }
@@ -756,7 +756,7 @@ const {
   justify-content: center;
   border-radius: 50%;
   background: #e2e8f0;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
@@ -770,14 +770,14 @@ const {
 }
 
 .settings-points__recipient-option strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
 
 .settings-points__recipient-option small {
   margin-top: 2px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 700;
 }
@@ -807,9 +807,9 @@ const {
   gap: 8px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 0 12px;
-  color: #000000;
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
@@ -865,7 +865,7 @@ const {
   border-radius: 14px;
   background: #fafbfe;
   padding: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -897,7 +897,7 @@ const {
   justify-content: center;
   border-radius: 50%;
   background: #e2e8f0;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
@@ -906,7 +906,7 @@ const {
   min-width: 0;
   margin: 0;
   overflow: hidden;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -921,17 +921,17 @@ const {
   justify-content: center;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background: #ffffff;
-  color: #64748b;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
 .settings-points__empty-line {
   margin: 0;
   border-radius: 12px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -946,7 +946,7 @@ const {
   width: min(100%, 260px);
   margin: 16px auto 0;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 10px;
   box-shadow: 0 8px 26px rgba(15, 23, 42, 0.12);
 }
@@ -960,14 +960,14 @@ const {
 
 .settings-points__section-title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
 }
 
 .settings-points__section-description {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 500;
   line-height: 1.5;
@@ -995,7 +995,7 @@ const {
 }
 
 .settings-points__preview-row strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 800;
 }
@@ -1025,8 +1025,8 @@ const {
   justify-content: center;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background: #ffffff;
-  color: #64748b;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   cursor: pointer;
   pointer-events: auto;
   transition: all 0.15s ease;
@@ -1081,7 +1081,7 @@ const {
 
 .settings-points__history-title {
   overflow: hidden;
-  color: #1e293b;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
   text-overflow: ellipsis;
@@ -1090,7 +1090,7 @@ const {
 
 .settings-points__history-meta {
   margin-top: 2px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 600;
 }
@@ -1117,7 +1117,7 @@ const {
   border: 1px dashed #cbd5e1;
   border-radius: 14px;
   background: #fafbfe;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -1147,7 +1147,7 @@ const {
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);
 }
 
@@ -1161,7 +1161,7 @@ const {
 
 .settings-points-modal__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 800;
 }
@@ -1181,7 +1181,7 @@ const {
   border-radius: 12px;
   outline: none;
   background: #fafbfe;
-  color: #0f172a;
+  color: var(--text-primary);
   font: inherit;
   font-size: 14px;
   font-weight: 700;
@@ -1214,7 +1214,7 @@ const {
 .settings-points-modal__summary strong {
   display: block;
   margin-top: 4px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
@@ -1241,8 +1241,8 @@ const {
   padding: 0 16px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
@@ -1250,7 +1250,7 @@ const {
 }
 
 .settings-points-modal__secondary:hover {
-  background: #f8fafc;
+  background: var(--bg-muted);
 }
 
 .settings-points-modal__primary {

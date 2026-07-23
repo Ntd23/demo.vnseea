@@ -282,7 +282,7 @@ function handlePostCreated() {
   overflow: hidden;
   border: 1px solid #dbe3f2;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 12px 30px rgba(15, 35, 110, 0.06);
 }
 
@@ -303,7 +303,7 @@ function handlePostCreated() {
 
 .profile-card__title {
   margin: 0;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 800;
   line-height: 1.2;

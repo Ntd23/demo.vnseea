@@ -50,7 +50,7 @@
       </div>
 
       <div class="space-y-2">
-        <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400 transition-colors group-hover:text-secondary-900">
+        <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)] transition-colors group-hover:text-secondary-900">
           {{ currencyLabel }}
         </p>
         <h3 class="pr-20 text-2xl font-extrabold leading-tight tracking-tight text-secondary-950 transition-colors line-clamp-1 group-hover:text-primary-950">
@@ -64,7 +64,7 @@
 
       <div class="flex items-center justify-between gap-4 pt-6 border-t border-secondary-50 transition-colors group-hover:border-primary-100">
         <div class="space-y-1">
-          <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] leading-none text-slate-400">{{ $t("pages.productEditor.priceLabel") }}</p>
+          <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] leading-none text-[var(--text-tertiary)]">{{ $t("pages.productEditor.priceLabel") }}</p>
           <p class="pt-1 text-2xl font-extrabold leading-none tracking-tight text-sky-600">
             {{ price }}
           </p>
@@ -75,7 +75,7 @@
             <Icon name="i-ph-check-circle-duotone" class="h-4 w-4" />
             {{ statusLabel }}
           </div>
-          <p class="pr-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+          <p class="pr-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             {{ stockLabel }}
           </p>
         </div>

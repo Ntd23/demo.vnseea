@@ -159,7 +159,7 @@ const { t } = useI18n()
 
 <style scoped>
 .setup-panel {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -191,7 +191,7 @@ const { t } = useI18n()
 .setup-panel__host-name {
   font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -200,7 +200,7 @@ const { t } = useI18n()
 
 .setup-panel__host-role {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 3px 0 0;
 }
 
@@ -213,7 +213,7 @@ const { t } = useI18n()
 .setup-panel__label {
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .setup-panel__device-section {
@@ -235,7 +235,7 @@ const { t } = useI18n()
   gap: 7px;
   padding: 8px 16px;
   border-radius: 999px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   color: #374151;
   font-size: 13px;
   font-weight: 600;

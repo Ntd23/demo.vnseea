@@ -61,7 +61,7 @@ defineEmits<{ select: [id: string] }>()
 
 <style scoped>
 .related {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -87,14 +87,14 @@ defineEmits<{ select: [id: string] }>()
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .related__title {
   margin-top: 4px;
   font-size: 16px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .related__count {
@@ -122,7 +122,7 @@ defineEmits<{ select: [id: string] }>()
   width: 100%;
   border-radius: 14px;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 10px;
   text-align: left;
   cursor: pointer;
@@ -201,7 +201,7 @@ defineEmits<{ select: [id: string] }>()
   font-size: 13px;
   font-weight: 700;
   line-height: 1.35;
-  color: #1e293b;
+  color: var(--text-primary);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -216,7 +216,7 @@ defineEmits<{ select: [id: string] }>()
 .related-item__author {
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .related-item__meta {
@@ -225,7 +225,7 @@ defineEmits<{ select: [id: string] }>()
   gap: 6px;
   font-size: 11px;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .related-item__dot {

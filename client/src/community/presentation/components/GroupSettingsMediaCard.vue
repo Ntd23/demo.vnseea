@@ -32,7 +32,7 @@
             alt=""
             class="group-media__avatar-img"
           >
-          <Icon v-else name="i-ph-users-three-duotone" class="h-12 w-12 text-slate-400" />
+          <Icon v-else name="i-ph-users-three-duotone" class="h-12 w-12 text-[var(--text-tertiary)]" />
         </div>
 
         <button type="button" class="group-media__avatar-action" aria-label="Đổi hình đại diện" @click="avatarInput?.click()">
@@ -128,7 +128,7 @@ function handleFileChange(event: Event, type: "avatar" | "banner") {
   justify-content: center;
   border: 0;
   background: rgba(241, 245, 249, 0.56);
-  color: #000000;
+  color: var(--text-primary);
   transition: background-color 0.15s ease;
 }
 
@@ -169,7 +169,7 @@ function handleFileChange(event: Event, type: "avatar" | "banner") {
   justify-content: center;
   border-radius: 999px;
   background: rgba(241, 245, 249, 0.72);
-  color: #000000;
+  color: var(--text-primary);
   opacity: 0.95;
   transition: background-color 0.15s ease, transform 0.15s ease;
 }

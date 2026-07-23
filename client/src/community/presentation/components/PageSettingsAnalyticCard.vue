@@ -256,7 +256,7 @@ const chartOption = computed<EChartsOption>(() => {
 .stat-card {
   border: 1px solid #f1f5f9;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 20px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -277,14 +277,14 @@ const chartOption = computed<EChartsOption>(() => {
 
 .stat-value {
   margin-top: 8px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 900;
 }
 
 .stat-label {
   margin-top: 2px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -296,8 +296,8 @@ const chartOption = computed<EChartsOption>(() => {
   gap: 8px;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #f8fafc;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   padding: 14px 16px;
   font-size: 13px;
   font-weight: 800;
@@ -325,7 +325,7 @@ const chartOption = computed<EChartsOption>(() => {
 
 .analytics-panel__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 900;
 }
@@ -333,7 +333,7 @@ const chartOption = computed<EChartsOption>(() => {
 .analytics-panel__subtitle {
   margin: 4px 0 0;
   max-width: 520px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.5;
@@ -346,7 +346,7 @@ const chartOption = computed<EChartsOption>(() => {
   gap: 4px;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 4px;
 }
 
@@ -354,14 +354,14 @@ const chartOption = computed<EChartsOption>(() => {
   min-height: 34px;
   flex: 1;
   border-radius: 10px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 900;
   transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .analytics-period-button--active {
-  background: #ffffff;
+  background: var(--bg-surface);
   color: var(--bg-brand);
   box-shadow: 0 1px 5px rgba(15, 23, 42, 0.08);
 }
@@ -373,7 +373,7 @@ const chartOption = computed<EChartsOption>(() => {
   overflow: hidden;
   border: 1px solid #eef2f7;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .analytics-echart {
@@ -387,7 +387,7 @@ const chartOption = computed<EChartsOption>(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 13px;
   font-weight: 800;
   pointer-events: none;

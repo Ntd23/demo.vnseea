@@ -298,7 +298,7 @@ const sectionIcon = computed(() => {
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid #f1f5f9;
   border-radius: 18px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 16px rgba(0, 0, 0, 0.04);
@@ -331,7 +331,7 @@ const sectionIcon = computed(() => {
   align-items: center;
   gap: 6px;
   padding: 4px 10px 4px 6px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   border-radius: 8px;
   margin-bottom: 12px;
   border: 1px solid #f1f5f9;
@@ -343,9 +343,9 @@ const sectionIcon = computed(() => {
   height: 24px;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 6px;
-  color: #000000;
+  color: var(--text-primary);
   border: 1px solid #e2e8f0;
 }
 
@@ -354,13 +354,13 @@ const sectionIcon = computed(() => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .settings-section__title {
   font-size: 18px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
@@ -369,7 +369,7 @@ const sectionIcon = computed(() => {
   margin-top: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.5;
   max-width: 540px;
 }
@@ -452,7 +452,7 @@ const sectionIcon = computed(() => {
   gap: 16px;
   padding: 16px;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid #f1f5f9;
   transition: all 0.2s ease;
 }
@@ -465,14 +465,14 @@ const sectionIcon = computed(() => {
 .settings-section__toggle-label {
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
 .settings-section__toggle-description {
   margin-top: 2px;
   font-size: 12px;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 /* ─── List Items ──────────────────────── */
@@ -489,7 +489,7 @@ const sectionIcon = computed(() => {
   gap: 20px;
   padding: 16px;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid #f1f5f9;
   transition: all 0.2s ease;
 }
@@ -502,14 +502,14 @@ const sectionIcon = computed(() => {
 .settings-section__item-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
 .settings-section__item-description {
   margin-top: 2px;
   font-size: 12px;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 /* ─── Danger Zone ─────────────────────── */

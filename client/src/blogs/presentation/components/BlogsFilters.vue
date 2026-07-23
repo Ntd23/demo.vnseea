@@ -117,7 +117,7 @@ const sortIcon = (value: string) => {
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -150,8 +150,8 @@ const sortIcon = (value: string) => {
   gap: 8px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
-  color: #334155;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   padding: 10px 14px;
   font-size: 13px;
   font-weight: 800;
@@ -173,7 +173,7 @@ const sortIcon = (value: string) => {
 .blogs-filters__eyebrow,
 .blogs-filters__label {
   margin: 0;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -182,7 +182,7 @@ const sortIcon = (value: string) => {
 
 .blogs-filters__title {
   margin: 3px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -217,7 +217,7 @@ const sortIcon = (value: string) => {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #fafbfe;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   outline: none;
@@ -227,7 +227,7 @@ const sortIcon = (value: string) => {
 
 .blogs-search-input:focus {
   border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .blogs-search-input::-webkit-search-cancel-button {
@@ -287,8 +287,8 @@ const sortIcon = (value: string) => {
 
 .blogs-filters__chip--idle,
 .blogs-filters__sort--idle {
-  background: #f8fafc;
-  color: #000000;
+  background: var(--bg-muted);
+  color: var(--text-primary);
 }
 
 .blogs-filters__chip--idle:hover,
@@ -316,20 +316,20 @@ const sortIcon = (value: string) => {
 
 .blogs-filters__mine--idle {
   border-color: #e2e8f0;
-  background: #f8fafc;
-  color: #000000;
+  background: var(--bg-muted);
+  color: var(--text-primary);
 }
 
 .blogs-filters__summary {
   gap: 8px;
   border-top: 1px solid #f1f5f9;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 10px 16px;
 }
 
 .blogs-filters__summary p {
   margin: 0;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 600;
 }

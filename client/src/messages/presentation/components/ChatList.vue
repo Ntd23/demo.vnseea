@@ -10,7 +10,7 @@
           <input
             :value="query"
             type="search"
-            class="cl-search text-black"
+            class="cl-search text-[var(--text-primary)]"
             :placeholder="$t('pages.messagesPage.searchPlaceholder')"
             @input="emit('update:query', ($event.target as HTMLInputElement).value)"
           >
@@ -75,7 +75,7 @@
               selected-icon="i-ph-x-bold"
               class="cl-recipient-listbox"
             />
-            <span v-else class="cl-recipient-empty text-black">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
+            <span v-else class="cl-recipient-empty text-[var(--text-primary)]">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
           </div>
 
           <UTextarea
@@ -107,7 +107,7 @@
             <input
               type="checkbox"
               :checked="allVisibleRecipientsSelected"
-              class="h-4 w-4 rounded border-slate-300 text-black focus:ring-primary-500"
+              class="h-4 w-4 rounded border-slate-300 text-[var(--text-primary)] focus:ring-primary-500"
               @change="emit('toggle-all-recipients')"
             >
             <span>{{ $t("pages.messagesPage.selectAll") }}</span>
@@ -633,7 +633,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   align-items: center;
   border: 1px solid var(--border-light);
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 3px 9px;
   color: var(--text-secondary);
   font-size: 11px;
@@ -666,7 +666,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 .cl-upload-box {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .cl-filter-card {
@@ -864,7 +864,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   justify-content: center;
   border: 1px solid var(--border-default);
   border-radius: 4px;
-  background: #ffffff;
+  background: var(--bg-surface);
   color: #ffffff;
 }
 

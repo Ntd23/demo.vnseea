@@ -82,14 +82,14 @@ const changePage = (page: number) => {
   gap: 12px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 12px;
 }
 
 .blogs-pagination__status {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12.5px;
   font-weight: 700;
 }
@@ -129,7 +129,7 @@ const changePage = (page: number) => {
   z-index: 2;
   border: 1px solid #e2e8f0;
   background: #fafbfe;
-  color: #000000;
+  color: var(--text-primary);
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
@@ -182,7 +182,7 @@ const changePage = (page: number) => {
 .blogs-pagination__ellipsis {
   width: 28px;
   flex: 0 0 28px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .blogs-pagination__icon {

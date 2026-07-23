@@ -29,7 +29,7 @@
             <div class="mt-3 flex items-start justify-between gap-3">
               <div>
                 <p class="text-[13px] font-semibold text-[#243b63]">{{ image.alt }}</p>
-                <p class="mt-1 text-[12px] text-slate-400">ID: {{ image.id }}</p>
+                <p class="mt-1 text-[12px] text-[var(--text-tertiary)]">ID: {{ image.id }}</p>
               </div>
 
               <UButton

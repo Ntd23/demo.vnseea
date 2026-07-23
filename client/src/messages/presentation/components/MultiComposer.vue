@@ -6,19 +6,19 @@
         <UButton
           variant="ghost"
           color="neutral"
-          class="md:hidden -ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-slate-500 hover:bg-slate-100"
+          class="md:hidden -ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-[var(--text-secondary)] hover:bg-slate-100"
           @click="$emit('close')"
         >
           <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />
         </UButton>
-        <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+        <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
           {{ $t("pages.messagesPage.composeTitle") }}
         </p>
       </div>
       <h3 class="mt-2 text-lg font-black text-[var(--text-primary)]">
         {{ $t("pages.messagesPage.sendMultiple") }}
       </h3>
-      <p class="mt-2 text-sm leading-6 text-slate-500">
+      <p class="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
         {{ $t("pages.messagesPage.multiComposerDescription") }}
       </p>
     </div>
@@ -29,7 +29,7 @@
           <p class="text-sm font-black text-[var(--text-primary)]">
             {{ $t("pages.messagesPage.sendTo") }}
           </p>
-          <span class="text-xs font-semibold text-slate-500">
+          <span class="text-xs font-semibold text-[var(--text-secondary)]">
             {{ selectedCountLabel }}
           </span>
         </div>
@@ -54,7 +54,7 @@
           </UBadge>
         </div>
 
-        <div v-else class="mt-3 rounded-[18px] border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-4 py-4 text-sm text-slate-500">
+        <div v-else class="mt-3 rounded-[18px] border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-4 py-4 text-sm text-[var(--text-secondary)]">
           {{ $t("pages.messagesPage.noRecipientsSelected") }}
         </div>
       </section>
@@ -76,7 +76,7 @@
           <label class="text-sm font-black text-[var(--text-primary)]">
             {{ $t("pages.messagesPage.attachmentLabel") }}
           </label>
-          <span class="text-xs font-semibold text-slate-500">
+          <span class="text-xs font-semibold text-[var(--text-secondary)]">
             {{ $t("pages.messagesPage.attachmentOptional") }}
           </span>
         </div>
@@ -84,7 +84,7 @@
         <input
           ref="fileInput"
           type="file"
-          class="block w-full rounded-[16px] border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-4 py-3 text-sm text-slate-600 file:mr-3 file:rounded-full file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:font-semibold file:text-primary-700 hover:file:bg-primary-100"
+          class="block w-full rounded-[16px] border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-4 py-3 text-sm text-[var(--text-secondary)] file:mr-3 file:rounded-full file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:font-semibold file:text-primary-700 hover:file:bg-primary-100"
           @change="handleFileChange"
         >
 
@@ -93,7 +93,7 @@
             <p class="truncate text-sm font-semibold text-[var(--text-primary)]">
               {{ fileModel.name }}
             </p>
-            <p class="text-xs text-slate-500">
+            <p class="text-xs text-[var(--text-secondary)]">
               {{ formatBytes(fileModel.size) }}
             </p>
           </div>
@@ -120,7 +120,7 @@
     </div>
 
     <div class="flex items-center justify-between gap-3 border-t border-[#e2e8f0] px-5 py-4">
-      <p class="text-xs font-semibold text-slate-500">
+      <p class="text-xs font-semibold text-[var(--text-secondary)]">
         {{ $t("pages.messagesPage.multiSubmitHint") }}
       </p>
 
@@ -183,7 +183,7 @@ const statusClass = computed(() => {
     return "bg-rose-50 text-rose-700"
   }
 
-  return "bg-slate-100 text-slate-700"
+  return "bg-slate-100 text-[var(--text-primary)]"
 })
 
 function handleFileChange(event: Event) {

@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-2">
     <div v-if="label || $slots.meta" class="flex items-center justify-between gap-3">
-      <label v-if="label" :for="inputId" class="text-sm font-semibold text-slate-700">
+      <label v-if="label" :for="inputId" class="text-sm font-semibold text-[var(--text-primary)]">
         {{ label }}
       </label>
       <slot name="meta" />
     </div>
 
-    <p v-if="description" class="text-sm text-slate-500">
+    <p v-if="description" class="text-sm text-[var(--text-secondary)]">
       {{ description }}
     </p>
 
@@ -27,7 +27,7 @@
     <p v-if="error" class="text-sm font-medium text-rose-600">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="text-sm text-slate-500">
+    <p v-else-if="hint" class="text-sm text-[var(--text-secondary)]">
       {{ hint }}
     </p>
   </div>

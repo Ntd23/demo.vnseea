@@ -19,8 +19,8 @@
                   <Icon name="i-ph-sliders-horizontal-bold" class="h-[18px] w-[18px]" />
                 </div>
                 <div>
-                  <span class="block font-semibold text-slate-800">{{ t("feed.publisherBox.advancedTitle") }}</span>
-                  <span class="block text-[12px] text-slate-500">{{ t("feed.publisherBox.advancedDescription") }}</span>
+                  <span class="block font-semibold text-[var(--text-primary)]">{{ t("feed.publisherBox.advancedTitle") }}</span>
+                  <span class="block text-[12px] text-[var(--text-secondary)]">{{ t("feed.publisherBox.advancedDescription") }}</span>
                 </div>
               </div>
               <UButton color="neutral" variant="ghost" size="xs" class="rounded-full" @click="emit('close')">

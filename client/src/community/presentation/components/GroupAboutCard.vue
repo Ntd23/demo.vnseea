@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <p class="mt-4 text-[14px] leading-7 text-slate-600">
+    <p class="mt-4 text-[14px] leading-7 text-[var(--text-secondary)]">
       {{ groupSummary }}
     </p>
 
@@ -23,16 +23,16 @@
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.groupDetailPage.privacyTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ privacyLabel }}</p>
-        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ privacyDescription }}</p>
+        <p class="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">{{ privacyDescription }}</p>
       </div>
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.groupDetailPage.categoryTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ categoryLabel }}</p>
-        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ locationLabel }}</p>
+        <p class="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">{{ locationLabel }}</p>
       </div>
     </div>
 
-    <div v-if="!compact || group.website" class="mt-4 space-y-2 text-[13px] text-slate-500">
+    <div v-if="!compact || group.website" class="mt-4 space-y-2 text-[13px] text-[var(--text-secondary)]">
       <!-- Founded Date: Only show in the full about card (not compact) -->
       <div v-if="!compact" class="flex items-start gap-2">
         <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[var(--text-brand)]/70" />
@@ -61,7 +61,7 @@
         <div
           v-for="rule in group.guidelines"
           :key="rule"
-          class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-600"
+          class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-[var(--text-secondary)]"
         >
           {{ translateText(rule) }}
         </div>

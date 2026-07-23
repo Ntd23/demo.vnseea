@@ -69,7 +69,7 @@ const {
 
 .create-blog-content-editor__label {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
 }
@@ -80,7 +80,7 @@ const {
   gap: 6px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 6px;
 }
 
@@ -95,7 +95,7 @@ const {
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #000000;
+  color: var(--text-primary);
   padding: 8px 10px;
   font-size: 13px;
   font-weight: 700;
@@ -127,17 +127,17 @@ const {
   border: 1px solid #e2e8f0;
   border-radius: 14px;
   background: #fafbfe;
-  color: #0f172a;
+  color: var(--text-primary);
   transition: all 0.15s ease;
 }
 
 .create-blog-content-editor__surface--ready {
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .create-blog-content-editor__surface:focus-within {
   border-color: color-mix(in srgb, var(--bg-brand) 25%, transparent);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
@@ -146,7 +146,7 @@ const {
   position: absolute;
   left: 16px;
   top: 16px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 15px;
   font-weight: 600;
 }
@@ -156,7 +156,7 @@ const {
   min-height: 320px;
   align-items: flex-start;
   padding: 16px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 15px;
   font-weight: 600;
 }
@@ -183,7 +183,7 @@ const {
 
 .create-blog-content-editor__surface :deep(h2),
 .create-blog-content-editor__surface :deep(h3) {
-  color: #0f172a;
+  color: var(--text-primary);
   font-weight: 850;
   line-height: 1.25;
 }
@@ -199,7 +199,7 @@ const {
 .create-blog-content-editor__surface :deep(blockquote) {
   margin-left: 0;
   border-left: 4px solid color-mix(in srgb, var(--bg-brand) 24%, transparent);
-  color: #475569;
+  color: var(--text-secondary);
   padding-left: 14px;
 }
 

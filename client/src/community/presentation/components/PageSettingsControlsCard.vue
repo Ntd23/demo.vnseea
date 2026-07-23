@@ -137,7 +137,7 @@ const toggleItems = computed(() => [
   gap: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 14px;
   text-align: left;
   transition: all 0.15s ease;
@@ -151,7 +151,7 @@ const toggleItems = computed(() => [
 
 .cta-card--inactive:hover {
   border-color: #cbd5e1;
-  background: #f8fafc;
+  background: var(--bg-muted);
 }
 
 .cta-card__icon-wrap {
@@ -161,10 +161,10 @@ const toggleItems = computed(() => [
   width: 48px;
   height: 48px;
   flex: 0 0 48px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid #f1f5f9;
   border-radius: 14px;
-  color: #0f172a;
+  color: var(--text-primary);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
@@ -176,14 +176,14 @@ const toggleItems = computed(() => [
 .cta-card__title {
   font-size: 14px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .cta-card__desc {
   font-size: 13px;
   line-height: 1.45;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 4px 0 0;
 }
 
@@ -214,7 +214,7 @@ const toggleItems = computed(() => [
 
 .page-settings-controls__info p {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 900;
 }
@@ -222,7 +222,7 @@ const toggleItems = computed(() => [
 .page-settings-controls__info span {
   display: block;
   margin-top: 3px;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -230,16 +230,16 @@ const toggleItems = computed(() => [
 .page-settings-controls__toggle {
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 16px;
 }
 
 .page-settings-controls :deep(label) {
-  color: #0f172a;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
 .page-settings-controls :deep(p) {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 </style>

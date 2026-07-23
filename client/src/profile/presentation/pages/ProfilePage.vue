@@ -1709,7 +1709,7 @@ function handleMoreAction(action: string) {
 
 /* ── Hero ─────────────────────────────────────────────── */
 .profile-page__hero {
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
   border-radius: 16px;
@@ -1890,7 +1890,7 @@ function handleMoreAction(action: string) {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 900;
   letter-spacing: -0.03em;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1908,16 +1908,16 @@ function handleMoreAction(action: string) {
   display: inline-flex;
   gap: 4px;
   font-size: 14px;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .profile-page__stat-chip strong {
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .profile-page__stat-label {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 /* Hero actions */
@@ -2047,7 +2047,7 @@ function handleMoreAction(action: string) {
 .profile-page__tab:hover {
   background: #f0f2f5;
   border-radius: 8px 8px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .profile-page__tab--active {
@@ -2063,7 +2063,7 @@ function handleMoreAction(action: string) {
 
 .profile-page__tab--more:hover {
   background: #f0f2f5;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .profile-page__tab-scroll-hint {
@@ -2158,17 +2158,17 @@ function handleMoreAction(action: string) {
 
 .profile-page__post-search :deep(input) {
   border-color: #e2e8f0;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   box-shadow: none;
 }
 
 .profile-page__post-search :deep(input::placeholder) {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .profile-page__post-search :deep(svg) {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .profile-page__post-card {
@@ -2259,7 +2259,7 @@ function handleMoreAction(action: string) {
 
 /* ── Profile card (reusable) ─────────────────────────── */
 .profile-card {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   padding: 16px;
@@ -2278,14 +2278,14 @@ function handleMoreAction(action: string) {
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0 0 4px;
 }
 
 .profile-card__title {
   font-size: 18px;
   font-weight: 900;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -2316,7 +2316,7 @@ function handleMoreAction(action: string) {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   color: var(--bg-brand);
 }
 
@@ -2325,14 +2325,14 @@ function handleMoreAction(action: string) {
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
 .profile-card__intro-value {
   font-size: 14px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 2px 0 0;
 }
 
@@ -2376,7 +2376,7 @@ function handleMoreAction(action: string) {
   margin: 5px 0 0;
   font-size: 12px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2394,7 +2394,7 @@ function handleMoreAction(action: string) {
   min-height: 92px;
   overflow: hidden;
   border-radius: 10px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .profile-card__media-img {
@@ -2436,12 +2436,12 @@ function handleMoreAction(action: string) {
   padding: 8px;
   font-size: 13px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
   transition: background 0.15s ease;
 }
 
 .profile-card__link-row:hover {
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .profile-card__link-dot {
@@ -2462,8 +2462,8 @@ function handleMoreAction(action: string) {
   min-width: 0;
   overflow: hidden;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--bg-muted);
+  color: var(--text-primary);
 }
 
 .profile-card__product-img {
@@ -2471,7 +2471,7 @@ function handleMoreAction(action: string) {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .profile-card__product-name {
@@ -2528,9 +2528,9 @@ function handleMoreAction(action: string) {
   min-width: 0;
   border-radius: 18px;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 12px;
-  color: #0f172a;
+  color: var(--text-primary);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
   transition:
     border-color 0.15s ease,
@@ -2579,7 +2579,7 @@ function handleMoreAction(action: string) {
   white-space: nowrap;
   font-size: 15px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .profile-page__friend-username {
@@ -2589,13 +2589,13 @@ function handleMoreAction(action: string) {
   white-space: nowrap;
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .profile-page__friend-open {
   width: 16px;
   height: 16px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 @media (min-width: 768px) {
@@ -2648,13 +2648,13 @@ function handleMoreAction(action: string) {
   margin: -16px -16px 14px;
   object-fit: cover;
   display: block;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 /* ── Skeletons / Empty ───────────────────────────────── */
 .profile-page__hero-skeleton {
   overflow: hidden;
-  background: #ffffff;
+  background: var(--bg-surface);
   margin-bottom: 12px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
@@ -2730,7 +2730,7 @@ function handleMoreAction(action: string) {
 .profile-page__empty {
   max-width: 540px;
   margin: 40px auto;
-  background: #fff;
+  background: var(--bg-surface);
   border-radius: 16px;
   padding: 40px 24px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -2746,7 +2746,7 @@ function handleMoreAction(action: string) {
   overflow: visible;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 8px;
   box-shadow: 0 14px 38px rgba(15, 23, 42, 0.22);
 }
@@ -2759,7 +2759,7 @@ function handleMoreAction(action: string) {
   height: 16px;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   border-left: 1px solid rgba(15, 23, 42, 0.08);
-  background: #ffffff;
+  background: var(--bg-surface);
   transform: translateX(-50%) rotate(45deg);
 }
 
@@ -2774,7 +2774,7 @@ function handleMoreAction(action: string) {
   border-radius: 11px;
   background: transparent;
   padding: 10px 13px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 650;
   text-align: left;
@@ -2783,7 +2783,7 @@ function handleMoreAction(action: string) {
 }
 
 .profile-avatar-menu__item:hover {
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .profile-avatar-menu__item:disabled {
@@ -2843,7 +2843,7 @@ function handleMoreAction(action: string) {
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 12px 40px color-mix(in srgb, var(--bg-brand) 12%, transparent);
 }
 
@@ -2885,13 +2885,13 @@ function handleMoreAction(action: string) {
 .profile-more-label {
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary);
   line-height: 1.3;
 }
 
 .profile-more-desc {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin-top: 2px;
   line-height: 1.3;
 }

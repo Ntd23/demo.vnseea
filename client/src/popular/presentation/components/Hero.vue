@@ -19,7 +19,7 @@
             <h1 class="max-w-[760px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]">
               {{ title }}
             </h1>
-            <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
+            <p class="max-w-xl text-[15px] font-medium leading-7 text-[var(--text-secondary)]">
               {{ description }}
             </p>
           </div>
@@ -74,13 +74,13 @@
             :key="item.label"
             class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
           >
-            <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+            <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
               {{ item.label }}
             </p>
             <p class="mt-2 text-[26px] font-extrabold leading-none text-[var(--text-primary)]">
               {{ item.value }}
             </p>
-            <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
+            <p class="mt-2 text-[12px] font-semibold leading-5 text-[var(--text-secondary)]">
               {{ item.description }}
             </p>
           </article>

@@ -247,7 +247,7 @@ const formatDonationDate = (value: string) => {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
 }
 
@@ -267,7 +267,7 @@ const formatDonationDate = (value: string) => {
   min-height: 280px;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .fund-detail__hero-body {
@@ -284,9 +284,9 @@ const formatDonationDate = (value: string) => {
   gap: 8px;
   border: 1px solid #e2e8f0;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 9px 14px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
@@ -317,7 +317,7 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__owner h1 {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 25px;
   font-weight: 900;
   line-height: 1.16;
@@ -326,7 +326,7 @@ const formatDonationDate = (value: string) => {
 .fund-detail__owner p,
 .fund-detail__amount-row span,
 .fund-detail__progress span {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
 }
@@ -360,7 +360,7 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__section-title h2 {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 900;
 }
@@ -368,7 +368,7 @@ const formatDonationDate = (value: string) => {
 .fund-detail__story p {
   margin-top: 14px;
   white-space: pre-line;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.75;
@@ -389,7 +389,7 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__donor-sort span {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
 }
@@ -398,9 +398,9 @@ const formatDonationDate = (value: string) => {
   min-height: 40px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 8px 12px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
@@ -417,7 +417,7 @@ const formatDonationDate = (value: string) => {
   align-items: center;
   border: 1px solid #eef2f7;
   border-radius: 14px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 10px;
 }
 
@@ -446,7 +446,7 @@ const formatDonationDate = (value: string) => {
 
 .fund-detail__donor-item strong {
   overflow: hidden;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 900;
   text-overflow: ellipsis;
@@ -454,7 +454,7 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__donor-item span {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -471,9 +471,9 @@ const formatDonationDate = (value: string) => {
   justify-items: center;
   gap: 8px;
   border-radius: 14px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 22px;
-  color: #64748b;
+  color: var(--text-secondary);
   text-align: center;
 }
 
@@ -504,7 +504,7 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__amount-row strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 900;
 }
@@ -556,8 +556,8 @@ const formatDonationDate = (value: string) => {
 .fund-detail__donate--disabled:hover {
   cursor: not-allowed;
   border-color: #cbd5e1;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .fund-detail__modal-body {
@@ -566,7 +566,7 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__modal-body p {
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
   line-height: 1.5;

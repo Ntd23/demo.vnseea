@@ -92,7 +92,7 @@
                     :ui="{
                       base: 'h-8 rounded-xl bg-white/95 px-2.5 text-xs font-bold text-slate-950 shadow-lg ring-0 hover:bg-white focus-visible:ring-2 focus-visible:ring-blue-500',
                       content: 'z-[200] min-w-52 overflow-hidden rounded-xl bg-white text-slate-950 shadow-2xl ring-1 ring-slate-200',
-                      item: 'cursor-pointer rounded-lg px-3 py-2.5 text-sm font-medium text-slate-800 data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-700',
+                      item: 'cursor-pointer rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--text-primary)] data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-700',
                     }"
                   />
                 </div>
@@ -841,14 +841,14 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow: hidden;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ── Sidebar ──────────────────────────────────────────── */
 .studio__sidebar {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -884,7 +884,7 @@ onBeforeUnmount(() => {
 .studio__host-name {
   font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -893,7 +893,7 @@ onBeforeUnmount(() => {
 
 .studio__host-role {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 3px 0 0;
 }
 
@@ -917,7 +917,7 @@ onBeforeUnmount(() => {
 .studio__label {
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 /* Selects */
@@ -932,7 +932,7 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   border: 1px solid #e2e8f0;
   background: #fafbfe;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
   appearance: none;
@@ -949,7 +949,7 @@ onBeforeUnmount(() => {
 .studio__select:disabled {
   opacity: 0.6;
   cursor: default;
-  background: #f8fafc;
+  background: var(--bg-muted);
 }
 
 .studio__select--sm {
@@ -964,7 +964,7 @@ onBeforeUnmount(() => {
   transform: translateY(-50%);
   width: 14px;
   height: 14px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   pointer-events: none;
 }
 
@@ -977,7 +977,7 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   border: 1px dashed #cbd5e1;
   background: #fafbfe;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -1014,7 +1014,7 @@ onBeforeUnmount(() => {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0;
 }
 .studio__main {
@@ -1040,7 +1040,7 @@ onBeforeUnmount(() => {
   gap: 7px;
   padding: 8px 16px;
   border-radius: 999px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   color: #374151;
   font-size: 13px;
   font-weight: 600;
@@ -1049,8 +1049,8 @@ onBeforeUnmount(() => {
 }
 
 .studio__toggle-btn:hover {
-  background: #f1f5f9;
-  border-color: #94a3b8;
+  background: var(--bg-muted);
+  border-color: var(--text-tertiary);
 }
 
 .studio__toggle-btn--off {
@@ -1062,18 +1062,18 @@ onBeforeUnmount(() => {
 .studio__toggle-btn--ghost {
   background: transparent;
   border-color: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .studio__toggle-btn--ghost:hover {
-  background: #f1f5f9;
+  background: var(--bg-muted);
   color: #374151;
 }
 
 /* Stage card */
 .studio__stage-card {
   position: relative;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -1153,7 +1153,7 @@ onBeforeUnmount(() => {
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .studio__viewer-count {
@@ -1214,7 +1214,7 @@ onBeforeUnmount(() => {
 
 .studio__end-confirmation h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 850;
   line-height: 1.25;
@@ -1222,7 +1222,7 @@ onBeforeUnmount(() => {
 
 .studio__end-confirmation > p {
   margin: 9px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -1675,7 +1675,7 @@ onBeforeUnmount(() => {
 .studio__activity-panel {
   display: none;
   gap: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 16px 18px 18px;
 }
 
@@ -1688,7 +1688,7 @@ onBeforeUnmount(() => {
 
 .studio__activity-eyebrow {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -1697,7 +1697,7 @@ onBeforeUnmount(() => {
 
 .studio__activity-title {
   margin: 3px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
 }
@@ -1706,7 +1706,7 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 900;
 }
@@ -1716,7 +1716,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 5px;
   border-radius: 999px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   padding: 8px 11px;
 }
 
@@ -1729,9 +1729,9 @@ onBeforeUnmount(() => {
 
 .studio__activity-empty {
   border-radius: 16px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 12px 14px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -1745,13 +1745,13 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 3px;
   border-radius: 16px;
-  background: #f8fafc;
+  background: var(--bg-muted);
   padding: 9px 12px;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .studio__activity-comment-body strong {
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 12px;
 }
 

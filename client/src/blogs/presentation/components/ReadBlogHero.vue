@@ -99,7 +99,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -107,7 +107,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
   position: relative;
   min-height: 260px;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .read-blog-hero__fallback,
@@ -157,8 +157,8 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 }
 
 .read-blog-hero__chip--muted {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .read-blog-hero__chip-icon,
@@ -171,7 +171,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 
 .read-blog-hero__title {
   margin: 14px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 30px;
   font-weight: 800;
   letter-spacing: 0;
@@ -183,7 +183,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 .read-blog-hero__excerpt {
   max-width: 760px;
   margin: 12px 0 0;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 15px;
   font-weight: 500;
   line-height: 1.7;
@@ -213,8 +213,8 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .read-blog-hero__avatar-image {
@@ -236,14 +236,14 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 }
 
 .read-blog-hero__author-name {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
 }
 
 .read-blog-hero__date {
   margin-top: 2px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -255,8 +255,8 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 }
 
 .read-blog-hero__stats > span {
-  background: #f8fafc;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   padding: 8px 10px;
 }
 

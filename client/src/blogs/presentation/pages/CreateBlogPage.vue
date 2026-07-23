@@ -165,7 +165,7 @@ onMounted(loadArticleForEditing)
   align-items: center;
   gap: 6px;
   margin-bottom: 14px;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
@@ -177,7 +177,7 @@ onMounted(loadArticleForEditing)
 
 .blog-editor-page__header h1 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: clamp(24px, 4vw, 32px);
   font-weight: 800;
   line-height: 1.2;
@@ -185,7 +185,7 @@ onMounted(loadArticleForEditing)
 
 .blog-editor-page__header p {
   margin: 7px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -194,7 +194,7 @@ onMounted(loadArticleForEditing)
 .blog-editor-page__loading {
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
 }
 
@@ -210,7 +210,7 @@ onMounted(loadArticleForEditing)
   align-items: center;
   justify-content: center;
   gap: 9px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 700;
 }
@@ -226,7 +226,7 @@ onMounted(loadArticleForEditing)
 }
 
 .blog-editor-page__field > span {
-  color: #334155;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 750;
 }
@@ -238,8 +238,8 @@ onMounted(loadArticleForEditing)
   min-width: 0;
   border: 1px solid #dbe3ef;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--bg-muted);
+  color: var(--text-primary);
   font: inherit;
   font-size: 14px;
   outline: none;
@@ -260,7 +260,7 @@ onMounted(loadArticleForEditing)
 
 .blog-editor-page__field input::placeholder,
 .blog-editor-page__field textarea::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
   opacity: 1;
 }
 
@@ -268,13 +268,13 @@ onMounted(loadArticleForEditing)
 .blog-editor-page__field select:focus,
 .blog-editor-page__field textarea:focus {
   border-color: color-mix(in srgb, var(--bg-brand) 30%, transparent);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent);
 }
 
 .blog-editor-page__field small {
   justify-self: end;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
 }
 
@@ -292,7 +292,7 @@ onMounted(loadArticleForEditing)
   overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .blog-editor-page__thumbnail-preview :deep(img) {
@@ -336,8 +336,8 @@ onMounted(loadArticleForEditing)
   align-items: center;
   gap: 9px;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   padding: 11px 13px;
   font-size: 13px;
   font-weight: 700;
@@ -384,8 +384,8 @@ onMounted(loadArticleForEditing)
 .blog-editor-page__cancel,
 .blog-editor-page__draft {
   border: 1px solid #dbe3ef;
-  background: #ffffff;
-  color: #334155;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .blog-editor-page__submit {

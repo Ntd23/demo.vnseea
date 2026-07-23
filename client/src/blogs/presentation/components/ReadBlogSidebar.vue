@@ -170,7 +170,7 @@ const openBlogCategory = (category: string) => navigateTo({
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -193,8 +193,8 @@ const openBlogCategory = (category: string) => navigateTo({
   margin-top: -29px;
   border: 4px solid #ffffff;
   border-radius: 50%;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .read-blog-sidebar__avatar-image {
@@ -205,7 +205,7 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__eyebrow {
   margin: 12px 0 0;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -214,7 +214,7 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__author-name {
   margin: 3px 0 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 800;
   letter-spacing: 0;
@@ -233,7 +233,7 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__description {
   margin: 12px 0 0;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.65;
@@ -254,13 +254,13 @@ const openBlogCategory = (category: string) => navigateTo({
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .read-blog-sidebar__title {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 800;
   letter-spacing: 0;
@@ -273,7 +273,7 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__search-card {
   padding: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
 }
 
 .read-blog-sidebar__search-heading {
@@ -285,7 +285,7 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__search-heading h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 850;
   letter-spacing: -0.01em;
@@ -298,7 +298,7 @@ const openBlogCategory = (category: string) => navigateTo({
   top: 50%;
   height: 17px;
   width: 17px;
-  color: #64748b;
+  color: var(--text-secondary);
   pointer-events: none;
   transform: translateY(-50%);
 }
@@ -309,7 +309,7 @@ const openBlogCategory = (category: string) => navigateTo({
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.94);
-  color: #0f172a;
+  color: var(--text-primary);
   outline: none;
   padding: 11px 42px;
   font-size: 13px;
@@ -320,7 +320,7 @@ const openBlogCategory = (category: string) => navigateTo({
 }
 
 .read-blog-sidebar__search input::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .read-blog-sidebar__search input::-webkit-search-cancel-button {
@@ -329,7 +329,7 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__search input:focus {
   border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent);
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent), 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
@@ -344,8 +344,8 @@ const openBlogCategory = (category: string) => navigateTo({
   justify-content: center;
   border: 0;
   border-radius: 8px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   cursor: pointer;
   transform: translateY(-50%);
 }
@@ -372,7 +372,7 @@ const openBlogCategory = (category: string) => navigateTo({
 .read-blog-sidebar__empty {
   margin: 0;
   padding: 16px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -392,8 +392,8 @@ const openBlogCategory = (category: string) => navigateTo({
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background: #f8fafc;
-  color: #334155;
+  background: var(--bg-muted);
+  color: var(--text-primary);
   gap: 5px;
   min-height: 66px;
   padding: 8px 5px;
@@ -440,7 +440,7 @@ const openBlogCategory = (category: string) => navigateTo({
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 12px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .read-blog-sidebar__thumb-fallback,
@@ -464,8 +464,8 @@ const openBlogCategory = (category: string) => navigateTo({
   max-width: 100%;
   overflow: hidden;
   border-radius: 999px;
-  background: #f8fafc;
-  color: #64748b;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 700;
   padding: 4px 8px;
@@ -479,7 +479,7 @@ const openBlogCategory = (category: string) => navigateTo({
   -webkit-line-clamp: 2;
   overflow: hidden;
   margin-top: 6px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   line-height: 1.4;
@@ -490,7 +490,7 @@ const openBlogCategory = (category: string) => navigateTo({
   align-items: center;
   gap: 4px;
   margin-top: 6px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -505,7 +505,7 @@ const openBlogCategory = (category: string) => navigateTo({
   max-width: 110px;
   overflow: hidden;
   margin-left: 3px;
-  color: #64748b;
+  color: var(--text-secondary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

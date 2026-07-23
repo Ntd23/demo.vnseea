@@ -421,7 +421,7 @@ const formatOrderCurrency = (value: number) =>
   align-items: center;
   border: 1px solid var(--wowonder-border);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }

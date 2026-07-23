@@ -177,8 +177,8 @@ const actionItems = computed(() => [
 }
 
 .reel-author__follow:hover {
-  background: #ffffff;
-  color: #1e293b;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .reel-author__subtitle {
@@ -326,8 +326,8 @@ const actionItems = computed(() => [
 
 .reel-action:hover .reel-action__circle {
   transform: translateY(-2px);
-  background: #ffffff;
-  color: #1e293b;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .reel-action__icon {

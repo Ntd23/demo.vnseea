@@ -6,7 +6,7 @@
     <h3 class="mt-2 text-[1.15rem] font-black tracking-[-0.04em] text-[#243b63]">
       {{ t("pages.pageDetailPage.actionTitle") }}
     </h3>
-    <p class="mt-2 text-[13px] leading-6 text-slate-500">
+    <p class="mt-2 text-[13px] leading-6 text-[var(--text-secondary)]">
       {{ t("pages.pageDetailPage.actionDescription", { response: responseLabel }) }}
     </p>
 
@@ -51,7 +51,7 @@
 
     <div v-if="page.canManage" class="mt-4 rounded-[18px] border border-[#dbe3f2] bg-white px-4 py-3">
       <p class="text-[12px] font-semibold text-[#243b63]">{{ t("pages.pageDetailPage.manageTitle") }}</p>
-      <p class="mt-1 text-[12px] leading-5 text-slate-500">
+      <p class="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">
         {{ t("pages.pageDetailPage.manageDescription") }}
       </p>
       <NuxtLink

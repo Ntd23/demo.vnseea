@@ -5757,6 +5757,10 @@
     }
   },
   "navigation": {
+    "theme": {
+      "darkMode": "Chế độ tối",
+      "darkModeDescription": "Chuyển sang giao diện nền tối Slate Tech"
+    },
     "headerBar": {
       "home": "Trang chủ",
       "friendRequests": "Lời mời kết bạn",

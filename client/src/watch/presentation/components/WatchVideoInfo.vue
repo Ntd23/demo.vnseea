@@ -82,7 +82,7 @@ defineEmits<{ like: []; share: [] }>()
 
 <style scoped>
 .watch-info {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
@@ -121,7 +121,7 @@ defineEmits<{ like: []; share: [] }>()
 .watch-info__title {
   font-size: 1.35rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   line-height: 1.25;
   letter-spacing: -0.01em;
 }
@@ -136,7 +136,7 @@ defineEmits<{ like: []; share: [] }>()
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .watch-info__dot {
@@ -157,10 +157,10 @@ defineEmits<{ like: []; share: [] }>()
   padding: 10px 20px;
   border-radius: 999px;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
+  background: var(--bg-surface);
   font-size: 13px;
   font-weight: 700;
-  color: #000000;
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -220,7 +220,7 @@ defineEmits<{ like: []; share: [] }>()
 .watch-author__name {
   font-size: 14px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -229,7 +229,7 @@ defineEmits<{ like: []; share: [] }>()
 .watch-author__role {
   font-size: 11px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-top: 2px;
@@ -240,7 +240,7 @@ defineEmits<{ like: []; share: [] }>()
   padding: 8px 18px;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 15%, transparent);
-  background: #ffffff;
+  background: var(--bg-surface);
   font-size: 13px;
   font-weight: 700;
   color: var(--bg-brand);
@@ -264,7 +264,7 @@ defineEmits<{ like: []; share: [] }>()
   font-size: 14px;
   font-weight: 500;
   line-height: 1.6;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .watch-info__tags {

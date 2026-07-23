@@ -75,7 +75,7 @@ await fetchPokes()
   justify-content: space-between;
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 18px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
@@ -100,7 +100,7 @@ await fetchPokes()
 
 .poke-page__eyebrow {
   margin: 0 0 4px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -108,7 +108,7 @@ await fetchPokes()
 
 .poke-page__title h1 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 900;
   line-height: 1.1;
@@ -132,13 +132,13 @@ await fetchPokes()
   gap: 6px;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 14px;
 }
 
 .poke-page__stats span {
   overflow: hidden;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -146,7 +146,7 @@ await fetchPokes()
 }
 
 .poke-page__stats strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 26px;
   font-weight: 900;
   line-height: 1;
@@ -165,7 +165,7 @@ await fetchPokes()
 
 .poke-page__content-head p {
   margin: 0 0 4px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -173,7 +173,7 @@ await fetchPokes()
 
 .poke-page__content-head h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 900;
 }
@@ -190,15 +190,15 @@ await fetchPokes()
   place-items: center;
   border: 1px dashed #cbd5e1;
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 28px;
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .poke-page__empty h2 {
   margin: 10px 0 4px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 900;
 }
@@ -206,7 +206,7 @@ await fetchPokes()
 .poke-page__empty p {
   max-width: 440px;
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   line-height: 1.5;

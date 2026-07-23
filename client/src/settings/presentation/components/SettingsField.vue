@@ -137,7 +137,7 @@
       
     >
       <template #leading>
-        <Icon :name="fieldIcon" class="h-4 w-4 text-black" />
+        <Icon :name="fieldIcon" class="h-4 w-4 text-[var(--text-primary)]" />
       </template>
     </UInput>
   </UFormField>
@@ -297,7 +297,7 @@ onBeforeUnmount(revokeObjectPreview)
 .settings-field__pill-label {
   font-size: 13px;
   font-weight: 500;
-  color: #000000;
+  color: var(--text-primary);
   pointer-events: none;
   white-space: nowrap;
 }
@@ -322,7 +322,7 @@ onBeforeUnmount(revokeObjectPreview)
   border-radius: 10px;
   border: 1.5px solid #e2e8f0;
   background: #fafbfe;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   transition: all 0.15s ease;
@@ -332,7 +332,7 @@ onBeforeUnmount(revokeObjectPreview)
 .settings-field__verify-btn:hover {
   border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
   background: color-mix(in srgb, var(--bg-brand) 2%, transparent);
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .settings-field__verify-btn:disabled {
@@ -401,7 +401,7 @@ onBeforeUnmount(revokeObjectPreview)
   padding: 10px 12px;
   font-size: 13px;
   font-weight: 500;
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .settings-field__file-input:disabled {

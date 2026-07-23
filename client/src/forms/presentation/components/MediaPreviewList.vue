@@ -10,7 +10,7 @@
       <p class="mt-4 text-sm font-bold text-[#243b63]">
         {{ emptyTitle }}
       </p>
-      <p class="mt-2 max-w-[340px] text-sm leading-6 text-slate-500">
+      <p class="mt-2 max-w-[340px] text-sm leading-6 text-[var(--text-secondary)]">
         {{ emptyDescription }}
       </p>
     </div>
@@ -77,7 +77,7 @@
               <p class="truncate text-sm font-bold text-[#243b63]">
                 {{ item.name }}
               </p>
-              <p v-if="item.description || itemMeta(item)" class="mt-1 text-sm leading-6 text-slate-500">
+              <p v-if="item.description || itemMeta(item)" class="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
                 {{ item.description || itemMeta(item) }}
               </p>
             </div>
@@ -92,7 +92,7 @@
             />
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div class="inline-flex items-center gap-2 text-xs font-medium text-slate-500">
+              <div class="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-secondary)]">
                 <Icon :name="statusIcon(item)" class="h-4 w-4" />
                 <span>{{ statusLabel(item) }}</span>
               </div>

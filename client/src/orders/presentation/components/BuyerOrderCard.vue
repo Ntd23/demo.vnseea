@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-6 border-b border-secondary-50 pb-6 xl:flex-row xl:items-start xl:justify-between">
       <div class="space-y-1">
         <div class="flex flex-wrap items-center gap-3">
-          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             {{ order.orderNumber }}
           </p>
           <UBadge
@@ -46,10 +46,10 @@
         <!-- Products Section -->
         <section class="surface-card p-6 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-6 group/section hover:bg-white transition-colors duration-500">
           <div class="flex items-center justify-between gap-4 border-b border-secondary-100 pb-4">
-            <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+            <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
               {{ $t("orders.card.productsInOrder") }}
             </p>
-            <p class="text-[11px] font-semibold text-slate-400 transition-colors group-hover/section:text-secondary-900">
+            <p class="text-[11px] font-semibold text-[var(--text-tertiary)] transition-colors group-hover/section:text-secondary-900">
               {{ displayOrderText(order.deliveryWindow) }}
             </p>
           </div>
@@ -65,7 +65,7 @@
 
         <!-- Shipping Section -->
         <section class="surface-card p-6 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-4 group/section hover:bg-white transition-colors duration-500">
-          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             {{ $t("orders.card.shippingAddress") }}
           </p>
           <div class="flex gap-3 items-start">
@@ -88,7 +88,7 @@
 
         <!-- Progress Tracking -->
         <section class="surface-card p-6 ring-1 ring-secondary-100 bg-white space-y-6">
-          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             {{ $t("orders.card.orderProgress") }}
           </p>
 

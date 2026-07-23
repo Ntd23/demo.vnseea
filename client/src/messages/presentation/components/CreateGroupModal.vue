@@ -269,7 +269,7 @@ const onFileChange = (event: Event) => {
   overflow: hidden;
   border: 1px solid var(--border-light);
   border-radius: 20px;
-  background: white;
+  background: var(--bg-surface);
 }
 
 .messages-group-create__selected-item {

@@ -135,7 +135,7 @@ const copy = computed(() => ({
   justify-content: space-between;
   gap: 16px;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 22px;
   box-shadow: 0 12px 32px rgba(15, 35, 110, 0.08);
 }
@@ -150,14 +150,14 @@ const copy = computed(() => ({
 
 .boosted-page__hero h1 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 28px;
   font-weight: 900;
 }
 
 .boosted-page__hero p {
   margin: 6px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -218,7 +218,7 @@ const copy = computed(() => ({
 .boosted-page__empty {
   overflow: hidden;
   border-radius: 18px;
-  background: #fff;
+  background: var(--bg-surface);
   box-shadow: 0 12px 32px rgba(15, 35, 110, 0.08);
 }
 
@@ -270,7 +270,7 @@ const copy = computed(() => ({
 
 .boosted-page-card__copy h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 900;
 }
@@ -282,13 +282,13 @@ const copy = computed(() => ({
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.6;
 }
 
 .boosted-page-card__copy span {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -314,19 +314,19 @@ const copy = computed(() => ({
   margin: 0 auto 10px;
   height: 42px;
   width: 42px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .boosted-page__empty h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 900;
 }
 
 .boosted-page__empty p {
   margin: 8px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 640px) {

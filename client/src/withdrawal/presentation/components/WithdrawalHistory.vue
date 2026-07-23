@@ -251,7 +251,7 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 .withdrawal-history {
   border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 18px;
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
 }
@@ -266,14 +266,14 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 .withdrawal-history__eyebrow {
   font-size: 12px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .withdrawal-history__title {
   margin-top: 2px;
   font-size: 18px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .withdrawal-history__filters {
@@ -294,9 +294,9 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
   gap: 7px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 8px 10px;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
@@ -313,9 +313,9 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 .withdrawal-history__filter strong {
   min-width: 22px;
   border-radius: 999px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
   padding: 2px 6px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 11px;
   text-align: center;
 }
@@ -357,8 +357,8 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .withdrawal-history__icon--approved {
@@ -396,14 +396,14 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
   overflow-wrap: anywhere;
   font-size: 14px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
 .withdrawal-history__meta {
   margin-top: 3px;
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .withdrawal-history__side {
@@ -469,8 +469,8 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
   justify-content: center;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background: #ffffff;
-  color: #475569;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;

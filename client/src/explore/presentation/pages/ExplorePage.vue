@@ -140,7 +140,7 @@ const { loading, errorMessage, mediaPosts } = useExplorePageVM()
 }
 
 .explore-tile__video {
-  background-color: #0f172a;
+  background-color: var(--text-primary);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

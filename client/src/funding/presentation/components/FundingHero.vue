@@ -85,7 +85,7 @@
             v-if="stats[0]"
             class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-sm"
           >
-            <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+            <p class="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-secondary)]">
               {{ stats[0].label }}
             </p>
             <p class="mt-2 text-[24px] font-black leading-none text-[var(--text-primary)]">
@@ -97,7 +97,7 @@
             v-if="stats[2]"
             class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-sm"
           >
-            <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+            <p class="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-secondary)]">
               {{ stats[2].label }}
             </p>
             <p class="mt-2 text-[24px] font-black leading-none text-[var(--text-primary)]">

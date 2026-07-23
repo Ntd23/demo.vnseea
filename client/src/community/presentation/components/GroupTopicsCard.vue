@@ -18,13 +18,13 @@
     <div class="mt-5 grid gap-3 sm:grid-cols-2">
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.groupDetailPage.topicsAudienceTitle") }}</p>
-        <p class="mt-1 text-[13px] leading-6 text-slate-600">
+        <p class="mt-1 text-[13px] leading-6 text-[var(--text-secondary)]">
           {{ t("pages.groupDetailPage.topicsAudienceDescription", { category: categoryLabel.toLowerCase() }) }}
         </p>
       </div>
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.groupDetailPage.topicsJoinTitle") }}</p>
-        <p class="mt-1 text-[13px] leading-6 text-slate-600">
+        <p class="mt-1 text-[13px] leading-6 text-[var(--text-secondary)]">
           {{ t("pages.groupDetailPage.topicsJoinDescription", { privacy: privacyDescription }) }}
         </p>
       </div>

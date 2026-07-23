@@ -396,7 +396,7 @@ useSeoMeta({
 .product-detail-related {
   border: 1px solid var(--border-light, #e2e8f0);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 

@@ -35,7 +35,7 @@
             <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 p-1.5" :style="{ color: tier.color }">
               <Icon :name="planIcon(tier.id)" class="h-5 w-5" />
             </span>
-            <span class="font-extrabold text-[17px] text-slate-800">{{ tier.title }}</span>
+            <span class="font-extrabold text-[17px] text-[var(--text-primary)]">{{ tier.title }}</span>
           </div>
         </template>
 
@@ -340,7 +340,7 @@ const planIcon = (id: string) => {
   margin-left: 8px;
   transform: translateY(-14px);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg-surface);
   padding: 2px 6px;
   color: #ea4c89;
   font-size: 15px;

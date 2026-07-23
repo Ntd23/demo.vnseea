@@ -49,7 +49,7 @@
                 </UBadge>
               </div>
 
-              <p v-if="description" class="mt-1 text-sm leading-6 text-slate-500">
+              <p v-if="description" class="mt-1 text-sm leading-6 text-[var(--text-secondary)]">
                 {{ description }}
               </p>
             </div>

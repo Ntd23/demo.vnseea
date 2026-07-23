@@ -22,7 +22,7 @@
     <!-- Members list -->
     <div v-if="loading" class="mt-6 flex flex-col items-center justify-center py-10 space-y-3">
       <Icon name="i-ph-spinner-gap-bold" class="h-8 w-8 animate-spin text-[var(--text-brand)]" />
-      <p class="text-[13px] text-slate-400 font-medium">Đang tải danh sách thành viên...</p>
+      <p class="text-[13px] text-[var(--text-tertiary)] font-medium">Đang tải danh sách thành viên...</p>
     </div>
 
     <div v-else-if="filteredMembers.length > 0" class="mt-6 divide-y divide-slate-100">
@@ -66,7 +66,7 @@
                 Chủ nhóm
               </span>
             </div>
-            <p class="mt-0.5 truncate text-[11.5px] text-slate-400">
+            <p class="mt-0.5 truncate text-[11.5px] text-[var(--text-tertiary)]">
               @{{ user.username }}
             </p>
           </div>
@@ -103,7 +103,7 @@
           class="rounded-full px-6 font-bold shadow-sm hover:shadow transition-all text-[12px]"
           @click="showMore"
         >
-          <Icon name="i-ph-caret-double-down-bold" class="mr-1.5 h-4 w-4 text-slate-500" />
+          <Icon name="i-ph-caret-double-down-bold" class="mr-1.5 h-4 w-4 text-[var(--text-secondary)]" />
           Xem thêm
         </UButton>
 
@@ -115,7 +115,7 @@
           class="rounded-full px-6 font-bold shadow-sm hover:shadow transition-all text-[12px]"
           @click="collapse"
         >
-          <Icon name="i-ph-caret-double-up-bold" class="mr-1.5 h-4 w-4 text-slate-500" />
+          <Icon name="i-ph-caret-double-up-bold" class="mr-1.5 h-4 w-4 text-[var(--text-secondary)]" />
           Rút gọn
         </UButton>
       </div>
@@ -126,13 +126,13 @@
       v-else
       class="mt-6 flex flex-col items-center justify-center rounded-[20px] bg-slate-50/50 border border-dashed border-slate-200 py-10 px-4 text-center transition-all hover:bg-slate-50"
     >
-      <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 shadow-sm mb-4">
+      <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-[var(--text-tertiary)] shadow-sm mb-4">
         <Icon name="i-ph-users-bold" class="h-8 w-8" />
       </div>
       <h4 class="text-[14px] font-black text-[#243b63]">
         {{ t("community.settings.members.emptyState") }}
       </h4>
-      <p class="mt-1 text-[12px] text-slate-400 max-w-[280px]">
+      <p class="mt-1 text-[12px] text-[var(--text-tertiary)] max-w-[280px]">
         {{ searchQuery ? 'Không có thành viên nào khớp với từ khóa tìm kiếm.' : 'Nhóm này hiện chưa có thành viên nào tham gia.' }}
       </p>
     </div>

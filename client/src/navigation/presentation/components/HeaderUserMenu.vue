@@ -104,6 +104,14 @@
             </NuxtLink>
           </template>
 
+          <div class="user-menu__item user-menu__item--theme flex items-center justify-between w-full px-3 py-2">
+            <div class="flex items-center gap-2.5">
+              <Icon name="i-ph-moon-bold" class="user-menu__item-icon h-5 w-5" />
+              <span class="user-menu__item-label font-semibold text-[14px]">{{ $t("navigation.theme.darkMode") || "Chế độ tối" }}</span>
+            </div>
+            <UColorModeSwitch color="primary" size="md" />
+          </div>
+
           <NavigationLocaleSwitcher />
 
           <NuxtLink
@@ -254,8 +262,8 @@ const logoutAction = {
   gap: 6px;
   padding: 4px;
   border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -281,7 +289,7 @@ const logoutAction = {
 .user-menu__caret {
   width: 14px;
   height: 14px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   transition: transform 0.2s ease;
 }
 
@@ -302,8 +310,8 @@ const logoutAction = {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   border-radius: 22px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #ffffff;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.16);
 }
 
@@ -313,7 +321,7 @@ const logoutAction = {
 
 .user-menu__summary-card {
   border-radius: 16px;
-  background: #f5f5f5;
+  background: var(--bg-muted);
   padding: 16px;
 }
 
@@ -332,7 +340,7 @@ const logoutAction = {
   font-size: 17px;
   font-weight: 800;
   line-height: 1.25;
-  color: #111827;
+  color: var(--text-primary);
   text-decoration: none;
   transition: color 0.15s ease;
 }
@@ -403,19 +411,19 @@ const logoutAction = {
 }
 
 a.user-menu__stat:hover {
-  background: #eef2ff;
-  color: var(--bg-brand);
+  background: var(--bg-surface-hover);
+  color: var(--text-brand);
 }
 
 .user-menu__stat-icon {
   width: 18px;
   height: 18px;
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .user-menu__divider {
   height: 1px;
-  background: #eceff4;
+  background: var(--border-light);
 }
 
 .user-menu__section {
@@ -431,7 +439,7 @@ a.user-menu__stat:hover {
   border: 0;
   background: transparent;
   text-decoration: none;
-  color: #1e293b;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
   text-align: left;
@@ -440,7 +448,11 @@ a.user-menu__stat:hover {
 }
 
 .user-menu__item:hover {
-  background: #f8fafc;
+  background: var(--bg-surface-hover);
+  color: var(--text-brand);
+}
+.user-menu__item:hover .user-menu__item-icon {
+  color: var(--text-brand);
 }
 
 .user-menu__item--danger {
@@ -455,7 +467,7 @@ a.user-menu__stat:hover {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .user-menu__item--danger .user-menu__item-icon {
@@ -477,12 +489,12 @@ a.user-menu__stat:hover {
   background: transparent;
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.12s ease;
 }
 
 .user-menu__switch:hover {
-  background: #f8fafc;
+  background: var(--bg-surface-hover);
 }
 </style>

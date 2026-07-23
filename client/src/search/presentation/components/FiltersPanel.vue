@@ -284,7 +284,7 @@ function resetFilters() {
 .search-filters {
   border: 1px solid #dfe6f4;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -301,14 +301,14 @@ function resetFilters() {
   border-radius: 12px;
   background: #fafbfe;
   padding: 0 16px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
   outline: none;
 }
 
 .search-filters__keyword::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
   opacity: 1;
 }
 
@@ -334,8 +334,8 @@ function resetFilters() {
 .search-filters__filter-trigger {
   width: 100%;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 700;
 }
@@ -358,7 +358,7 @@ function resetFilters() {
   width: 20px;
   height: 20px;
   flex: none;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .search-filters__submit,
@@ -387,7 +387,7 @@ function resetFilters() {
   overflow-y: auto;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 16px;
   box-shadow: 0 12px 44px rgba(0, 0, 0, 0.12);
 }
@@ -398,7 +398,7 @@ function resetFilters() {
 }
 
 .search-filters__group-title {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   line-height: 1.2;
@@ -414,8 +414,8 @@ function resetFilters() {
   min-height: 32px;
   border: 1px solid transparent;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #000000;
+  background: var(--bg-muted);
+  color: var(--text-primary);
   padding: 0 14px;
   font-size: 13px;
   font-weight: 700;
@@ -451,7 +451,7 @@ function resetFilters() {
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 0 12px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
   outline: none;
@@ -477,7 +477,7 @@ function resetFilters() {
 .search-filters__reset {
   border: 0;
   background: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .search-filters__reset:hover {
@@ -502,7 +502,7 @@ function resetFilters() {
   border: 0;
   border-radius: 12px;
   background: transparent;
-  color: #64748b;
+  color: var(--text-secondary);
   padding: 0 12px;
   font-size: 13px;
   font-weight: 700;

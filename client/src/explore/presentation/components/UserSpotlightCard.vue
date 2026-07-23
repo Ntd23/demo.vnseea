@@ -27,7 +27,7 @@
             >
               {{ user.name }}
             </NuxtLink>
-            <p class="mt-1 text-[13px] font-semibold text-slate-500">
+            <p class="mt-1 text-[13px] font-semibold text-[var(--text-secondary)]">
               {{ user.role }}
             </p>
           </div>
@@ -38,7 +38,7 @@
         </UBadge>
       </div>
 
-      <p class="text-[14px] leading-7 text-slate-600">
+      <p class="text-[14px] leading-7 text-[var(--text-secondary)]">
         {{ user.reason }}
       </p>
 

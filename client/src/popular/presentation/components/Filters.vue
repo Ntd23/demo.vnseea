@@ -6,7 +6,7 @@
         <Icon name="i-ph-magnifying-glass-duotone" class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary-600" />
         <input
           :value="search"
-          class="h-11 w-full rounded-[14px] border border-secondary-100 bg-secondary-50/70 py-2.5 pl-11 pr-4 text-[13px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-slate-400 focus:border-primary-200 focus:bg-white focus:ring-4 focus:ring-primary-500/10 sm:h-12"
+          class="h-11 w-full rounded-[14px] border border-secondary-100 bg-secondary-50/70 py-2.5 pl-11 pr-4 text-[13px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-primary-200 focus:bg-white focus:ring-4 focus:ring-primary-500/10 sm:h-12"
           :placeholder="placeholder"
           @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
         >

@@ -85,7 +85,7 @@
                 <p class="truncate text-[13px] font-bold text-[var(--text-primary)]">
                   {{ item.label }}
                 </p>
-                <p class="truncate text-[11px] font-medium text-slate-400">
+                <p class="truncate text-[11px] font-medium text-[var(--text-tertiary)]">
                   {{ item.description }}
                 </p>
               </div>
@@ -114,7 +114,7 @@
 
         <!-- Next Steps Section -->
         <div class="space-y-4">
-          <p class="ml-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+          <p class="ml-1 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
             {{ $t("community.creation.insights.afterCreation") }}
           </p>
           <div class="space-y-3">

@@ -9,7 +9,7 @@
         <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.03em] text-[#243b63]">
           {{ t("community.settings.requests.title") }}
         </h3>
-        <p class="mt-1 text-[13px] text-slate-400">
+        <p class="mt-1 text-[13px] text-[var(--text-tertiary)]">
           {{ t("community.settings.requests.desc") }}
         </p>
       </div>
@@ -44,7 +44,7 @@
     <!-- Requests list -->
     <div v-if="loading" class="mt-6 flex flex-col items-center justify-center py-10 space-y-3">
       <Icon name="i-ph-spinner-gap-bold" class="h-8 w-8 animate-spin text-[var(--text-brand)]" />
-      <p class="text-[13px] text-slate-400 font-medium">Đang tải danh sách...</p>
+      <p class="text-[13px] text-[var(--text-tertiary)] font-medium">Đang tải danh sách...</p>
     </div>
 
     <div v-else-if="requests.length > 0" class="mt-6 space-y-3.5">
@@ -79,7 +79,7 @@
             <p class="truncate text-[14px] font-extrabold text-[#243b63] transition-colors group-hover:text-[var(--text-brand)]">
               {{ user.name }}
             </p>
-            <p class="mt-0.5 truncate text-[12px] text-slate-400">
+            <p class="mt-0.5 truncate text-[12px] text-[var(--text-tertiary)]">
               @{{ user.username }}
             </p>
           </div>
@@ -131,7 +131,7 @@
           class="rounded-full px-6 font-bold shadow-sm hover:shadow transition-all text-[12px]"
           @click="showMore"
         >
-          <Icon name="i-ph-caret-double-down-bold" class="mr-1.5 h-4 w-4 text-slate-500" />
+          <Icon name="i-ph-caret-double-down-bold" class="mr-1.5 h-4 w-4 text-[var(--text-secondary)]" />
           Xem thêm
         </UButton>
 
@@ -143,7 +143,7 @@
           class="rounded-full px-6 font-bold shadow-sm hover:shadow transition-all text-[12px]"
           @click="collapse"
         >
-          <Icon name="i-ph-caret-double-up-bold" class="mr-1.5 h-4 w-4 text-slate-500" />
+          <Icon name="i-ph-caret-double-up-bold" class="mr-1.5 h-4 w-4 text-[var(--text-secondary)]" />
           Rút gọn
         </UButton>
       </div>
@@ -160,7 +160,7 @@
       <h4 class="text-[14px] font-black text-[#243b63]">
         {{ t("community.settings.requests.emptyState") }}
       </h4>
-      <p class="mt-1 text-[12px] text-slate-400 max-w-[280px]">
+      <p class="mt-1 text-[12px] text-[var(--text-tertiary)] max-w-[280px]">
         Khi có thành viên mới gửi yêu cầu tham gia, danh sách sẽ xuất hiện tại đây để bạn kiểm duyệt.
       </p>
     </div>

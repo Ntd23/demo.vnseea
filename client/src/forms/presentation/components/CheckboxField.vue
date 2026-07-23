@@ -9,7 +9,7 @@
         color="primary"
         size="lg"
       />
-      <p v-if="description" class="mt-2 pl-8 text-sm text-slate-500">
+      <p v-if="description" class="mt-2 pl-8 text-sm text-[var(--text-secondary)]">
         {{ description }}
       </p>
     </div>
@@ -17,7 +17,7 @@
     <p v-if="error" class="text-sm font-medium text-rose-600">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="text-sm text-slate-500">
+    <p v-else-if="hint" class="text-sm text-[var(--text-secondary)]">
       {{ hint }}
     </p>
   </div>

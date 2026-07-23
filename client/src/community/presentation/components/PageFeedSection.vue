@@ -9,12 +9,12 @@
           <h2 class="mt-2 text-[1.3rem] font-black tracking-[-0.04em] text-[#243b63]">
             {{ t("pages.pageDetailPage.feedTitle") }}
           </h2>
-          <p class="mt-1 text-[14px] leading-6 text-slate-500">
+          <p class="mt-1 text-[14px] leading-6 text-[var(--text-secondary)]">
             {{ t("pages.pageDetailPage.feedDescription", { owner: ownerLabel }) }}
           </p>
         </div>
 
-        <UBadge color="neutral" variant="soft" class="rounded-full px-4 py-3 text-[12px] font-semibold text-slate-500">
+        <UBadge color="neutral" variant="soft" class="rounded-full px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]">
           {{ responseLabel }}
         </UBadge>
       </div>

@@ -108,6 +108,14 @@
               </NuxtLink>
             </template>
 
+            <div class="mm__item mm__item--theme flex items-center justify-between w-full px-4 py-3">
+              <div class="flex items-center gap-3">
+                <Icon name="i-ph-moon-bold" class="mm__item-icon h-5 w-5" />
+                <span class="mm__item-label font-semibold text-[14px]">{{ $t("navigation.theme.darkMode") || "Chế độ tối" }}</span>
+              </div>
+              <UColorModeSwitch color="primary" size="md" />
+            </div>
+
             <NavigationLocaleSwitcher />
 
             <NuxtLink
@@ -285,7 +293,7 @@ const logoutAction = {
   flex-direction: column;
   width: 85vw;
   max-width: 340px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: -8px 0 40px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
@@ -415,7 +423,7 @@ const logoutAction = {
   padding: 4px 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-secondary);
   text-decoration: none;
   transition: background 0.12s ease, color 0.12s ease;
 }
@@ -447,7 +455,7 @@ const logoutAction = {
 .mm__divider {
   height: 1px;
   margin: 4px 16px;
-  background: #f1f5f9;
+  background: var(--bg-muted);
 }
 
 .mm__item {
@@ -457,7 +465,7 @@ const logoutAction = {
   padding: 11px 14px;
   border-radius: 12px;
   text-decoration: none;
-  color: #000000;
+  color: var(--text-primary);
   transition: background 0.12s ease, color 0.12s ease;
 }
 
@@ -465,7 +473,7 @@ const logoutAction = {
 .mm__item--active { background: color-mix(in srgb, var(--bg-brand) 6%, transparent); color: var(--bg-brand); }
 .mm__item--danger:hover { background: rgba(220, 38, 38, 0.05); }
 
-.mm__item-icon { width: 18px; height: 18px; flex-shrink: 0; color: #000000; }
+.mm__item-icon { width: 18px; height: 18px; flex-shrink: 0; color: var(--text-primary); }
 .mm__item-icon--active { color: var(--bg-brand); }
 .mm__item-icon--danger { color: #dc2626; }
 
@@ -483,10 +491,10 @@ const logoutAction = {
   background: transparent;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.12s ease;
 }
 
-.mm__switch:hover { background: #f8fafc; }
+.mm__switch:hover { background: var(--bg-muted); }
 </style>

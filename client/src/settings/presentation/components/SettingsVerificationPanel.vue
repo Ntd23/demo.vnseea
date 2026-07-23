@@ -326,7 +326,7 @@ onBeforeUnmount(() => {
 .verification-panel__form {
   border: 1px solid var(--color-primary-100);
   border-radius: 20px;
-  background: #ffffff;
+  background: var(--bg-surface);
   box-shadow: 0 8px 24px rgba(15, 35, 110, 0.06);
 }
 
@@ -401,7 +401,7 @@ onBeforeUnmount(() => {
 .verification-panel__features h3,
 .verification-panel__upload-copy h3 {
   margin: 0 0 8px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 900;
 }
@@ -409,7 +409,7 @@ onBeforeUnmount(() => {
 .verification-panel__features ol {
   margin: 0;
   padding-left: 20px;
-  color: #475569;
+  color: var(--text-secondary);
   font-weight: 650;
 }
 
@@ -432,7 +432,7 @@ onBeforeUnmount(() => {
 
 .verification-panel__upload-copy p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -448,8 +448,8 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #f8fafc;
-  color: #475569;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
 }
