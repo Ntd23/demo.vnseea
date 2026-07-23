@@ -4,14 +4,17 @@
     <div
       ref="stageElement"
       class="feed-live-player__stage"
-      :class="{ 'feed-live-player__stage--fullscreen': isFullscreen }"
+      :class="[
+        { 'feed-live-player__stage--fullscreen': isFullscreen },
+        `feed-live-player__stage--${videoOrientation}`,
+      ]"
     >
       <div ref="stageHost" class="feed-live-player__video-host" />
 
       <!-- Placeholder before viewer joins -->
       <div v-if="!connected" class="feed-live-player__placeholder">
         <div class="feed-live-player__placeholder-card">
-          <UIcon name="i-ph-broadcast-duotone" class="feed-live-player__placeholder-icon" />
+          <UIcon :name="statusIcon" class="feed-live-player__placeholder-icon" />
           <p class="feed-live-player__placeholder-title">{{ statusTitle }}</p>
           <p class="feed-live-player__placeholder-copy">{{ statusCopy }}</p>
           <UButton
@@ -24,6 +27,17 @@
           >
             {{ t("pages.livePage.viewer.joinLive") }}
           </UButton>
+        </div>
+      </div>
+
+      <div
+        v-if="connected && liveState === 'stale'"
+        class="feed-live-player__state-notice feed-live-player__state-notice--stale"
+      >
+        <UIcon name="i-ph-wifi-slash-bold" />
+        <div>
+          <strong>{{ statusTitle }}</strong>
+          <span>{{ statusCopy }}</span>
         </div>
       </div>
 
@@ -236,7 +250,7 @@
             size="2xs"
             :ui="{ base: 'flex-shrink-0' }"
           />
-          <span class="feed-live-player__activity-name">{{ item.username || item.author }}</span>
+          <span class="feed-live-player__activity-name">{{ item.author || item.username }}</span>
           <span v-if="item.kind === 'comment'" class="feed-live-player__activity-msg">{{ item.message }}</span>
           <span v-else-if="item.kind === 'joined'" class="feed-live-player__activity-msg feed-live-player__activity-msg--system">{{ t("pages.livePage.viewer.joinedActivity") }}</span>
           <span v-else class="feed-live-player__activity-msg feed-live-player__activity-msg--system">{{ t("pages.livePage.viewer.leftActivity") }}</span>
@@ -305,11 +319,19 @@ const {
   connecting,
   connected,
   errorMessage,
+  videoOrientation,
   connect,
+  disconnect,
   setStageHost,
 } = useLiveKitViewer()
 
 watch(stageHost, element => setStageHost(element), { flush: "post", immediate: true })
+
+watch(connected, (nextConnected, wasConnected) => {
+  if (!nextConnected && wasConnected && liveState.value === "live") {
+    liveState.value = "stale"
+  }
+})
 
 const canJoin = computed(() => liveState.value !== "offline")
 const stateLabel = computed(() => {
@@ -324,7 +346,13 @@ const statusTitle = computed(() => {
 })
 const statusCopy = computed(() => {
   if (liveState.value === "offline") return t("pages.livePage.viewer.offlineCopy")
+  if (liveState.value === "stale") return t("pages.livePage.viewer.staleCopy")
   return t("pages.livePage.viewer.liveCopy")
+})
+const statusIcon = computed(() => {
+  if (liveState.value === "offline") return "i-ph-stop-circle-duotone"
+  if (liveState.value === "stale") return "i-ph-wifi-slash-duotone"
+  return "i-ph-broadcast-duotone"
 })
 
 const selectedReactionAsset = computed(() =>
@@ -344,6 +372,11 @@ async function joinLive() {
   try {
     const session = await repository.joinViewer(props.postId)
     liveState.value = session.streamState
+
+    if (session.streamState === "offline") {
+      return
+    }
+
     await connect(session)
     await refreshHeartbeat()
     resume()
@@ -397,10 +430,11 @@ async function refreshHeartbeat() {
 
     if (heartbeat.stillLive === "offline") {
       pause()
+      disconnect()
     }
   }
   catch {
-    pause()
+    liveState.value = "stale"
   }
 }
 
@@ -582,6 +616,19 @@ onBeforeUnmount(() => {
   box-shadow: var(--shadow-xl);
 }
 
+.feed-live-player__stage--portrait:not(.feed-live-player__stage--fullscreen) {
+  width: min(100%, 420px, 45dvh);
+  margin-inline: auto;
+  aspect-ratio: 9 / 16;
+  background: #020617;
+}
+
+.feed-live-player__stage--landscape:not(.feed-live-player__stage--fullscreen),
+.feed-live-player__stage--unknown:not(.feed-live-player__stage--fullscreen) {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
 .feed-live-player__stage--fullscreen {
   width: 100vw;
   height: 100vh;
@@ -589,6 +636,11 @@ onBeforeUnmount(() => {
   border-radius: 0;
   aspect-ratio: auto;
   border: none;
+}
+
+.feed-live-player__stage--fullscreen .feed-live-player__video-host :deep(video) {
+  object-fit: contain;
+  background: #020617;
 }
 
 .feed-live-player__video-host,
@@ -643,6 +695,46 @@ onBeforeUnmount(() => {
   font-size: 12px;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.68);
+}
+
+.feed-live-player__state-notice {
+  position: absolute;
+  z-index: 24;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.46);
+  padding: 24px;
+  color: #ffffff;
+  pointer-events: none;
+  backdrop-filter: blur(2px);
+}
+
+.feed-live-player__state-notice > svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  margin-right: 10px;
+  color: #fbbf24;
+}
+
+.feed-live-player__state-notice > div {
+  display: flex;
+  max-width: 280px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.feed-live-player__state-notice strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.feed-live-player__state-notice span {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 /* ─── Top Bar ─────────────────────────────────── */

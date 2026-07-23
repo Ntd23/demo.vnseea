@@ -89,6 +89,7 @@ type BackendLiveMutationResponse = {
   message?: string
   error?: string
   thumb_url?: string
+  already_ended?: boolean | number | string
 }
 
 const LIVE_DESTINATION_OPTIONS = [
@@ -442,16 +443,33 @@ export async function endLiveSession(
   event: H3Event,
   postId: number,
 ): Promise<LiveMutationResult> {
-  const response = await createBackendWebClient(event).postForm<BackendLiveMutationResponse>(
-    "live",
-    { post_id: postId },
-    { s: "delete" },
-  )
-  const normalized = assertLiveWebSuccess(response, "Unable to end live session.")
+  try {
+    const response = await createBackendWebClient(event).postForm<BackendLiveMutationResponse>(
+      "live",
+      { post_id: postId },
+      { s: "delete" },
+    )
+    const normalized = assertLiveWebSuccess(response, "Unable to end live session.")
 
-  return {
-    success: true,
-    message: asString(normalized.message) || "Live session ended.",
+    return {
+      success: true,
+      message: asString(normalized.message) || "Live session ended.",
+    }
+  }
+  catch (endError) {
+    // The PHP handler deletes the live post before sending its response. If
+    // cleanup/webhook wins the race or the response is interrupted afterward,
+    // confirm the final state instead of reporting a false failure to the host.
+    const post = await fetchFeedPostById(event, postId).catch(() => undefined)
+
+    if (post === null || (post.isLive && post.liveState === "offline")) {
+      return {
+        success: true,
+        message: "Live session ended.",
+      }
+    }
+
+    throw endError
   }
 }
 
