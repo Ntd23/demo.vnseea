@@ -471,6 +471,7 @@ if ($f == 'live') {
     }
     if ($s == 'delete') {
         $deleted = false;
+        $already_ended = false;
         if (!empty($_POST['post_id']) && is_numeric($_POST['post_id']) && $_POST['post_id'] > 0) {
             $post_id = Wo_Secure($_POST['post_id']);
             $post = $db->where('post_id', $post_id)->where('user_id', $wo['user']['id'])->getOne(T_POSTS);
@@ -496,6 +497,16 @@ if ($f == 'live') {
                 }
                 Wo_DeletePost($post_id);
                 $deleted = true;
+            } else {
+                // Ending a live session is idempotent. LiveKit's room-finished
+                // webhook may remove the post before the host request arrives.
+                $post_still_exists = intval(
+                    $db->where('post_id', $post_id)->getValue(T_POSTS, 'COUNT(*)')
+                );
+                if ($post_still_exists === 0) {
+                    $deleted = true;
+                    $already_ended = true;
+                }
             }
         }
         $posts = $db->where('stream_name','','<>')->where('postFile','')->get(T_POSTS);
@@ -509,7 +520,10 @@ if ($f == 'live') {
         header("Content-type: application/json");
         echo json_encode(array(
             'status' => $deleted ? 200 : 400,
-            'message' => $deleted ? 'Live session ended.' : $error_icon . $wo['lang']['please_check_details']
+            'message' => $deleted
+                ? ($already_ended ? 'Live session was already ended.' : 'Live session ended.')
+                : $error_icon . $wo['lang']['please_check_details'],
+            'already_ended' => $already_ended ? 1 : 0
         ));
         exit();
     }

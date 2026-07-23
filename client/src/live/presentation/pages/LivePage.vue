@@ -412,6 +412,52 @@
       </main>
 
     </div>
+
+    <UModal
+      v-model:open="endConfirmationOpen"
+      :dismissible="!ending"
+      :ui="{
+        overlay: 'z-[200] bg-slate-950/65 backdrop-blur-sm',
+        content: 'z-[201] w-[calc(100%-2rem)] max-w-sm overflow-hidden rounded-2xl bg-white p-0 shadow-2xl ring-1 ring-slate-200',
+      }"
+    >
+      <template #content>
+        <div class="studio__end-confirmation">
+          <div class="studio__end-confirmation-icon">
+            <UIcon name="i-ph-warning-circle-duotone" />
+          </div>
+          <h2>{{ t("pages.livePage.studio.endConfirmTitle") }}</h2>
+          <p>{{ t("pages.livePage.studio.endConfirmDescription") }}</p>
+          <p v-if="errorMessage" class="studio__end-confirmation-error">
+            {{ errorMessage }}
+          </p>
+          <div class="studio__end-confirmation-actions">
+            <UButton
+              type="button"
+              color="neutral"
+              variant="soft"
+              size="lg"
+              block
+              :disabled="ending"
+              @click="endConfirmationOpen = false"
+            >
+              {{ t("pages.livePage.studio.cancel") }}
+            </UButton>
+            <UButton
+              type="button"
+              color="error"
+              size="lg"
+              block
+              icon="i-ph-stop-circle-fill"
+              :loading="ending"
+              @click="confirmEndLive"
+            >
+              {{ t("pages.livePage.studio.endBroadcastShort") }}
+            </UButton>
+          </div>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -433,6 +479,7 @@ useSeoMeta({
 })
 
 const previewStageHost = ref<HTMLElement | null>(null)
+const endConfirmationOpen = ref(false)
 
 const {
   bootstrap, bootstrapLoading, bootstrapErrorMessage, blockedReasonMessage,
@@ -530,8 +577,25 @@ async function handleStartLive() {
   await startLive(async (s) => { await connect(s) })
 }
 
-async function handleEndLive() {
+function handleEndLive() {
+  if (!session.value || ending.value) {
+    return
+  }
+
+  endConfirmationOpen.value = true
+}
+
+async function confirmEndLive() {
+  if (!session.value || ending.value) {
+    return
+  }
+
   await endLive(() => { disconnect() })
+
+  if (!session.value) {
+    endConfirmationOpen.value = false
+    await router.push(appRoutes.feed)
+  }
 }
 
 function handleCloseMobileStudio() {
@@ -1129,6 +1193,53 @@ onBeforeUnmount(() => {
 
 .studio__mobile-live {
   display: none;
+}
+
+.studio__end-confirmation {
+  padding: 26px 24px 22px;
+  text-align: center;
+}
+
+.studio__end-confirmation-icon {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 15px;
+  place-items: center;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 30px;
+}
+
+.studio__end-confirmation h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.studio__end-confirmation > p {
+  margin: 9px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.studio__end-confirmation .studio__end-confirmation-error {
+  border-radius: 10px;
+  background: #fef2f2;
+  padding: 9px 11px;
+  color: #b91c1c;
+  font-weight: 650;
+}
+
+.studio__end-confirmation-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 22px;
 }
 
 :deep(.live-studio-preview__video) {

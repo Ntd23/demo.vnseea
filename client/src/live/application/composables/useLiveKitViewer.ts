@@ -11,6 +11,7 @@ export function useLiveKitViewer() {
   const connecting = ref(false)
   const connected = ref(false)
   const errorMessage = ref("")
+  const videoOrientation = ref<"unknown" | "portrait" | "landscape">("unknown")
 
   let liveKitModule: LiveKitModule | null = null
   let room: Room | null = null
@@ -25,14 +26,27 @@ export function useLiveKitViewer() {
     stageHost.value?.querySelectorAll("video, audio").forEach(element => element.remove())
   }
 
+  function syncVideoOrientation(element: HTMLVideoElement) {
+    if (element.videoWidth <= 0 || element.videoHeight <= 0) {
+      return
+    }
+
+    videoOrientation.value = element.videoHeight > element.videoWidth
+      ? "portrait"
+      : "landscape"
+  }
+
   function attachRemoteTrack(track: RemoteTrack) {
     if (!stageHost.value || track.kind !== "video") return
     clearStage()
-    const element = track.attach()
+    const element = track.attach() as HTMLVideoElement
     element.autoplay = true
     element.playsInline = true
     element.className = "feed-live-player__video"
+    element.addEventListener("loadedmetadata", () => syncVideoOrientation(element), { once: true })
+    element.addEventListener("resize", () => syncVideoOrientation(element))
     stageHost.value.appendChild(element)
+    syncVideoOrientation(element)
   }
 
   async function connect(session: LiveViewerSession) {
@@ -45,6 +59,7 @@ export function useLiveKitViewer() {
       const module = await ensureModule()
 
       disconnect()
+      videoOrientation.value = "unknown"
       room = new module.Room({
         adaptiveStream: true,
         dynacast: true,
@@ -104,6 +119,7 @@ export function useLiveKitViewer() {
     connecting,
     connected,
     errorMessage,
+    videoOrientation,
     connect,
     disconnect,
     setStageHost,

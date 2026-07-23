@@ -57,9 +57,12 @@
         <!-- Cover -->
         <div
           class="profile-page__cover"
-          :class="{ 'profile-page__cover--viewable': profile.coverImage }"
-          :role="profile.coverImage ? 'button' : undefined"
-          :tabindex="profile.coverImage ? 0 : undefined"
+          :class="{
+            'profile-page__cover--viewable': profile.coverImage && !profileCoverDraft,
+            'profile-page__cover--editing': Boolean(profileCoverDraft),
+          }"
+          :role="profile.coverImage && !profileCoverDraft ? 'button' : undefined"
+          :tabindex="profile.coverImage && !profileCoverDraft ? 0 : undefined"
           @click="openProfileCoverDetail"
           @keydown.enter="openProfileCoverDetail"
           @keydown.space.prevent="openProfileCoverDetail"
@@ -72,7 +75,14 @@
           />
           <div v-else class="profile-page__cover-placeholder" />
           <div class="profile-page__cover-shade" />
-          <div v-if="profile.isOwner" class="profile-page__cover-actions">
+          <ProfileCoverRepositionEditor
+            v-if="profileCoverDraft"
+            :file="profileCoverDraft"
+            :saving="profileMediaUploading === 'cover'"
+            @cancel="closeCoverReposition"
+            @confirm="uploadRepositionedCover"
+          />
+          <div v-if="profile.isOwner && !profileCoverDraft" class="profile-page__cover-actions">
             <label
               class="profile-page__cover-btn"
               :class="{ 'profile-page__cover-btn--disabled': Boolean(profileMediaUploading) }"
@@ -1093,6 +1103,7 @@ import type { FeedPostRecord } from "../../../feed/domain/types/feed.types";
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue";
 import { useProfileVM } from "../../application/composables/useProfileVM";
 import ProfileImageCropModal from "../components/ProfileImageCropModal.vue";
+import ProfileCoverRepositionEditor from "../components/ProfileCoverRepositionEditor.vue";
 
 const route = useRoute();
 
@@ -1157,6 +1168,7 @@ const profileAvatarInput = ref<HTMLInputElement | null>(null);
 const profileMediaUploading = ref<"avatar" | "cover" | null>(null);
 const profileMediaViewer = ref<{ src: string; alt: string } | null>(null);
 const profileCropDraft = ref<{ kind: "avatar" | "cover"; file: File } | null>(null);
+const profileCoverDraft = ref<File | null>(null);
 const profileLightboxPost = ref<FeedPostRecord | null>(null);
 let profileImageDetailRequestId = 0;
 const toast = useToast();
@@ -1467,6 +1479,10 @@ function openProfilePostLightbox(post: FeedPostRecord, imageUrl: string) {
 }
 
 async function openProfileCoverDetail() {
+  if (profileCoverDraft.value) {
+    return;
+  }
+
   await openProfileImagePostDetail("cover");
 }
 
@@ -1493,11 +1509,22 @@ function handleProfileMediaChange(kind: "avatar" | "cover", event: Event) {
     return;
   }
 
+  if (kind === "cover") {
+    profileCoverDraft.value = file;
+    return;
+  }
+
   profileCropDraft.value = { kind, file };
 }
 
 function closeProfileCropper() {
   profileCropDraft.value = null;
+}
+
+function closeCoverReposition() {
+  if (profileMediaUploading.value !== "cover") {
+    profileCoverDraft.value = null;
+  }
 }
 
 async function uploadCroppedProfileMedia(file: File, postText: string) {
@@ -1509,7 +1536,22 @@ async function uploadCroppedProfileMedia(file: File, postText: string) {
 
   const kind = draft.kind;
   profileCropDraft.value = null;
+  await uploadProfileMedia(kind, file, postText);
+}
 
+async function uploadRepositionedCover(file: File) {
+  const updated = await uploadProfileMedia("cover", file, "");
+
+  if (updated) {
+    profileCoverDraft.value = null;
+  }
+}
+
+async function uploadProfileMedia(
+  kind: "avatar" | "cover",
+  file: File,
+  postText: string,
+) {
   const formData = new FormData();
   formData.append("section", "avatar");
   formData.append(kind, file);
@@ -1527,6 +1569,7 @@ async function uploadCroppedProfileMedia(file: File, postText: string) {
       color: "success",
       icon: "i-ph-check-circle-fill",
     });
+    return true;
   } catch (error: any) {
     toast.add({
       title: t("pages.profilePage.imageUpdateError"),
@@ -1535,6 +1578,7 @@ async function uploadCroppedProfileMedia(file: File, postText: string) {
       color: "error",
       icon: "i-ph-warning-circle-fill",
     });
+    return false;
   } finally {
     profileMediaUploading.value = null;
   }
@@ -1682,7 +1726,8 @@ function handleMoreAction(action: string) {
 /* Cover */
 .profile-page__cover {
   position: relative;
-  height: 280px;
+  height: auto;
+  aspect-ratio: 918 / 332;
   overflow: hidden;
   background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 56%, #bfdbfe 100%);
 }
@@ -1691,16 +1736,8 @@ function handleMoreAction(action: string) {
   cursor: pointer;
 }
 
-@media (min-width: 640px) {
-  .profile-page__cover {
-    height: 350px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .profile-page__cover {
-    height: 400px;
-  }
+.profile-page__cover--editing {
+  cursor: default;
 }
 
 .profile-page__cover-img {
@@ -2623,20 +2660,9 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__cover-skeleton {
-  height: 280px;
+  height: auto;
+  aspect-ratio: 918 / 332;
   width: 100%;
-}
-
-@media (min-width: 640px) {
-  .profile-page__cover-skeleton {
-    height: 350px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .profile-page__cover-skeleton {
-    height: 400px;
-  }
 }
 
 .profile-page__identity-skeleton {

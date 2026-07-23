@@ -21,3 +21,4 @@ client/Content-Type:
 client/Host:
 client/POST
 client/User-Agent:
+.pnpm-store/
