@@ -55,12 +55,12 @@
         <aside class="profile-page__sidebar">
           <section class="profile-card profile-card--search">
             <div class="profile-card__head">
-              <h2 class="profile-card__title">Tìm kiếm các bài viết</h2>
+              <h2 class="profile-card__title">{{ $t('community.detail.searchGroupPosts') }}</h2>
             </div>
             <UInput
               v-model="postSearchQuery"
               icon="i-ph-magnifying-glass-duotone"
-              placeholder="Tìm bài viết trong nhóm..."
+              :placeholder="$t('community.detail.searchGroupPlaceholder')"
               size="xl"
               class="mt-3 w-full"
             />
@@ -71,14 +71,14 @@
               <span class="profile-card__icon profile-card__icon--blue">
                 <Icon name="i-ph-info-fill" class="h-4.5 w-4.5" />
               </span>
-              <h2 class="profile-card__title">Thông tin</h2>
+              <h2 class="profile-card__title">{{ $t('community.detail.info') }}</h2>
             </div>
 
             <div class="profile-card__rows">
               <div class="profile-card__intro-row">
                 <Icon name="i-ph-users-three-fill" class="profile-card__row-icon" />
                 <span class="profile-card__intro-value">{{ memberCountLabel }}</span>
-                <span class="profile-card__weekly">+0 Tuần này</span>
+                <span class="profile-card__weekly">{{ $t('community.detail.thisWeek') }}</span>
               </div>
               <div class="profile-card__intro-row">
                 <Icon name="i-ph-globe-hemisphere-west-fill" class="profile-card__row-icon" />
@@ -99,7 +99,7 @@
                 @click="handleInviteMembers"
               >
                 <Icon name="i-ph-user-plus-fill" class="profile-card__row-icon" />
-                <span>Thêm bạn bè của bạn vào nhóm này</span>
+                <span>{{ $t('community.detail.addFriends') }}</span>
               </button>
             </div>
           </section>
@@ -109,10 +109,10 @@
               <span class="profile-card__icon profile-card__icon--blue">
                 <Icon name="i-ph-text-align-left-bold" class="h-4.5 w-4.5" />
               </span>
-              <h2 class="profile-card__title">Về</h2>
+              <h2 class="profile-card__title">{{ $t('community.detail.about') }}</h2>
             </div>
             <p class="profile-card__about-text">
-              {{ groupSummary || "Chưa có mô tả." }}
+              {{ groupSummary || $t("community.detail.noSummary") }}
             </p>
           </section>
         </aside>
@@ -123,8 +123,8 @@
             v-if="group"
             :group="group"
             :posts="filteredGroupPosts"
-            :empty-title="postSearchQuery.trim() ? 'Không tìm thấy bài viết phù hợp' : undefined"
-            :empty-description="postSearchQuery.trim() ? 'Thử tìm bằng từ khóa khác.' : undefined"
+            :empty-title="postSearchQuery.trim() ? $t('community.detail.emptyPostsTitle') : undefined"
+            :empty-description="postSearchQuery.trim() ? $t('community.detail.emptyPostsDesc') : undefined"
             @created="handlePostCreated"
           />
         </main>
@@ -194,7 +194,7 @@ const groupPostCount = computed(() => {
 })
 
 const groupPostCountLabel = computed(() =>
-  `${groupPostCount.value} bài viết`,
+  t("community.detail.postsCount", { count: groupPostCount.value }),
 )
 
 const filteredGroupPosts = computed(() => {

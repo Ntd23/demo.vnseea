@@ -2,7 +2,7 @@
 <template>
   <CommunitySettingsSectionCard
     eyebrow=""
-    title="Cài đặt cá nhân"
+    :title="$t('community.groupSettings.controls.title')"
     icon="i-ph-wrench-bold"
     :translate-text="false"
   >
@@ -12,7 +12,7 @@
 
     <div class="group-settings-controls">
       <div class="group-settings-controls__row">
-        <label for="group-privacy">Loại nhóm</label>
+        <label for="group-privacy">{{ $t("community.groupSettings.controls.typeLabel") }}</label>
         <USelect
           id="group-privacy"
           v-model="model.privacy"
@@ -23,7 +23,7 @@
       </div>
 
       <div class="group-settings-controls__row">
-        <label for="group-join-approval">Xác nhận yêu cầu khi ai đó tham gia nhóm này?</label>
+        <label for="group-join-approval">{{ $t("community.groupSettings.controls.approvalLabel") }}</label>
         <USelect
           id="group-join-approval"
           v-model="joinApprovalValue"
@@ -50,13 +50,13 @@ const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
 
 
 const privacyItems: Array<{ value: GroupSettingsPrivacy; label: string }> = [
-  { value: "public", label: "Công cộng" },
-  { value: "private", label: "Riêng tư" },
+  { value: "public", label: t("community.groupSettings.controls.privacyPublic") },
+  { value: "private", label: t("community.groupSettings.controls.privacyPrivate") },
 ]
 
 const joinApprovalItems = [
-  { value: "no", label: "Không" },
-  { value: "yes", label: "Có" },
+  { value: "no", label: t("community.groupSettings.controls.optionNo") },
+  { value: "yes", label: t("community.groupSettings.controls.optionYes") },
 ]
 
 const joinApprovalValue = computed({

@@ -82,8 +82,8 @@
           "step1": "Mở Cài đặt (Settings) trên màn hình chính iPhone/iPad.",
           "step2": "Cuộn xuống dưới tìm và nhấp chọn Safari hoặc Chrome (trình duyệt bạn đang dùng).",
           "step3": "Tìm đến mục Vị trí (Location) -> chuyển sang chọn Hỏi hoặc Cho phép (Allow).",
-          "step4":"Quay lại Cài đặt . Cuộn xuống và nhấn vào mục Quyền riêng tư & Bảo mật",
-          "step5":"Chọn Dịch vụ định vị và gạt nút màu xanh"
+          "step4": "Quay lại Cài đặt . Cuộn xuống và nhấn vào mục Quyền riêng tư & Bảo mật",
+          "step5": "Chọn Dịch vụ định vị và gạt nút màu xanh"
         },
         "android": {
           "step1": "Vào Cài đặt (Settings) trên điện thoại -> chọn mục Ứng dụng / Quản lý ứng dụng (Apps).",
@@ -7577,7 +7577,14 @@
         "categoryDesc": "{entity} sẽ xuất hiện đúng ngữ cảnh hơn khi chọn đúng danh mục.",
         "privacyLabel": "Loại hiển thị đã chọn",
         "privacyDesc": "Thiết lập này ảnh hưởng trực tiếp tới việc ai có thể tìm thấy và xem {entity}."
-      }
+      },
+      "createGroupTitle": "Tạo mới nhóm",
+      "createPageTitle": "Tạo mới trang",
+      "groupUrlLabel": "Nhóm URL",
+      "groupCategoryLabel": "Danh mục nhóm",
+      "pageCategoryLabel": "Danh mục trang",
+      "createCategoryError": "Không thể tạo danh mục",
+      "tryAgain": "Vui lòng thử lại."
     },
     "cta": {
       "message": {
@@ -8109,6 +8116,14 @@
           "ctaFallback": "Chưa chọn",
           "websiteYes": "Đã có",
           "websiteNo": "Chưa có"
+        },
+        "mapPin": {
+          "label": "Yêu cầu ghim trên bản đồ",
+          "desc": "Admin sẽ duyệt trước khi tên trang hiển thị trực tiếp trên bản đồ tìm kiếm gần đây.",
+          "statusApproved": "Đã duyệt ghim",
+          "statusPending": "Đang chờ admin duyệt",
+          "statusRejected": "Yêu cầu đã bị từ chối",
+          "statusNone": "Chưa yêu cầu ghim"
         }
       },
       "controls": {
@@ -8191,7 +8206,11 @@
       },
       "delete": {
         "warning": "Hành động này không thể hoàn tác và sẽ xóa vĩnh viễn tất cả dữ liệu liên quan đến trang, bao gồm bài viết, hình ảnh và cài đặt.",
-        "confirm": "Xóa trang"
+        "passwordNotice": "Để đảm bảo an toàn, vui lòng nhập mật khẩu của bạn để xác nhận.",
+        "passwordLabel": "Mật khẩu xác nhận",
+        "passwordPlaceholder": "Nhập mật khẩu của bạn...",
+        "confirm": "Xóa trang",
+        "confirmDialog": "Bạn có chắc chắn muốn xóa trang này không? Hành động này không thể hoàn tác."
       },
       "empty": {
         "title": "Không tìm thấy fanpage để cài đặt",
@@ -8200,7 +8219,30 @@
       },
       "seoTitle": "Cài đặt {name} | VNSEEA",
       "seoTitleFallback": "Cài đặt page | VNSEEA",
-      "seoDescFallback": "Quản lý thiết lập fanpage trên VNSEEA."
+      "seoDescFallback": "Quản lý thiết lập fanpage trên VNSEEA.",
+      "admin": {
+        "searchPlaceholder": "Tìm kiếm thành viên theo tên hoặc email...",
+        "addAdmin": "Thêm quản trị viên",
+        "roleOwner": "Chủ sở hữu",
+        "roleAdmin": "Quản trị viên",
+        "removeConfirm": "Bạn có chắc chắn muốn gỡ quyền quản trị của thành viên này?"
+      },
+      "analytics": {
+        "loading": "Đang tải dữ liệu phân tích...",
+        "empty": "Chưa có dữ liệu phân tích cho trang này.",
+        "filterAria": "Lọc biểu đồ",
+        "chartSubtitle": "Bộ lọc chỉ áp dụng cho biểu đồ, các chỉ số phía trên là tổng toàn thời gian.",
+        "chartEmpty": "Chưa có lượt thích mới trong khoảng này.",
+        "likes": "Lượt thích",
+        "likesIn": "lượt thích trong",
+        "peak": "cao nhất",
+        "periods": {
+          "day": "Ngày",
+          "week": "Tuần",
+          "month": "Tháng",
+          "year": "Năm"
+        }
+      }
     },
     "mock": {
       "groups": {
@@ -8343,6 +8385,121 @@
           }
         }
       }
+    },
+    "groupSettings": {
+      "requests": {
+        "approveAll": "Duyệt tất cả",
+        "loading": "Đang tải danh sách...",
+        "showMore": "Xem thêm",
+        "showLess": "Rút gọn",
+        "empty": "Khi có thành viên mới gửi yêu cầu tham gia, danh sách sẽ xuất hiện tại đây để bạn kiểm duyệt."
+      },
+      "analytics": {
+        "title": "Phân tích nhóm",
+        "membersTotal": "Tổng số thành viên",
+        "loading": "Đang tải dữ liệu phân tích...",
+        "joined": "Đã tham gia",
+        "periods": {
+          "today": "Hôm nay",
+          "week": "Tuần này",
+          "month": "Tháng này",
+          "year": "Năm nay"
+        }
+      },
+      "basics": {
+        "title": "Cài đặt chung",
+        "nameLabel": "Tên nhóm",
+        "namePlaceholder": "Nhập tên nhóm",
+        "categoryLabel": "Loại",
+        "slugLabel": "Đường dẫn nhóm",
+        "slugHint": "Gợi ý: {slug}",
+        "useSuggestion": "Dùng gợi ý",
+        "summaryLabel": "Mô tả",
+        "summaryPlaceholder": "Nhập mô tả nhóm"
+      },
+      "controls": {
+        "title": "Cài đặt cá nhân",
+        "typeLabel": "Loại nhóm",
+        "approvalLabel": "Xác nhận yêu cầu khi ai đó tham gia nhóm này?",
+        "privacyPublic": "Công khai",
+        "privacyPrivate": "Riêng tư",
+        "optionNo": "Không",
+        "optionYes": "Có"
+      },
+      "delete": {
+        "title": "Xóa nhóm",
+        "passwordLabel": "Mật khẩu",
+        "deleteBtn": "Xóa bỏ",
+        "confirmDialog": "Bạn có chắc chắn muốn xóa nhóm này không? Hành động này không thể hoàn tác."
+      },
+      "media": {
+        "title": "Hình đại diện & Ảnh bìa",
+        "changeCover": "Đổi ảnh bìa",
+        "changeAvatar": "Đổi hình đại diện"
+      },
+      "members": {
+        "owner": "Chủ nhóm",
+        "showMore": "Xem thêm",
+        "showLess": "Rút gọn",
+        "emptyFiltered": "Không có thành viên nào khớp với từ khóa tìm kiếm.",
+        "empty": "Nhóm này hiện chưa có thành viên nào tham gia."
+      }
+    },
+    "detail": {
+      "searchPosts": "Tìm kiếm bài viết",
+      "searchGroupPosts": "Tìm kiếm các bài viết",
+      "searchGroupPlaceholder": "Tìm bài viết trong nhóm...",
+      "info": "Thông tin",
+      "thisWeek": "+0 Tuần này",
+      "addFriends": "Thêm bạn bè của bạn vào nhóm này",
+      "about": "Về",
+      "noSummary": "Chưa có mô tả.",
+      "emptyPostsTitle": "Không tìm thấy bài viết phù hợp",
+      "emptyPostsDesc": "Thử tìm bằng từ khóa khác.",
+      "changeCover": "Thay đổi ảnh bìa",
+      "inviteFriends": "Mời bạn bè",
+      "jobs": "Việc làm",
+      "offers": "Lời đề nghị",
+      "pagesYouMayLike": "Các trang bạn có thể thích",
+      "likesCount": "{count} những người như thế này",
+      "postsCount": "{count} bài viết",
+      "success": "Thành công",
+      "error": "Lỗi",
+      "updateAvatarSuccess": "Cập nhật ảnh đại diện thành công",
+      "updateAvatarError": "Không thể cập nhật ảnh đại diện",
+      "updateCoverSuccess": "Cập nhật ảnh bìa thành công",
+      "updateCoverError": "Không thể cập nhật ảnh bìa",
+      "back": "Quay lại"
+    },
+    "creationForm": {
+      "pageLink": "Link trang",
+      "groupLink": "Link nhóm",
+      "mapPinLabel": "Yêu cầu ghim trên bản đồ",
+      "mapPinDesc": "Admin sẽ duyệt trước khi tên trang hiển thị trực tiếp trên bản đồ tìm kiếm gần đây."
     }
+  },
+  "appShell": {
+    "runtimeError": {
+      "eyebrow": "Lỗi trang ứng dụng",
+      "title": "Trang này vừa gặp sự cố",
+      "desc": "Thanh điều hướng vẫn hoạt động. Bạn có thể chuyển sang trang khác ngay hoặc thử tải lại trang hiện tại.",
+      "route": "Đường dẫn",
+      "error": "Chi tiết lỗi",
+      "retry": "Thử lại trang này",
+      "safe": "Về trang ổn định"
+    }
+  },
+  "errorScreen": {
+    "eyebrow": "Lỗi điều hướng",
+    "statusNotFound": "Trang này không tồn tại",
+    "statusServerError": "Trang này đang gặp lỗi",
+    "statusFallback": "Không thể mở trang",
+    "descNotFound": "Liên kết bạn vừa mở chưa có trang hoặc đường dẫn tương ứng. Hệ thống sẽ đưa bạn về trang an toàn ngay.",
+    "descServerError": "Trang vừa truy cập đang gặp lỗi dữ liệu hoặc xử lý. Hệ thống sẽ tự động trả bạn về route ổn định.",
+    "descFallback": "Đã xảy ra lỗi khi điều hướng. Hệ thống sẽ tự động khôi phục để bạn tiếp tục sử dụng bình thường.",
+    "errorMessageFallback": "Đã xảy ra lỗi không xác định trong quá trình điều hướng.",
+    "back": "Quay lại trang trước",
+    "home": "Về trang chủ",
+    "autoRecoverHint": "Trang sẽ tự động quay về trong giây lát để bạn tiếp tục điều hướng mà không cần tải lại."
   }
 }

@@ -1,4 +1,4 @@
-<!-- Description: Displays page analytics charts and summary cards in page settings. -->
+<!-- English description: Displays page analytics charts and summary cards in page settings. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.sidebar.analytics.eyebrow')"
@@ -9,7 +9,7 @@
   >
     <div v-if="loading" class="analytics-state mt-6">
       <Icon name="i-ph-spinner-gap-bold" class="h-5 w-5 animate-spin" />
-      <span>{{ copy.loading }}</span>
+      <span>{{ copy.value.loading }}</span>
     </div>
 
     <div v-else-if="errorMessage" class="analytics-state analytics-state--error mt-6">
@@ -19,7 +19,7 @@
 
     <div v-else-if="!analytics" class="analytics-state mt-6">
       <Icon name="i-ph-chart-line-bold" class="h-5 w-5" />
-      <span>{{ copy.empty }}</span>
+      <span>{{ copy.value.empty }}</span>
     </div>
 
     <template v-else>
@@ -40,11 +40,11 @@
           <div>
             <h4 class="analytics-panel__title">{{ chartTitle }}</h4>
             <p class="analytics-panel__subtitle">
-              {{ copy.chartSubtitle }}
+              {{ copy.value.chartSubtitle }}
             </p>
           </div>
 
-          <div class="analytics-toolbar" :aria-label="copy.filterAria">
+          <div class="analytics-toolbar" :aria-label="copy.value.filterAria">
             <button
               v-for="option in periodOptions"
               :key="option.value"
@@ -68,13 +68,13 @@
           </ClientOnly>
 
           <div v-if="chartTotal === 0" class="analytics-chart__empty">
-            {{ copy.chartEmpty }}
+            {{ copy.value.chartEmpty }}
           </div>
         </div>
 
         <div class="analytics-summary">
-          <span>{{ formatNumber(analytics.likesInPeriod) }} {{ copy.likesIn }} {{ periodLabelLower }}</span>
-          <span>{{ formatNumber(chartPeak) }} {{ copy.peak }}</span>
+          <span>{{ formatNumber(analytics.likesInPeriod) }} {{ copy.value.likesIn }} {{ periodLabelLower }}</span>
+          <span>{{ formatNumber(chartPeak) }} {{ copy.value.peak }}</span>
         </div>
       </div>
     </template>
@@ -115,34 +115,36 @@ defineEmits<{
   "update:period": [period: CommunityPageAnalyticsPeriod]
 }>()
 
-const copy = {
-  loading: "Đang tải dữ liệu phân tích...",
-  empty: "Chưa có dữ liệu phân tích cho trang này.",
-  filterAria: "Lọc biểu đồ",
-  chartSubtitle: "Bộ lọc chỉ áp dụng cho biểu đồ, các chỉ số phía trên là tổng toàn thời gian.",
-  chartEmpty: "Chưa có lượt thích mới trong khoảng này.",
-  likes: "Lượt thích",
-  likesIn: "lượt thích trong",
-  peak: "cao nhất",
-} as const
+const { t } = useI18n()
 
-const periodOptions: Array<{ value: CommunityPageAnalyticsPeriod; label: string }> = [
-  { value: "day", label: "Ngày" },
-  { value: "week", label: "Tuần" },
-  { value: "month", label: "Tháng" },
-  { value: "year", label: "Năm" },
-]
+const copy = computed(() => ({
+  loading: t("community.pageSettings.analytics.loading"),
+  empty: t("community.pageSettings.analytics.empty"),
+  filterAria: t("community.pageSettings.analytics.filterAria"),
+  chartSubtitle: t("community.pageSettings.analytics.chartSubtitle"),
+  chartEmpty: t("community.pageSettings.analytics.chartEmpty"),
+  likes: t("community.pageSettings.analytics.likes"),
+  likesIn: t("community.pageSettings.analytics.likesIn"),
+  peak: t("community.pageSettings.analytics.peak"),
+}))
+
+const periodOptions = computed<Array<{ value: CommunityPageAnalyticsPeriod; label: string }>>(() => [
+  { value: "day", label: t("community.pageSettings.analytics.periods.day") },
+  { value: "week", label: t("community.pageSettings.analytics.periods.week") },
+  { value: "month", label: t("community.pageSettings.analytics.periods.month") },
+  { value: "year", label: t("community.pageSettings.analytics.periods.year") },
+])
 
 const formatNumber = (value: number) =>
   new Intl.NumberFormat("vi-VN").format(Math.max(0, Math.round(value)))
 
 const activePeriodOption = computed(() =>
-  periodOptions.find(option => option.value === props.period) ?? periodOptions[1],
+  periodOptions.value.find(option => option.value === props.period) ?? periodOptions[1],
 )
 
 const periodLabelLower = computed(() => activePeriodOption.value.label.toLowerCase())
 
-const chartTitle = computed(() => `${copy.likes} theo ${periodLabelLower.value}`)
+const chartTitle = computed(() => `${copy.value.likes} theo ${periodLabelLower.value}`)
 
 const chartPoints = computed(() => props.analytics?.chart ?? [])
 
@@ -190,7 +192,7 @@ const chartOption = computed<EChartsOption>(() => {
         fontSize: 12,
         fontWeight: 700,
       },
-      valueFormatter: value => `${formatNumber(Number(value || 0))} ${copy.likes.toLowerCase()}`,
+      valueFormatter: value => `${formatNumber(Number(value || 0))} ${copy.value.likes.toLowerCase()}`,
     },
     xAxis: {
       type: "category",
@@ -227,7 +229,7 @@ const chartOption = computed<EChartsOption>(() => {
       },
     },
     series: [{
-      name: copy.likes,
+      name: copy.value.likes,
       type: "line",
       data: values,
       smooth: true,
@@ -293,7 +295,7 @@ const chartOption = computed<EChartsOption>(() => {
   color: inherit !important;
 }
 
-/* Override Tailwind bg-*/text-* utility classes from backend with design tokens */
+/* Override backend Tailwind background and text utility classes with design tokens. */
 .stat-icon-wrap[class*="bg-"] {
   background: color-mix(in srgb, var(--bg-brand) 14%, transparent) !important;
   color: var(--icon-brand) !important;

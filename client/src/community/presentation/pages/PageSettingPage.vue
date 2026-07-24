@@ -186,8 +186,8 @@ async function handleCreateCategory(name: string) {
   }
   catch (error) {
     toast.add({
-      title: "Không thể tạo danh mục",
-      description: error instanceof Error ? error.message : "Vui lòng thử lại.",
+      title: t("community.creation.createCategoryError"),
+      description: error instanceof Error ? error.message : t("community.creation.tryAgain"),
       color: "error",
     })
   }

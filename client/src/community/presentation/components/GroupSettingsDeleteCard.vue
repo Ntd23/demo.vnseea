@@ -2,12 +2,12 @@
 <template>
   <CommunitySettingsSectionCard
     eyebrow=""
-    title="Xóa nhóm"
+    :title="$t('community.groupSettings.delete.title')"
     icon="i-ph-wrench-bold"
     :translate-text="false"
   >
     <div class="group-delete">
-      <label for="group-delete-password">Mật khẩu</label>
+      <label for="group-delete-password">{{ $t("community.groupSettings.delete.passwordLabel") }}</label>
       <input
         id="group-delete-password"
         v-model="password"
@@ -30,7 +30,7 @@
           <template #leading>
             <Icon name="i-ph-trash-bold" class="h-4 w-4" />
           </template>
-          Xóa bỏ
+          {{ $t('community.groupSettings.delete.deleteBtn') }}
         </UButton>
       </div>
     </div>
@@ -52,7 +52,7 @@ async function handleDelete() {
     return
   }
 
-  if (!window.confirm("Bạn có chắc chắn muốn xóa nhóm này không? Hành động này không thể hoàn tác.")) {
+  if (!window.confirm(t("community.groupSettings.delete.confirmDialog"))) {
     return
   }
 

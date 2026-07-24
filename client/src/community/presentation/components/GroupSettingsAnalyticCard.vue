@@ -2,7 +2,7 @@
 <template>
   <CommunitySettingsSectionCard
     eyebrow=""
-    title="Phân tích trang"
+    :title="$t('community.groupSettings.analytics.title')"
     icon="i-ph-trend-up-bold"
     :translate-text="false"
   >
@@ -13,7 +13,7 @@
             <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
           </span>
           <strong>{{ memberTotalLabel }}</strong>
-          <span>Tổng số thành viên</span>
+          <span>{{ $t('community.groupSettings.analytics.membersTotal') }}</span>
         </div>
 
         <USelect
@@ -27,7 +27,7 @@
 
       <div v-if="loading" class="group-analytics__state">
         <Icon name="i-ph-spinner-gap-bold" class="h-5 w-5 animate-spin" />
-        <span>Đang tải dữ liệu phân tích...</span>
+        <span>{{ $t('community.groupSettings.analytics.loading') }}</span>
       </div>
 
       <div v-else-if="errorMessage" class="group-analytics__state group-analytics__state--error">
@@ -46,7 +46,7 @@
         </ClientOnly>
         <div class="group-analytics__legend">
           <span></span>
-          Đã tham gia
+          {{ $t('community.groupSettings.analytics.joined') }}
         </div>
       </div>
     </div>
@@ -92,10 +92,10 @@ const emit = defineEmits<{
 
 
 const periodOptions: Array<{ value: AnalyticsPeriod; label: string }> = [
-  { value: "day", label: "Hôm nay" },
-  { value: "week", label: "Tuần này" },
-  { value: "month", label: "Tháng này" },
-  { value: "year", label: "Năm nay" },
+  { value: "day", label: t("community.groupSettings.analytics.periods.today") },
+  { value: "week", label: t("community.groupSettings.analytics.periods.week") },
+  { value: "month", label: t("community.groupSettings.analytics.periods.month") },
+  { value: "year", label: t("community.groupSettings.analytics.periods.year") },
 ]
 
 function handlePeriodChange(value: unknown) {
@@ -163,7 +163,7 @@ const chartOption = computed<EChartsOption>(() => {
       },
     },
     series: [{
-      name: "Đã tham gia",
+      name: "{{ $t('community.groupSettings.analytics.joined') }}",
       type: "line",
       data: points.map(point => point.likes),
       smooth: true,

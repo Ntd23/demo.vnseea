@@ -72,7 +72,7 @@
             @click="triggerBannerUpload"
           >
             <Icon name="i-ph-camera-bold" class="h-4 w-4" />
-            <span>Thay đổi ảnh bìa</span>
+            <span>{{ $t('community.detail.changeCover') }}</span>
           </button>
           <input
             ref="bannerInput"
@@ -153,7 +153,7 @@
                 @click="inviteVM.openModal()"
               >
                 <Icon name="i-ph-envelope-simple-duotone" class="mr-1.5 h-4 w-4" />
-                Mời bạn bè
+                {{ $t('community.detail.inviteFriends') }}
               </UButton>
               <UButton
                 color="primary"
@@ -265,8 +265,8 @@
               </div>
               <div v-else class="rounded-[20px] bg-[var(--bg-surface)] p-8 text-center text-[var(--text-secondary)] shadow-sm border border-[var(--border-light)]">
                 <Icon name="i-ph-magnifying-glass-duotone" class="mx-auto h-12 w-12 text-[var(--text-tertiary)] mb-2" />
-                <p class="font-semibold text-[var(--text-primary)]">Không tìm thấy bài viết nào phù hợp</p>
-                <p class="text-sm text-[var(--text-tertiary)] mt-1">Thử lại với từ khóa khác</p>
+                <p class="font-semibold text-[var(--text-primary)]">{{ $t('community.detail.emptyPostsTitle') }}</p>
+                <p class="text-sm text-[var(--text-tertiary)] mt-1">{{ $t('community.detail.emptyPostsDesc') }}</p>
               </div>
             </div>
             <div v-else class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-8 text-center shadow-sm">
@@ -287,7 +287,7 @@
         <aside class="page-detail__sidebar">
           <section class="profile-card profile-card--search">
             <div class="profile-card__head">
-              <h2 class="profile-card__title">Tìm kiếm bài viết</h2>
+              <h2 class="profile-card__title">{{ $t('community.detail.searchPosts') }}</h2>
             </div>
             <div class="mt-2">
               <UInput
@@ -306,14 +306,14 @@
               <span class="profile-card__section-icon">
                 <Icon name="i-ph-info-fill" class="h-4.5 w-4.5" />
               </span>
-              <h2 class="profile-card__title">Thông tin</h2>
+              <h2 class="profile-card__title">{{ $t('community.detail.info') }}</h2>
             </div>
 
             <div class="profile-card__rows">
               <div class="profile-card__info-row">
                 <Icon name="i-ph-thumbs-up-fill" class="profile-card__row-icon" />
                 <span class="profile-card__row-value">{{ likeInfoLabel }}</span>
-                <span class="profile-card__weekly">+0 Tuần này</span>
+                <span class="profile-card__weekly">{{ $t('community.detail.thisWeek') }}</span>
               </div>
               <div class="profile-card__info-row">
                 <Icon name="i-ph-list-bullets-fill" class="profile-card__row-icon" />
@@ -322,11 +322,11 @@
               </div>
               <div class="profile-card__info-row">
                 <Icon name="i-ph-briefcase-fill" class="profile-card__row-icon" />
-                <span class="profile-card__row-value">Việc làm</span>
+                <span class="profile-card__row-value">{{ $t('community.detail.jobs') }}</span>
               </div>
               <div class="profile-card__info-row">
                 <Icon name="i-ph-cube-fill" class="profile-card__row-icon" />
-                <span class="profile-card__row-value">Lời đề nghị</span>
+                <span class="profile-card__row-value">{{ $t('community.detail.offers') }}</span>
               </div>
               <div class="profile-card__info-row">
                 <Icon name="i-ph-tag-fill" class="profile-card__row-icon" />
@@ -341,10 +341,10 @@
               <span class="profile-card__section-icon">
                 <Icon name="i-ph-text-align-left-bold" class="h-4.5 w-4.5" />
               </span>
-              <h2 class="profile-card__title">Về</h2>
+              <h2 class="profile-card__title">{{ $t('community.detail.about') }}</h2>
             </div>
             <p class="profile-card__about-text">
-              {{ pageSummary || "Chưa có mô tả." }}
+              {{ pageSummary || $t("community.detail.noSummary") }}
             </p>
           </section>
 
@@ -353,7 +353,7 @@
               <span class="profile-card__section-icon">
                 <Icon name="i-ph-flag-fill" class="h-4.5 w-4.5" />
               </span>
-              <h2 class="profile-card__title">Các trang bạn có thể thích</h2>
+              <h2 class="profile-card__title">{{ $t('community.detail.pagesYouMayLike') }}</h2>
             </div>
 
             <NuxtLink
@@ -467,12 +467,12 @@ const suggestedPages = computed(() =>
 )
 
 const likeInfoLabel = computed(() =>
-  `${page.value?.likes || 0} những người như thế này`,
+  t("community.detail.likesCount", { count: page.value?.likes || 0 }),
 )
 
 const pagePostCountLabel = computed(() => {
   const count = page.value?.postCount ?? pagePosts.value.length
-  return `${count} bài viết`
+  return t("community.detail.postsCount", { count })
 })
 
 function triggerAvatarUpload() {
@@ -494,14 +494,14 @@ async function onAvatarFileChange(e: Event) {
     } as any)
     page.value.avatarUrl = updatedPage.avatarUrl
     toast.add({
-      title: "Thành công",
-      description: "Cập nhật ảnh đại diện thành công",
+      title: t("community.detail.success"),
+      description: t("community.detail.updateAvatarSuccess"),
       color: "success"
     })
   } catch (err) {
     toast.add({
-      title: "Lỗi",
-      description: err instanceof Error ? err.message : "Không thể cập nhật ảnh đại diện",
+      title: t("community.detail.error"),
+      description: err instanceof Error ? err.message : t("community.detail.updateAvatarError"),
       color: "error"
     })
   } finally {
@@ -520,14 +520,14 @@ async function onBannerFileChange(e: Event) {
     } as any)
     page.value.banner = updatedPage.banner
     toast.add({
-      title: "Thành công",
-      description: "Cập nhật ảnh bìa thành công",
+      title: t("community.detail.success"),
+      description: t("community.detail.updateCoverSuccess"),
       color: "success"
     })
   } catch (err) {
     toast.add({
-      title: "Lỗi",
-      description: err instanceof Error ? err.message : "Không thể cập nhật ảnh bìa",
+      title: t("community.detail.error"),
+      description: err instanceof Error ? err.message : t("community.detail.updateCoverError"),
       color: "error"
     })
   } finally {

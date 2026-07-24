@@ -4,20 +4,20 @@
     <CommunityCreationForm
       v-model="draft"
       is-group
-      title="Tạo mới nhóm"
+      :title="$t('community.creation.createGroupTitle')"
       hide-description
       entity-label="community.creation.common.entityLabelGroup"
       :privacy-options="communityPrivacyOptions"
       :category-options="categoryOptions"
       :name-label="$t('community.creation.group.nameLabel')"
       :name-placeholder="$t('community.creation.group.namePlaceholder')"
-      url-label="Nhóm URL"
+      :url-label="$t('community.creation.groupUrlLabel')"
       :url-prefix="urlPrefix"
       :slug-placeholder="$t('community.creation.group.slugPlaceholder')"
       :description-label="$t('community.creation.common.descriptionLabel')"
       :description-placeholder="$t('community.creation.group.description')"
       :privacy-label="$t('community.creation.group.privacyLabel')"
-      category-label="Danh mục nhóm"
+      :category-label="$t('community.creation.groupCategoryLabel')"
       :back-to="appRoutes.groups"
       :submit-label="$t('community.creation.common.create')"
       :submit-state="submitState"

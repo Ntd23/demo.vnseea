@@ -126,8 +126,8 @@
       <div class="page-settings-basics__map-pin">
         <UCheckbox
           v-model="mapPinRequestedModel"
-          label="Yêu cầu ghim trên bản đồ"
-          description="Admin sẽ duyệt trước khi tên trang hiển thị trực tiếp trên bản đồ tìm kiếm gần đây."
+          :label="$t('community.pageSettings.basics.mapPin.label')"
+          :description="$t('community.pageSettings.basics.mapPin.desc')"
         />
         <span class="page-settings-basics__map-pin-status">
           {{ mapPinStatusLabel }}
@@ -299,11 +299,11 @@ const mapPinRequestedModel = computed({
 })
 
 const mapPinStatusLabel = computed(() => {
-  if (model.value.mapPinStatus === "approved") return "Đã duyệt ghim"
-  if (model.value.mapPinStatus === "pending") return "Đang chờ admin duyệt"
-  if (model.value.mapPinStatus === "rejected") return "Yêu cầu đã bị từ chối"
+  if (model.value.mapPinStatus === "approved") return t("community.pageSettings.basics.mapPin.statusApproved")
+  if (model.value.mapPinStatus === "pending") return t("community.pageSettings.basics.mapPin.statusPending")
+  if (model.value.mapPinStatus === "rejected") return t("community.pageSettings.basics.mapPin.statusRejected")
 
-  return "Chưa yêu cầu ghim"
+  return t("community.pageSettings.basics.mapPin.statusNone")
 })
 
 const tagCount = computed(() =>
