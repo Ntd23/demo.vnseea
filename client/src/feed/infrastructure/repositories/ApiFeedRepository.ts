@@ -147,6 +147,28 @@ export function createApiFeedRepository(): FeedRepository {
       )
     },
     async runCommentAction(input) {
+      if (input.action === "reply" && (input.imageFile || input.gifFile || input.audioFile)) {
+        const formData = new FormData()
+        formData.append("action", input.action)
+        formData.append("commentId", String(input.commentId))
+        formData.append("text", input.text ?? "")
+
+        if (input.imageFile) {
+          formData.append("commentImage", input.imageFile, input.imageFile.name)
+        }
+        if (input.gifFile) {
+          formData.append("commentGif", input.gifFile, input.gifFile.name)
+        }
+        if (input.audioFile) {
+          formData.append("commentAudio", input.audioFile, input.audioFile.name)
+        }
+
+        return await client.post<FeedPostActionResult, FormData>(
+          apiRoutes.feed.comments.action,
+          formData,
+        )
+      }
+
       return await client.post<FeedPostActionResult, Record<string, unknown>>(
         apiRoutes.feed.comments.action,
         input as Record<string, unknown> & {
@@ -245,6 +267,10 @@ export function createApiFeedRepository(): FeedRepository {
       formData.append("fileType", input.fileType)
       formData.append("privacy_contract", "audience_v2")
       formData.append("privacy", input.privacy || "followers")
+
+      if (input.coverFile) {
+        formData.append("cover", input.coverFile, input.coverFile.name)
+      }
 
       if (input.title) {
         formData.append("title", input.title)

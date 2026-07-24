@@ -185,11 +185,12 @@
         </div>
 
         <FeedCommentComposer
+          ref="replyComposerRef"
           :current-user-name="currentUserName"
           :current-user-avatar-url="currentUserAvatarUrl"
           :submitting="replySubmitting"
-          :enable-attachments="false"
-          @submit="submitReply"
+          preserve-focus-while-submitting
+          @submit="handleSubmitReply"
         />
       </div>
     </div>
@@ -210,6 +211,7 @@ const audioRef = ref<HTMLAudioElement | null>(null)
 const audioPlaying = ref(false)
 const audioCurrentTime = ref(0)
 const audioDuration = ref(0)
+const replyComposerRef = ref<{ focus: () => void } | null>(null)
 
 const props = withDefaults(defineProps<{
   id?: number
@@ -333,6 +335,12 @@ async function toggleAudio() {
   catch {
     audioPlaying.value = false
   }
+}
+
+async function handleSubmitReply(payload: FeedCommentSubmitPayload) {
+  await submitReply(payload)
+  await nextTick()
+  replyComposerRef.value?.focus()
 }
 
 onBeforeUnmount(() => {

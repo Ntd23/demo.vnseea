@@ -457,12 +457,12 @@ export async function endLiveSession(
     }
   }
   catch (endError) {
-    // The PHP handler deletes the live post before sending its response. If
-    // cleanup/webhook wins the race or the response is interrupted afterward,
-    // confirm the final state instead of reporting a false failure to the host.
+    // Ending is idempotent. If the webhook wins the race or the response is
+    // interrupted afterward, confirm the retained post's final state instead
+    // of reporting a false failure to the host.
     const post = await fetchFeedPostById(event, postId).catch(() => undefined)
 
-    if (post === null || (post.isLive && post.liveState === "offline")) {
+    if (post?.isLive && post.liveState === "offline") {
       return {
         success: true,
         message: "Live session ended.",

@@ -448,8 +448,19 @@ const mapMessageStoryContext = (
   const imagePath = firstString(image, ["filename", "image", "file", "src"])
     || firstString(storyImage, ["filename", "image", "file", "src"])
   const thumbnailPath = firstString(story, ["thumbnail"])
+  const avatarUrl = resolveMediaUrl(firstString(user, ["avatar", "avatar_full", "avatar_org"]))
   const mediaUrl = resolveMediaUrl(videoPath || imagePath || thumbnailPath)
-  const posterUrl = resolveMediaUrl(imagePath || thumbnailPath)
+  const posterCandidate = resolveMediaUrl(imagePath || thumbnailPath)
+  const normalizeComparableMediaUrl = (value: string) =>
+    value
+      .trim()
+      .split(/[?#]/)[0]
+      ?.replace(/^https?:\/\/[^/]+/i, "")
+      .replace(/^\/+/, "")
+      .toLowerCase() || ""
+  const posterUrl = normalizeComparableMediaUrl(posterCandidate) === normalizeComparableMediaUrl(avatarUrl)
+    ? ""
+    : posterCandidate
   const postedAt = asNumber(story.posted)
 
   return {
@@ -457,7 +468,7 @@ const mapMessageStoryContext = (
     available: Boolean(mediaUrl),
     ownerId: asNumber(story.user_id) || asNumber(user.user_id) || undefined,
     author: buildDisplayName(user),
-    avatarUrl: resolveMediaUrl(firstString(user, ["avatar", "avatar_full", "avatar_org"])) || undefined,
+    avatarUrl: avatarUrl || undefined,
     mediaUrl: mediaUrl || undefined,
     mediaType: videoPath ? "video" : "image",
     posterUrl: posterUrl || undefined,

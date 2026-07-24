@@ -1,4 +1,4 @@
-// English description: Ends the current host livestream session through the legacy PHP live delete handler.
+// English description: Ends the current host livestream session while retaining its timeline post.
 
 import { createError, readBody } from "h3"
 import { endLiveSession } from "./_shared"

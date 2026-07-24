@@ -18,6 +18,93 @@ import type { ContentAudience } from "../../../shared-kernel/domain/content-audi
 type MediaType = "image" | "video" | null
 type MediaOrientation = "portrait" | "landscape" | "square" | null
 
+const storyCoverMaxDimension = 1280
+const storyCoverCaptureSecond = 1
+
+const waitForVideoEvent = (
+  video: HTMLVideoElement,
+  successEvent: "loadedmetadata" | "loadeddata" | "seeked",
+) => new Promise<void>((resolve, reject) => {
+  const cleanup = () => {
+    video.removeEventListener(successEvent, handleSuccess)
+    video.removeEventListener("error", handleError)
+  }
+  const handleSuccess = () => {
+    cleanup()
+    resolve()
+  }
+  const handleError = () => {
+    cleanup()
+    reject(new Error("Unable to read the selected story video."))
+  }
+
+  video.addEventListener(successEvent, handleSuccess, { once: true })
+  video.addEventListener("error", handleError, { once: true })
+})
+
+async function createVideoCover(file: File) {
+  const videoUrl = URL.createObjectURL(file)
+  const video = document.createElement("video")
+
+  try {
+    video.muted = true
+    video.playsInline = true
+    video.preload = "auto"
+    video.src = videoUrl
+    video.load()
+
+    await waitForVideoEvent(video, "loadedmetadata")
+
+    const duration = Number.isFinite(video.duration) ? video.duration : 0
+    const captureTime = duration > 0
+      ? Math.min(storyCoverCaptureSecond, Math.max(0, duration - 0.05))
+      : 0
+
+    if (captureTime > 0) {
+      video.currentTime = captureTime
+      await waitForVideoEvent(video, "seeked")
+    }
+    else if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+      await waitForVideoEvent(video, "loadeddata")
+    }
+
+    if (!video.videoWidth || !video.videoHeight) {
+      throw new Error("The selected story video has no readable frame.")
+    }
+
+    const scale = Math.min(
+      1,
+      storyCoverMaxDimension / Math.max(video.videoWidth, video.videoHeight),
+    )
+    const canvas = document.createElement("canvas")
+    canvas.width = Math.max(1, Math.round(video.videoWidth * scale))
+    canvas.height = Math.max(1, Math.round(video.videoHeight * scale))
+
+    const context = canvas.getContext("2d")
+    if (!context) {
+      throw new Error("Unable to create the story cover canvas.")
+    }
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+    const blob = await new Promise<Blob | null>(resolve =>
+      canvas.toBlob(resolve, "image/jpeg", 0.86),
+    )
+    if (!blob) {
+      throw new Error("Unable to encode the story cover.")
+    }
+
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "story"
+    return new File([blob], `${baseName}-cover.jpg`, { type: "image/jpeg" })
+  }
+  finally {
+    video.pause()
+    video.removeAttribute("src")
+    video.load()
+    URL.revokeObjectURL(videoUrl)
+  }
+}
+
 export function useStatusCreatePageVM(
   repository = createApiFeedRepository(),
 ) {
@@ -142,9 +229,17 @@ export function useStatusCreatePageVM(
     statusDescription.value = t("pages.statusCreatePage.submittingStatus")
 
     try {
+      const coverFile = mediaType.value === "video"
+        ? await createVideoCover(selectedFile.value).catch((error) => {
+            console.warn("Could not create a local story video cover.", error)
+            return undefined
+          })
+        : undefined
+
       const response = await repository.createStory({
         file: selectedFile.value,
         fileType: mediaType.value,
+        coverFile,
         privacy: privacy.value,
         title: title.value.trim() || undefined,
         description: caption.value.trim() || undefined,

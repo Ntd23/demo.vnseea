@@ -1,4 +1,4 @@
-// English description: Bridges story views, reactions, and replies to the PHP backend APIs.
+// English description: Bridges story views, reactions, replies, and owner-only deletion to the PHP backend APIs.
 
 import { createError, readBody } from "h3"
 import { assertBackendApiSuccess } from "../../../utils/backend-api-response"
@@ -27,6 +27,14 @@ type BackendStoryViewResponse = {
   }
 }
 
+type BackendDeleteStoryResponse = {
+  api_status?: number | string
+  message?: string
+  errors?: {
+    error_text?: string
+  }
+}
+
 type BackendSendMessageResponse = {
   api_status?: number | string
   message_data?: unknown[]
@@ -40,6 +48,7 @@ const storyActionErrors = {
   invalidOwner: "A valid story owner is required.",
   invalidReaction: "A valid story reaction is required.",
   invalidStory: "A valid story id is required.",
+  deleteFailed: "Unable to delete story.",
   ownStoryReply: "You cannot reply to your own story.",
   reactFailed: "Unable to react to story.",
   replyRequired: "Reply text is required.",
@@ -127,6 +136,23 @@ export default defineEventHandler(async (event) => {
         data: response,
       })
     }
+
+    return {
+      ok: true,
+      storyId,
+    }
+  }
+
+  if (action === "delete") {
+    assertBackendApiSuccess(
+      await createBackendApiClient(event).post<BackendDeleteStoryResponse, Record<string, unknown>>(
+        "delete-story",
+        {
+          story_id: storyId,
+        },
+      ),
+      storyActionErrors.deleteFailed,
+    )
 
     return {
       ok: true,

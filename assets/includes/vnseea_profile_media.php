@@ -67,13 +67,13 @@ function VNSEEA_ProfileMediaImageMatchesContract($kind, $image_size)
         return false;
     }
 
-    $expected_ratio = $kind === 'avatar' ? 1.0 : (16.0 / 9.0);
+    $expected_ratio = $kind === 'avatar' ? 1.0 : (918.0 / 332.0);
     $actual_ratio = (float) $image_size[0] / (float) $image_size[1];
 
     return abs($actual_ratio - $expected_ratio) <= 0.02;
 }
 
-function VNSEEA_HandleCanonicalProfileMediaRequest($files, $user_id)
+function VNSEEA_HandleCanonicalProfileMediaRequest($files, $user_id, $post_text = '')
 {
     global $wo, $db;
 
@@ -115,9 +115,10 @@ function VNSEEA_HandleCanonicalProfileMediaRequest($files, $user_id)
         return VNSEEA_ProfileMediaError('profile_media_storage_failed', 500);
     }
 
-    $target_width = $kind === 'avatar' ? 1080 : 1600;
-    $target_height = $kind === 'avatar' ? 1080 : 900;
-    $quality = !empty($wo['config']['images_quality']) ? (int) $wo['config']['images_quality'] : 80;
+    $target_width = $kind === 'avatar' ? 1080 : 1836;
+    $target_height = $kind === 'avatar' ? 1080 : 664;
+    $configured_quality = !empty($wo['config']['images_quality']) ? (int) $wo['config']['images_quality'] : 90;
+    $quality = min(100, max(90, $configured_quality));
     if (
         !Wo_Resize_Crop_Image($target_width, $target_height, $profile_path, $profile_path, $quality)
         || !@copy($profile_path, $full_path)
@@ -175,7 +176,7 @@ function VNSEEA_HandleCanonicalProfileMediaRequest($files, $user_id)
         $post_id = $db->insert(T_POSTS, array(
             'user_id' => $user_id,
             'postFile' => $full_path,
-            'postText' => '',
+            'postText' => Wo_Secure($post_text),
             'time' => $now,
             'postType' => $post_type,
             'postPrivacy' => '0',
