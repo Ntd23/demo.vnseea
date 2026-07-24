@@ -2,7 +2,7 @@
 <template>
   <CommunitySettingsSectionCard
     eyebrow=""
-    title="Cài đặt chung"
+    :title="$t('community.groupSettings.basics.title')"
     icon="i-ph-wrench-bold"
     :translate-text="false"
   >
@@ -12,16 +12,16 @@
 
     <div class="group-settings-basic">
       <div class="group-settings-basic__grid">
-        <UFormField name="name" label="Tên nhóm" required>
+        <UFormField name="name" :label="$t('community.groupSettings.basics.nameLabel')" required>
           <UInput
             v-model="model.name"
-            placeholder="Nhập tên nhóm"
+            :placeholder="$t('community.groupSettings.basics.namePlaceholder')"
             size="xl"
             class="w-full"
           />
         </UFormField>
 
-        <UFormField name="category" label="Loại" required>
+        <UFormField name="category" :label="$t('community.groupSettings.basics.categoryLabel')" required>
           <USelect
             v-model="model.category"
             :items="categoryItems"
@@ -31,7 +31,7 @@
         </UFormField>
       </div>
 
-      <UFormField name="slug" label="Đường dẫn nhóm" required>
+      <UFormField name="slug" :label="$t('community.groupSettings.basics.slugLabel')" required>
         <div class="group-settings-basic__slug">
           <span class="group-settings-basic__slug-prefix">{{ urlPrefix }}</span>
           <UInput
@@ -43,24 +43,24 @@
         </div>
 
         <div class="group-settings-basic__hint">
-          <span>Gợi ý: {{ suggestedSlug || "ten-nhom" }}</span>
+          <span>{{ $t('community.groupSettings.basics.slugHint', { slug: suggestedSlug || "ten-nhom" }) }}</span>
           <button
             v-if="suggestedSlug && (model.slug || '').trim() !== suggestedSlug"
             type="button"
             class="group-settings-basic__hint-action"
             @click="model.slug = suggestedSlug"
           >
-            Dùng gợi ý
+            {{ $t("community.groupSettings.basics.useSuggestion") }}
           </button>
         </div>
       </UFormField>
 
-      <UFormField name="summary" label="Sự mô tả" required>
+      <UFormField name="summary" :label="$t('community.groupSettings.basics.summaryLabel')" required>
         <textarea
           v-model="model.summary"
           rows="6"
           class="group-settings-basic__textarea"
-          placeholder="Nhập mô tả nhóm"
+          :placeholder="$t('community.groupSettings.basics.summaryPlaceholder')"
         />
       </UFormField>
     </div>

@@ -62,7 +62,7 @@
                 v-if="user.isAdmin"
                 class="rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-600/90"
               >
-                Chủ nhóm
+                {{ $t("community.groupSettings.members.owner") }}
               </span>
             </div>
             <p class="mt-0.5 truncate text-[11.5px] text-[var(--text-tertiary)]">
@@ -103,7 +103,7 @@
           @click="showMore"
         >
           <Icon name="i-ph-caret-double-down-bold" class="mr-1.5 h-4 w-4 text-[var(--text-secondary)]" />
-          Xem thêm
+          {{ $t("community.groupSettings.members.showMore") }}
         </UButton>
 
         <UButton
@@ -115,7 +115,7 @@
           @click="collapse"
         >
           <Icon name="i-ph-caret-double-up-bold" class="mr-1.5 h-4 w-4 text-[var(--text-secondary)]" />
-          Rút gọn
+          {{ $t("community.groupSettings.members.showLess") }}
         </UButton>
       </div>
     </div>
@@ -132,7 +132,7 @@
         {{ t("community.settings.members.emptyState") }}
       </h4>
       <p class="mt-1 text-[12px] text-[var(--text-tertiary)] max-w-[280px]">
-        {{ searchQuery ? 'Không có thành viên nào khớp với từ khóa tìm kiếm.' : 'Nhóm này hiện chưa có thành viên nào tham gia.' }}
+        {{ searchQuery ? $t('community.groupSettings.members.emptyFiltered') : $t('community.groupSettings.members.empty') }}
       </p>
     </div>
   </section>

@@ -1,4 +1,4 @@
-<!-- Description: Renders the password confirmation form for deleting a community page. -->
+<!-- English description: Renders the password confirmation form for deleting a community page. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.sidebar.delete.eyebrow')"
@@ -13,10 +13,10 @@
           <Icon name="i-ph-warning-fill" class="h-5 w-5 text-[var(--text-danger)]" />
           <div class="flex-1">
             <p class="text-sm font-bold text-[var(--text-primary)]">
-              {{ $t('community.pageSettings.delete.warning') || 'Hành động này không thể hoàn tác. Vui lòng cân nhắc kỹ trước khi tiếp tục.' }}
+              {{ $t('community.pageSettings.delete.warning') }}
             </p>
             <p class="mt-1 text-[13px] text-[var(--text-secondary)]">
-              Để đảm bảo an toàn, vui lòng nhập mật khẩu của bạn để xác nhận.
+              {{ $t('community.pageSettings.delete.passwordNotice') }}
             </p>
           </div>
         </div>
@@ -24,13 +24,13 @@
 
       <div class="space-y-4">
         <div class="space-y-2">
-          <label class="text-[13px] font-bold text-[var(--text-primary)]">Mật khẩu xác nhận</label>
+          <label class="text-[13px] font-bold text-[var(--text-primary)]">{{ $t('community.pageSettings.delete.passwordLabel') }}</label>
           <div class="relative">
             <Icon name="i-ph-lock-bold" class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
             <input
               v-model="password"
               type="password"
-              placeholder="Nhập mật khẩu của bạn..."
+              :placeholder="$t('community.pageSettings.delete.passwordPlaceholder')"
               class="password-input"
             >
           </div>
@@ -44,7 +44,7 @@
             @click="handleDelete"
           >
             <Icon :name="isDeleting ? 'i-ph-spinner-gap-bold' : 'i-ph-trash-bold'" class="mr-2 h-4 w-4" :class="{ 'animate-spin': isDeleting }" />
-            {{ $t('community.pageSettings.delete.confirm') || 'Xác nhận xóa trang' }}
+            {{ $t('community.pageSettings.delete.confirm') }}
           </button>
         </div>
       </div>
@@ -56,10 +56,12 @@
 import { ref } from "vue"
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
 
+const { t } = useI18n()
+
 const props = defineProps<{
   pageId: number
   slug: string
->()
+}>()
 
 const emit = defineEmits<{
   delete: [id: number, password: string]
@@ -70,8 +72,8 @@ const isDeleting = ref(false)
 
 async function handleDelete() {
   if (!password.value) return
-  
-  if (!confirm("Bạn có chắc chắn muốn xóa trang này không? Hành động này không thể hoàn tác.")) {
+
+  if (!confirm(t("community.pageSettings.delete.confirmDialog"))) {
     return
   }
 

@@ -4,7 +4,7 @@
     <CommunityCreationForm
       v-model="draft"
       is-page
-      title="Tạo mới trang"
+      :title="$t('community.creation.createPageTitle')"
       hide-description
       entity-label="community.creation.common.entityLabelPage"
       :category-options="categoryOptions"
@@ -15,11 +15,11 @@
       :url-prefix="urlPrefix"
       :name-label="$t('community.creation.page.nameLabel')"
       :name-placeholder="$t('community.creation.page.namePlaceholder')"
-      url-label="Trang URL"
+      :url-label="$t('community.creation.pageUrlLabel')"
       :slug-placeholder="$t('community.creation.page.slugPlaceholder')"
       :description-label="$t('community.creation.common.descriptionLabel')"
       :description-placeholder="$t('community.creation.common.introHint', { entity: $t('community.creation.common.entityLabelPage') })"
-      category-label="Danh mục trang"
+      :category-label="$t('community.creation.pageCategoryLabel')"
       :location-label="$t('community.creation.page.locationLabel')"
       :location-placeholder="$t('community.creation.page.locationPlaceholder')"
       :location-hint="$t('community.creation.page.locationHint')"
@@ -91,8 +91,8 @@ async function handleCreateCategory(name: string) {
   }
   catch (error) {
     toast.add({
-      title: "Không thể tạo danh mục",
-      description: error instanceof Error ? error.message : "Vui lòng thử lại.",
+      title: t("community.creation.createCategoryError"),
+      description: error instanceof Error ? error.message : t("community.creation.tryAgain"),
       color: "error",
     })
   }

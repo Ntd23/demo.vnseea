@@ -15,13 +15,13 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Tìm kiếm thành viên theo tên hoặc email..."
+            :placeholder="$t('community.pageSettings.admin.searchPlaceholder')"
             class="admin-search-input"
           >
         </div>
         <button type="button" class="admin-add-button" :disabled="!searchQuery" @click="handleAddAdmin">
           <Icon name="i-ph-user-plus-bold" class="mr-2 h-4 w-4" />
-          Thêm quản trị viên
+          {{ $t('community.pageSettings.admin.addAdmin') }}
         </button>
       </div>
 
@@ -35,7 +35,7 @@
             </div>
             <div>
               <div class="admin-name">{{ admin.name }}</div>
-              <div class="admin-role">{{ admin.role === 'owner' ? 'Chủ sở hữu' : 'Quản trị viên' }}</div>
+              <div class="admin-role">{{ admin.role === 'owner' ? $t('community.pageSettings.admin.roleOwner') : $t('community.pageSettings.admin.roleAdmin') }}</div>
             </div>
           </div>
           
@@ -60,12 +60,13 @@
 import { ref } from "vue"
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
 
+const { t } = useI18n()
 const searchQuery = ref("")
 
 // Mock data
 const admins = ref([
-  { id: 1, name: "Admin Nguyễn", role: "owner", avatar: "" },
-  { id: 2, name: "Thanh Hằng", role: "admin", avatar: "" },
+  { id: 1, name: "Admin", role: "owner", avatar: "" },
+  { id: 2, name: "Member", role: "admin", avatar: "" },
 ])
 
 function handleAddAdmin() {
@@ -75,7 +76,7 @@ function handleAddAdmin() {
 }
 
 function handleRemoveAdmin(id: number) {
-  if (confirm("Bạn có chắc chắn muốn gỡ quyền quản trị của thành viên này?")) {
+  if (confirm(t("community.pageSettings.admin.removeConfirm"))) {
     admins.value = admins.value.filter(a => a.id !== id)
   }
 }

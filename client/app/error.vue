@@ -6,7 +6,7 @@
         <section class="surface-card w-full overflow-hidden border border-[var(--border-light)] shadow-[var(--shadow-xl)]">
           <div class="bg-[linear-gradient(135deg,var(--bg-brand)_0%,var(--bg-brand-hover)_58%,var(--bg-media)_100%)] px-8 py-10 text-[var(--text-media)] sm:px-10">
             <p class="text-[11px] font-black uppercase tracking-[0.32em] text-[var(--text-media-muted)]">
-              Loi dieu huong
+              {{ $t('errorScreen.eyebrow') }}
             </p>
             <h1 class="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
               {{ statusTitle }}
@@ -37,7 +37,7 @@
                 class="justify-center rounded-2xl bg-[var(--bg-brand)] px-6 font-black uppercase tracking-[0.18em] text-[var(--text-inverse)] shadow-[var(--shadow-brand)] hover:bg-[var(--bg-brand-hover)]"
                 @click="recoverToLastSafeRoute"
               >
-                Quay lai trang truoc
+                {{ $t('errorScreen.back') }}
               </UButton>
               <UButton
                 size="xl"
@@ -46,12 +46,12 @@
                 class="justify-center rounded-2xl px-6 font-black uppercase tracking-[0.18em] text-[var(--text-primary)] ring-1 ring-[var(--border-light)] hover:ring-[var(--border-strong)]"
                 @click="recoverToHome"
               >
-                Ve trang chu
+                {{ $t('errorScreen.home') }}
               </UButton>
             </div>
 
             <p class="text-xs font-semibold text-[var(--text-tertiary)]">
-              Trang se tu dong quay ve trong giay lat de ban tiep tuc dieu huong ma khong can reload.
+              {{ $t('errorScreen.autoRecoverHint') }}
             </p>
           </div>
         </section>
@@ -67,30 +67,31 @@ const props = defineProps<{
   error: NuxtError
 }>()
 
+const { t } = useI18n()
 const route = useRoute()
 const lastSafeRoute = useState("last-safe-route", () => "/home")
 
 const statusCode = computed(() => props.error.statusCode || 500)
 
 const statusTitle = computed(() => {
-  if (statusCode.value === 404) return "Trang nay khong ton tai"
-  if (statusCode.value >= 500) return "Trang nay dang gap loi"
-  return "Khong the mo trang"
+  if (statusCode.value === 404) return t("errorScreen.statusNotFound")
+  if (statusCode.value >= 500) return t("errorScreen.statusServerError")
+  return t("errorScreen.statusFallback")
 })
 
 const statusDescription = computed(() => {
   if (statusCode.value === 404) {
-    return "Lien ket ban vua mo chua co page hoac route tuong ung. He thong se dua ban ve trang an toan ngay."
+    return t("errorScreen.descNotFound")
   }
 
   if (statusCode.value >= 500) {
-    return "Page vua truy cap dang loi render hoac loi du lieu. He thong se tu dong tra ban ve route on dinh de khong bi ket app."
+    return t("errorScreen.descServerError")
   }
 
-  return "Da xay ra loi khi dieu huong. He thong se tu dong khoi phuc de ban tiep tuc su dung nav binh thuong."
+  return t("errorScreen.descFallback")
 })
 
-const errorMessage = computed(() => props.error.message || "Da xay ra loi khong xac dinh trong qua trinh dieu huong.")
+const errorMessage = computed(() => props.error.message || t("errorScreen.errorMessageFallback"))
 
 const recoveryTarget = computed(() => {
   const fallback = lastSafeRoute.value || "/home"

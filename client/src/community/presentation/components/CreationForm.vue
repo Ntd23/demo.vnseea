@@ -51,7 +51,7 @@
               />
             </div>
             <span class="text-[13px] text-[var(--text-secondary)] mt-2 block">
-              {{ isPage ? 'Link trang' : 'Link nhóm' }}: {{ urlPrefix }}{{ model.slug || '' }}
+              {{ isPage ? $t('community.creationForm.pageLink') : $t('community.creationForm.groupLink') }}: {{ urlPrefix }}{{ model.slug || '' }}
             </span>
           </div>
           <UInput
@@ -153,8 +153,8 @@
         <UCheckbox
           v-if="showMapPinRequest"
           v-model="mapPinRequestedModel"
-          label="Yêu cầu ghim trên bản đồ"
-          description="Admin sẽ duyệt trước khi tên trang hiển thị trực tiếp trên bản đồ tìm kiếm gần đây."
+          :label="$t('community.creationForm.mapPinLabel')"
+          :description="$t('community.creationForm.mapPinDesc')"
       class="rounded-2xl border border-[var(--border-light)] bg-[var(--bg-muted)] p-4"
         />
 

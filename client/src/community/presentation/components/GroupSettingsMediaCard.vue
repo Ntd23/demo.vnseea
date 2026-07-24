@@ -2,7 +2,7 @@
 <template>
   <CommunitySettingsSectionCard
     eyebrow=""
-    title="Hình đại diện & Ảnh bìa"
+    :title="$t('community.groupSettings.media.title')"
     icon="i-ph-wrench-bold"
     :translate-text="false"
   >
@@ -12,7 +12,7 @@
 
     <div class="group-media">
       <div class="group-media__cover" :style="coverStyle">
-        <button type="button" class="group-media__cover-action" aria-label="Đổi ảnh bìa" @click="coverInput?.click()">
+        <button type="button" class="group-media__cover-action" :aria-label="$t('community.groupSettings.media.changeCover')" @click="coverInput?.click()">
           <Icon name="i-ph-image-duotone" class="h-7 w-7" />
         </button>
         <input
@@ -35,7 +35,7 @@
           <Icon v-else name="i-ph-users-three-duotone" class="h-12 w-12 text-[var(--text-tertiary)]" />
         </div>
 
-        <button type="button" class="group-media__avatar-action" aria-label="Đổi hình đại diện" @click="avatarInput?.click()">
+        <button type="button" class="group-media__avatar-action" :aria-label="$t('community.groupSettings.media.changeAvatar')" @click="avatarInput?.click()">
           <Icon name="i-ph-camera-fill" class="h-6 w-6" />
         </button>
         <input
