@@ -162,8 +162,18 @@ else{
                     }
                 }
                 else{
-                    $error_code    = 7;
-				    $error_message = 'live ended';
+                    // Keep ended broadcasts as normal timeline records and
+                    // expose a final state to mobile clients.
+                    $response_data = array(
+                        'api_status' => 200,
+                        'comments' => array(),
+                        'joined' => array(),
+                        'left' => array(),
+                        'count' => 0,
+                        'word' => $wo['lang']['offline'],
+                        'still_live' => 'offline',
+                        'is_final' => 1
+                    );
                 }
                 
     		}
@@ -196,10 +206,9 @@ else{
                     } catch (Exception $e) {
                     }
                 }
-                Wo_DeletePost($post_id);
                 $response_data = array(
                                     'api_status' => 200,
-                                    'message' => 'deleted successfully'
+                                    'message' => 'Live session ended.'
                                 );
             }
             else{

@@ -34,7 +34,7 @@
                 ref="textareaRef"
                 v-model="message"
                 class="comment-composer__textarea"
-                :disabled="submitting"
+                :disabled="submitting && !preserveFocusWhileSubmitting"
                 :placeholder="$t('feed.commentComposer.placeholder')"
                 rows="1"
                 spellcheck="false"
@@ -289,12 +289,14 @@ const props = withDefaults(defineProps<{
   currentUserAvatarUrl?: string
   submitting?: boolean
   enableAttachments?: boolean
+  preserveFocusWhileSubmitting?: boolean
   variant?: "default" | "lightbox"
 }>(), {
   currentUserName: "",
   currentUserAvatarUrl: "",
   submitting: false,
   enableAttachments: true,
+  preserveFocusWhileSubmitting: false,
   variant: "default",
 })
 

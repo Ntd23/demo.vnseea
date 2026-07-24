@@ -22,12 +22,12 @@ profile_media_assert_true(
     'avatar contract must accept a square crop'
 );
 profile_media_assert_true(
-    VNSEEA_ProfileMediaImageMatchesContract('cover', array(1600, 900)),
-    'cover contract must accept a 16:9 crop'
+    VNSEEA_ProfileMediaImageMatchesContract('cover', array(1836, 664)),
+    'cover contract must accept the profile hero crop at 2x density'
 );
 profile_media_assert_true(
-    !VNSEEA_ProfileMediaImageMatchesContract('cover', array(918, 332)),
-    'cover contract must reject the legacy wide crop'
+    !VNSEEA_ProfileMediaImageMatchesContract('cover', array(1600, 900)),
+    'cover contract must reject a crop that does not match the profile hero'
 );
 
 $helper = file_get_contents($helperPath);
@@ -42,6 +42,8 @@ profile_media_assert_true(strpos($helper, "'profile_media' =>") !== false, 'succ
 profile_media_assert_true(strpos($helper, "'full_url' =>") !== false, 'success response must contain full url');
 profile_media_assert_true(strpos($helper, "'post_id' =>") !== false, 'success response must contain post id');
 profile_media_assert_true(strpos($helper, 'Wo_Resize_Crop_Image(918, 332') === false, 'canonical cover must not be cropped to the legacy ratio');
+profile_media_assert_true(strpos($helper, '$target_width = $kind === \'avatar\' ? 1080 : 1836') !== false, 'canonical cover must retain 2x hero density');
+profile_media_assert_true(strpos($helper, 'max(90, $configured_quality)') !== false, 'profile media quality must not fall below 90');
 profile_media_assert_true(strpos($endpoint, 'VNSEEA_HandleCanonicalProfileMediaRequest') !== false, 'API v2 must delegate the canonical request');
 profile_media_assert_true(strpos($endpoint, "profile_media_contract") !== false, 'API v2 must detect the canonical contract');
 

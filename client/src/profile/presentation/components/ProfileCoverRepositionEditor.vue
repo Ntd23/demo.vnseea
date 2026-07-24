@@ -137,10 +137,10 @@ async function confirm() {
 
   try {
     const canvas = cropper.getCroppedCanvas({
-      width: 918,
-      height: 332,
-      minWidth: 918,
-      minHeight: 332,
+      width: 1836,
+      height: 664,
+      minWidth: 1836,
+      minHeight: 664,
       maxWidth: 4096,
       maxHeight: 4096,
       fillColor: "#ffffff",

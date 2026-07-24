@@ -50,11 +50,15 @@ export interface FeedRepository {
     action: "reply"
     commentId: number
     text?: string
+    imageFile?: File
+    gifFile?: File
+    audioFile?: File
   } | {
     action: "reaction"
     target: "comment" | "reply"
     targetId: number
-    reaction: FeedStoryReactionType
+    reaction?: FeedStoryReactionType
+    remove?: boolean
   }): Promise<FeedPostActionResult>
   createPost(input: {
     text: string
@@ -83,6 +87,7 @@ export interface FeedRepository {
   createStory(input: {
     file: File
     fileType: "image" | "video"
+    coverFile?: File
     privacy?: string
     title?: string
     description?: string
@@ -98,6 +103,10 @@ export interface FeedRepository {
       storyId: number
       ownerId: number
       text: string
+    }
+    | {
+      action: "delete"
+      storyId: number
     }
     | {
       action: "view"

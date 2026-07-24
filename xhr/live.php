@@ -174,13 +174,23 @@ if ($f == 'live') {
                     'post_id' => intval($post_id)
                 ));
             } else if (intval($post['live_ended']) === 1 || $stream_state === 'offline') {
-                $data['removed'] = 'yes';
+                // An ended broadcast is still a valid timeline post. Return a
+                // final session state so viewers render the ended card instead
+                // of treating the room shutdown as a network/API error.
+                $data['status'] = 200;
+                $data['post_id'] = intval($post['id']);
+                $data['provider'] = 'livekit';
+                $data['stream_name'] = $post['stream_name'];
+                $data['room_name'] = '';
+                $data['ws_url'] = '';
+                $data['token'] = '';
                 $data['stream_state'] = 'offline';
-                $data['message'] = $error_icon . $wo['lang']['stream_has_ended'];
+                $data['heartbeat_age'] = $heartbeat_age;
+                $data['message'] = $wo['lang']['stream_has_ended'];
                 Wo_VnseeaCallDebugLog('live_join', array(
                     'user_id' => intval($wo['user']['id']),
                     'role' => 'viewer',
-                    'status' => 410,
+                    'status' => 200,
                     'blocked_reason' => 'stream_offline',
                     'post_id' => intval($post['id']),
                     'stream_name' => $post['stream_name'],
@@ -495,7 +505,6 @@ if ($f == 'live') {
                     catch (Exception $e) {
                     }
                 }
-                Wo_DeletePost($post_id);
                 $deleted = true;
             } else {
                 // Ending a live session is idempotent. LiveKit's room-finished
@@ -506,14 +515,6 @@ if ($f == 'live') {
                 if ($post_still_exists === 0) {
                     $deleted = true;
                     $already_ended = true;
-                }
-            }
-        }
-        $posts = $db->where('stream_name','','<>')->where('postFile','')->get(T_POSTS);
-        if (!empty($posts)) {
-            foreach ($posts as $key => $value) {
-                if ((!empty($value->agora_resource_id) || !empty($value->agora_sid) || !empty($value->agora_token)) && empty($value->postFile)) {
-                    Wo_DeletePost($value->id,'shared');
                 }
             }
         }

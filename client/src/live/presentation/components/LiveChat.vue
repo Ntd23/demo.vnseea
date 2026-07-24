@@ -111,8 +111,11 @@ function submitMessage() {
 watch(
   () => props.items.length,
   () => {
+    const shouldFollowLatest = !feedEl.value
+      || feedEl.value.scrollHeight - feedEl.value.scrollTop - feedEl.value.clientHeight < 56
+
     nextTick(() => {
-      if (feedEl.value) {
+      if (feedEl.value && shouldFollowLatest) {
         feedEl.value.scrollTop = feedEl.value.scrollHeight
       }
     })

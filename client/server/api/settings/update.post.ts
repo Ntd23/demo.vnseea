@@ -3,6 +3,7 @@
 import { createError, deleteCookie, getHeader, readBody, readMultipartFormData, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
+import { postBackendApiUpload } from "../../utils/backend-api-upload"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 
@@ -46,6 +47,20 @@ const isFiniteNumberLike = (value: unknown) => {
   }
 
   return Number.isFinite(Number(value))
+}
+
+type BackendProfileMediaResponse = {
+  api_status?: number | string
+  message?: string
+  profile_media?: {
+    kind?: "avatar" | "cover"
+    url?: string
+    full_url?: string
+    post_id?: string
+  }
+  errors?: {
+    error_text?: string
+  }
 }
 
 const normalizeVerified = (value: unknown) =>
@@ -314,6 +329,41 @@ export default defineEventHandler(async (event) => {
       statusCode: 401,
       statusMessage: "Authentication is required.",
     })
+  }
+
+  if (section === "avatar") {
+    const formData = new FormData()
+    formData.append("profile_media_contract", "canonical_crop_v1")
+
+    if (body.postText) {
+      formData.append("postText", text(body.postText))
+    }
+
+    for (const file of files.filter(item =>
+      item.name === "avatar" || item.name === "cover",
+    )) {
+      formData.append(
+        file.name!,
+        new Blob([file.data], { type: file.type || "image/jpeg" }),
+        file.filename || `${file.name}.jpg`,
+      )
+    }
+
+    const response = assertBackendApiSuccess(
+      await postBackendApiUpload<BackendProfileMediaResponse>(
+        event,
+        "update-user-data",
+        formData,
+      ),
+      "Unable to update profile image.",
+    )
+
+    return {
+      success: true,
+      status: "updated",
+      message: response.message || "Profile image updated successfully.",
+      profileMedia: response.profile_media,
+    }
   }
 
   const payload = pickAllowedPayload(body, config)

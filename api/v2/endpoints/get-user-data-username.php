@@ -56,8 +56,19 @@ if (empty($error_code)) {
         if (is_array($recipient_data_)) {
             $recipient_data = $recipient_data_;
         }
+        $profile_media_sources = array(
+            'avatar_full' => !empty($recipient_data['avatar_full']) ? $recipient_data['avatar_full'] : '',
+            'avatar_org' => !empty($recipient_data['avatar_org']) ? $recipient_data['avatar_org'] : '',
+            'cover_full' => !empty($recipient_data['cover_full']) ? $recipient_data['cover_full'] : '',
+            'cover_org' => !empty($recipient_data['cover_org']) ? $recipient_data['cover_org'] : '',
+        );
         foreach ($non_allowed as $key => $value) {
            unset($recipient_data[$value]);
+        }
+        foreach ($profile_media_sources as $profile_media_key => $profile_media_value) {
+            if ($profile_media_value !== '') {
+                $recipient_data[$profile_media_key] = Wo_GetMedia($profile_media_value);
+            }
         }
 	    $fetch = explode(',', $_POST['fetch']);
 		$data = array();
