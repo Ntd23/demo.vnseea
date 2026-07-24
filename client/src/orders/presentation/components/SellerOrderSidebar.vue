@@ -1,24 +1,24 @@
 <!-- English description: Seller order sidebar with locale-aware payout totals and order actions. -->
 <template>
   <div class="space-y-6">
-    <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
+    <section class="surface-card space-y-6 border border-[var(--border-light)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-lg)] sm:p-8">
+      <p class="pl-1 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">
         {{ $t("orders.sidebar.coordination") }}
       </p>
 
       <div class="space-y-4">
         <OrdersOrderPriceSummary
           :order="order"
-          card-class="surface-card p-6 bg-primary-50/30 ring-1 ring-primary-100 shadow-sm"
+          card-class="surface-card border border-[var(--border-light)] bg-[var(--bg-muted)] p-6 shadow-[var(--shadow-sm)]"
         />
 
         <!-- Payment Info Card -->
-        <div class="surface-card p-5 bg-white ring-1 ring-secondary-100 space-y-4 group/info">
-          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
+        <div class="surface-card group/info space-y-4 border border-[var(--border-light)] bg-[var(--bg-surface)] p-5">
+          <p class="pl-1 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
             {{ $t("orders.summary.totalPayment") }}
           </p>
           <div class="flex flex-col gap-2">
-            <p class="text-sm font-black text-secondary-900 group-hover/info:text-secondary-900 transition-colors">
+            <p class="text-sm font-black text-[var(--text-primary)] transition-colors group-hover/info:text-[var(--text-primary)]">
               {{ displayOrderPaymentMethod(order.paymentMethod) }}
             </p>
             <div class="flex flex-wrap items-center gap-3">
@@ -29,7 +29,7 @@
               >
                 {{ $t(paymentMeta.label) }}
               </UBadge>
-              <span class="text-[10px] font-bold text-secondary-400 tracking-wider">
+              <span class="text-[10px] font-bold tracking-wider text-[var(--text-tertiary)]">
                 #{{ order.paymentReference }}
               </span>
             </div>
@@ -37,13 +37,13 @@
         </div>
 
         <!-- Payout Info Card -->
-        <div class="surface-card p-5 bg-white ring-1 ring-secondary-100 space-y-4 group/payout">
-          <p class="text-[10px] font-black uppercase tracking-[0.18em] text-secondary-400 pl-1">
+        <div class="surface-card group/payout space-y-4 border border-[var(--border-light)] bg-[var(--bg-surface)] p-5">
+          <p class="pl-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
             {{ $t("orders.sidebar.payoutShop") }}
           </p>
           <div class="space-y-3">
             <div class="flex items-center justify-between gap-3">
-              <p class="text-base font-black text-secondary-900 group-hover/payout:text-secondary-900 transition-colors">
+              <p class="text-base font-black text-[var(--text-primary)] transition-colors group-hover/payout:text-[var(--text-primary)]">
                 {{ formatOrderCurrency(order.payoutAmount) }}
               </p>
               <UBadge
@@ -55,10 +55,10 @@
               </UBadge>
             </div>
             <div class="space-y-1">
-              <p class="text-[11px] font-semibold text-secondary-500 leading-relaxed italic">
+              <p class="text-[11px] font-semibold italic leading-relaxed text-[var(--text-secondary)]">
                 {{ displayOrderText(order.payoutWindow) }}
               </p>
-              <p class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-tertiary)]">
                 ID: {{ order.payoutReference }}
               </p>
             </div>
@@ -66,17 +66,17 @@
         </div>
 
         <!-- Shipping Info Card -->
-        <div class="surface-card p-5 bg-white ring-1 ring-secondary-100 space-y-4 group/ship">
-          <p class="text-[10px] font-black uppercase tracking-[0.18em] text-secondary-400 pl-1">
+        <div class="surface-card group/ship space-y-4 border border-[var(--border-light)] bg-[var(--bg-surface)] p-5">
+          <p class="pl-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
             {{ $t("orders.detail.shippingProvider") }}
           </p>
           <div class="space-y-2">
-            <p class="text-sm font-black text-secondary-900 group-hover/ship:text-secondary-900 transition-colors">
+            <p class="text-sm font-black text-[var(--text-primary)] transition-colors group-hover/ship:text-[var(--text-primary)]">
               {{ order.shippingProvider }}
             </p>
-            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary-50 border border-secondary-100">
-              <Icon name="i-ph-package-duotone" class="h-3.5 w-3.5 text-secondary-400" />
-              <p class="text-[10px] font-black text-secondary-600 uppercase tracking-widest">
+            <div class="flex items-center gap-2 rounded-lg border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2">
+              <Icon name="i-ph-package-duotone" class="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+              <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
                 {{ displayOrderText(order.trackingCode) }}
               </p>
             </div>
@@ -94,8 +94,8 @@
     </section>
 
     <!-- Task Section -->
-    <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
+    <section class="surface-card space-y-6 border border-[var(--border-light)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-lg)] sm:p-8">
+      <p class="pl-1 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">
         {{ $t("orders.sidebar.tasks") }}
       </p>
 
@@ -103,7 +103,7 @@
         <UButton
           size="xl"
           icon="i-ph-lightning-duotone"
-          class="rounded-2xl bg-secondary-900 hover:bg-black text-white font-black text-xs uppercase tracking-widest h-12 shadow-lg transition-all active:scale-95"
+          class="h-12 rounded-2xl bg-[var(--bg-media)] text-xs font-black uppercase tracking-widest text-[var(--text-media)] shadow-[var(--shadow-lg)] transition-all hover:opacity-90 active:scale-95"
         >
           {{ $t(primaryActionLabel) }}
         </UButton>
@@ -122,7 +122,7 @@
           :to="appRoutes.myProducts"
           size="xl"
           icon="i-ph-arrow-left-duotone"
-          class="rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-black text-xs uppercase tracking-widest h-12 shadow-xl shadow-primary-500/30 transition-all active:scale-95"
+          class="h-12 rounded-2xl bg-[var(--bg-brand)] text-xs font-black uppercase tracking-widest text-[var(--text-inverse)] shadow-[var(--shadow-brand)] transition-all hover:bg-[var(--bg-brand-hover)] active:scale-95"
         >
           {{ $t("orders.sidebar.backToProducts") }}
         </UButton>

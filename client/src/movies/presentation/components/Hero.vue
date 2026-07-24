@@ -1,5 +1,6 @@
+<!-- English description: Renders the featured movie hero and its key viewing actions. -->
 <template>
-  <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-xl)] sm:rounded-[32px]">
+  <section class="overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-xl)] sm:rounded-[32px]">
     <div class="relative overflow-hidden">
       <img :alt="movie.title" class="absolute inset-0 h-full w-full object-cover" :src="movie.backdrop">
       <div class="absolute inset-0 bg-[linear-gradient(115deg,rgba(15,23,42,0.92)_8%,rgba(15,23,42,0.74)_42%,rgba(15,23,42,0.18)_100%)]" />
@@ -44,7 +45,7 @@
           <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <NuxtLink
               :to="movie.to"
-              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-5 text-[13px] font-black text-[var(--text-primary)] shadow-[0_10px_30px_rgba(255,255,255,0.18)] transition hover:-translate-y-0.5 sm:w-auto"
+              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-5 text-[13px] font-black text-[var(--color-on-light-surface)] shadow-[0_10px_30px_rgba(255,255,255,0.18)] transition hover:-translate-y-0.5 sm:w-auto"
             >
               <Icon name="i-ph-play-fill" class="h-4 w-4" />
               {{ primaryLabel }}

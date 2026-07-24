@@ -12,58 +12,58 @@
     </template>
 
     <div class="page-settings-basics space-y-5">
-        <UFormField
-          name="name"
-          :label="$t('community.pageSettings.basics.fields.name')"
-          required
+      <UFormField
+        name="name"
+        :label="$t('community.pageSettings.basics.fields.name')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
+        <UInput
+          v-model="model.name"
+          :placeholder="$t('community.pageSettings.basics.fields.namePlaceholder')"
+          color="primary"
           size="xl"
-          class="space-y-2"
-        >
-          <UInput
-            v-model="model.name"
-            :placeholder="$t('community.pageSettings.basics.fields.namePlaceholder')"
-            color="primary"
-            size="xl"
-            class="w-full"
-            :ui="inputUi"
+          class="w-full"
+          :ui="inputUi"
+        />
+      </UFormField>
+      <UFormField 
+        name="slug"
+        :label="$t('community.pageSettings.basics.fields.url')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
+        <div class="flex w-full items-center rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface)] overflow-hidden shadow-sm focus-within:border-[var(--bg-brand)] focus-within:ring-2 focus-within:ring-[var(--bg-brand)]/20">
+          <div class="flex items-center justify-center bg-[var(--bg-muted)] border-r border-[var(--border-light)] px-4 h-14 text-[var(--text-secondary)] text-[14px] font-semibold whitespace-nowrap select-none">
+            {{ urlPrefix }}
+          </div>
+          <input
+            v-model="model.slug"
+            type="text"
+            :placeholder="$t('community.pageSettings.basics.fields.slugPlaceholder')"
+            class="flex-1 h-14 px-4 text-[15px] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none border-none bg-transparent"
           />
-        </UFormField>
-              <UFormField 
-          name="slug"
-          :label="$t('community.pageSettings.basics.fields.url')"
-          required
-          size="xl"
-          class="space-y-2"
-        >
-          <div class="flex w-full items-center rounded-[18px] border border-slate-200 bg-white overflow-hidden shadow-sm focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20">
-            <div class="flex items-center justify-center bg-slate-50 border-r border-slate-200 px-4 h-14 text-[var(--text-secondary)] text-[14px] font-semibold whitespace-nowrap select-none">
-              {{ urlPrefix }}
-            </div>
-            <input
-              v-model="model.slug"
-              type="text"
-              :placeholder="$t('community.pageSettings.basics.fields.slugPlaceholder')"
-              class="flex-1 h-14 px-4 text-[15px] text-[var(--text-primary)] placeholder-slate-400 focus:outline-none border-none bg-transparent"
-            />
-          </div>
+        </div>
 
-          <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[var(--text-secondary)]">
-            <span class="text-[13px] text-[var(--text-secondary)] block w-full">
-              Link trang: {{ urlPrefix }}{{ model.slug || '' }}
-            </span>
-            <span class="page-settings-basics__hint">
-              {{ $t("community.pageSettings.basics.fields.urlSuggested", { slug: suggestedSlug || $t("community.pageSettings.basics.fields.slugPlaceholder") }) }}
-            </span>
-            <button
-              v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
-              type="button"
-              class="page-settings-basics__suggestion-button"
-              @click="model.slug = suggestedSlug"
-            >
-              {{ $t("community.pageSettings.basics.fields.urlUseSuggestion") }}
-            </button>
-          </div>
-        </UFormField>
+        <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[var(--text-secondary)]">
+          <span class="text-[13px] text-[var(--text-secondary)] block w-full">
+            Link trang: {{ urlPrefix }}{{ model.slug || '' }}
+          </span>
+          <span class="page-settings-basics__hint">
+            {{ $t("community.pageSettings.basics.fields.urlSuggested", { slug: suggestedSlug || $t("community.pageSettings.basics.fields.slugPlaceholder") }) }}
+          </span>
+          <button
+            v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
+            type="button"
+            class="page-settings-basics__suggestion-button"
+            @click="model.slug = suggestedSlug"
+          >
+            {{ $t("community.pageSettings.basics.fields.urlUseSuggestion") }}
+          </button>
+        </div>
+      </UFormField>
       <UFormField
         name="summary"
         :label="$t('community.pageSettings.basics.fields.summary')"
@@ -321,7 +321,7 @@ const tagCount = computed(() =>
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border-default);
   border-radius: 999px;
   background: var(--bg-surface);
   color: var(--text-primary);
@@ -361,7 +361,7 @@ const tagCount = computed(() =>
 }
 
 .page-settings-basics__stat {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-muted);
   padding: 13px 16px;
@@ -372,7 +372,7 @@ const tagCount = computed(() =>
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-muted);
   padding: 14px 16px;
@@ -382,7 +382,7 @@ const tagCount = computed(() =>
   display: inline-flex;
   flex: 0 0 auto;
   border-radius: 999px;
-  background: #eef2ff;
+  background: color-mix(in srgb, var(--bg-brand) 10%, transparent);
   color: var(--bg-brand-hover);
   font-size: 12px;
   font-weight: 800;
@@ -399,15 +399,15 @@ const tagCount = computed(() =>
 .page-settings-basics :deep(input),
 .page-settings-basics :deep(textarea),
 .page-settings-basics :deep(button[role="combobox"]) {
-  border: 1px solid #cbd5e1;
-  background: #ffffff !important;
-  color: #0f172a !important;
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
   box-shadow: none;
 }
 
 .page-settings-basics :deep(input::placeholder),
 .page-settings-basics :deep(textarea::placeholder) {
-  color: #94a3b8 !important;
+  color: var(--text-secondary) !important;
 }
 
 .page-settings-basics :deep(label) {

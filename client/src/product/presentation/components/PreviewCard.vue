@@ -8,31 +8,31 @@
     <div class="relative h-[280px] overflow-hidden">
       <!-- Background Decorations -->
       <div class="absolute inset-0 transition-transform duration-1000 group-hover:scale-110" :style="{ background: previewBackground }" />
-      <div class="absolute inset-0 bg-gradient-to-t from-secondary-950/80 via-transparent to-transparent opacity-60" />
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent_50%)]" />
+      <div class="absolute inset-0 bg-[linear-gradient(to_top,color-mix(in_srgb,var(--bg-media)_80%,transparent),transparent)] opacity-60" />
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,color-mix(in_srgb,var(--text-media)_20%,transparent),transparent_50%)]" />
       
       <!-- Duotone Icon Deco -->
-      <div class="absolute right-[-10%] top-8 h-48 w-48 text-white/5 transition-all duration-700 group-hover:scale-125 group-hover:rotate-12 group-hover:text-white/10 pointer-events-none">
+      <div class="absolute right-[-10%] top-8 h-48 w-48 text-[color-mix(in_srgb,var(--text-media)_5%,transparent)] transition-all duration-700 group-hover:scale-125 group-hover:rotate-12 group-hover:text-[color-mix(in_srgb,var(--text-media)_10%,transparent)] pointer-events-none">
         <Icon :name="previewIcon + '-duotone'" class="h-full w-full" />
       </div>
 
       <!-- Badges -->
       <div class="absolute left-6 top-6 flex flex-wrap gap-3">
-        <div class="rounded-xl border border-white/10 bg-secondary-950/60 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-white shadow-xl backdrop-blur-xl">
+        <div class="rounded-xl border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--bg-media)_60%,transparent)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-media)] shadow-[var(--shadow-lg)] backdrop-blur-xl">
           {{ categoryLabel }}
         </div>
-        <div class="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-white shadow-xl backdrop-blur-xl transition-colors group-hover:bg-primary-500/30">
+        <div class="rounded-xl border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--text-media)_10%,transparent)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-media)] shadow-[var(--shadow-lg)] backdrop-blur-xl transition-colors group-hover:bg-[color-mix(in_srgb,var(--bg-brand)_30%,transparent)]">
           {{ conditionLabel }}
         </div>
       </div>
 
       <!-- Location Info -->
       <div class="absolute bottom-6 left-6 flex items-center gap-3">
-        <div class="flex items-center gap-2.5 rounded-xl border border-white/5 bg-black/40 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-white shadow-xl backdrop-blur-xl">
-          <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 text-sky-400" />
+        <div class="flex items-center gap-2.5 rounded-xl border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--bg-media)_40%,transparent)] px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-media)] shadow-[var(--shadow-lg)] backdrop-blur-xl">
+          <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 text-[var(--color-success)]" />
           {{ location || locationPlaceholder || $t("pages.productEditor.previewLocationPlaceholder") }}
         </div>
-        <div class="rounded-xl border border-white/20 bg-white/20 px-4 py-2.5 text-[10px] font-semibold text-white shadow-xl backdrop-blur-xl">
+        <div class="rounded-xl border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--text-media)_20%,transparent)] px-4 py-2.5 text-[10px] font-semibold text-[var(--text-media)] shadow-[var(--shadow-lg)] backdrop-blur-xl">
           {{ $t("pages.productEditor.imageCount", { count: imageCount }) }}
         </div>
       </div>
@@ -42,19 +42,19 @@
     <div class="relative p-8 space-y-6">
       <!-- Preview Action Icons (Mock) -->
       <div class="absolute -top-10 right-8 flex items-center gap-4">
-        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-white text-[var(--text-primary)] shadow-2xl ring-1 ring-secondary-100 transition-all hover:bg-primary-50 hover:text-primary-600 active:scale-90 border-none">
+        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-[var(--shadow-lg)] ring-1 ring-[var(--border-light)] transition-all hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-brand)] active:scale-90 border-none">
           <Icon :name="leadingIcon + '-duotone'" class="h-7 w-7" />
         </div>
-        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-primary-600 text-white shadow-2xl shadow-primary-500/40 active:scale-90 transition-all border-none">
+        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-[var(--bg-brand)] text-[var(--text-inverse)] shadow-[var(--shadow-brand)] active:scale-90 transition-all border-none">
           <Icon :name="trailingIcon + '-duotone'" class="h-8 w-8" />
         </div>
       </div>
 
       <div class="space-y-2">
-        <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)] transition-colors group-hover:text-secondary-900">
+        <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)] transition-colors group-hover:text-[var(--text-primary)]">
           {{ currencyLabel }}
         </p>
-        <h3 class="pr-20 text-2xl font-extrabold leading-tight tracking-tight text-secondary-950 transition-colors line-clamp-1 group-hover:text-primary-950">
+        <h3 class="pr-20 text-2xl font-extrabold leading-tight tracking-tight text-[var(--text-primary)] transition-colors line-clamp-1 group-hover:text-[var(--text-brand)]">
           {{ title || emptyTitle }}
         </h3>
       </div>
@@ -63,16 +63,16 @@
         "{{ description }}"
       </p>
 
-      <div class="flex items-center justify-between gap-4 pt-6 border-t border-secondary-50 transition-colors group-hover:border-primary-100">
+      <div class="flex items-center justify-between gap-4 pt-6 border-t border-[var(--border-light)] transition-colors">
         <div class="space-y-1">
           <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] leading-none text-[var(--text-tertiary)]">{{ $t("pages.productEditor.priceLabel") }}</p>
-          <p class="pt-1 text-2xl font-extrabold leading-none tracking-tight text-sky-600">
+          <p class="pt-1 text-2xl font-extrabold leading-none tracking-tight text-[var(--text-brand)]">
             {{ price }}
           </p>
         </div>
 
         <div class="flex flex-col items-end gap-2 text-right">
-          <div class="inline-flex items-center gap-2 rounded-xl bg-sky-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-sky-700 ring-1 ring-sky-100 shadow-sm">
+          <div class="inline-flex items-center gap-2 rounded-xl bg-[color-mix(in_srgb,var(--color-success)_10%,transparent)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--color-success)] ring-1 ring-[var(--border-light)] shadow-[var(--shadow-sm)]">
             <Icon name="i-ph-check-circle-duotone" class="h-4 w-4" />
             {{ statusLabel }}
           </div>

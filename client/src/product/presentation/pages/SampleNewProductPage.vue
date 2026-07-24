@@ -1,3 +1,4 @@
+<!-- English description: Renders a minimal product editor integration sample. -->
 <template>
   <section class="space-y-4">
     <header>
@@ -12,7 +13,7 @@
       </p>
     </header>
 
-    <div class="rounded-2xl border border-slate-200 bg-white p-5">
+    <div class="rounded-2xl border border-[var(--border-light)] bg-[var(--bg-surface)] p-5">
       <p class="text-sm text-[var(--text-secondary)]">
         Completion: {{ completionCount }}/7
       </p>

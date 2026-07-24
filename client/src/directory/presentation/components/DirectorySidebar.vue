@@ -1,7 +1,8 @@
 <!-- English description: Renders contextual directory filters and recommendations. -->
 <template>
   <aside class="space-y-4">
-    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]">
+      <div class="p-4">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.sidebarCategoriesEyebrow") }}</p>
@@ -56,9 +57,11 @@
           </UBadge>
         </UButton>
       </div>
-    </UCard>
+    </div>
+  </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]">
+      <div class="p-4">
       <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.sidebarFeaturedEyebrow") }}</p>
       <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.directoryPage.sidebarFeaturedTitle") }}</h2>
 
@@ -96,6 +99,7 @@
         :title="t('pages.directoryPage.sidebarFeaturedEmptyTitle')"
         :description="t('pages.directoryPage.sidebarFeaturedEmptyDescription')"
       />
+    </div>
     </UCard>
   </aside>
 </template>

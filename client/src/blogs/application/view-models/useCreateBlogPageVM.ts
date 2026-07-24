@@ -194,10 +194,14 @@ export function useCreateBlogPageVM(
     thumbnailObjectUrl.value = ""
   }
 
-  const onThumbnailChange = (event: Event) => {
-    const input = event.target as HTMLInputElement
-    const file = input.files?.[0]
-    if (!file) return
+  const setThumbnailFile = (file: File | null) => {
+    if (!file) {
+      clearThumbnailObjectUrl()
+      thumbnailPreviewUrl.value = ""
+      thumbnailName.value = ""
+      thumbnailFile.value = null
+      return
+    }
 
     clearThumbnailObjectUrl()
     thumbnailObjectUrl.value = URL.createObjectURL(file)
@@ -207,10 +211,18 @@ export function useCreateBlogPageVM(
     cycleThumbnail()
   }
 
+  const onThumbnailChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    if (!file) return
+
+    setThumbnailFile(file)
+  }
+
   const createPayload = (status: BlogCreateDraft["status"]): BlogCreateDraft => ({
     title: title.value.trim(),
-    content: plainContent.value ? content.value.trim() : "",
-    description: description.value,
+    content: content.value.trim(),
+    description: description.value.trim(),
     category: category.value,
     tags: tagList.value,
     status,
@@ -379,6 +391,7 @@ export function useCreateBlogPageVM(
     checklistItems,
     cycleThumbnail,
     onThumbnailChange,
+    setThumbnailFile,
     saveDraft,
     publishBlog,
     quickFillDemo,

@@ -210,7 +210,7 @@ async function submitAddress() {
   gap: 12px;
   margin-top: 24px;
   padding-top: 18px;
-  border-top: 1px solid var(--color-secondary-200);
+  border-top: 1px solid var(--border-light);
 }
 
 .shipping-form__action {

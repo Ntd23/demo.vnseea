@@ -38,10 +38,10 @@ defineProps<{
 <style scoped>
 .movie-player {
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: #020617;
-  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .movie-player__frame {

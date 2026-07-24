@@ -1,84 +1,77 @@
-<!-- Description: Renders page avatar and banner upload controls for page settings. -->
+<!-- Description: Renders page banner and avatar uploading inputs with drag-n-drop preview settings. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.sidebar.media.eyebrow')"
     :title="$t('community.pageSettings.sidebar.media.title')"
     :description="$t('community.pageSettings.sidebar.media.desc')"
-    icon="i-ph-image-square-bold"
+    icon="i-ph-image-bold"
     :translate-text="false"
   >
-    <template #trailing>
-      <slot name="trailing" />
-    </template>
+    <div class="py-4">
+      <div class="page-preview">
+        <!-- Banner Container -->
+        <div class="page-preview__banner" :style="bannerStyle">
+          <!-- Dark gradient overlay for banner text readability -->
+          <div class="page-preview__overlay" />
 
-    <div class="page-preview">
-      <!-- Banner -->
-      <div
-        class="page-preview__banner"
-        :style="bannerStyle"
-      >
-        <div class="page-preview__overlay"></div>
+          <!-- Banner Upload trigger button -->
+          <div class="page-preview__banner-upload">
+            <button type="button" class="upload-btn" @click="bannerInput?.click()">
+              <Icon name="i-ph-camera-bold" class="upload-btn__icon" />
+            </button>
+            <input
+              ref="bannerInput"
+              type="file"
+              accept="image/*"
+              class="hidden-input"
+              @change="onFileChange($event, 'bannerUrl')"
+            >
+          </div>
 
-        <!-- Upload Banner -->
-        <div class="page-preview__banner-upload">
-          <input
-            ref="bannerInput"
-            type="file"
-            accept="image/*"
-            class="hidden-input"
-            @change="e => onFileChange(e, 'bannerUrl')"
-          >
+          <!-- Profile Avatar Wrapper -->
+          <div class="page-preview__avatar-wrapper">
+            <div class="page-preview__avatar">
+              <img
+                v-if="modelValue.avatarUrl || previewPage?.avatar"
+                :src="modelValue.avatarUrl || previewPage?.avatar"
+                :alt="modelValue.name"
+                class="page-preview__avatar-img"
+              >
+              <span v-else>{{ initials }}</span>
 
-          <button type="button" class="upload-btn" @click="bannerInput?.click()">
-            <Icon name="i-ph-camera-bold" class="upload-btn__icon" />
-          </button>
+              <!-- Avatar Upload trigger button -->
+              <button type="button" class="avatar-upload-btn" @click="avatarInput?.click()">
+                <Icon name="i-ph-camera-bold" class="avatar-upload-btn__icon" />
+              </button>
+              <input
+                ref="avatarInput"
+                type="file"
+                accept="image/*"
+                class="hidden-input"
+                @change="onFileChange($event, 'avatarUrl')"
+              >
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Avatar -->
-      <div class="page-preview__avatar-wrapper">
-        <div class="page-preview__avatar" :style="{ background: previewPage?.accent }">
-          <img
-            v-if="previewPage?.avatarUrl"
-            :src="previewPage?.avatarUrl"
-            class="page-preview__avatar-img"
-            @error="e => console.error('[ImageError] Avatar failed to load:', (e.target as HTMLImageElement).src)"
-          >
-
-          <span v-else>
-            {{ initials }}
-          </span>
-        </div>
-
-        <!-- Upload Avatar -->
-        <input
-          ref="avatarInput"
-          type="file"
-          accept="image/*"
-          class="hidden-input"
-          @change="e => onFileChange(e, 'avatarUrl')"
-        >
-
-        <button type="button" class="avatar-upload-btn" @click="avatarInput?.click()">
-          <Icon name="i-ph-camera-bold" class="avatar-upload-btn__icon" />
-        </button>
-      </div>
+      <div class="h-20 sm:h-24" />
     </div>
-
-    <!-- Spacer for overlapping avatar -->
-    <div class="h-20 sm:h-28"></div>
   </CommunitySettingsSectionCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue"
-import type { CommunityPageRecord, CommunityPageSettingsDraft } from "../../domain/types/community.types"
-import { getCommunityInitials } from "../../domain/services/community-helpers.service"
+import { ref, computed } from "vue"
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
+import { getCommunityInitials } from "../../domain/services/community-helpers.service"
+import type {
+  CommunityPageRecord,
+  CommunityPageSettingsDraft,
+} from "../../domain/types/community.types"
 
 const props = defineProps<{
   modelValue: CommunityPageSettingsDraft
-  previewPage: CommunityPageRecord | null
+  previewPage?: CommunityPageRecord | null
 }>()
 
 const emit = defineEmits<{
@@ -92,7 +85,7 @@ const initials = computed(() => getCommunityInitials(props.modelValue.name || pr
 
 const bannerStyle = computed(() => {
   const banner = props.previewPage?.banner
-  if (!banner) return { backgroundColor: "#f1f5f9" }
+  if (!banner) return { backgroundColor: "var(--bg-muted)" }
 
   // Already a CSS gradient or url() value
   if (banner.startsWith("linear-gradient") || banner.startsWith("radial-gradient")) {
@@ -109,7 +102,7 @@ const bannerStyle = computed(() => {
   }
 
   // Fallback to accent color
-  return { backgroundColor: props.previewPage?.accent || "#f1f5f9" }
+  return { backgroundColor: props.previewPage?.accent || "var(--bg-muted)" }
 })
 
 function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
@@ -122,11 +115,10 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
     
     if (field === "avatarUrl") {
       newDraft.avatarFile = file
-    }
-    else if (field === "bannerUrl") {
+    } else if (field === "bannerUrl") {
       newDraft.bannerFile = file
     }
-    
+
     emit("update:modelValue", newDraft)
   }
 }
@@ -135,12 +127,8 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
 <style scoped>
 .page-preview {
   position: relative;
-  margin-top: 16px;
+  width: 100%;
 }
-
-/* =========================
-   Banner
- ========================= */
 
 .page-preview__banner {
   position: relative;
@@ -148,7 +136,7 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
   height: 360px;
   overflow: hidden;
   border-radius: 24px;
-  background-color: #f1f5f9;
+  background-color: var(--bg-muted);
   background-size: cover;
   background-position: center;
 }
@@ -157,7 +145,7 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top,
-      rgba(0, 0, 0, 0.3),
+      color-mix(in srgb, var(--color-secondary-900) 30%, transparent),
       transparent);
 }
 
@@ -194,14 +182,14 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
 
   overflow: hidden;
 
-  border: 8px solid #ffffff;
+  border: 8px solid var(--bg-surface);
   border-radius: 999px;
 
   background: var(--bg-brand);
 
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+  box-shadow: var(--shadow-lg);
 
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 42px;
   font-weight: 900;
 }
@@ -245,7 +233,7 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
 .upload-btn {
   width: 48px;
   height: 48px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow-md);
 }
 
 /* Avatar button */
@@ -258,9 +246,9 @@ function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
   width: 48px;
   height: 48px;
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
 
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 .upload-btn__icon,

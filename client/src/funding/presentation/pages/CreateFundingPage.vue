@@ -17,7 +17,6 @@
             :placeholder="t('pages.createFundingPage.formTitlePlaceholder')"
             :disabled="submitting"
             size="xl"
-            :ui="{ base: 'h-12 rounded-xl shadow-none' }"
           />
         </UFormField>
 
@@ -35,7 +34,6 @@
             :placeholder="t('pages.createFundingPage.goalPlaceholder')"
             :disabled="submitting"
             size="xl"
-            :ui="{ base: 'h-12 rounded-xl shadow-none' }"
           />
         </UFormField>
 
@@ -53,7 +51,6 @@
             autoresize
             :rows="6"
             class="w-full"
-            :ui="{ base: 'rounded-xl px-4 py-3 shadow-none' }"
           />
         </UFormField>
 
@@ -152,8 +149,8 @@ const {
 
 .create-funding__card {
   border-radius: 24px;
-  border: 1px solid #e2e8f0; /* slate-200 */
-  background-color: #ffffff;
+  border: 1px solid var(--border-light); /* slate-200 */
+  background-color: var(--bg-surface);
   padding: 24px;
   box-shadow:
     0 1px 3px 0 rgba(0, 0, 0, 0.1),
@@ -201,42 +198,13 @@ const {
   gap: 24px;
 }
 
-/* Sync deep styles with CreationForm.vue for Nuxt UI */
-.create-funding__card :deep(label) {
-  font-weight: 700 !important;
-  color: #0f172a !important;
-  font-size: 15px !important;
-  margin-bottom: 8px !important;
-}
-
-.create-funding__card :deep(input:not([type="file"])),
-.create-funding__card :deep(textarea) {
-  border: 1px solid #e2e8f0 !important; /* slate-200 */
-  border-radius: 12px !important;
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-  outline: none !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease !important;
-}
-
-.create-funding__card :deep(input:not([type="file"]):focus),
-.create-funding__card :deep(textarea:focus) {
-  border-color: var(--bg-brand) !important; /* primary-500 */
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--bg-brand) 15%, transparent) !important;
-}
-
 .create-funding__preview {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   margin-bottom: 12px;
-  border: 1px solid #dbe3f2;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  background: #f8fafc;
+  background: var(--bg-muted);
 }
 
 .create-funding__preview img {
@@ -255,7 +223,7 @@ const {
   justify-content: space-between;
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
 }
 
 @media (max-width: 520px) {

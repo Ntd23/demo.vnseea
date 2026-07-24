@@ -77,11 +77,11 @@ const avatarUrl = computed(() =>
 const coverStyle = computed(() =>
   coverUrl.value
     ? { backgroundImage: `url(${coverUrl.value})` }
-    : { backgroundColor: "#f1f5f9" },
+    : { backgroundColor: "var(--bg-muted)" },
 )
 
 const avatarStyle = computed(() => ({
-  backgroundColor: props.previewGroup?.accent || "#f1f5f9",
+  backgroundColor: props.previewGroup?.accent || "var(--bg-muted)",
 }))
 
 function handleFileChange(event: Event, type: "avatar" | "banner") {
@@ -127,13 +127,13 @@ function handleFileChange(event: Event, type: "avatar" | "banner") {
   align-items: center;
   justify-content: center;
   border: 0;
-  background: rgba(241, 245, 249, 0.56);
+  background: color-mix(in srgb, var(--bg-surface) 60%, transparent);
   color: var(--text-primary);
   transition: background-color 0.15s ease;
 }
 
 .group-media__cover-action:hover {
-  background: rgba(226, 232, 240, 0.72);
+  background: color-mix(in srgb, var(--color-secondary-200) 72%, transparent);
 }
 
 .group-media__avatar-wrap {
@@ -150,9 +150,9 @@ function handleFileChange(event: Event, type: "avatar" | "banner") {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 6px solid #ffffff;
+  border: 6px solid var(--bg-surface);
   border-radius: 999px;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .group-media__avatar-img {
@@ -168,14 +168,14 @@ function handleFileChange(event: Event, type: "avatar" | "banner") {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(241, 245, 249, 0.72);
+  background: color-mix(in srgb, var(--bg-muted) 72%, transparent);
   color: var(--text-primary);
   opacity: 0.95;
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .group-media__avatar-action:hover {
-  background: rgba(226, 232, 240, 0.88);
+  background: color-mix(in srgb, var(--color-secondary-200) 88%, transparent);
   transform: scale(1.02);
 }
 

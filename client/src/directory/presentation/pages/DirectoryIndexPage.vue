@@ -1,29 +1,6 @@
 <!-- English description: Premium single-column WoWonder directory middle content page, natively aligned with layout-level sidebar. -->
 <template>
-  <div class="space-y-6">
-    
-    <!-- ── Discover Header Banner (Full-Width of middle column) ─────── -->
-    <div :class="['wo_directory_head', activeCategory.accentClass]">
-      <div class="wo_directory_head_content flex items-start gap-4">
-        <span class="head-icon-box shadow-md">
-          <Icon :name="activeCategory.icon" class="h-7 w-7 text-white" />
-        </span>
-        <div class="min-w-0">
-          <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight leading-tight">
-            {{ activeCategory.headerTitle }}
-          </h1>
-          <p class="text-[13px] font-semibold text-[var(--text-secondary)] mt-1.5 leading-relaxed max-w-3xl">
-            {{ activeCategory.longDescription }}
-          </p>
-        </div>
-      </div>
-      
-      <!-- Double Wave SVGs (Sunshine Theme Trademark Accent) -->
-      <svg class="wave-accent text-slate-200/50" xmlns="http://www.w3.org/2000/svg" width="231" height="16" viewBox="0 0 231 16" fill="none">
-        <path d="M219.137 3.73034C192.486 10.1419 150.867 7.69945 117.645 5.40965C98.2952 4.11209 78.5808 2.58543 57.7711 2.50911C31.4852 2.4329 15.4216 6.55455 4.4691 11.0578C3.37385 11.5158 -0.642052 11.2105 0.088112 10.6762C15.4216 2.20392 46.4536 -0.391312 86.9777 1.66964C128.962 3.80679 175.692 9.8366 213.661 2.66189C217.311 1.89862 222.423 2.96719 219.137 3.73034Z" fill="currentColor"></path>
-        <path d="M228.995 8.72779C201.249 16.0495 160.726 14.4749 123.122 11.8769C103.043 10.4598 82.9631 8.72779 61.4233 8.41288C36.9628 8.01924 21.2642 11.1684 11.407 15.7346C10.3118 16.2857 5.5657 15.892 6.66095 15.3409C43.8993 -6.62428 164.741 22.8988 222.79 7.54674C226.805 6.60214 232.282 7.86178 228.995 8.72779Z" fill="currentColor"></path>
-      </svg>
-    </div>
+  <div class="space-y-6 mt-1.5">
 
     <!-- ── Mobile-Only Responsive Horizontal Capsules ────────────────── -->
     <nav class="xl:hidden flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
@@ -35,7 +12,7 @@
           'px-4 py-2 rounded-full font-bold text-xs shrink-0 transition-all border',
           activeTab === category.value 
             ? 'bg-primary text-white border-primary shadow-sm' 
-            : 'bg-white text-[var(--text-secondary)] border-[var(--border-default)] hover:bg-slate-50'
+            : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border-[var(--border-default)] hover:bg-[var(--bg-surface-hover)]'
         ]"
         @click="selectCategory(category)"
       >
@@ -80,7 +57,7 @@
             <article v-for="user in users" :key="user.id" class="directory-card relative overflow-hidden">
               <div class="cover-accent bg-gradient-to-tr from-sky-400 to-blue-600" />
               <div class="card-inner p-4 pt-12 flex flex-col items-center text-center">
-                <UAvatar :src="user.avatarUrl" :alt="user.title" size="xl" class="border-4 border-white shadow-md relative z-10 hover-avatar" />
+                <UAvatar :src="user.avatarUrl" :alt="user.title" size="xl" class="border-4 border-[var(--bg-surface)] shadow-md relative z-10 hover-avatar" />
                 
                 <NuxtLink :to="user.href" class="font-extrabold text-[var(--text-primary)] hover:text-blue-600 mt-3 text-base truncate max-w-full">
                   {{ user.title }}
@@ -89,7 +66,7 @@
                   {{ user.subtitle }}
                 </span>
                 
-                <span class="text-xs font-bold text-[var(--text-secondary)] mt-2 bg-slate-100 rounded-full px-3 py-1">
+                <span class="text-xs font-bold text-[var(--text-secondary)] mt-2 bg-[var(--bg-muted)] rounded-full px-3 py-1">
                   {{ user.metricLabel || "Profile" }}
                 </span>
 
@@ -122,7 +99,7 @@
             <article v-for="page in pages" :key="page.id" class="directory-card relative overflow-hidden">
               <div class="cover-accent bg-gradient-to-tr from-violet-400 to-indigo-600" />
               <div class="card-inner p-4 pt-12 flex flex-col items-center text-center">
-                <UAvatar :src="page.avatarUrl" :alt="page.title" size="xl" class="border-4 border-white shadow-md relative z-10 hover-avatar" />
+                <UAvatar :src="page.avatarUrl" :alt="page.title" size="xl" class="border-4 border-[var(--bg-surface)] shadow-md relative z-10 hover-avatar" />
                 
                 <NuxtLink :to="page.href" class="font-extrabold text-[var(--text-primary)] hover:text-indigo-600 mt-3 text-base truncate max-w-full">
                   {{ page.title }}
@@ -164,7 +141,7 @@
             <article v-for="group in groups" :key="group.id" class="directory-card relative overflow-hidden">
               <div class="cover-accent bg-gradient-to-tr from-teal-400 to-emerald-600" />
               <div class="card-inner p-4 pt-12 flex flex-col items-center text-center">
-                <UAvatar :src="group.avatarUrl" :alt="group.title" size="xl" class="border-4 border-white shadow-md relative z-10 hover-avatar" />
+                <UAvatar :src="group.avatarUrl" :alt="group.title" size="xl" class="border-4 border-[var(--bg-surface)] shadow-md relative z-10 hover-avatar" />
                 
                 <NuxtLink :to="group.href" class="font-extrabold text-[var(--text-primary)] hover:text-emerald-600 mt-3 text-base truncate max-w-full">
                   {{ group.title }}
@@ -220,8 +197,8 @@
         <!-- 6. Market Grid (Thị trường) -->
         <div v-else-if="activeTab === 'market'">
           <div v-if="products.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-grid">
-            <article v-for="product in products" :key="product.id" class="directory-card group overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-sm hover:shadow-md transition duration-300 flex flex-col relative">
-              <div class="relative aspect-square overflow-hidden bg-slate-50">
+            <article v-for="product in products" :key="product.id" class="directory-card group overflow-hidden rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-sm hover:shadow-md transition duration-300 flex flex-col relative">
+              <div class="relative aspect-square overflow-hidden bg-[var(--bg-muted)]">
                 <NuxtLink :to="product.href" class="block h-full">
                   <NuxtImg v-if="product.imageUrl" :src="product.imageUrl" :alt="product.title" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />
                   <div v-else class="flex h-full w-full items-center justify-center bg-gradient-to-tr from-orange-400 to-amber-600 text-white">
@@ -241,9 +218,9 @@
                     {{ product.priceFormat || (product.price + ' ' + (product.currency || 'VND')) }}
                   </div>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-xs text-[var(--text-tertiary)] font-bold border-t border-slate-50 pt-3">
+                <div class="mt-3 flex items-center justify-between text-xs text-[var(--text-tertiary)] font-bold border-t border-[var(--border-light)] pt-3">
                   <span class="truncate max-w-[120px]">{{ product.seller }}</span>
-                  <span class="px-2 py-0.5 bg-slate-100 rounded text-[var(--text-secondary)] font-extrabold uppercase text-[10px]">{{ product.condition }}</span>
+                  <span class="px-2 py-0.5 bg-[var(--bg-muted)] rounded text-[var(--text-secondary)] font-extrabold uppercase text-[10px]">{{ product.condition }}</span>
                 </div>
               </div>
             </article>
@@ -283,12 +260,12 @@
         <div v-else-if="activeTab === 'forums'">
           <div v-if="forumSections.length" class="space-y-4 animate-grid w-full">
             <article v-for="section in forumSections" :key="section.id" class="border border-slate-100 rounded-2xl bg-white overflow-hidden shadow-sm">
-              <header class="bg-slate-50 border-b border-slate-100 p-4">
+              <header class="bg-[var(--bg-muted)] border-b border-slate-100 p-4">
                 <h3 class="font-extrabold text-[var(--text-primary)] text-sm tracking-wide">{{ section.title }}</h3>
                 <p v-if="section.description" class="text-xs text-[var(--text-tertiary)] mt-0.5">{{ section.description }}</p>
               </header>
-              <div class="divide-y divide-slate-50">
-                <NuxtLink v-for="forum in section.forums" :key="forum.id" :to="forum.url" class="flex items-center justify-between p-4 hover:bg-slate-50 transition">
+              <div class="divide-y divide-[var(--border-light)]">
+                <NuxtLink v-for="forum in section.forums" :key="forum.id" :to="forum.url" class="flex items-center justify-between p-4 hover:bg-[var(--bg-muted)] transition">
                   <div class="flex items-center gap-3">
                     <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-500">
                       <Icon name="i-ph-chat-centered-text-duotone" class="h-5 w-5" />
@@ -298,7 +275,7 @@
                       <p class="text-xs text-[var(--text-tertiary)] mt-0.5 line-clamp-1">{{ forum.description }}</p>
                     </div>
                   </div>
-                  <span class="text-xs font-bold text-[var(--text-tertiary)] px-3 py-1 bg-slate-100 rounded-full shrink-0">
+                  <span class="text-xs font-bold text-[var(--text-tertiary)] px-3 py-1 bg-[var(--bg-muted)] rounded-full shrink-0">
                     {{ forum.posts }} bài viết
                   </span>
                 </NuxtLink>

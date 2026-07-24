@@ -8,7 +8,7 @@
         </p>
         <div class="mt-5 rounded-[24px] border border-white/20 bg-white/10 p-5 backdrop-blur-xl ring-1 ring-white/10">
           <div class="flex items-start gap-4">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-white text-primary-600 shadow-xl shadow-black/20 transition-transform hover:scale-105">
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[var(--bg-surface)] text-primary-600 shadow-xl shadow-black/20 transition-transform hover:scale-105">
               <Icon :name="previewIcon" class="h-7 w-7" />
             </div>
 
@@ -56,7 +56,7 @@
             </div>
             <div
               class="flex h-12 w-12 items-center justify-center rounded-[18px] transition-all duration-500"
-              :class="progressValue === 100 ? 'bg-green-500 text-white shadow-lg shadow-green-500/30' : 'bg-white text-primary-500 shadow-sm'"
+              :class="progressValue === 100 ? 'bg-green-500 text-white shadow-lg shadow-green-500/30' : 'bg-[var(--bg-surface)] text-primary-500 shadow-sm'"
             >
               <Icon :name="progressValue === 100 ? 'i-ph-check-fat-fill' : 'i-ph-rocket-launch-fill'" class="h-6 w-6" />
             </div>
@@ -73,11 +73,11 @@
             <div
               v-for="item in readinessItems"
               :key="item.label"
-              class="flex items-center gap-3 rounded-2xl bg-white px-3.5 py-3 shadow-sm ring-1 ring-slate-100/50 transition-all hover:ring-primary-100"
+              class="flex items-center gap-3 rounded-2xl bg-[var(--bg-surface)] px-3.5 py-3 shadow-sm ring-1 ring-slate-100/50 transition-all hover:ring-primary-100"
             >
               <div
                 class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors duration-300"
-                :class="item.done ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20' : 'bg-slate-50 text-slate-300'"
+                :class="item.done ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20' : 'bg-[var(--bg-muted)] text-slate-300'"
               >
                 <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle-bold'" class="h-4 w-4" />
               </div>
@@ -96,7 +96,7 @@
         <!-- Privacy Insight -->
         <div
           v-if="showPrivacy"
-          class="rounded-[24px] border border-[var(--border-default)] bg-white p-5 shadow-sm"
+          class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface)] p-5 shadow-sm"
         >
           <div class="flex items-center gap-2">
             <Icon name="i-ph-info-fill" class="h-4 w-4 text-primary-500" />
@@ -121,7 +121,7 @@
             <div
               v-for="step in resolvedNextSteps"
               :key="step.title"
-              class="group relative overflow-hidden rounded-[24px] bg-[var(--bg-surface-sunken)] p-4 ring-1 ring-[var(--border-default)] transition-all hover:bg-white hover:shadow-md hover:ring-primary-100"
+              class="group relative overflow-hidden rounded-[24px] bg-[var(--bg-surface-sunken)] p-4 ring-1 ring-[var(--border-default)] transition-all hover:bg-[var(--bg-surface)] hover:shadow-md hover:ring-primary-100"
             >
               <div class="relative z-10 space-y-1">
                 <p class="text-[13px] font-bold text-[var(--text-primary)] transition-colors group-hover:text-primary-600">

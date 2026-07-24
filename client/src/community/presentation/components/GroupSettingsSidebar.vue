@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6 xl:sticky xl:top-[84px]">
     <!-- Unified Elegant Preview Card -->
-    <section v-if="group" class="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md">
+    <section v-if="group" class="overflow-hidden rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-sm transition-all hover:shadow-md">
       <!-- Minimal Accent Header -->
       <div class="relative h-24 overflow-hidden">
         <div class="absolute inset-0" :style="bannerBackgroundStyle" />
@@ -12,7 +12,7 @@
       <div class="relative px-6 pb-6">
         <!-- Floating Avatar/Icon -->
         <div class="relative -mt-10 mb-4">
-          <div class="flex h-20 w-20 items-center justify-center rounded-[20px] border-4 border-white bg-slate-50 shadow-lg overflow-hidden">
+          <div class="flex h-20 w-20 items-center justify-center rounded-[20px] border-4 border-white bg-[var(--bg-muted)] shadow-lg overflow-hidden">
             <img v-if="group.avatar" :src="group.avatar" class="h-full w-full object-cover" />
             <Icon v-else name="i-ph-users-three-fill" class="h-10 w-10 text-primary-500" />
           </div>
@@ -29,10 +29,10 @@
 
         <!-- Minimal Badges -->
         <div class="mt-4 flex flex-wrap gap-2">
-          <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+          <span class="rounded-full bg-[var(--bg-muted)] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
             {{ privacyLabel }}
           </span>
-          <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+          <span class="rounded-full bg-[var(--bg-muted)] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
             {{ categoryLabel }}
           </span>
         </div>
@@ -42,10 +42,10 @@
         </p>
 
         <!-- Divider -->
-        <div class="my-6 h-px bg-slate-100" />
+        <div class="my-6 h-px bg-[var(--bg-muted)]" />
 
         <!-- Compact Stats Row (Strict Horizontal) -->
-        <div class="flex items-center justify-around rounded-2xl bg-slate-50/80 py-4 ring-1 ring-slate-100">
+        <div class="flex items-center justify-around rounded-2xl bg-[var(--bg-muted)]/80 py-4 ring-1 ring-slate-100">
           <div class="flex flex-col items-center px-2 text-center">
             <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">{{ $t('community.settings.basics.stats.tagCount') }}</p>
             <p class="mt-1 text-base font-black text-primary-600">{{ (group.tags || []).length }}</p>
@@ -68,7 +68,7 @@
             <span>Policies Enabled</span>
             <span class="text-primary-600">{{ enabledPolicies }}/{{ totalPolicies }}</span>
           </div>
-          <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+          <div class="h-2 w-full overflow-hidden rounded-full bg-[var(--bg-muted)]">
             <div 
               class="h-full bg-gradient-to-r from-primary-500 to-primary-400 transition-all duration-1000 ease-out" 
               :style="{ width: `${policyProgress}%` }" 
@@ -79,14 +79,14 @@
     </section>
 
     <!-- Loading State -->
-    <section v-else class="animate-pulse rounded-[24px] bg-slate-50 p-6">
+    <section v-else class="animate-pulse rounded-[24px] bg-[var(--bg-muted)] p-6">
       <div class="h-20 w-20 rounded-2xl bg-slate-200" />
       <div class="mt-6 h-6 w-1/2 rounded bg-slate-200" />
       <div class="mt-2 h-4 w-1/3 rounded bg-slate-200" />
     </section>
 
     <!-- Notes Section (More Airy) -->
-    <section class="rounded-[24px] border border-slate-100 bg-white p-6 shadow-sm">
+    <section class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-6 shadow-sm">
       <div class="flex items-center gap-3">
         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
           <Icon name="i-ph-info-bold" class="h-6 w-6" />

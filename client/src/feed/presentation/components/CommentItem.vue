@@ -553,11 +553,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 4px;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--bg-surface);
   padding: 6px 8px;
-  box-shadow: var(--shadow-md);
   transform-origin: 22px 100%;
   animation: comment-reaction-tray-in 0.16s ease-out both;
   will-change: transform, opacity;
@@ -611,7 +607,6 @@ onBeforeUnmount(() => {
     max-width: calc(100vw - 32px);
     gap: 3px;
     padding: 7px 8px;
-    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
     transform-origin: calc(100% - 28px) 100%;
   }
 

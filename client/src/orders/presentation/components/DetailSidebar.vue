@@ -1,23 +1,23 @@
 <!-- English description: Buyer order detail sidebar with payment, shipping, and follow-up actions. -->
 <template>
   <div class="orders-detail-sidebar space-y-6">
-    <section class="detail-sidebar-section surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
+    <section class="detail-sidebar-section surface-card space-y-6 border border-[var(--border-light)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-lg)] sm:p-8">
+      <p class="pl-1 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">
         {{ $t("orders.sidebar.overview") }}
       </p>
 
       <div class="space-y-4">
         <OrdersOrderPriceSummary
           :order="order"
-          card-class="surface-card p-6 bg-primary-50/30 ring-1 ring-primary-100 shadow-sm"
+          card-class="surface-card border border-[var(--border-light)] bg-[var(--bg-muted)] p-6 shadow-[var(--shadow-sm)]"
         />
 
-        <div class="detail-sidebar-mini surface-card p-5 bg-white ring-1 ring-secondary-100 space-y-4 group/info">
-          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
+        <div class="detail-sidebar-mini surface-card group/info space-y-4 border border-[var(--border-light)] bg-[var(--bg-surface)] p-5">
+          <p class="pl-1 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
             {{ $t("orders.summary.totalPayment") }}
           </p>
           <div class="flex flex-col gap-2">
-            <p class="text-sm font-black text-secondary-900 group-hover/info:text-secondary-900 transition-colors">
+            <p class="text-sm font-black text-[var(--text-primary)] transition-colors group-hover/info:text-[var(--text-primary)]">
               {{ displayOrderPaymentMethod(order.paymentMethod) }}
             </p>
             <div class="flex flex-wrap items-center gap-3">
@@ -28,24 +28,24 @@
               >
                 {{ $t(paymentMeta.label) }}
               </UBadge>
-              <span class="text-[10px] font-bold text-secondary-400 tracking-wider">
+              <span class="text-[10px] font-bold tracking-wider text-[var(--text-tertiary)]">
                 #{{ order.paymentReference }}
               </span>
             </div>
           </div>
         </div>
 
-        <div class="detail-sidebar-mini surface-card p-5 bg-white ring-1 ring-secondary-100 space-y-4 group/ship">
-          <p class="text-[10px] font-black uppercase tracking-[0.18em] text-secondary-400 pl-1">
+        <div class="detail-sidebar-mini surface-card group/ship space-y-4 border border-[var(--border-light)] bg-[var(--bg-surface)] p-5">
+          <p class="pl-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
             {{ $t("orders.detail.shippingProvider") }}
           </p>
           <div class="space-y-2">
-            <p class="text-sm font-black text-secondary-900 group-hover/ship:text-secondary-900 transition-colors">
+            <p class="text-sm font-black text-[var(--text-primary)] transition-colors group-hover/ship:text-[var(--text-primary)]">
               {{ order.shippingProvider || $t('orders.detail.noShippingProvider', 'Chưa xác định') }}
             </p>
-            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary-50 border border-secondary-100">
-              <Icon name="i-ph-hash-duotone" class="h-3.5 w-3.5 text-secondary-400" />
-              <p class="text-[10px] font-black text-secondary-600 uppercase tracking-widest">
+            <div class="flex items-center gap-2 rounded-lg border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2">
+              <Icon name="i-ph-hash-duotone" class="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+              <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
                 {{ order.trackingCode || $t('orders.detail.noTrackingCode', 'Chưa có') }}
               </p>
             </div>

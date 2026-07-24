@@ -43,7 +43,7 @@ defineEmits<{
   gap: 8px;
   overflow-x: scroll;
   scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
+  scrollbar-color: var(--text-tertiary) var(--bg-muted);
   padding-bottom: 12px; /* Bottom padding for scrollbar on mobile */
 }
 
@@ -96,21 +96,21 @@ defineEmits<{
 /* Global CSS block to style the webkit scrollbar for Movie Tabs */
 .movie-tabs::-webkit-scrollbar {
   height: 6px !important;
-  background-color: #e2e8f0 !important;
+  background-color: var(--bg-muted) !important;
   display: block !important;
 }
 
 .movie-tabs::-webkit-scrollbar-track {
-  background-color: #e2e8f0 !important;
+  background-color: var(--bg-muted) !important;
   border-radius: 999px !important;
 }
 
 .movie-tabs::-webkit-scrollbar-thumb {
-  background-color: #475569 !important; /* Higher contrast slate-600 */
+  background-color: var(--text-tertiary) !important;
   border-radius: 999px !important;
 }
 
 .movie-tabs::-webkit-scrollbar-thumb:hover {
-  background-color: #1e293b !important;
+  background-color: var(--text-secondary) !important;
 }
 </style>

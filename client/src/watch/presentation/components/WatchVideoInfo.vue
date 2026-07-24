@@ -83,9 +83,9 @@ defineEmits<{ like: []; share: [] }>()
 <style scoped>
 .watch-info {
   background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -140,7 +140,7 @@ defineEmits<{ like: []; share: [] }>()
 }
 
 .watch-info__dot {
-  color: #cbd5e1;
+  color: var(--text-tertiary);
 }
 
 /* Action buttons */
@@ -156,7 +156,7 @@ defineEmits<{ like: []; share: [] }>()
   gap: 8px;
   padding: 10px 20px;
   border-radius: 999px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   font-size: 13px;
   font-weight: 700;
@@ -174,13 +174,13 @@ defineEmits<{ like: []; share: [] }>()
 .watch-info__action-btn--active {
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   border-color: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
 .watch-info__action-btn--active:hover {
-  background: linear-gradient(180deg, #3344ff 0%, #1111ff 100%);
-  color: #ffffff;
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
+  color: var(--text-inverse);
 }
 
 .watch-info__action-icon {
@@ -195,7 +195,7 @@ defineEmits<{ like: []; share: [] }>()
   gap: 14px;
   border-radius: 14px;
   background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   padding: 14px 16px;
 }
 
@@ -209,7 +209,7 @@ defineEmits<{ like: []; share: [] }>()
   border-radius: 50%;
   font-size: 14px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .watch-author__info {
@@ -239,7 +239,7 @@ defineEmits<{ like: []; share: [] }>()
   flex-shrink: 0;
   padding: 8px 18px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 15%, transparent);
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   font-size: 13px;
   font-weight: 700;
@@ -250,7 +250,7 @@ defineEmits<{ like: []; share: [] }>()
 
 .watch-author__follow:hover {
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 /* Description & tags */
@@ -290,7 +290,7 @@ defineEmits<{ like: []; share: [] }>()
   gap: 10px;
   border-radius: 12px;
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 10%, transparent);
+  border: 1px solid var(--border-light);
   padding: 12px 16px;
   font-size: 13px;
   font-weight: 600;

@@ -33,12 +33,11 @@
             class="w-full"
             size="xl"
             :disabled="!canCreate || submitting"
-            :ui="{ base: 'h-12 rounded-[18px]' }"
           />
         </UFormField>
 
         <UFormField :label="$t('pages.jobsPage.roleTitle')" required :error="errors.title || undefined">
-          <UInput v-model="form.title" class="w-full" size="xl" :disabled="submitting" :ui="{ base: 'h-12 rounded-[18px]' }" />
+          <UInput v-model="form.title" class="w-full" size="xl" :disabled="submitting" />
         </UFormField>
 
         <UFormField :label="$t('pages.jobsPage.category')" required :error="errors.category || undefined">
@@ -50,7 +49,6 @@
             class="w-full"
             size="xl"
             :disabled="submitting"
-            :ui="{ base: 'h-12 rounded-[18px]' }"
           />
         </UFormField>
 
@@ -63,12 +61,11 @@
             class="w-full"
             size="xl"
             :disabled="submitting"
-            :ui="{ base: 'h-12 rounded-[18px]' }"
           />
         </UFormField>
 
         <UFormField :label="$t('pages.jobsPage.location')" required :error="errors.location || undefined">
-          <UInput v-model="form.location" class="w-full" size="xl" :disabled="submitting" :ui="{ base: 'h-12 rounded-[18px]' }" />
+          <UInput v-model="form.location" class="w-full" size="xl" :disabled="submitting" />
         </UFormField>
 
         <UFormField :label="$t('pages.jobsPage.currency')" required :error="errors.currency || undefined">
@@ -80,17 +77,16 @@
             class="w-full"
             size="xl"
             :disabled="submitting"
-            :ui="{ base: 'h-12 rounded-[18px]' }"
           />
         </UFormField>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-3">
         <UFormField :label="$t('pages.jobsPage.minimumSalary')">
-          <UInput v-model="minimumModel" type="number" min="0" class="w-full" size="xl" :disabled="submitting" :ui="{ base: 'h-12 rounded-[18px]' }" />
+          <UInput v-model="minimumModel" type="number" min="0" class="w-full" size="xl" :disabled="submitting" />
         </UFormField>
         <UFormField :label="$t('pages.jobsPage.maximumSalary')">
-          <UInput v-model="maximumModel" type="number" min="0" class="w-full" size="xl" :disabled="submitting" :ui="{ base: 'h-12 rounded-[18px]' }" />
+          <UInput v-model="maximumModel" type="number" min="0" class="w-full" size="xl" :disabled="submitting" />
         </UFormField>
         <UFormField :label="$t('pages.jobsPage.salaryDate')">
           <USelect
@@ -101,16 +97,22 @@
             class="w-full"
             size="xl"
             :disabled="submitting"
-            :ui="{ base: 'h-12 rounded-[18px]' }"
           />
         </UFormField>
       </div>
 
       <UFormField :label="$t('pages.jobsPage.jobDescription')" required :error="errors.description || undefined">
-        <UTextarea v-model="form.description" :rows="6" autoresize />
+        <UTextarea
+          v-model="form.description"
+          :rows="6"
+          autoresize
+          size="xl"
+          :placeholder="$t('pages.jobsPage.jobDescriptionPlaceholder')"
+          :disabled="submitting"
+        />
       </UFormField>
 
-      <UCard class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
+      <UCard class="rounded-[24px]">
         <div class="space-y-4">
           <p class="text-sm font-[700] text-[var(--text-primary)]">
             {{ $t("pages.jobsPage.jobImageSource") }}
@@ -150,7 +152,7 @@
         </div>
       </UCard>
 
-      <UCard class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
+      <UCard class="rounded-[24px]">
         <div class="space-y-5">
           <p class="text-sm font-[700] text-[var(--text-primary)]">
             {{ $t("pages.jobsPage.questions") }}
@@ -170,7 +172,12 @@
 
             <template v-if="question.enabled">
               <UFormField :label="$t('pages.jobsPage.questionPrompt')">
-                <UTextarea v-model="question.prompt" :rows="3" autoresize />
+                <UTextarea
+                  v-model="question.prompt"
+                  :rows="3"
+                  autoresize
+                  :disabled="submitting"
+                />
               </UFormField>
 
               <UFormField :label="$t('pages.jobsPage.questionType')">
@@ -181,7 +188,6 @@
                   label-key="label"
                   class="w-full"
                   size="xl"
-                  :ui="{ base: 'h-12 rounded-[18px]' }"
                 />
               </UFormField>
 
@@ -191,7 +197,6 @@
                   class="w-full"
                   size="xl"
                   :placeholder="$t('pages.jobsPage.questionAnswersHint')"
-                  :ui="{ base: 'h-12 rounded-[18px]' }"
                 />
               </UFormField>
             </template>

@@ -1,3 +1,4 @@
+<!-- English description: Renders the password recovery form and its submission states. -->
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
@@ -176,8 +177,8 @@ const checkboxUi = {
   justify-content: space-between;
   gap: 12px;
   border-radius: 14px;
-  border: 1.5px solid #e2e8f0;
-  background: #fafbfe;
+  border: 1.5px solid var(--border-light);
+  background: var(--bg-muted);
   padding: 14px 16px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -202,8 +203,8 @@ const checkboxUi = {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  background: #f8faff;
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
 }
 
 .auth-captcha__brand-text {
@@ -223,7 +224,7 @@ const checkboxUi = {
   border: 0;
   border-radius: 14px !important;
   background: var(--bg-brand) !important;
-  color: #ffffff !important;
+  color: var(--text-inverse) !important;
   height: 3.5rem !important;
   font-size: 1rem !important;
   font-weight: 800 !important;

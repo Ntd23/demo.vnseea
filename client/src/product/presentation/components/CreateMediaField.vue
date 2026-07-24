@@ -1,7 +1,8 @@
+<!-- English description: Renders product image upload controls and selection progress. -->
 <template>
   <div class="space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <p class="text-[1.02rem] font-black text-[#2f3542]">Hình ảnh</p>
+      <p class="text-[1.02rem] font-black text-[var(--text-primary)]">Hình ảnh</p>
       <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5">
         {{ imageButtonLabel }}
       </UBadge>

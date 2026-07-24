@@ -1,11 +1,11 @@
 <!-- English description: Checkout layout with the shared site header and a focused full-width purchase workspace. -->
 <template>
-  <div class="phone-safe min-h-screen overflow-x-clip bg-[#f1f4fb]">
+  <div class="phone-safe min-h-screen overflow-x-clip bg-[var(--bg-base)]">
     <ClientOnly>
       <NavigationHeaderBar />
 
       <template #fallback>
-        <div class="h-16 border-b border-[#dfe6ff] bg-white" />
+        <div class="h-16 border-b border-[var(--border-light)] bg-[var(--bg-surface)]" />
       </template>
     </ClientOnly>
 

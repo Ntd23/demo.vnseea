@@ -116,21 +116,21 @@ defineEmits<{
 }>()
 
 const copy = {
-  loading: "\u0110ang t\u1ea3i d\u1eef li\u1ec7u ph\u00e2n t\u00edch...",
-  empty: "Ch\u01b0a c\u00f3 d\u1eef li\u1ec7u ph\u00e2n t\u00edch cho trang n\u00e0y.",
-  filterAria: "L\u1ecdc bi\u1ec3u \u0111\u1ed3",
-  chartSubtitle: "B\u1ed9 l\u1ecdc ch\u1ec9 \u00e1p d\u1ee5ng cho bi\u1ec3u \u0111\u1ed3, c\u00e1c ch\u1ec9 s\u1ed1 ph\u00eda tr\u00ean l\u00e0 t\u1ed5ng to\u00e0n th\u1eddi gian.",
-  chartEmpty: "Ch\u01b0a c\u00f3 l\u01b0\u1ee3t th\u00edch m\u1edbi trong kho\u1ea3ng n\u00e0y.",
-  likes: "L\u01b0\u1ee3t th\u00edch",
-  likesIn: "l\u01b0\u1ee3t th\u00edch trong",
-  peak: "cao nh\u1ea5t",
+  loading: "Đang tải dữ liệu phân tích...",
+  empty: "Chưa có dữ liệu phân tích cho trang này.",
+  filterAria: "Lọc biểu đồ",
+  chartSubtitle: "Bộ lọc chỉ áp dụng cho biểu đồ, các chỉ số phía trên là tổng toàn thời gian.",
+  chartEmpty: "Chưa có lượt thích mới trong khoảng này.",
+  likes: "Lượt thích",
+  likesIn: "lượt thích trong",
+  peak: "cao nhất",
 } as const
 
 const periodOptions: Array<{ value: CommunityPageAnalyticsPeriod; label: string }> = [
-  { value: "day", label: "Ng\u00e0y" },
-  { value: "week", label: "Tu\u1ea7n" },
-  { value: "month", label: "Th\u00e1ng" },
-  { value: "year", label: "N\u0103m" },
+  { value: "day", label: "Ngày" },
+  { value: "week", label: "Tuần" },
+  { value: "month", label: "Tháng" },
+  { value: "year", label: "Năm" },
 ]
 
 const formatNumber = (value: number) =>
@@ -154,12 +154,24 @@ const chartTotal = computed(() =>
   chartPoints.value.reduce((total, point) => total + point.likes, 0),
 )
 
+const resolveToken = (varName: string) => {
+  if (!import.meta.client) return ""
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim()
+}
+
 const chartOption = computed<EChartsOption>(() => {
   const labels = chartPoints.value.map(point => point.label)
   const values = chartPoints.value.map(point => point.likes)
 
+  const brandColor = resolveToken("--bg-brand")
+  const textTertiary = resolveToken("--text-tertiary")
+  const borderLight = resolveToken("--border-light")
+  const borderDefault = resolveToken("--border-default")
+  const bgSurface = resolveToken("--bg-surface")
+  const textInverse = resolveToken("--text-inverse")
+
   return {
-    color: ["var(--bg-brand)"],
+    color: [brandColor],
     grid: {
       top: 18,
       right: 18,
@@ -169,12 +181,12 @@ const chartOption = computed<EChartsOption>(() => {
     },
     tooltip: {
       trigger: "axis",
-      backgroundColor: "rgba(15, 23, 42, 0.92)",
+      backgroundColor: resolveToken("--color-secondary-900"),
       borderWidth: 0,
       borderRadius: 10,
       padding: [8, 10],
       textStyle: {
-        color: "#ffffff",
+        color: textInverse,
         fontSize: 12,
         fontWeight: 700,
       },
@@ -186,14 +198,14 @@ const chartOption = computed<EChartsOption>(() => {
       data: labels,
       axisLine: {
         lineStyle: {
-          color: "#e2e8f0",
+          color: borderDefault,
         },
       },
       axisTick: {
         show: false,
       },
       axisLabel: {
-        color: "#94a3b8",
+        color: textTertiary,
         fontSize: 10,
         fontWeight: 800,
         interval: props.period === "month" ? 4 : 0,
@@ -204,13 +216,13 @@ const chartOption = computed<EChartsOption>(() => {
       minInterval: 1,
       splitNumber: 4,
       axisLabel: {
-        color: "#94a3b8",
+        color: textTertiary,
         fontSize: 10,
         fontWeight: 800,
       },
       splitLine: {
         lineStyle: {
-          color: "#eef2f7",
+          color: borderLight,
         },
       },
     },
@@ -224,11 +236,11 @@ const chartOption = computed<EChartsOption>(() => {
       showSymbol: values.length <= 31,
       lineStyle: {
         width: 3,
-        color: "var(--bg-brand)",
+        color: brandColor,
       },
       itemStyle: {
-        color: "#ffffff",
-        borderColor: "var(--bg-brand)",
+        color: bgSurface,
+        borderColor: brandColor,
         borderWidth: 2,
       },
       areaStyle: {
@@ -239,8 +251,8 @@ const chartOption = computed<EChartsOption>(() => {
           x2: 0,
           y2: 1,
           colorStops: [
-            { offset: 0, color: "color-mix(in srgb, var(--bg-brand) 22%, transparent)" },
-            { offset: 1, color: "color-mix(in srgb, var(--bg-brand) 2%, transparent)" },
+            { offset: 0, color: `color-mix(in srgb, ${brandColor} 22%, transparent)` },
+            { offset: 1, color: `color-mix(in srgb, ${brandColor} 2%, transparent)` },
           ],
         },
       },
@@ -254,7 +266,7 @@ const chartOption = computed<EChartsOption>(() => {
 
 <style scoped>
 .stat-card {
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
   padding: 20px;
@@ -262,17 +274,29 @@ const chartOption = computed<EChartsOption>(() => {
 }
 
 .stat-card:hover {
-  border-color: #e2e8f0;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-icon-wrap {
   display: flex;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 12px;
+}
+
+.stat-icon-wrap :deep(svg),
+.stat-icon-wrap :deep(i),
+.stat-icon-wrap :deep(span) {
+  color: inherit !important;
+}
+
+/* Override Tailwind bg-*/text-* utility classes from backend with design tokens */
+.stat-icon-wrap[class*="bg-"] {
+  background: color-mix(in srgb, var(--bg-brand) 14%, transparent) !important;
+  color: var(--icon-brand) !important;
 }
 
 .stat-value {
@@ -294,7 +318,7 @@ const chartOption = computed<EChartsOption>(() => {
   width: 100%;
   align-items: center;
   gap: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-muted);
   color: var(--text-secondary);
@@ -304,15 +328,15 @@ const chartOption = computed<EChartsOption>(() => {
 }
 
 .analytics-state--error {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #dc2626;
+  border-color: color-mix(in srgb, var(--color-error) 25%, transparent);
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
+  color: var(--text-danger);
 }
 
 .analytics-panel {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  background: var(--bg-surface);
   padding: 18px;
 }
 
@@ -344,7 +368,7 @@ const chartOption = computed<EChartsOption>(() => {
   width: min(100%, 320px);
   flex: 0 0 auto;
   gap: 4px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-muted);
   padding: 4px;
@@ -363,7 +387,7 @@ const chartOption = computed<EChartsOption>(() => {
 .analytics-period-button--active {
   background: var(--bg-surface);
   color: var(--bg-brand);
-  box-shadow: 0 1px 5px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .analytics-chart {
@@ -371,7 +395,7 @@ const chartOption = computed<EChartsOption>(() => {
   height: 260px;
   margin-top: 20px;
   overflow: hidden;
-  border: 1px solid #eef2f7;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
 }
@@ -402,8 +426,9 @@ const chartOption = computed<EChartsOption>(() => {
 
 .analytics-summary span {
   border-radius: 999px;
-  background: var(--color-primary-50);
-  color: var(--bg-brand-hover);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
   padding: 6px 10px;
   font-size: 11px;
   font-weight: 900;

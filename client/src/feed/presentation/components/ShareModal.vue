@@ -9,11 +9,7 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div
-        v-if="open"
-        class="share-modal"
-        @click.self="closeModal"
-      >
+      <div v-if="open" class="share-modal" @click.self="closeModal">
         <div class="share-modal__scrim" @click="closeModal" />
 
         <Transition
@@ -54,13 +50,21 @@
               <UAlert
                 v-if="status !== 'idle' && statusMessage"
                 class="share-modal__alert"
-                :color="status === 'error' ? 'warning' : status === 'success' ? 'success' : 'primary'"
+                :color="
+                  status === 'error'
+                    ? 'warning'
+                    : status === 'success'
+                      ? 'success'
+                      : 'primary'
+                "
                 variant="subtle"
-                :icon="status === 'error'
-                  ? 'i-ph-warning-circle-fill'
-                  : status === 'success'
-                    ? 'i-ph-check-circle-fill'
-                    : 'i-ph-spinner-gap-bold'"
+                :icon="
+                  status === 'error'
+                    ? 'i-ph-warning-circle-fill'
+                    : status === 'success'
+                      ? 'i-ph-check-circle-fill'
+                      : 'i-ph-spinner-gap-bold'
+                "
                 :description="statusMessage"
               />
 
@@ -77,8 +81,11 @@
                     :disabled="!canShare"
                     @click="platform.action"
                   >
-                    <span class="share-modal__platform-icon" :style="{ color: platform.color }">
-                      <Icon :name="platform.icon" class="w-7 h-7"/>
+                    <span
+                      class="share-modal__platform-icon"
+                      :style="{ color: platform.color }"
+                    >
+                      <Icon :name="platform.icon" class="w-7 h-7" />
                     </span>
                     <span>{{ platform.label }}</span>
                   </button>
@@ -91,7 +98,7 @@
                   leave-to-class="opacity-0"
                 >
                   <p v-if="copied" class="share-modal__inline-success">
-                    <Icon name="i-ph-check-circle-fill" class="w-7 h-7"/>
+                    <Icon name="i-ph-check-circle-fill" class="w-7 h-7" />
                     <span>{{ t("feed.shareModal.copied") }}</span>
                   </p>
                 </Transition>
@@ -107,9 +114,6 @@
                   :rows="3"
                   :placeholder="t('feed.shareModal.captionPlaceholder')"
                   class="share-modal__textarea"
-                  :ui="{
-                    base: 'resize-none rounded-[16px] border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 text-sm leading-relaxed text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--color-primary-200)]',
-                  }"
                   @update:model-value="clearErrorState"
                 />
               </section>
@@ -117,14 +121,19 @@
               <section class="share-modal__section">
                 <div class="share-modal__section-head">
                   <p>{{ t("feed.shareModal.destinationTitle") }}</p>
-                  <small v-if="shareDisabledMessage">{{ shareDisabledMessage }}</small>
+                  <small v-if="shareDisabledMessage">{{
+                    shareDisabledMessage
+                  }}</small>
                 </div>
                 <div class="share-modal__destination-grid">
                   <button
                     v-for="dest in destinations"
                     :key="dest.value"
                     class="share-modal__destination"
-                    :class="{ 'share-modal__destination--active': selectedDestination === dest.value }"
+                    :class="{
+                      'share-modal__destination--active':
+                        selectedDestination === dest.value,
+                    }"
                     type="button"
                     @click="handleDestinationChange(dest.value)"
                   >
@@ -134,13 +143,19 @@
                 </div>
 
                 <div class="share-modal__target-panel">
-                  <div v-if="selectedDestination === 'timeline'" class="share-modal__target-card share-modal__target-card--selected">
+                  <div
+                    v-if="selectedDestination === 'timeline'"
+                    class="share-modal__target-card share-modal__target-card--selected"
+                  >
                     <TargetAvatar :target="currentProfileTarget" />
                     <span class="share-modal__target-copy">
                       <strong>{{ currentProfileTarget.title }}</strong>
                       <small>{{ currentProfileTarget.subtitle }}</small>
                     </span>
-                    <Icon name="i-ph-check-circle-fill" class="share-modal__target-check" />
+                    <Icon
+                      name="i-ph-check-circle-fill"
+                      class="share-modal__target-check"
+                    />
                   </div>
 
                   <div v-else class="share-modal__target-search">
@@ -149,9 +164,8 @@
                       v-model="pageSearch"
                       size="lg"
                       icon="i-ph-magnifying-glass-bold"
-                      class="w-7 h-7"
+                      class="w-full"
                       :placeholder="t('feed.shareModal.pageSearchPlaceholder')"
-                      :ui="{ base: 'rounded-[14px] bg-[var(--bg-surface)] text-sm font-semibold' }"
                       @update:model-value="clearErrorState"
                     />
                     <UInput
@@ -159,9 +173,8 @@
                       v-model="groupSearch"
                       size="lg"
                       icon="i-ph-magnifying-glass-bold"
-                      class="w-7 h-7"
+                      class="w-full"
                       :placeholder="t('feed.shareModal.groupSearchPlaceholder')"
-                      :ui="{ base: 'rounded-[14px] bg-[var(--bg-surface)] text-sm font-semibold' }"
                       @update:model-value="clearErrorState"
                     />
                     <UInput
@@ -169,24 +182,37 @@
                       v-model="messageSearch"
                       size="lg"
                       icon="i-ph-magnifying-glass-bold"
-                      class="w-7 h-7"
-                      :placeholder="t('feed.shareModal.messageSearchPlaceholder')"
-                      :ui="{ base: 'rounded-[14px] bg-[var(--bg-surface)] text-sm font-semibold' }"
+                      class="w-full"
+                      :placeholder="
+                        t('feed.shareModal.messageSearchPlaceholder')
+                      "
                       @update:model-value="clearErrorState"
                     />
 
-                    <div v-if="destinationPending" class="share-modal__target-state">
-                      <Icon name="i-ph-spinner-gap-bold" class="animate-spin w-7 h-7" />
+                    <div
+                      v-if="destinationPending"
+                      class="share-modal__target-state"
+                    >
+                      <Icon
+                        name="i-ph-spinner-gap-bold"
+                        class="animate-spin w-7 h-7"
+                      />
                       <span>{{ t("feed.shareModal.searchLoading") }}</span>
                     </div>
 
-                    <div v-else-if="destinationTargets.length" class="share-modal__target-list">
+                    <div
+                      v-else-if="destinationTargets.length"
+                      class="share-modal__target-list"
+                    >
                       <button
                         v-for="target in destinationTargets"
                         :key="`${target.kind}-${target.id}`"
                         type="button"
                         class="share-modal__target-card"
-                        :class="{ 'share-modal__target-card--selected': selectedTargetId === target.id }"
+                        :class="{
+                          'share-modal__target-card--selected':
+                            selectedTargetId === target.id,
+                        }"
                         @click="handleTargetSelect(target.id)"
                       >
                         <TargetAvatar :target="target" />
@@ -208,7 +234,6 @@
                   </div>
                 </div>
               </section>
-
             </div>
 
             <footer class="share-modal__footer">
@@ -227,7 +252,13 @@
                 :disabled="status === 'loading' || !canShare"
                 @click="onShare"
               >
-                {{ shared ? t("feed.shareModal.shared") : status === "loading" ? t("feed.shareModal.submitLoading") : t("feed.shareModal.submit") }}
+                {{
+                  shared
+                    ? t("feed.shareModal.shared")
+                    : status === "loading"
+                      ? t("feed.shareModal.submitLoading")
+                      : t("feed.shareModal.submit")
+                }}
               </UButton>
             </footer>
           </section>
@@ -238,44 +269,48 @@
 </template>
 
 <script setup lang="ts">
-import {
-  useFeedShareModalVM,
-} from "../../application/view-models/useFeedShareModalVM"
-import type { FeedShareDestination, FeedShareTarget } from "../../domain/types/feed-share.types"
-import type { PropType } from "vue"
+import { useFeedShareModalVM } from "../../application/view-models/useFeedShareModalVM";
+import type {
+  FeedShareDestination,
+  FeedShareTarget,
+} from "../../domain/types/feed-share.types";
+import type { PropType } from "vue";
 
-const { t } = useI18n()
-const route = useRoute()
-const requestURL = useRequestURL()
-const toast = useToast()
+const { t } = useI18n();
+const route = useRoute();
+const requestURL = useRequestURL();
+const toast = useToast();
 
-const props = withDefaults(defineProps<{
-  open?: boolean
-  canShare?: boolean
-  shareUrl?: string
-  post?: {
-    id?: number
-    author: string
-    text: string
-    authorAvatar?: string
-    authorVerified?: boolean
-  } | null
-}>(), {
-  open: false,
-  canShare: false,
-  shareUrl: "",
-  post: null,
-})
+const props = withDefaults(
+  defineProps<{
+    open?: boolean;
+    canShare?: boolean;
+    shareUrl?: string;
+    post?: {
+      id?: number;
+      author: string;
+      text: string;
+      authorAvatar?: string;
+      authorVerified?: boolean;
+    } | null;
+  }>(),
+  {
+    open: false,
+    canShare: false,
+    shareUrl: "",
+    post: null,
+  },
+);
 
-type ShareStatus = "idle" | "loading" | "success" | "error"
+type ShareStatus = "idle" | "loading" | "success" | "error";
 
-const emit = defineEmits<{ close: []; shared: [destination: string] }>()
+const emit = defineEmits<{ close: []; shared: [destination: string] }>();
 
-const copied = ref(false)
-const caption = ref("")
-const shared = ref(false)
-const status = ref<ShareStatus>("idle")
-const errorMessage = ref("")
+const copied = ref(false);
+const caption = ref("");
+const shared = ref(false);
+const status = ref<ShareStatus>("idle");
+const errorMessage = ref("");
 const {
   selectedDestination,
   selectedTargetId,
@@ -291,7 +326,7 @@ const {
   selectTarget,
   submitShare,
   reset: resetShareDestination,
-} = useFeedShareModalVM(toRef(props, "open"), toRef(props, "canShare"))
+} = useFeedShareModalVM(toRef(props, "open"), toRef(props, "canShare"));
 
 const TargetAvatar = defineComponent({
   name: "TargetAvatar",
@@ -302,39 +337,58 @@ const TargetAvatar = defineComponent({
     },
   },
   setup(componentProps) {
-    return () => componentProps.target.avatarUrl
-      ? h("img", {
-        src: componentProps.target.avatarUrl,
-        alt: componentProps.target.title,
-        class: "share-modal__target-avatar",
-      })
-      : h("span", { class: "share-modal__target-avatar share-modal__target-avatar--fallback" }, componentProps.target.initials)
+    return () =>
+      componentProps.target.avatarUrl
+        ? h("img", {
+            src: componentProps.target.avatarUrl,
+            alt: componentProps.target.title,
+            class: "share-modal__target-avatar",
+          })
+        : h(
+            "span",
+            {
+              class:
+                "share-modal__target-avatar share-modal__target-avatar--fallback",
+            },
+            componentProps.target.initials,
+          );
   },
-})
+});
 
-const pageUrl = computed(() =>
-  props.shareUrl || new URL(route.fullPath || route.path || "/", requestURL.origin).toString(),
-)
-const shareText = computed(() => caption.value || props.post?.text || "")
+const pageUrl = computed(
+  () =>
+    props.shareUrl ||
+    new URL(route.fullPath || route.path || "/", requestURL.origin).toString(),
+);
+const shareText = computed(() => caption.value || props.post?.text || "");
 
 const platforms = computed(() => [
   {
     label: "Facebook",
     icon: "i-ph-facebook-logo-fill",
     color: "#1877F2",
-    action: () => openPlatform(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl.value)}`),
+    action: () =>
+      openPlatform(
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl.value)}`,
+      ),
   },
   {
     label: "WhatsApp",
     icon: "i-ph-whatsapp-logo-fill",
     color: "#25D366",
-    action: () => openPlatform(`https://wa.me/?text=${encodeURIComponent(`${shareText.value} ${pageUrl.value}`)}`),
+    action: () =>
+      openPlatform(
+        `https://wa.me/?text=${encodeURIComponent(`${shareText.value} ${pageUrl.value}`)}`,
+      ),
   },
   {
     label: "Telegram",
     icon: "i-ph-telegram-logo-fill",
     color: "#0088cc",
-    action: () => openPlatform(`https://t.me/share/url?url=${encodeURIComponent(pageUrl.value)}&text=${encodeURIComponent(shareText.value)}`),
+    action: () =>
+      openPlatform(
+        `https://t.me/share/url?url=${encodeURIComponent(pageUrl.value)}&text=${encodeURIComponent(shareText.value)}`,
+      ),
   },
   {
     label: t("feed.shareModal.platformCopy"),
@@ -342,205 +396,238 @@ const platforms = computed(() => [
     color: "var(--text-secondary)",
     action: copyShareLink,
   },
-])
+]);
 
 const destinations = computed(() => [
-  { label: t("feed.shareModal.destinationTimeline"), value: "timeline" as FeedShareDestination, icon: "i-ph-rows-duotone" },
-  { label: t("feed.shareModal.destinationPage"), value: "page" as FeedShareDestination, icon: "i-ph-flag-duotone" },
-  { label: t("feed.shareModal.destinationGroup"), value: "group" as FeedShareDestination, icon: "i-ph-users-three-duotone" },
-  { label: t("feed.shareModal.destinationMessage"), value: "message" as FeedShareDestination, icon: "i-ph-paper-plane-tilt-duotone" },
-])
+  {
+    label: t("feed.shareModal.destinationTimeline"),
+    value: "timeline" as FeedShareDestination,
+    icon: "i-ph-rows-duotone",
+  },
+  {
+    label: t("feed.shareModal.destinationPage"),
+    value: "page" as FeedShareDestination,
+    icon: "i-ph-flag-duotone",
+  },
+  {
+    label: t("feed.shareModal.destinationGroup"),
+    value: "group" as FeedShareDestination,
+    icon: "i-ph-users-three-duotone",
+  },
+  {
+    label: t("feed.shareModal.destinationMessage"),
+    value: "message" as FeedShareDestination,
+    icon: "i-ph-paper-plane-tilt-duotone",
+  },
+]);
 
 const destinationPanelTitle = computed(() => {
-  if (selectedDestination.value === "page") return t("feed.shareModal.pagePanelTitle")
-  if (selectedDestination.value === "group") return t("feed.shareModal.groupPanelTitle")
-  if (selectedDestination.value === "message") return t("feed.shareModal.messagePanelTitle")
+  if (selectedDestination.value === "page")
+    return t("feed.shareModal.pagePanelTitle");
+  if (selectedDestination.value === "group")
+    return t("feed.shareModal.groupPanelTitle");
+  if (selectedDestination.value === "message")
+    return t("feed.shareModal.messagePanelTitle");
 
-  return t("feed.shareModal.timelinePanelTitle")
-})
+  return t("feed.shareModal.timelinePanelTitle");
+});
 
 const destinationPanelDescription = computed(() => {
-  if (selectedDestination.value === "page") return t("feed.shareModal.pagePanelDescription")
-  if (selectedDestination.value === "group") return t("feed.shareModal.groupPanelDescription")
-  if (selectedDestination.value === "message") return t("feed.shareModal.messagePanelDescription")
+  if (selectedDestination.value === "page")
+    return t("feed.shareModal.pagePanelDescription");
+  if (selectedDestination.value === "group")
+    return t("feed.shareModal.groupPanelDescription");
+  if (selectedDestination.value === "message")
+    return t("feed.shareModal.messagePanelDescription");
 
-  return t("feed.shareModal.timelinePanelDescription")
-})
+  return t("feed.shareModal.timelinePanelDescription");
+});
 
 const destinationPanelIcon = computed(() => {
-  if (selectedDestination.value === "page") return "i-ph-flag-duotone"
-  if (selectedDestination.value === "group") return "i-ph-users-three-duotone"
-  if (selectedDestination.value === "message") return "i-ph-paper-plane-tilt-duotone"
+  if (selectedDestination.value === "page") return "i-ph-flag-duotone";
+  if (selectedDestination.value === "group") return "i-ph-users-three-duotone";
+  if (selectedDestination.value === "message")
+    return "i-ph-paper-plane-tilt-duotone";
 
-  return "i-ph-user-circle-duotone"
-})
+  return "i-ph-user-circle-duotone";
+});
 
 const destinationEmptyMessage = computed(() => {
-  if (selectedDestination.value === "page") return t("feed.shareModal.pageEmpty")
-  if (selectedDestination.value === "group") return t("feed.shareModal.groupEmpty")
+  if (selectedDestination.value === "page")
+    return t("feed.shareModal.pageEmpty");
+  if (selectedDestination.value === "group")
+    return t("feed.shareModal.groupEmpty");
 
-  return t("feed.shareModal.messageEmpty")
-})
+  return t("feed.shareModal.messageEmpty");
+});
 
 const shareDisabledMessage = computed(() => {
-  if (canShare.value || selectedDestination.value === "timeline") return ""
+  if (canShare.value || selectedDestination.value === "timeline") return "";
 
-  return destinationPanelDescription.value
-})
+  return destinationPanelDescription.value;
+});
 
 const statusMessage = computed(() => {
-  if (status.value === "loading") return t("feed.shareModal.submitLoading")
-  if (status.value === "success") return t("feed.shareModal.shared")
-  if (status.value === "error") return errorMessage.value || t("feed.shareModal.shareFailed")
+  if (status.value === "loading") return t("feed.shareModal.submitLoading");
+  if (status.value === "success") return t("feed.shareModal.shared");
+  if (status.value === "error")
+    return errorMessage.value || t("feed.shareModal.shareFailed");
 
-  return ""
-})
+  return "";
+});
 
 const postAuthorInitials = computed(() => {
-  const name = props.post?.author || "VN"
+  const name = props.post?.author || "VN";
   const initials = name
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map(part => part.slice(0, 1).toUpperCase())
-    .join("")
+    .map((part) => part.slice(0, 1).toUpperCase())
+    .join("");
 
-  return initials || "VN"
-})
+  return initials || "VN";
+});
 
 async function copyShareLink() {
-  clearErrorState()
+  clearErrorState();
 
   if (!props.canShare) {
-    rejectUnauthorizedShare()
-    return
+    rejectUnauthorizedShare();
+    return;
   }
 
-  if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+  if (
+    !import.meta.client ||
+    typeof navigator === "undefined" ||
+    !navigator.clipboard?.writeText
+  ) {
     toast.add({
       color: "warning",
       icon: "i-ph-warning-circle-fill",
       title: t("feed.shareModal.title"),
       description: t("feed.shareModal.copyUnavailable"),
-    })
-    return
+    });
+    return;
   }
 
   try {
-    await navigator.clipboard.writeText(pageUrl.value)
-    copied.value = true
+    await navigator.clipboard.writeText(pageUrl.value);
+    copied.value = true;
     toast.add({
       color: "success",
       icon: "i-ph-check-circle-fill",
       title: t("feed.shareModal.title"),
       description: t("feed.shareModal.copied"),
-    })
-    setTimeout(() => (copied.value = false), 2000)
-  }
-  catch {
+    });
+    setTimeout(() => (copied.value = false), 2000);
+  } catch {
     toast.add({
       color: "warning",
       icon: "i-ph-warning-circle-fill",
       title: t("feed.shareModal.title"),
       description: t("feed.shareModal.copyUnavailable"),
-    })
+    });
   }
 }
 
 function openPlatform(url: string) {
-  clearErrorState()
+  clearErrorState();
 
   if (!props.canShare) {
-    rejectUnauthorizedShare()
-    return
+    rejectUnauthorizedShare();
+    return;
   }
 
-  if (!import.meta.client) return
+  if (!import.meta.client) return;
 
-  window.open(url, "_blank", "noopener,noreferrer")
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 function rejectUnauthorizedShare() {
-  status.value = "error"
-  errorMessage.value = t("feed.shareModal.shareFailed")
+  status.value = "error";
+  errorMessage.value = t("feed.shareModal.shareFailed");
   toast.add({
     color: "warning",
     icon: "i-ph-warning-circle-fill",
     title: t("feed.shareModal.title"),
     description: errorMessage.value,
-  })
+  });
 }
 
 function handleDestinationChange(destination: FeedShareDestination) {
-  selectDestination(destination)
-  clearErrorState()
+  selectDestination(destination);
+  clearErrorState();
 }
 
 function handleTargetSelect(targetId: string) {
-  selectTarget(targetId)
-  clearErrorState()
+  selectTarget(targetId);
+  clearErrorState();
 }
 
 function clearErrorState() {
   if (status.value === "error") {
-    status.value = "idle"
+    status.value = "idle";
   }
-  errorMessage.value = ""
+  errorMessage.value = "";
 }
 
 function closeModal() {
-  emit("close")
+  emit("close");
 }
 
 function resolveInvalidShareMessage() {
-  if (selectedDestination.value === "timeline") return t("feed.shareModal.shareFailed")
+  if (selectedDestination.value === "timeline")
+    return t("feed.shareModal.shareFailed");
 
-  return destinationPanelDescription.value
+  return destinationPanelDescription.value;
 }
 
 function extractShareError(error: unknown) {
   const candidate = error as {
-    message?: string
-    statusMessage?: string
+    message?: string;
+    statusMessage?: string;
     data?: {
-      message?: string
-      statusMessage?: string
+      message?: string;
+      statusMessage?: string;
       data?: {
-        message?: string
+        message?: string;
         errors?: {
-          error_text?: string
-        }
-      }
+          error_text?: string;
+        };
+      };
       errors?: {
-        error_text?: string
-      }
-    }
-  }
+        error_text?: string;
+      };
+    };
+  };
 
-  const message = candidate?.data?.data?.errors?.error_text
-    || candidate?.data?.errors?.error_text
-    || candidate?.data?.data?.message
-    || candidate?.data?.message
-    || candidate?.data?.statusMessage
-    || candidate?.statusMessage
-    || candidate?.message
+  const message =
+    candidate?.data?.data?.errors?.error_text ||
+    candidate?.data?.errors?.error_text ||
+    candidate?.data?.data?.message ||
+    candidate?.data?.message ||
+    candidate?.data?.statusMessage ||
+    candidate?.statusMessage ||
+    candidate?.message;
 
-  if (!message || /fetch/i.test(message)) return t("feed.shareModal.shareFailed")
-  if (/cant_share_own/i.test(message)) return "You cannot share your own post."
-  if (/target and content|required|valid destination/i.test(message)) return t("feed.shareModal.shareFailed")
+  if (!message || /fetch/i.test(message))
+    return t("feed.shareModal.shareFailed");
+  if (/cant_share_own/i.test(message)) return "You cannot share your own post.";
+  if (/target and content|required|valid destination/i.test(message))
+    return t("feed.shareModal.shareFailed");
 
-  return message
+  return message;
 }
 
 async function onShare() {
   if (!canShare.value) {
-    status.value = "error"
-    errorMessage.value = resolveInvalidShareMessage()
-    return
+    status.value = "error";
+    errorMessage.value = resolveInvalidShareMessage();
+    return;
   }
 
-  status.value = "loading"
-  errorMessage.value = ""
+  status.value = "loading";
+  errorMessage.value = "";
 
   try {
     const result = await submitShare({
@@ -548,50 +635,52 @@ async function onShare() {
       postText: props.post?.text,
       postId: props.post?.id,
       shareUrl: pageUrl.value,
-    })
+    });
 
-    shared.value = true
-    status.value = "success"
+    shared.value = true;
+    status.value = "success";
 
     toast.add({
       color: "success",
       icon: "i-ph-share-network-fill",
       title: t("feed.shareModal.title"),
       description: t("feed.shareModal.shared"),
-    })
+    });
 
-    emit("shared", result.destination)
+    emit("shared", result.destination);
 
     setTimeout(() => {
-      shared.value = false
-      emit("close")
-    }, 1200)
-  }
-  catch (error) {
-    const message = extractShareError(error)
-    status.value = "error"
-    errorMessage.value = message
+      shared.value = false;
+      emit("close");
+    }, 1200);
+  } catch (error) {
+    const message = extractShareError(error);
+    status.value = "error";
+    errorMessage.value = message;
     toast.add({
       color: "warning",
       icon: "i-ph-warning-circle-fill",
       title: t("feed.shareModal.title"),
       description: message,
-    })
+    });
   }
 }
 
-watch(() => props.open, (val) => {
-  if (!val) {
-    setTimeout(() => {
-      caption.value = ""
-      shared.value = false
-      copied.value = false
-      status.value = "idle"
-      errorMessage.value = ""
-      resetShareDestination()
-    }, 200)
-  }
-})
+watch(
+  () => props.open,
+  (val) => {
+    if (!val) {
+      setTimeout(() => {
+        caption.value = "";
+        shared.value = false;
+        copied.value = false;
+        status.value = "idle";
+        errorMessage.value = "";
+        resetShareDestination();
+      }, 200);
+    }
+  },
+);
 </script>
 
 <style scoped>
@@ -608,7 +697,7 @@ watch(() => props.open, (val) => {
 .share-modal__scrim {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.44);
+  background: color-mix(in srgb, var(--bg-media) 44%, transparent);
   backdrop-filter: blur(8px);
 }
 
@@ -664,8 +753,8 @@ watch(() => props.open, (val) => {
   align-items: center;
   justify-content: center;
   border-radius: 14px;
-  background: var(--color-primary-50);
-  color: var(--color-primary-600);
+  background: color-mix(in srgb, var(--bg-brand) 10%, transparent);
+  color: var(--text-brand);
 }
 
 .share-modal__title-icon svg,
@@ -709,7 +798,9 @@ watch(() => props.open, (val) => {
   background: var(--bg-muted);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
 }
 
 .share-modal__icon-button:hover {
@@ -766,7 +857,10 @@ watch(() => props.open, (val) => {
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
-  transition: border-color var(--duration-fast) var(--ease-default), background var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default);
+  transition:
+    border-color var(--duration-fast) var(--ease-default),
+    background var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default);
 }
 
 .share-modal__platform {
@@ -805,7 +899,7 @@ watch(() => props.open, (val) => {
   gap: 8px;
   border: 1px solid var(--color-success);
   border-radius: 14px;
-  background: rgba(34, 197, 94, 0.08);
+  background: color-mix(in srgb, var(--color-success) 8%, transparent);
   padding: 10px 12px;
   color: var(--color-success);
   font-size: 13px;
@@ -816,6 +910,10 @@ watch(() => props.open, (val) => {
   width: 100%;
 }
 
+.share-modal__textarea :deep(textarea) {
+  resize: none;
+}
+
 .share-modal__destination {
   flex-direction: column;
   color: var(--text-secondary);
@@ -823,8 +921,8 @@ watch(() => props.open, (val) => {
 
 .share-modal__destination--active {
   border-color: var(--color-primary-300);
-  background: var(--color-primary-50);
-  color: var(--color-primary-700);
+  background: color-mix(in srgb, var(--bg-brand) 10%, transparent);
+  color: var(--text-brand);
   box-shadow: 0 10px 28px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
@@ -872,13 +970,16 @@ watch(() => props.open, (val) => {
   width: 100%;
   min-width: 0;
   gap: 12px;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   padding: 10px;
   text-align: left;
   cursor: pointer;
-  transition: border-color var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default), background var(--duration-fast) var(--ease-default);
+  transition:
+    border-color var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default),
+    background var(--duration-fast) var(--ease-default);
 }
 
 .share-modal__target-card--selected {
@@ -901,7 +1002,7 @@ watch(() => props.open, (val) => {
 .share-modal__target-avatar--fallback,
 .share-modal__preview-avatar--fallback {
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 12px;
   font-weight: 800;
 }
@@ -936,7 +1037,7 @@ watch(() => props.open, (val) => {
   height: 20px;
   margin-left: auto;
   flex-shrink: 0;
-  color: var(--color-primary-600);
+  color: var(--text-brand);
 }
 
 .share-modal__target-state,
@@ -985,7 +1086,7 @@ watch(() => props.open, (val) => {
 
 .share-modal__footer {
   border-top: 1px solid var(--border-light);
-  background: rgba(255, 255, 255, 0.92);
+  background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
 }
 
 .share-modal__secondary {

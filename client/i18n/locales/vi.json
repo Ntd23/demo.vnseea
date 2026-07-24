@@ -3764,6 +3764,7 @@
       "heroTitle": "Gây quỹ hỗ trợ cộng đồng",
       "heroDescription": "Khám phá và đồng hành cùng các chiến dịch ý nghĩa trên VNSEEA.",
       "createCampaign": "Tạo chiến dịch",
+      "raisedOf": "đã đạt được trên mục tiêu",
       "campaignCount": "{count} chiến dịch đang hiển thị",
       "queryBadge": "Từ khóa: \"{query}\"",
       "filtersEyebrow": "Bộ lọc công khai",
@@ -5759,7 +5760,8 @@
   "navigation": {
     "theme": {
       "darkMode": "Chế độ tối",
-      "darkModeDescription": "Chuyển sang giao diện nền tối Slate Tech"
+      "darkModeDescription": "Chuyển sang giao diện nền tối Slate Tech",
+      "themeMode": "Chế độ "
     },
     "headerBar": {
       "home": "Trang chủ",

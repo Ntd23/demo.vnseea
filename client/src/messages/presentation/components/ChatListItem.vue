@@ -1,4 +1,4 @@
-<!-- Description: Renders a single inbox row for the PHP-parity left conversation list. -->
+<!-- English description: Renders a single inbox row for the PHP-parity left conversation list. -->
 <template>
   <div
     class="cli-item"
@@ -15,7 +15,7 @@
         :show="type === 'user' ? isOnline : type === 'group' && isOnline"
         position="bottom-right"
         color="success"
-        :ui="{ base: '!bg-emerald-500' }"
+        :ui="{ base: '!bg-[var(--color-success)]' }"
         inset
       >
         <div v-if="type === 'group' && !avatarUrl" class="cli-group-avatar">
@@ -224,7 +224,7 @@ const previewClass = computed(() => ({
 
 .cli-status {
   font-size: var(--text-caption);
-  color: black;
+  color: var(--text-secondary);
   margin: 1px 0 0;
   font-family: var(--font-primary);
 }
@@ -283,7 +283,7 @@ const previewClass = computed(() => ({
   height: 18px;
   border-radius: var(--radius-full);
   background: var(--color-primary-500);
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: var(--text-micro);
   font-weight: var(--weight-bold);
   display: inline-flex;
@@ -310,12 +310,12 @@ const previewClass = computed(() => ({
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  border: 1.5px solid var(--border-default);
+  border: 1.5px solid var(--border-light);
   background: var(--bg-surface);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--text-inverse);
   transition: all var(--duration-fast) var(--ease-default);
 }
 
@@ -340,7 +340,7 @@ const previewClass = computed(() => ({
 .cli-open-btn:hover {
   background: var(--bg-surface-active);
   color: var(--text-brand);
-  border-color: var(--border-default);
+  border-color: var(--border-strong);
 }
 
 /* Tags row */
@@ -363,9 +363,9 @@ const previewClass = computed(() => ({
   width: 12px;
   height: 12px;
   border-radius: 4px;
-  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  border: 1.5px solid var(--border-light);
   flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .cli-tag-btn {
@@ -374,18 +374,18 @@ const previewClass = computed(() => ({
   justify-content: center;
   width: 20px;
   height: 18px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-light);
   border-radius: 4px;
-  background: #f9fafb;
-  color: #6b7280;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
 .cli-tag-btn:hover {
-  border-color: var(--color-primary-500, var(--bg-brand));
-  color: var(--color-primary-500, var(--bg-brand));
-  background: var(--color-primary-50);
+  border-color: var(--border-strong);
+  color: var(--text-brand);
+  background: var(--bg-surface-active);
 }
 
 /* Responsive: tighter on small screens */

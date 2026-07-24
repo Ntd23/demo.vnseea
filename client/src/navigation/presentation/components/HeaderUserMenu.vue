@@ -104,11 +104,8 @@
             </NuxtLink>
           </template>
 
-          <div class="user-menu__item user-menu__item--theme flex items-center justify-between w-full px-3 py-2">
-            <div class="flex items-center gap-2.5">
-              <Icon name="i-ph-moon-bold" class="user-menu__item-icon h-5 w-5" />
-              <span class="user-menu__item-label font-semibold text-[14px]">{{ $t("navigation.theme.darkMode") || "Chế độ tối" }}</span>
-            </div>
+          <div class="user-menu__item user-menu__item--theme">
+            <Icon name="i-ph-moon-bold" class="user-menu__item-icon h-5 w-5" />
             <UColorModeSwitch color="primary" size="md" />
           </div>
 

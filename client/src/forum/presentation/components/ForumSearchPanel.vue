@@ -55,7 +55,6 @@
         loading-animation="carousel"
         :caption="t('pages.forumPage.searchTitle')"
         :empty="t('pages.forumPage.searchEmptyTitle')"
-        :ui="forumTableUi"
       >
         <template #title-cell="{ row }">
           <button type="button" class="forum-search-panel__forum-link" @click="$emit('select-forum', row.original.id)">
@@ -203,15 +202,7 @@ const forumColumns = computed<TableColumn<ForumSearchTableRow>[]>(() => [
   },
 ])
 
-const forumTableUi = {
-  root: "forum-search-panel__table-root",
-  base: "w-full min-w-[640px]",
-  thead: "bg-[var(--bg-surface-hover)]",
-  th: "text-xs text-[var(--text-secondary)]",
-  td: "text-xs text-[var(--text-secondary)]",
-  empty: "p-0",
-  loading: "p-0",
-}
+
 
 const SearchEmptyState = defineComponent({
   props: {

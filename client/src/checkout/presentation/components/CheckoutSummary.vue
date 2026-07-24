@@ -157,7 +157,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
-const defaultCardBackground = "linear-gradient(145deg, var(--color-primary-100), #fce7f3)"
+const defaultCardBackground = "linear-gradient(145deg, var(--bg-surface-active), var(--bg-muted))"
 
 const itemCount = computed(() => props.items.reduce((sum, item) => sum + item.quantity, 0))
 const itemCountLabel = computed(() => t("checkout.summary.items", { count: itemCount.value }))
@@ -234,10 +234,10 @@ function stockLimitLabel(item: CheckoutLineItem) {
 <style scoped>
 .order-card {
   overflow: hidden;
-  border: 1px solid #dfe6f3;
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   background: var(--bg-surface);
-  box-shadow: 0 4px 14px rgb(31 51 92 / 7%);
+  box-shadow: var(--shadow-sm);
 }
 
 .order-card__header {
@@ -260,14 +260,14 @@ function stockLimitLabel(item: CheckoutLineItem) {
 }
 
 .order-card__heading h2 {
-  color: var(--color-secondary-900);
+  color: var(--text-primary);
   font-size: 19px;
   font-weight: 800;
 }
 
 .order-card__heading p {
   margin-top: 2px;
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -278,12 +278,12 @@ function stockLimitLabel(item: CheckoutLineItem) {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #1b9ef3;
-  color: #fff;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
 }
 
 .order-card__store-link {
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
@@ -304,7 +304,7 @@ function stockLimitLabel(item: CheckoutLineItem) {
   overflow: hidden;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
-  background: var(--color-secondary-100);
+  background: var(--bg-muted);
 }
 
 .order-item__image,
@@ -335,14 +335,14 @@ function stockLimitLabel(item: CheckoutLineItem) {
 
 .order-item__body h3 {
   overflow-wrap: anywhere;
-  color: var(--color-secondary-900);
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 700;
 }
 
 .order-item__price {
   margin-top: 5px;
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-weight: 700;
 }
 
@@ -351,21 +351,21 @@ function stockLimitLabel(item: CheckoutLineItem) {
   align-items: center;
   gap: 8px;
   margin-top: 12px;
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .order-item__quantity strong {
   min-width: 20px;
   text-align: center;
-  color: var(--color-secondary-900);
+  color: var(--text-primary);
 }
 
 .order-card__totals {
   margin: 0 24px;
   padding: 20px 0;
-  border-top: 1px solid var(--color-secondary-200);
-  border-bottom: 1px solid var(--color-secondary-200);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .order-card__total-row,
@@ -378,7 +378,7 @@ function stockLimitLabel(item: CheckoutLineItem) {
 
 .order-card__total-row {
   margin-bottom: 12px;
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -390,13 +390,13 @@ function stockLimitLabel(item: CheckoutLineItem) {
 }
 
 .order-card__grand-total span {
-  color: var(--color-secondary-700);
+  color: var(--text-secondary);
   font-size: 16px;
   font-weight: 700;
 }
 
 .order-card__grand-total strong {
-  color: var(--color-secondary-900);
+  color: var(--text-primary);
   font-size: clamp(24px, 4vw, 34px);
   font-weight: 500;
 }
@@ -414,12 +414,12 @@ function stockLimitLabel(item: CheckoutLineItem) {
 .order-card__submit {
   min-width: 190px;
   justify-content: center;
-  background: #8bcf8d;
+  background: var(--color-success);
   font-weight: 800;
 }
 
 .order-card__submit:hover:not(:disabled) {
-  background: #73bd77;
+  background: color-mix(in srgb, var(--color-success) 82%, var(--bg-media));
 }
 
 .order-card__empty {
@@ -427,7 +427,7 @@ function stockLimitLabel(item: CheckoutLineItem) {
   justify-items: center;
   gap: 12px;
   padding: 48px 24px;
-  color: var(--color-secondary-500);
+  color: var(--text-tertiary);
   text-align: center;
 }
 

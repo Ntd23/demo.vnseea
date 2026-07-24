@@ -24,7 +24,7 @@
               class="auth-hero__brand-logo"
               @error="logoFailed = true"
             />
-            <Icon v-else name="i-ph-sparkles-fill" class="h-10 w-10 text-white" />
+            <Icon v-else name="i-ph-sparkles-fill" class="h-10 w-10 text-[var(--text-media)]" />
           </div>
           <div class="auth-hero__brand-ring" />
         </div>
@@ -39,7 +39,7 @@
         <div class="hero-widget hero-widget--central">
           <div class="hero-widget__orbit">
             <div class="hero-widget__node hero-widget__node--center">
-              <Icon name="i-ph-globe-hemisphere-east-duotone" class="w-12 h-12 text-white" />
+              <Icon name="i-ph-globe-hemisphere-east-duotone" class="h-12 w-12 text-[var(--text-media)]" />
             </div>
             <!-- Orbiting Nodes -->
             <div class="hero-widget__node hero-widget__node--orbit-1">
@@ -62,14 +62,14 @@
           <!-- Widget A: Connections & Sharing -->
           <div class="hero-widget hero-widget--glass hero-widget--a">
             <div class="widget-header">
-              <Icon name="i-ph-share-network-duotone" class="w-6 h-6 text-red-400" />
+              <Icon name="i-ph-share-network-duotone" class="h-6 w-6 text-[var(--text-brand)]" />
               <div class="widget-status-dot" />
             </div>
             <div class="widget-avatars">
-              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="w-6 h-6 text-white/90" /></span>
-              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="w-6 h-6 text-white/70" /></span>
-              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="w-6 h-6 text-white/50" /></span>
-              <span class="widget-avatar-add"><Icon name="i-ph-plus-bold" class="w-3 h-3 text-white" /></span>
+              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="h-6 w-6 text-[var(--text-media)] opacity-90" /></span>
+              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="h-6 w-6 text-[var(--text-media)] opacity-70" /></span>
+              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="h-6 w-6 text-[var(--text-media)] opacity-50" /></span>
+              <span class="widget-avatar-add"><Icon name="i-ph-plus-bold" class="h-3 w-3 text-[var(--text-media)]" /></span>
             </div>
           </div>
 
@@ -318,8 +318,8 @@ onBeforeUnmount(() => {
   width: 100%;
   min-height: 100svh;
   overflow-x: hidden; /* Block horizontal scrollbar completely */
-  color: #ffffff;
-  background: linear-gradient(160deg, #1a0507 0%, #2b0b0e 50%, #0f0304 100%);
+  color: var(--text-media);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--bg-brand) 34%, var(--bg-media)) 0%, color-mix(in srgb, var(--bg-brand) 20%, var(--bg-media)) 50%, var(--bg-media) 100%);
 }
 
 @media (min-width: 1024px) {
@@ -349,7 +349,7 @@ onBeforeUnmount(() => {
   left: -8%;
   width: 22rem;
   height: 22rem;
-  background: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--text-media) 18%, transparent);
   animation-duration: 4s;
 }
 
@@ -358,7 +358,7 @@ onBeforeUnmount(() => {
   top: 20%;
   width: 26rem;
   height: 26rem;
-  background: rgba(185, 28, 28, 0.35);
+  background: color-mix(in srgb, var(--bg-brand) 35%, transparent);
 }
 
 .auth-hero__orb--c {
@@ -366,7 +366,7 @@ onBeforeUnmount(() => {
   bottom: -8%;
   width: 24rem;
   height: 24rem;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--text-media) 8%, transparent);
   animation-duration: 5s;
 }
 
@@ -375,8 +375,8 @@ onBeforeUnmount(() => {
   inset: 0;
   opacity: 0.07;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--text-media) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--text-media) 15%, transparent) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -415,9 +415,9 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-xl);
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.16);
-  box-shadow: var(--shadow-lg), 0 0 32px rgba(255, 255, 255, 0.12);
+  border: 2px solid var(--border-media);
+  background: color-mix(in srgb, var(--text-media) 16%, transparent);
+  box-shadow: var(--shadow-lg), 0 0 32px color-mix(in srgb, var(--text-media) 12%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   z-index: 2;
@@ -439,7 +439,7 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: -3px;
   border-radius: 28px;
-  border: 1.5px dashed rgba(255, 255, 255, 0.25);
+  border: 1.5px dashed var(--border-media);
   animation: rotate-orbit 40s linear infinite;
   pointer-events: none;
 }
@@ -506,13 +506,11 @@ onBeforeUnmount(() => {
   max-width: 26rem;
   max-height: calc(100vh - 100px);
   overflow-y: auto; /* Sleeker, more compact width */
-  background: rgba(255, 255, 255, 0.96);
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-light);
   border-radius: var(--radius-xl);
   padding: 1.75rem 1.25rem; /* Highly compact padding to prevent scrollbar */
-  box-shadow: 
-    0 4px 30px rgba(0, 0, 0, 0.05),
-    0 20px 50px rgba(15, 32, 67, 0.15);
+  box-shadow: var(--shadow-xl);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   transition: transform var(--duration-normal) var(--ease-default);
@@ -541,7 +539,7 @@ onBeforeUnmount(() => {
   max-width: 72rem;
   margin: 1.25rem auto 0;
   padding: 0 1rem;
-  color: rgba(255, 255, 255, 0.76);
+  color: var(--text-media-muted);
   font-size: 0.78rem;
   font-weight: 650;
   line-height: 1.4;
@@ -549,20 +547,20 @@ onBeforeUnmount(() => {
 
 .auth-hero__footer-copy,
 .auth-hero__footer-separator {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-media-muted);
 }
 
 .auth-hero__footer-link {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: rgba(255, 255, 255, 0.76);
+  color: var(--text-media-muted);
   text-decoration: none;
   transition: color var(--duration-normal) var(--ease-default);
 }
 
 .auth-hero__footer-link:hover {
-  color: #ffffff;
+  color: var(--text-media);
   text-decoration: underline;
   text-underline-offset: 0.22em;
 }
@@ -583,7 +581,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(15, 23, 42, 0.46);
+  background: color-mix(in srgb, var(--bg-media) 46%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -713,7 +711,7 @@ onBeforeUnmount(() => {
   width: 14rem;
   height: 14rem;
   border-radius: 50%;
-  border: 1.5px dashed rgba(255, 255, 255, 0.15);
+  border: 1.5px dashed var(--border-media);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -734,11 +732,11 @@ onBeforeUnmount(() => {
   position: relative;
   width: 5.5rem;
   height: 5.5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--text-media) 18%, transparent) 0%, color-mix(in srgb, var(--text-media) 8%, transparent) 100%);
+  border: 1px solid var(--border-media);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  box-shadow: var(--shadow-brand), 0 0 32px rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-brand), 0 0 32px color-mix(in srgb, var(--text-media) 12%, transparent);
   z-index: 5;
 }
 
@@ -753,8 +751,8 @@ onBeforeUnmount(() => {
 .hero-widget__node--orbit-4 {
   width: 2.25rem;
   height: 2.25rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--text-media) 10%, transparent);
+  border: 1px solid var(--border-media);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -796,7 +794,7 @@ onBeforeUnmount(() => {
 
 .hero-widget--glass {
   border: 1px solid var(--border-light);
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--text-media) 8%, transparent);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -805,8 +803,8 @@ onBeforeUnmount(() => {
 
 .hero-widget--glass:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--border-media);
+  background: color-mix(in srgb, var(--text-media) 12%, transparent);
   box-shadow: var(--shadow-lg);
 }
 
@@ -846,8 +844,8 @@ onBeforeUnmount(() => {
   width: 1.75rem;
   height: 1.75rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--text-media) 12%, transparent);
+  border: 1px solid var(--border-media);
   margin-left: -0.5rem;
 }
 
@@ -863,7 +861,7 @@ onBeforeUnmount(() => {
   height: 1.75rem;
   border-radius: var(--radius-full);
   background: var(--bg-brand);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--border-media);
   margin-left: -0.5rem;
   box-shadow: var(--shadow-brand);
 }
@@ -882,8 +880,8 @@ onBeforeUnmount(() => {
   display: inline-flex;
   padding: 8px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--text-media) 8%, transparent);
 }
 
 .widget-bars {
@@ -895,12 +893,12 @@ onBeforeUnmount(() => {
 .widget-bar {
   width: 6px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, var(--text-media) 15%, transparent);
 }
 
 .widget-bar--active {
-  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
+  background: linear-gradient(180deg, var(--color-warning) 0%, color-mix(in srgb, var(--color-warning) 72%, var(--bg-media)) 100%);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--color-warning) 40%, transparent);
 }
 
 /* Widget C: Audio visualizer / Wave */
@@ -929,7 +927,7 @@ onBeforeUnmount(() => {
   width: 3px;
   height: 100%;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, var(--text-media) 30%, transparent);
   animation: audio-wave 1.2s ease-in-out infinite;
   transform-origin: center;
 }
@@ -956,8 +954,8 @@ onBeforeUnmount(() => {
   display: inline-flex;
   padding: 12px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--text-media) 10%, transparent);
   box-shadow: var(--shadow-md);
 }
 
@@ -968,7 +966,7 @@ onBeforeUnmount(() => {
   display: inline-flex;
   padding: 4px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--border-media);
   background: var(--bg-brand);
   box-shadow: var(--shadow-brand);
 }

@@ -1,7 +1,7 @@
 <!-- English description: Renders a buyer order summary and actions. -->
 <template>
-  <article class="surface-card group overflow-hidden p-6 sm:p-8 ring-1 ring-secondary-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_12px_32px_color-mix(in srgb, var(--bg-brand) 12%, transparent)]">
-    <div class="flex flex-col gap-6 border-b border-secondary-50 pb-6 xl:flex-row xl:items-start xl:justify-between">
+  <article class="surface-card group overflow-hidden border border-[var(--border-light)] p-6 shadow-[var(--shadow-sm)] transition-all duration-500 hover:shadow-[var(--shadow-lg)] sm:p-8">
+    <div class="flex flex-col gap-6 border-b border-[var(--border-light)] pb-6 xl:flex-row xl:items-start xl:justify-between">
       <div class="space-y-1">
         <div class="flex flex-wrap items-center gap-3">
           <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
@@ -19,23 +19,23 @@
           </UBadge>
         </div>
 
-        <h3 class="text-2xl font-extrabold leading-tight tracking-tight text-secondary-900">
+        <h3 class="text-2xl font-extrabold leading-tight tracking-tight text-[var(--text-primary)]">
           {{ order.seller }}
         </h3>
-        <p class="text-sm font-medium leading-relaxed text-secondary-500 max-w-2xl">
+        <p class="max-w-2xl text-sm font-medium leading-relaxed text-[var(--text-secondary)]">
           {{ $t(statusMeta.description) }}
         </p>
       </div>
 
       <!-- Quick Stats -->
       <div class="flex flex-wrap gap-2 pt-2 xl:pt-1">
-        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-sm transition-all hover:border-primary-100 hover:bg-[var(--bg-surface-hover)] hover:text-primary-600">
+        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-[var(--shadow-sm)] transition-all hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-brand)]">
           {{ order.placedAt }}
         </UBadge>
-        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-sm transition-all hover:border-primary-100 hover:bg-[var(--bg-surface-hover)] hover:text-primary-600">
+        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-[var(--shadow-sm)] transition-all hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-brand)]">
           {{ $t("orders.card.items", { count: totalItems }) }}
         </UBadge>
-        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-sm transition-all hover:border-primary-100 hover:bg-[var(--bg-surface-hover)] hover:text-primary-600">
+        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-[var(--shadow-sm)] transition-all hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-brand)]">
           {{ displayOrderPaymentMethod(order.paymentMethod) }}
         </UBadge>
       </div>
@@ -45,12 +45,12 @@
     <div class="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
       <div class="space-y-8">
         <!-- Products Section -->
-        <section class="surface-card p-6 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-6 group/section hover:bg-white transition-colors duration-500">
-          <div class="flex items-center justify-between gap-4 border-b border-secondary-100 pb-4">
+        <section class="surface-card group/section space-y-6 border border-[var(--border-light)] bg-[var(--bg-muted)] p-6 transition-colors duration-500 hover:bg-[var(--bg-surface-hover)]">
+          <div class="flex items-center justify-between gap-4 border-b border-[var(--border-light)] pb-4">
             <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
               {{ $t("orders.card.productsInOrder") }}
             </p>
-            <p class="text-[11px] font-semibold text-[var(--text-tertiary)] transition-colors group-hover/section:text-secondary-900">
+            <p class="text-[11px] font-semibold text-[var(--text-tertiary)] transition-colors group-hover/section:text-[var(--text-primary)]">
               {{ displayOrderText(order.deliveryWindow) }}
             </p>
           </div>
@@ -65,15 +65,15 @@
         </section>
 
         <!-- Shipping Section -->
-        <section class="surface-card p-6 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-4 group/section hover:bg-white transition-colors duration-500">
+        <section class="surface-card group/section space-y-4 border border-[var(--border-light)] bg-[var(--bg-muted)] p-6 transition-colors duration-500 hover:bg-[var(--bg-surface-hover)]">
           <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             {{ $t("orders.card.shippingAddress") }}
           </p>
           <div class="flex gap-3 items-start">
-            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-secondary-100 text-secondary-900">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border-light)] bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-[var(--shadow-sm)]">
               <Icon name="i-ph-map-pin-duotone" class="h-4 w-4" />
             </div>
-            <p class="text-sm font-semibold leading-relaxed text-secondary-600 group-hover/section:text-secondary-900 transition-colors">
+            <p class="text-sm font-semibold leading-relaxed text-[var(--text-secondary)] transition-colors group-hover/section:text-[var(--text-primary)]">
               {{ order.shippingAddress }}
             </p>
           </div>
@@ -84,11 +84,11 @@
         <!-- Price Summary Integrated -->
         <OrdersOrderPriceSummary
           :order="order"
-          card-class="surface-card p-6 bg-gradient-to-br from-primary-50 to-white ring-1 ring-primary-100 shadow-lg"
+          card-class="surface-card border border-[var(--border-light)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-lg)]"
         />
 
         <!-- Progress Tracking -->
-        <section class="surface-card p-6 ring-1 ring-secondary-100 bg-white space-y-6">
+        <section class="surface-card space-y-6 border border-[var(--border-light)] bg-[var(--bg-surface)] p-6">
           <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             {{ $t("orders.card.orderProgress") }}
           </p>
@@ -101,14 +101,14 @@
             >
               <div
                 class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold transition-all duration-500"
-                :class="index <= activeProgressStep ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30 ring-1 ring-primary-500' : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100'"
+                :class="index <= activeProgressStep ? 'bg-[var(--bg-brand)] text-[var(--text-inverse)] shadow-[var(--shadow-brand)] ring-1 ring-[var(--border-strong)]' : 'bg-[var(--bg-muted)] text-[var(--text-tertiary)] ring-1 ring-[var(--border-light)]'"
               >
                 <Icon v-if="index < activeProgressStep" name="i-ph-check-bold" class="h-3 w-3" />
                 <span v-else>{{ index + 1 }}</span>
               </div>
               <div class="min-w-0 space-y-0.5">
-                <p class="text-xs font-semibold transition-colors" :class="index <= activeProgressStep ? 'text-secondary-900' : 'text-secondary-300'">{{ $t(step.label) }}</p>
-                <p class="text-[10px] font-medium leading-relaxed transition-colors" :class="index <= activeProgressStep ? 'text-secondary-500' : 'text-secondary-300'">{{ $t(step.description) }}</p>
+                <p class="text-xs font-semibold transition-colors" :class="index <= activeProgressStep ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)]'">{{ $t(step.label) }}</p>
+                <p class="text-[10px] font-medium leading-relaxed transition-colors" :class="index <= activeProgressStep ? 'text-[var(--text-secondary)]' : 'text-[var(--text-tertiary)]'">{{ $t(step.description) }}</p>
               </div>
             </div>
           </div>
@@ -117,12 +117,12 @@
     </div>
 
     <!-- Primary Actions -->
-    <div class="mt-10 flex flex-wrap gap-3 border-t border-secondary-50 pt-8">
+    <div class="mt-10 flex flex-wrap gap-3 border-t border-[var(--border-light)] pt-8">
       <UButton
         :to="appRoutes.orderDetail(order.id)"
         size="xl"
         icon="i-ph-arrow-square-out-duotone"
-        class="rounded-xl bg-primary-600 px-8 text-xs font-semibold uppercase tracking-[0.06em] text-white shadow-[0_4px_14px_color-mix(in srgb, var(--bg-brand) 20%, transparent)] transition-all hover:bg-primary-700 active:scale-95"
+        class="rounded-xl bg-[var(--bg-brand)] px-8 text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-inverse)] shadow-[var(--shadow-brand)] transition-all hover:bg-[var(--bg-brand-hover)] active:scale-95"
       >
         {{ $t("orders.card.viewDetail") }}
       </UButton>
@@ -143,7 +143,7 @@
         variant="soft"
         size="xl"
         icon="i-ph-shopping-cart-duotone"
-        class="rounded-xl border border-secondary-200 bg-secondary-50/50 px-6 text-xs font-semibold uppercase tracking-[0.06em] text-secondary-600 transition-all hover:bg-secondary-100 active:scale-95"
+        class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-6 text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-surface-hover)] active:scale-95"
       >
         {{ $t(repeatActionLabel) }}
       </UButton>

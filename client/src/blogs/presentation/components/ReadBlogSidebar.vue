@@ -191,7 +191,7 @@ const openBlogCategory = (category: string) => navigateTo({
   align-items: center;
   justify-content: center;
   margin-top: -29px;
-  border: 4px solid #ffffff;
+  border: 4px solid var(--bg-surface);
   border-radius: 50%;
   background: var(--bg-muted);
   color: var(--text-secondary);
@@ -243,7 +243,7 @@ const openBlogCategory = (category: string) => navigateTo({
   display: flex;
   align-items: center;
   gap: 9px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   padding: 14px 16px;
 }
 
@@ -357,7 +357,7 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__search button:not(:disabled) {
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .read-blog-sidebar__search button:disabled {
@@ -390,7 +390,7 @@ const openBlogCategory = (category: string) => navigateTo({
   align-items: center;
   justify-content: center;
   width: 100%;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-muted);
   color: var(--text-primary);
@@ -419,7 +419,7 @@ const openBlogCategory = (category: string) => navigateTo({
   display: grid;
   grid-template-columns: 76px minmax(0, 1fr);
   gap: 10px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
   padding: 12px 14px;
   color: inherit;
   text-decoration: none;
@@ -513,7 +513,7 @@ const openBlogCategory = (category: string) => navigateTo({
 .read-blog-sidebar__related-author::before {
   content: "\2022";
   margin-right: 6px;
-  color: #cbd5e1;
+  color: var(--text-tertiary);
 }
 
 </style>

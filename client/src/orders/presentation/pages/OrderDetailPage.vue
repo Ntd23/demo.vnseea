@@ -255,12 +255,12 @@ useSeoMeta({
 
 <style scoped>
 .order-detail-page {
-  --order-brand: var(--color-primary-500, var(--bg-brand));
-  --order-card: var(--surface-card, #ffffff);
-  --order-border: var(--border-light, #e2e8f0);
-  --order-soft: var(--surface-muted, #fafbfe);
-  --order-text: var(--text-primary, #0f172a);
-  --order-muted: var(--text-tertiary, #64748b);
+  --order-brand: var(--bg-brand);
+  --order-card: var(--bg-surface);
+  --order-border: var(--border-light);
+  --order-soft: var(--bg-muted);
+  --order-text: var(--text-primary);
+  --order-muted: var(--text-tertiary);
   container-type: inline-size;
   width: 100%;
   max-width: 1440px;
@@ -275,7 +275,7 @@ useSeoMeta({
   border: 1px solid var(--order-border);
   border-radius: 16px;
   background: var(--order-card);
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.04), 0 2px 8px -2px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-sm);
 }
 
 .order-detail-header {
@@ -392,7 +392,7 @@ useSeoMeta({
   background: var(--order-soft);
   padding: 4px 10px;
   margin-bottom: 8px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
 }
 
 .order-detail-shop {
@@ -425,7 +425,7 @@ useSeoMeta({
   align-items: center;
   gap: 12px;
   min-width: 0;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--order-soft);
   padding: 12px 16px;
@@ -615,7 +615,7 @@ useSeoMeta({
 .progress-stepper__marker--done {
   background: var(--order-brand);
   border-color: var(--order-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
@@ -642,9 +642,9 @@ useSeoMeta({
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #0ea5e9;
-  border: 1.5px solid #ffffff;
-  color: #ffffff;
+  background: var(--color-success);
+  border: 1.5px solid var(--bg-surface);
+  color: var(--text-inverse);
 }
 
 .progress-stepper__label {
@@ -703,7 +703,7 @@ useSeoMeta({
   align-items: center;
   min-width: 0;
   margin-top: 16px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--order-soft);
   padding: 14px 16px;

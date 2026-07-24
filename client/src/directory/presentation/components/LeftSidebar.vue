@@ -103,7 +103,7 @@ function selectCategory(category: any) {
 }
 
 .sidebar-nav-item:hover .sidebar-icon-box {
-  background: #e2e8f0;
+  background: var(--bg-surface-hover);
   color: var(--text-secondary);
 }
 
@@ -113,7 +113,7 @@ function selectCategory(category: any) {
 }
 
 /* 1. Posts */
-.sidebar-nav-item.active.posts { background-color: #fee2e2 !important; color: #ef4444 !important; }
+.sidebar-nav-item.active.posts { background-color: color-mix(in srgb, #ef4444 15%, transparent) !important; color: #ef4444 !important; }
 .sidebar-icon-box.active.posts { background-color: #ef4444 !important; color: #ffffff !important; }
 
 /* 2. Nearby search */
@@ -121,46 +121,46 @@ function selectCategory(category: any) {
 .sidebar-icon-box.active.nearby-search { background-color: var(--bg-brand) !important; color: var(--text-inverse) !important; }
 
 /* 3. Users (Người dùng) */
-.sidebar-nav-item.active.users { background-color: #e0f2fe !important; color: #0284c7 !important; }
+.sidebar-nav-item.active.users { background-color: color-mix(in srgb, #0284c7 15%, transparent) !important; color: #0284c7 !important; }
 .sidebar-icon-box.active.users { background-color: #0284c7 !important; color: #ffffff !important; }
 
 /* 3. Pages (Các trang) */
-.sidebar-nav-item.active.pages { background-color: #e0e7ff !important; color: #4f46e5 !important; }
+.sidebar-nav-item.active.pages { background-color: color-mix(in srgb, #4f46e5 15%, transparent) !important; color: #6366f1 !important; }
 .sidebar-icon-box.active.pages { background-color: #4f46e5 !important; color: #ffffff !important; }
 
 /* 4. Groups (Tập đoàn) */
-.sidebar-nav-item.active.groups { background-color: #ccfbf1 !important; color: #0d9488 !important; }
+.sidebar-nav-item.active.groups { background-color: color-mix(in srgb, #0d9488 15%, transparent) !important; color: #14b8a6 !important; }
 .sidebar-icon-box.active.groups { background-color: #0d9488 !important; color: #ffffff !important; }
 
 /* 5. Blogs */
-.sidebar-nav-item.active.blogs { background-color: #fce7f3 !important; color: #db2777 !important; }
+.sidebar-nav-item.active.blogs { background-color: color-mix(in srgb, #db2777 15%, transparent) !important; color: #ec4899 !important; }
 .sidebar-icon-box.active.blogs { background-color: #db2777 !important; color: #ffffff !important; }
 
 /* 6. Market (Thị trường) */
-.sidebar-nav-item.active.market { background-color: #ffedd5 !important; color: #ea580c !important; }
+.sidebar-nav-item.active.market { background-color: color-mix(in srgb, #ea580c 15%, transparent) !important; color: #f97316 !important; }
 .sidebar-icon-box.active.market { background-color: #ea580c !important; color: #ffffff !important; }
 
 /* 7. Events (Sự kiện) */
-.sidebar-nav-item.active.events { background-color: #f3e8ff !important; color: #7c3aed !important; }
+.sidebar-nav-item.active.events { background-color: color-mix(in srgb, #7c3aed 15%, transparent) !important; color: #a855f7 !important; }
 .sidebar-icon-box.active.events { background-color: #7c3aed !important; color: #ffffff !important; }
 
 /* 8. Games (Trò chơi) */
-.sidebar-nav-item.active.games { background-color: #fdf2f8 !important; color: #db2777 !important; }
+.sidebar-nav-item.active.games { background-color: color-mix(in srgb, #db2777 15%, transparent) !important; color: #ec4899 !important; }
 .sidebar-icon-box.active.games { background-color: #db2777 !important; color: #ffffff !important; }
 
 /* 9. Forums (Diễn đàn) */
-.sidebar-nav-item.active.forums { background-color: #e0f7fa !important; color: #00acc1 !important; }
+.sidebar-nav-item.active.forums { background-color: color-mix(in srgb, #00acc1 15%, transparent) !important; color: #06b6d4 !important; }
 .sidebar-icon-box.active.forums { background-color: #00acc1 !important; color: #ffffff !important; }
 
 /* 10. Movies (Phim) */
-.sidebar-nav-item.active.movies { background-color: #ffebee !important; color: #e53935 !important; }
+.sidebar-nav-item.active.movies { background-color: color-mix(in srgb, #e53935 15%, transparent) !important; color: #ef4444 !important; }
 .sidebar-icon-box.active.movies { background-color: #e53935 !important; color: #ffffff !important; }
 
 /* 11. Jobs (Việc làm) */
-.sidebar-nav-item.active.jobs { background-color: #f1f5f9 !important; color: #475569 !important; }
+.sidebar-nav-item.active.jobs { background-color: color-mix(in srgb, #475569 20%, transparent) !important; color: var(--text-primary) !important; }
 .sidebar-icon-box.active.jobs { background-color: #475569 !important; color: #ffffff !important; }
 
 /* 12. Funding (Gây quỹ) */
-.sidebar-nav-item.active.funding { background-color: #fdf2f8 !important; color: #ec4899 !important; }
+.sidebar-nav-item.active.funding { background-color: color-mix(in srgb, #ec4899 15%, transparent) !important; color: #ec4899 !important; }
 .sidebar-icon-box.active.funding { background-color: #ec4899 !important; color: #ffffff !important; }
 </style>

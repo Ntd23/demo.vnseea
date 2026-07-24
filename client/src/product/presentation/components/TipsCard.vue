@@ -18,10 +18,10 @@
           :key="index" 
           class="flex items-start gap-4 group/tip"
         >
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-[var(--text-primary)] ring-1 ring-primary-100 transition-transform duration-500 group-hover/tip:scale-110">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--bg-surface-active)] text-[var(--text-brand)] ring-1 ring-[var(--border-light)] transition-transform duration-500 group-hover/tip:scale-110">
             <Icon name="i-ph-info-duotone" class="h-5 w-5" />
           </div>
-          <p class="text-[11px] font-medium leading-relaxed text-[var(--text-primary)] transition-colors group-hover/tip:text-secondary-900 pt-2.5">
+          <p class="text-[11px] font-medium leading-relaxed text-[var(--text-primary)] transition-colors group-hover/tip:text-[var(--text-brand)] pt-2.5">
             {{ tip.description }}
           </p>
         </div>

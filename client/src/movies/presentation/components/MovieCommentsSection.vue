@@ -102,11 +102,11 @@ const submitComment = () => {
 .movie-comments {
   display: grid;
   gap: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
   padding: 18px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .movie-comments__header {
@@ -114,7 +114,7 @@ const submitComment = () => {
   align-items: center;
   gap: 10px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #eef2f7;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .movie-comments__icon {
@@ -125,7 +125,7 @@ const submitComment = () => {
   justify-content: center;
   border-radius: 10px;
   background: var(--color-accent-700, var(--bg-brand));
-  color: #ffffff;
+  color: var(--color-on-brand);
 }
 
 .movie-comments__header h2 {
@@ -148,7 +148,7 @@ const submitComment = () => {
 
 .movie-comments__composer {
   padding-top: 12px;
-  border-top: 1px solid #eef2f7;
+  border-top: 1px solid var(--border-light);
 }
 
 .movie-comments__form {
@@ -166,7 +166,7 @@ const submitComment = () => {
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
-  background: #eef2ff;
+  background: var(--bg-surface-active);
   color: var(--color-accent-700, var(--bg-brand));
   font-size: 12px;
   font-weight: 800;
@@ -182,7 +182,7 @@ const submitComment = () => {
   width: 100%;
   min-width: 0;
   height: 44px;
-  border: 1px solid #dbe3ef;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   padding: 0 14px;
@@ -206,7 +206,7 @@ const submitComment = () => {
   border: 0;
   border-radius: 12px;
   background: var(--color-accent-700, var(--bg-brand));
-  color: #ffffff;
+  color: var(--color-on-brand);
   cursor: pointer;
   font-size: 20px;
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);

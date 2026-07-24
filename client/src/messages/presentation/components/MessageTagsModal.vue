@@ -176,7 +176,7 @@ const activeTab = ref<"assign" | "manage">("assign")
 const newTagName = ref("")
 const newTagColor = ref(defaultTagColor)
 const assignListboxUi = {
-  root: "rounded-xl border border-slate-200 ring-0 shadow-sm",
+  root: "rounded-xl border border-[var(--border-light)] ring-0 shadow-[var(--shadow-sm)]",
   content: "max-h-[min(20rem,45dvh)]",
   item: "min-h-12 px-3 py-2.5",
   itemLabel: "overflow-visible text-clip whitespace-normal break-words font-semibold",
@@ -237,13 +237,13 @@ async function submitCreateTag() {
 .messages-tag-modal__tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-bottom: 3px solid #e5e7eb;
+  border-bottom: 3px solid var(--border-light);
   margin: 0 0 20px;
 }
 
 .messages-tag-modal__tab {
   height: 44px;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 15px;
   font-weight: 800;
   text-align: center;
@@ -302,7 +302,7 @@ async function submitCreateTag() {
   gap: 10px;
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-light);
 }
 
 .messages-tag-modal__create-actions {
@@ -321,7 +321,7 @@ async function submitCreateTag() {
   display: block;
   width: 24px;
   height: 24px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--border-light);
   border-radius: 6px;
 }
 
@@ -345,7 +345,7 @@ async function submitCreateTag() {
   justify-content: flex-end;
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-light);
 }
 
 @media (max-width: 767.98px) {

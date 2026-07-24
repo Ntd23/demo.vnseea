@@ -77,9 +77,9 @@ const {
 .skeleton-card {
   overflow: hidden;
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .skeleton-cover {
@@ -89,12 +89,12 @@ const {
 }
 
 .skeleton {
-  background: #000000;
+  background: var(--bg-surface-hover);
   background: linear-gradient(
     90deg,
-    #334155 25%,
-    #475569 50%,
-    #334155 75%
+    var(--bg-surface-hover) 25%,
+    var(--bg-surface-active) 50%,
+    var(--bg-surface-hover) 75%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 2s infinite linear;
@@ -116,12 +116,12 @@ const {
 
 .skeleton-pill {
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--bg-muted);
 }
 
 .skeleton-circle {
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--bg-muted);
 }
 
 .skeleton-avatar {
@@ -129,12 +129,12 @@ const {
   height: 52px;
   border-radius: 16px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--bg-muted);
 }
 
 .skeleton-text {
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--bg-muted);
 }
 
 .skeleton-overlay-top-left {

@@ -20,16 +20,16 @@
         >
           <div 
             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-500"
-            :class="item.done 
-              ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' 
-              : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100'"
+            :class="item.done
+              ? 'bg-[var(--color-success)] text-[var(--text-inverse)] shadow-[var(--shadow-sm)]'
+              : 'bg-[var(--bg-muted)] text-[var(--text-tertiary)] ring-1 ring-[var(--border-light)]'"
           >
             <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle-duotone'" class="h-5 w-5" />
           </div>
           <div class="space-y-0.5">
             <span 
-              class="text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] transition-colors group-hover/item:text-secondary-900"
-              :class="{ 'line-through text-secondary-300': item.done }"
+              class="text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] transition-colors group-hover/item:text-[var(--text-brand)]"
+              :class="{ 'line-through !text-[var(--text-tertiary)]': item.done }"
             >
               {{ item.label }}
             </span>
@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <div class="pt-6 border-t border-secondary-50">
+      <div class="pt-6 border-t border-[var(--border-light)]">
         <div class="flex items-center justify-between px-1">
           <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
             {{ $t('pages.productEditor.completionLabel') }}
@@ -49,9 +49,9 @@
             {{ Math.round(donePercent) }}%
           </p>
         </div>
-        <div class="mt-4 h-2 w-full rounded-full bg-secondary-50 ring-1 ring-secondary-100 overflow-hidden">
+        <div class="mt-4 h-2 w-full rounded-full bg-[var(--bg-muted)] ring-1 ring-[var(--border-light)] overflow-hidden">
           <div 
-            class="h-full bg-primary-500 transition-all duration-1000 shadow-[0_0_12px_rgba(var(--color-primary-500-rgb),0.5)]" 
+            class="h-full bg-[var(--bg-brand)] transition-all duration-1000 shadow-[var(--shadow-brand)]"
             :style="{ width: `${donePercent}%` }" 
           />
         </div>

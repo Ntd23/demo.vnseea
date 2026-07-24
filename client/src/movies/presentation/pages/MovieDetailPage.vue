@@ -1,7 +1,7 @@
 <!-- English description: Composes the backend movie overview, player, related catalog, sharing, and comments experience. -->
 <template>
-  <main class="movie-detail-page">
-    <div class="container mx-auto">
+  <main class="movie-detail-page mt-1.5">
+    <div class="container">
       <div v-if="loading" class="movie-detail-page__loading" aria-busy="true">
         <div class="movie-detail-page__loading-overview">
           <span class="movie-detail-page__loading-poster" />
@@ -136,21 +136,19 @@ const formatFilterLabel = (value: string) =>
 <style scoped>
 .movie-detail-page {
   min-height: 100%;
-  padding: 18px 0 32px;
 }
 
 .movie-detail-page .container {
   display: grid;
   gap: 18px;
-  width: min(1120px, calc(100% - 24px));
 }
 
 .movie-detail-page__related,
 .movie-detail-page__state {
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .movie-detail-page__related {
@@ -161,7 +159,7 @@ const formatFilterLabel = (value: string) =>
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid #eef2f7;
+  border-bottom: 1px solid var(--border-light);
   padding: 14px 16px;
 }
 
@@ -173,7 +171,7 @@ const formatFilterLabel = (value: string) =>
   justify-content: center;
   border-radius: 9px;
   background: var(--color-accent-700, var(--bg-brand));
-  color: #ffffff;
+  color: var(--color-on-brand);
 }
 
 .movie-detail-page__section-header h2 {
@@ -250,7 +248,7 @@ const formatFilterLabel = (value: string) =>
 .movie-detail-page__loading-line,
 .movie-detail-page__loading-player {
   display: block;
-  background: linear-gradient(90deg, #e5e7eb 25%, #f8fafc 50%, #e5e7eb 75%);
+  background: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-surface-hover) 50%, var(--bg-muted) 75%);
   background-size: 200% 100%;
   animation: movie-detail-loading 1.2s ease-in-out infinite;
 }

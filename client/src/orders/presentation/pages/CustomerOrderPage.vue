@@ -273,12 +273,12 @@ const pageTitle = computed(() =>
 
 <style scoped>
 .customer-order-page {
-  --order-brand: var(--color-primary-500, var(--bg-brand));
-  --order-card: var(--surface-card, #ffffff);
-  --order-border: var(--border-light, #e2e8f0);
-  --order-soft: var(--surface-muted, #f8fafc);
-  --order-text: var(--text-primary, #0f172a);
-  --order-muted: var(--text-tertiary, #64748b);
+  --order-brand: var(--bg-brand);
+  --order-card: var(--bg-surface);
+  --order-border: var(--border-light);
+  --order-soft: var(--bg-muted);
+  --order-text: var(--text-primary);
+  --order-muted: var(--text-tertiary);
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
@@ -291,7 +291,7 @@ const pageTitle = computed(() =>
   border: 1px solid var(--order-border);
   border-radius: 16px;
   background: var(--order-card);
-  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .customer-order-header {
@@ -407,7 +407,7 @@ const pageTitle = computed(() =>
   max-width: 100%;
   overflow: hidden;
   padding: 7px 10px;
-  border: 1px solid #eef2f7;
+  border: 1px solid var(--border-light);
   background: var(--order-soft);
   color: var(--order-muted);
   font-size: 11px;
@@ -459,7 +459,7 @@ const pageTitle = computed(() =>
   display: flex;
   min-width: 0;
   gap: 12px;
-  border: 1px solid #eef2f7;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--order-soft);
   padding: 14px;

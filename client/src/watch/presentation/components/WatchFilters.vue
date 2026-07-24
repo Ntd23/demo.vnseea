@@ -47,9 +47,9 @@ defineEmits<{
 <style scoped>
 .watch-filters {
   background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   padding: 16px;
 }
 
@@ -93,8 +93,8 @@ defineEmits<{
   width: 100%;
   padding: 10px 14px 10px 42px;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: #fafbfe;
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
   font-size: 13px;
   font-weight: 500;
   color: var(--text-primary);
@@ -131,7 +131,7 @@ defineEmits<{
   gap: 6px;
   padding: 8px 18px;
   border-radius: 999px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   font-size: 13px;
   font-weight: 600;
@@ -150,14 +150,14 @@ defineEmits<{
 .watch-filter-cat--active {
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   border-color: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   font-weight: 700;
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
   transform: translateY(-1px);
 }
 
 .watch-filter-cat--active:hover {
-  color: #ffffff;
-  background: linear-gradient(180deg, #3344ff 0%, #1111ff 100%);
+  color: var(--text-inverse);
+  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
 }
 </style>

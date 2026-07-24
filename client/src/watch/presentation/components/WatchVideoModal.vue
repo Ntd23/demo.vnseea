@@ -38,7 +38,7 @@
                 <!-- Center Play Button Overlay -->
                 <div v-if="!isPlaying" class="watch-modal__play-overlay" @click="togglePlay">
                    <div class="watch-modal__play-btn">
-                      <Icon name="i-ph-play-fill" class="h-10 w-10 text-white" />
+                      <Icon name="i-ph-play-fill" class="watch-modal__media-icon h-10 w-10" />
                    </div>
                 </div>
               </div>
@@ -92,7 +92,7 @@
                     <img v-else :src="item.thumb" :alt="item.title" class="watch-modal__next-img">
                     
                     <div v-if="item.id === post?.id" class="watch-modal__playing-overlay">
-                      <Icon name="i-ph-play-fill" class="h-6 w-6 text-white" />
+                      <Icon name="i-ph-play-fill" class="watch-modal__media-icon h-6 w-6" />
                     </div>
                   </div>
                   <div class="watch-modal__next-info">
@@ -400,7 +400,7 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: #000000;;
+  background: var(--bg-media);
   display: flex;
   flex-direction: column;
   user-select: none;
@@ -424,7 +424,7 @@ onBeforeUnmount(() => {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: #000000;;
+  background: var(--bg-media);
   height: 100%;
   min-height: 0;
 }
@@ -452,7 +452,7 @@ onBeforeUnmount(() => {
   max-height: 100%;
   width: auto;
   height: auto;
-  background: #000;
+  background: var(--bg-media);
 }
 
 .watch-modal__play-overlay {
@@ -461,7 +461,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
+  background: color-mix(in srgb, var(--bg-media) 30%, transparent);
   cursor: pointer;
   z-index: 5;
 }
@@ -482,13 +482,17 @@ onBeforeUnmount(() => {
   transform: scale(1.1);
 }
 
+.watch-modal__media-icon {
+  color: var(--text-media);
+}
+
 .watch-modal__nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
-  border: none;
+  background: color-mix(in srgb, var(--bg-media) 45%, transparent);
+  color: var(--text-media);
+  border: 1px solid var(--border-media);
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -507,7 +511,7 @@ onBeforeUnmount(() => {
 
 .watch-modal__nav:hover {
   opacity: 1 !important;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--text-media) 14%, transparent);
 }
 
 .watch-modal__nav--left {
@@ -525,7 +529,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-media-muted);
   font-size: 14px;
 }
 
@@ -539,7 +543,7 @@ onBeforeUnmount(() => {
 }
 
 .watch-modal__stage-link:hover {
-  color: white;
+  color: var(--text-media);
 }
 
 .watch-modal__stage-divider {
@@ -549,9 +553,10 @@ onBeforeUnmount(() => {
 /* Sidebar */
 .watch-modal__sidebar {
   background: var(--bg-surface);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: 1px solid var(--border-light);
   height: 100%;
   overflow: hidden;
 }
@@ -561,26 +566,26 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .watch-modal__sidebar-title {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .watch-modal__close-btn {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #f1f3f4;
+  background: var(--bg-muted);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #5f6368;
+  color: var(--text-secondary);
 }
 
 .watch-modal__sidebar-content {
@@ -589,7 +594,7 @@ onBeforeUnmount(() => {
   padding: 20px;
   /* Ensure scrollbar is visible but elegant */
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+  scrollbar-color: color-mix(in srgb, var(--text-primary) 12%, transparent) transparent;
 }
 
 .watch-modal__sidebar-content::-webkit-scrollbar {
@@ -597,7 +602,7 @@ onBeforeUnmount(() => {
 }
 
 .watch-modal__sidebar-content::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: color-mix(in srgb, var(--text-primary) 12%, transparent);
   border-radius: 10px;
 }
 
@@ -617,11 +622,11 @@ onBeforeUnmount(() => {
 }
 
 .watch-modal__next-item:hover {
-  background: #f8f9fa;
+  background: var(--bg-surface-hover);
 }
 
 .watch-modal__next-item--active {
-  background: #f1f3f4;
+  background: var(--bg-surface-active);
 }
 
 .watch-modal__next-thumb {
@@ -630,7 +635,7 @@ onBeforeUnmount(() => {
   aspect-ratio: 16/9;
   border-radius: 8px;
   overflow: hidden;
-  background: #000;
+  background: var(--bg-media);
   flex-shrink: 0;
 }
 
@@ -658,7 +663,7 @@ onBeforeUnmount(() => {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
-  color: #1a1a1a;
+  color: var(--text-primary);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -668,12 +673,12 @@ onBeforeUnmount(() => {
 .watch-modal__next-meta {
   margin-top: 4px;
   font-size: 12px;
-  color: #70757a;
+  color: var(--text-secondary);
 }
 
 .watch-modal__divider {
   height: 1px;
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--border-light);
   margin: 20px 0;
 }
 
@@ -698,18 +703,18 @@ onBeforeUnmount(() => {
 .watch-modal__author-name {
   font-size: 15px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .watch-modal__author-time {
   font-size: 13px;
-  color: #70757a;
+  color: var(--text-secondary);
 }
 
 .watch-modal__post-text {
   font-size: 14px;
   line-height: 1.5;
-  color: #3c4043;
+  color: var(--text-primary);
 }
 
 .watch-modal__interaction-bar {
@@ -717,8 +722,8 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(3, 1fr);
   gap: 4px;
   padding: 10px 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
   margin-bottom: 16px;
 }
 
@@ -736,7 +741,7 @@ onBeforeUnmount(() => {
   padding: 10px 4px;
   border: none;
   background: transparent;
-  color: #5f6368;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -745,7 +750,7 @@ onBeforeUnmount(() => {
 }
 
 .watch-modal__interaction-btn:hover {
-  background: #f1f3f4;
+  background: var(--bg-surface-hover);
   color: var(--bg-brand);
 }
 
@@ -761,9 +766,10 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 6px;
   background: var(--bg-surface);
+  border: 1px solid var(--border-light);
   padding: 5px;
   border-radius: 999px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
   z-index: 100;
 }
 
@@ -793,7 +799,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   padding-bottom: 12px;
   font-size: 13px;
-  color: #70757a;
+  color: var(--text-secondary);
 }
 
 .watch-modal__reaction-stats {
@@ -812,7 +818,7 @@ onBeforeUnmount(() => {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 1.5px solid white;
+  border: 1.5px solid var(--border-light);
   background: var(--bg-surface);
   margin-left: -4px;
 }
@@ -832,7 +838,7 @@ onBeforeUnmount(() => {
 
 .watch-modal__stat-number {
   font-weight: 600;
-  color: #5f6368;
+  color: var(--text-secondary);
 }
 
 .watch-modal__share-stats {
@@ -863,14 +869,14 @@ onBeforeUnmount(() => {
 .watch-modal__comments-empty {
   text-align: center;
   padding: 40px 0;
-  color: #70757a;
+  color: var(--text-secondary);
 }
 
 .watch-modal__composer {
   flex-shrink: 0;
   padding: 14px 20px 18px;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
-  background: var(--bg-surface, #ffffff);
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-surface);
 }
 
 .scrollbar-hide {

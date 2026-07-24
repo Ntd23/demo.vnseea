@@ -1,9 +1,9 @@
-<!-- Description: Renders the messages workspace with a docked desktop user detail pane while preserving mobile slideovers and group management flows. -->
+<!-- English description: Renders the messages workspace with a docked desktop user detail pane while preserving mobile slideovers and group management flows. -->
 <template>
-  <div class="h-full min-h-0 w-full overflow-hidden bg-white">
+  <div class="h-full min-h-0 w-full overflow-hidden bg-[var(--bg-surface)]">
     <div class="flex h-full min-h-0 overflow-hidden">
       <aside
-        class="messages-page__left h-full min-h-0 shrink-0 border-r border-[#e5e7eb] bg-white"
+        class="messages-page__left h-full min-h-0 shrink-0 border-r border-[var(--border-light)] bg-[var(--bg-surface)]"
         :class="{ 'messages-page__left--mobile-hidden': !mobileListOpen }"
       >
         <MessagesChatList
@@ -40,7 +40,7 @@
       </aside>
 
       <main
-        class="messages-page__main h-full min-h-0 min-w-0 flex-1 flex-col bg-white"
+        class="messages-page__main h-full min-h-0 min-w-0 flex-1 flex-col bg-[var(--bg-surface)]"
         :class="{ 'messages-page__main--mobile-hidden': mobileListOpen }"
       >
         <MessagesChatWindow
@@ -86,7 +86,7 @@
 
       <aside
         v-if="showDesktopUserDetailPane"
-        class="messages-page__detail hidden h-full min-h-0 shrink-0 border-l border-[#e5e7eb] bg-[#fcfdff] xl:flex"
+        class="messages-page__detail hidden h-full min-h-0 shrink-0 border-l border-[var(--border-light)] bg-[var(--bg-surface)] xl:flex"
       >
         <MessagesUserDetailPanel
           :contact="selectedContact"

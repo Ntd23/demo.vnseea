@@ -1,6 +1,7 @@
+<!-- English description: Displays upcoming movies, curated picks, and related viewing destinations. -->
 <template>
   <aside class="min-w-0 space-y-4">
-    <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
+    <section class="rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-4 shadow-[var(--shadow-md)]">
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
           <p class="text-label-secondary text-[var(--text-tertiary)]">{{ upcomingEyebrow }}</p>
@@ -15,12 +16,12 @@
         <article
           v-for="(item, index) in upcoming"
           :key="item.title"
-          class="rounded-[22px] border bg-[var(--bg-surface-hover)] p-3.5 transition hover:bg-white hover:shadow-[0_14px_30px_rgba(15,23,42,0.08)]"
+          class="rounded-[22px] border bg-[var(--bg-surface-hover)] p-3.5 transition hover:bg-[var(--bg-surface)] hover:shadow-[var(--shadow-sm)]"
           :style="{ borderColor: upcomingTheme(index).border }"
         >
           <div class="flex items-start gap-3">
             <div
-              class="flex h-[72px] w-[72px] shrink-0 flex-col items-center justify-center rounded-[20px] border bg-white text-center shadow-[0_8px_20px_rgba(15,23,42,0.05)]"
+              class="flex h-[72px] w-[72px] shrink-0 flex-col items-center justify-center rounded-[20px] border bg-[var(--bg-surface)] text-center shadow-[var(--shadow-sm)]"
               :style="{ borderColor: upcomingTheme(index).border }"
             >
               <p
@@ -40,7 +41,7 @@
               </h3>
 
               <span
-                class="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border bg-white px-2.5 py-1 text-[11px] font-black text-[var(--text-secondary)]"
+                class="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border bg-[var(--bg-surface)] px-2.5 py-1 text-[11px] font-black text-[var(--text-secondary)]"
                 :style="{ borderColor: upcomingTheme(index).border }"
               >
                 <Icon name="i-ph-broadcast-bold" class="h-3.5 w-3.5 shrink-0" :style="{ color: upcomingTheme(index).color }" />
@@ -56,7 +57,7 @@
       </div>
     </section>
 
-    <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
+    <section class="rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-4 shadow-[var(--shadow-md)]">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--text-tertiary)]">{{ picksEyebrow }}</p>
@@ -70,11 +71,11 @@
           v-for="movie in picks"
           :key="movie.id"
           class="flex w-full items-center gap-3 rounded-[20px] px-3 py-3 text-left transition"
-          :class="movie.id === activeMovieId ? 'bg-[var(--color-primary-50)] text-[var(--color-primary-700)]' : 'bg-[var(--bg-surface-hover)] text-[var(--text-primary)] hover:bg-[var(--color-primary-50)]'"
+          :class="movie.id === activeMovieId ? 'bg-[var(--bg-surface-active)] text-[var(--text-brand)]' : 'bg-[var(--bg-surface-hover)] text-[var(--text-primary)] hover:bg-[var(--bg-surface-active)]'"
           type="button"
           @click="$emit('select', movie.id)"
         >
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] text-white" :style="{ background: movie.accent }">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] text-[var(--color-on-brand)]" :style="{ background: movie.accent }">
             <Icon name="i-ph-popcorn-fill" class="h-5 w-5" />
           </div>
           <div class="min-w-0 flex-1">
@@ -86,35 +87,35 @@
       </div>
     </section>
 
-    <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] shadow-[var(--shadow-md)]" style="background-color: #0a58ca !important; color: white !important;">
+    <section class="overflow-hidden rounded-[28px] border border-[var(--border-on-brand)] bg-[var(--bg-brand)] text-[var(--color-on-brand)] shadow-[var(--shadow-md)]">
       <div class="p-5">
-        <p class="text-[11px] font-black uppercase tracking-[0.18em]" style="color: rgba(255,255,255,0.6) !important;">{{ $t("pages.moviesPage.sidebarRoutingEyebrow") }}</p>
-        <h3 class="mt-2 text-[1.1rem] font-black leading-tight" style="color: white !important;">{{ $t("pages.moviesPage.sidebarRoutingTitle") }}</h3>
-        <p class="mt-2 text-[12px] font-medium leading-5" style="color: rgba(255,255,255,0.7) !important;">
+        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--color-on-brand-secondary)]">{{ $t("pages.moviesPage.sidebarRoutingEyebrow") }}</p>
+        <h3 class="mt-2 text-[1.1rem] font-black leading-tight text-[var(--color-on-brand)]">{{ $t("pages.moviesPage.sidebarRoutingTitle") }}</h3>
+        <p class="mt-2 text-[12px] font-medium leading-5 text-[var(--color-on-brand-secondary)]">
           {{ $t("pages.moviesPage.sidebarRoutingDescription") }}
         </p>
       </div>
 
       <div class="grid grid-cols-1 gap-2 p-4 pt-0">
-        <NuxtLink to="/watch" class="flex items-center gap-3 rounded-2xl border border-white/10 p-3 transition" style="background-color: rgba(255,255,255,0.1) !important;">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: rgba(255,255,255,0.2) !important;">
-            <Icon name="i-ph-play-fill" class="h-5 w-5" style="color: white !important;" />
+        <NuxtLink to="/watch" class="flex items-center gap-3 rounded-2xl border border-[var(--border-on-brand)] bg-white/10 p-3 text-[var(--color-on-brand)] transition hover:bg-white/20">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20">
+            <Icon name="i-ph-play-fill" class="h-5 w-5 text-[var(--color-on-brand)]" />
           </div>
-          <span class="text-[13px] font-bold" style="color: white !important;">Xem Watch</span>
+          <span class="text-[13px] font-bold">Xem Watch</span>
         </NuxtLink>
         
-        <NuxtLink to="/live" class="flex items-center gap-3 rounded-2xl border border-white/10 p-3 transition" style="background-color: rgba(255,255,255,0.1) !important;">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: rgba(255,255,255,0.2) !important;">
-            <Icon name="i-ph-broadcast-fill" class="h-5 w-5" style="color: white !important;" />
+        <NuxtLink to="/live" class="flex items-center gap-3 rounded-2xl border border-[var(--border-on-brand)] bg-white/10 p-3 text-[var(--color-on-brand)] transition hover:bg-white/20">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20">
+            <Icon name="i-ph-broadcast-fill" class="h-5 w-5 text-[var(--color-on-brand)]" />
           </div>
-          <span class="text-[13px] font-bold" style="color: white !important;">Xem Live</span>
+          <span class="text-[13px] font-bold">Xem Live</span>
         </NuxtLink>
 
-        <NuxtLink to="/blogs" class="flex items-center gap-3 rounded-2xl border border-white/10 p-3 transition" style="background-color: rgba(255,255,255,0.1) !important;">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: rgba(255,255,255,0.2) !important;">
-            <Icon name="i-ph-newspaper-fill" class="h-5 w-5" style="color: white !important;" />
+        <NuxtLink to="/blogs" class="flex items-center gap-3 rounded-2xl border border-[var(--border-on-brand)] bg-white/10 p-3 text-[var(--color-on-brand)] transition hover:bg-white/20">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20">
+            <Icon name="i-ph-newspaper-fill" class="h-5 w-5 text-[var(--color-on-brand)]" />
           </div>
-          <span class="text-[13px] font-bold" style="color: white !important;">Đọc Blog</span>
+          <span class="text-[13px] font-bold">Đọc Blog</span>
         </NuxtLink>
       </div>
     </section>
@@ -138,16 +139,16 @@ defineEmits<{ select: [id: string] }>()
 
 const upcomingThemes = [
   {
-    border: "rgba(10,88,202,0.18)",
-    color: "#0a58ca",
+    border: "color-mix(in srgb, var(--color-info) 18%, transparent)",
+    color: "var(--color-info)",
   },
   {
-    border: "rgba(124,58,237,0.18)",
-    color: "#7c3aed",
+    border: "color-mix(in srgb, var(--color-warning) 18%, transparent)",
+    color: "var(--color-warning)",
   },
   {
-    border: "rgba(15,118,110,0.18)",
-    color: "#0f766e",
+    border: "color-mix(in srgb, var(--color-success) 18%, transparent)",
+    color: "var(--color-success)",
   },
 ]
 

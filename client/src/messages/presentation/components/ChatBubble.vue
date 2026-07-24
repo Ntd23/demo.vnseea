@@ -1,11 +1,11 @@
-<!-- Description: Renders one normalized message bubble with a PHP-style chat rhythm while keeping the current backend-backed message formats. -->
+<!-- English description: Renders one normalized message bubble with a PHP-style chat rhythm while keeping the current backend-backed message formats. -->
 <template>
   <div
     class="flex w-full flex-col animate-in fade-in slide-in-from-bottom-2 duration-500 chat-bubble__container"
     :class="{ 'chat-bubble__container--mine': isMine }"
   >
     <div v-if="showTime" class="my-3 self-center sm:my-4">
-      <span class="rounded-full bg-[#f6f6f6] px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#8e8e93] border border-black/5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+      <span class="rounded-full border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-tertiary)] shadow-[var(--shadow-sm)]">
         {{ time }}
       </span>
     </div>
@@ -28,7 +28,7 @@
             <UAvatar
               :src="avatar"
               size="xs"
-              class="ring-1 ring-white shadow-sm chat-bubble__avatar"
+              class="chat-bubble__avatar ring-1 ring-[var(--border-light)] shadow-[var(--shadow-sm)]"
             />
           </UChip>
         </button>
@@ -121,8 +121,8 @@
             isDeleted ? 'chat-bubble--deleted' : '',
             storyContext && !isDeleted ? 'chat-bubble--story' : '',
             isMine
-              ? 'chat-bubble--mine text-white'
-              : 'chat-bubble--theirs text-[var(--text-primary)] border border-slate-100'
+              ? 'chat-bubble--mine text-[var(--text-inverse)]'
+              : 'chat-bubble--theirs border border-[var(--border-light)] text-[var(--text-primary)]'
           ]"
         >
           <p v-if="showAuthor && authorName && !storyContext" class="chat-bubble__author">{{ authorName }}</p>
@@ -162,7 +162,7 @@
               v-if="mediaType === 'image' || mediaType === 'gif'"
               :src="mediaUrl"
               :alt="mediaName || text || 'Message media'"
-              class="max-h-[360px] rounded-[10px] object-contain bg-white border border-slate-100 p-1"
+              class="max-h-[360px] rounded-[10px] border border-[var(--border-light)] bg-[var(--bg-surface)] object-contain p-1"
             />
             <video
               v-else-if="mediaType === 'video'"
@@ -183,7 +183,7 @@
               :href="mediaUrl"
               target="_blank"
               rel="noopener noreferrer"
-              class="chat-bubble__file inline-flex items-center gap-2 rounded-[8px] bg-black/5 px-3 py-2 text-sm font-medium"
+              class="chat-bubble__file inline-flex items-center gap-2 rounded-[8px] bg-[var(--bg-muted)] px-3 py-2 text-sm font-medium"
             >
               <Icon name="i-ph-paperclip-duotone" class="h-4 w-4" />
               <span class="chat-bubble__file-name">{{ mediaName || mediaUrl }}</span>
@@ -523,7 +523,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   gap: 9px;
   overflow: hidden;
   box-sizing: border-box;
-  border: 1px solid #dbe3ef;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   padding: 7px;
@@ -533,8 +533,8 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 .chat-bubble__product-card:hover {
-  border-color: var(--bg-brand, var(--bg-brand));
-  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.12);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .chat-bubble__product-media {
@@ -545,8 +545,8 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   justify-content: center;
   overflow: hidden;
   border-radius: 9px;
-  background: #eef2ff;
-  color: #4f46e5;
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
 }
 
 .chat-bubble__wrapper--product {
@@ -591,28 +591,28 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 .chat-bubble--mine {
-  background: var(--bg-brand, #a84849);
+  background: var(--bg-brand);
   border-radius: 18px 18px 6px 18px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .chat-bubble--theirs {
-  background: #f1f0f0;
+  background: var(--bg-muted);
   border-radius: 18px 18px 18px 6px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .chat-bubble--deleted {
-  color: #737373 !important;
+  color: var(--text-tertiary) !important;
   font-style: italic;
-  background: #f4f4f5 !important;
-  border: 1px solid #e4e4e7 !important;
+  background: var(--bg-muted) !important;
+  border: 1px solid var(--border-light) !important;
 }
 
 .chat-bubble__call-card {
   width: min(250px, 74vw);
   border-radius: 18px;
-  background: #f1f1f1;
+  background: var(--bg-muted);
   padding: 14px 14px 12px;
 }
 
@@ -627,15 +627,15 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   width: 44px !important;
   height: 44px !important;
   border-radius: 999px !important;
-  color: #050505 !important;
-  background: #e2e5e9 !important;
+  color: var(--text-primary) !important;
+  background: var(--bg-surface-active) !important;
   pointer-events: none;
 }
 
 .chat-bubble__call-card--missed .chat-bubble__call-icon-btn {
-  color: #dc2626 !important;
-  background: #fee2e2 !important;
-  border-color: #fecaca !important;
+  color: var(--text-danger) !important;
+  background: color-mix(in srgb, var(--color-error) 12%, var(--bg-surface)) !important;
+  border-color: color-mix(in srgb, var(--color-error) 28%, var(--border-light)) !important;
 }
 
 .chat-bubble__call-copy {
@@ -646,7 +646,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 .chat-bubble__call-title {
-  color: #050505;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 750;
   line-height: 1.08;
@@ -654,11 +654,11 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__call-card--missed .chat-bubble__call-title,
 .chat-bubble__call-card--missed .chat-bubble__call-subtitle {
-  color: #dc2626;
+  color: var(--text-danger);
 }
 
 .chat-bubble__call-subtitle {
-  color: #65676b;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 450;
   line-height: 1.12;
@@ -669,25 +669,25 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   margin-top: 12px;
   min-height: 44px;
   border-radius: 8px !important;
-  background: #868687 !important;
-  color: #050505 !important;
+  background: var(--bg-surface-active) !important;
+  color: var(--text-primary) !important;
   font-size: 18px !important;
   font-weight: 650 !important;
 }
 
 .chat-bubble__call-card--missed .chat-bubble__call-again {
-  background: #dc2626 !important;
-  color: #ffffff !important;
-  border-color: #dc2626 !important;
+  background: var(--color-error) !important;
+  color: var(--text-inverse) !important;
+  border-color: var(--color-error) !important;
 }
 
 .chat-bubble__call-again:hover {
-  background: #d8dce2 !important;
+  background: var(--bg-surface-hover) !important;
 }
 
 .chat-bubble__call-card--missed .chat-bubble__call-again:hover {
-  background: #b91c1c !important;
-  border-color: #b91c1c !important;
+  background: color-mix(in srgb, var(--color-error) 82%, var(--bg-media)) !important;
+  border-color: color-mix(in srgb, var(--color-error) 82%, var(--bg-media)) !important;
 }
 
 .chat-bubble__avatar {
@@ -761,7 +761,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   align-items: flex-start;
   gap: 3px;
   margin: 0 0 2px;
-  color: #65676b;
+  color: var(--text-secondary);
   border: 0;
   background: transparent;
   padding: 0;
@@ -803,9 +803,9 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   max-width: min(220px, 100%);
   overflow: hidden;
   border-radius: 14px;
-  background: #f1f0f0;
+  background: var(--bg-muted);
   padding: 7px 11px;
-  color: #65676b;
+  color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.35;
   text-overflow: ellipsis;
@@ -821,7 +821,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   height: 64px;
   overflow: hidden;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-light);
   background: var(--bg-muted);
   object-fit: cover;
 }
@@ -839,7 +839,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   border-radius: 999px;
   background: var(--bg-surface);
   padding: 3px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow-md);
 }
 
 .chat-bubble__reaction img {
@@ -902,8 +902,8 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 .chat-bubble__message-tool--danger:hover {
-  background: #fee2e2;
-  color: #dc2626;
+  background: color-mix(in srgb, var(--color-error) 12%, var(--bg-surface));
+  color: var(--text-danger);
 }
 
 .chat-bubble__reaction-picker {
@@ -915,11 +915,11 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   display: flex;
   align-items: center;
   gap: 2px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
+  border: 1px solid var(--border-light);
   border-radius: 999px;
   background: var(--bg-surface);
   padding: 5px 7px;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  box-shadow: var(--shadow-lg);
   transform: none;
 }
 
@@ -931,7 +931,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   border-radius: 0;
   background: transparent;
   padding: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   box-shadow: none;
 }
 

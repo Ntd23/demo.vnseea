@@ -4,14 +4,25 @@
     <!-- Loading State -->
     <div v-if="loading" class="reels-page__status">
       <div class="reels-page__loader">
-        <Icon name="i-lucide-loader-2" class="mx-auto h-8 w-8 animate-spin text-white/70" />
-        <p class="text-sm font-bold text-white/70">{{ t("pages.reelsPage.playing") }}</p>
+        <Icon
+          name="i-lucide-loader-2"
+          class="reels-page__status-icon mx-auto h-8 w-8 animate-spin"
+        />
+        <p class="reels-page__status-copy text-sm font-bold">
+          {{ t("pages.reelsPage.playing") }}
+        </p>
       </div>
     </div>
 
     <!-- Active Reel Content -->
-    <div v-else-if="activeReel" class="reels-page__container" @wheel="handleWheel" @pointerdown.passive="onPointerDown"
-      @pointerup.passive="onPointerUp" @pointercancel.passive="onPointerUp">
+    <div
+      v-else-if="activeReel"
+      class="reels-page__container"
+      @wheel="handleWheel"
+      @pointerdown.passive="onPointerDown"
+      @pointerup.passive="onPointerUp"
+      @pointercancel.passive="onPointerUp"
+    >
       <!-- Main Content Area -->
       <main class="reels-page__main">
         <!-- Reel Player Stage -->
@@ -26,13 +37,30 @@
               <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />
             </button>
             <template v-if="activeMedia?.type === 'video'">
-              <video ref="videoRef" :src="activeMedia.src" class="reels-page__video" autoplay
-                controls playsinline @play="isPlaying = true" @pause="isPlaying = false" @timeupdate="updateProgress"
-                @loadedmetadata="onMetadataLoaded" @ended="handleVideoEnded" />
+              <video
+                ref="videoRef"
+                :src="activeMedia.src"
+                class="reels-page__video"
+                autoplay
+                controls
+                playsinline
+                @play="isPlaying = true"
+                @pause="isPlaying = false"
+                @timeupdate="updateProgress"
+                @loadedmetadata="onMetadataLoaded"
+                @ended="handleVideoEnded"
+              />
 
               <!-- Play Overlay -->
-              <div v-if="!isPlaying" class="reels-page__play-overlay" @click="togglePlayPause">
-                <Icon name="i-ph-play-fill" class="h-16 w-16 text-white/50" />
+              <div
+                v-if="!isPlaying"
+                class="reels-page__play-overlay"
+                @click="togglePlayPause"
+              >
+                <Icon
+                  name="i-ph-play-fill"
+                  class="reels-page__play-icon h-16 w-16"
+                />
               </div>
 
               <!-- Custom Progress Bar -->
@@ -43,8 +71,15 @@
                 </div>
               </div> -->
             </template>
-            <img v-else :src="activeMedia?.thumb || activeMedia?.src || activeReel.authorAvatarUrl"
-              class="reels-page__video">
+            <img
+              v-else
+              :src="
+                activeMedia?.thumb ||
+                activeMedia?.src ||
+                activeReel.authorAvatarUrl
+              "
+              class="reels-page__video"
+            />
 
             <!-- Dark Overlay for better text readability -->
             <div class="reels-page__video-overlay" />
@@ -52,7 +87,11 @@
             <!-- Author Info & Caption (Bottom Left of player) -->
             <div class="reels-page__info">
               <div class="reels-page__author">
-                <img :src="activeReel.authorAvatarUrl" :alt="activeReel.author" class="reels-page__avatar">
+                <img
+                  :src="activeReel.authorAvatarUrl"
+                  :alt="activeReel.author"
+                  class="reels-page__avatar"
+                />
                 <div class="reels-page__author-meta">
                   <p class="reels-page__author-name">{{ activeReel.author }}</p>
                 </div>
@@ -63,19 +102,28 @@
           <!-- Interaction Icons (Floating on the right) -->
           <div class="reels-page__actions">
             <div class="reels-page__action-item">
-              <div class="reels-page__action-wrapper" @mouseenter="openPostReactionTray"
+              <div
+                class="reels-page__action-wrapper"
+                @mouseenter="openPostReactionTray"
                 @mouseleave="closePostReactionTray"
                 @focusin="openPostReactionTray"
                 @focusout="closePostReactionTray"
-                @contextmenu.prevent>
-                <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
-                  :class="{ 'reels-page__action-btn--active': liked }" :aria-label="t('pages.reelsPage.like')"
+                @contextmenu.prevent
+              >
+                <UButton
+                  type="button"
+                  color="info"
+                  variant="link"
+                  class="reels-page__action-btn"
+                  :class="{ 'reels-page__action-btn--active': liked }"
+                  :aria-label="t('pages.reelsPage.like')"
                   @pointerdown="startPostReactionPress"
                   @pointerup="finishPostReactionPress"
                   @pointerleave="cancelPostReactionPress"
                   @pointercancel="cancelPostReactionPress"
                   @contextmenu.prevent
-                  @click="handlePostReactionButtonClick">
+                  @click="handlePostReactionButtonClick"
+                >
                   <img
                     v-if="selectedPostReaction"
                     :src="activePostReactionAsset.src"
@@ -84,17 +132,21 @@
                     draggable="false"
                     @contextmenu.prevent
                     @dragstart.prevent
-                  >
+                  />
                   <Icon v-else name="i-ph-thumbs-up-bold" class="h-8 w-8" />
                 </UButton>
-                <span class="reels-page__action-label">{{ formatCompact(likesCount) }}</span>
+                <span class="reels-page__action-label">{{
+                  formatCompact(likesCount)
+                }}</span>
 
                 <!-- Reaction Tray -->
-                <Transition enter-active-class="transition duration-150 ease-out"
+                <Transition
+                  enter-active-class="transition duration-150 ease-out"
                   enter-from-class="opacity-0 translate-y-2 scale-95"
                   enter-to-class="opacity-100 translate-y-0 scale-100"
                   leave-active-class="transition duration-100 ease-in"
-                  leave-to-class="opacity-0 translate-y-2 scale-95">
+                  leave-to-class="opacity-0 translate-y-2 scale-95"
+                >
                   <div
                     v-if="postReactionTrayOpen"
                     class="reels-page__reaction-tray"
@@ -102,8 +154,14 @@
                     @pointerdown.stop
                     @contextmenu.prevent
                   >
-                    <button v-for="reaction in postReactionOptions" :key="reaction.value"
-                      class="reels-page__reaction-option" type="button" @contextmenu.prevent @click="reactToPost(reaction.value)">
+                    <button
+                      v-for="reaction in postReactionOptions"
+                      :key="reaction.value"
+                      class="reels-page__reaction-option"
+                      type="button"
+                      @contextmenu.prevent
+                      @click="reactToPost(reaction.value)"
+                    >
                       <img
                         :src="reaction.src"
                         :alt="reaction.label"
@@ -111,7 +169,7 @@
                         draggable="false"
                         @contextmenu.prevent
                         @dragstart.prevent
-                      >
+                      />
                     </button>
                   </div>
                 </Transition>
@@ -119,34 +177,83 @@
             </div>
 
             <div class="reels-page__action-item">
-              <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
-                :aria-label="t('pages.reelsPage.comment')" @click="toggleComments">
+              <UButton
+                type="button"
+                color="info"
+                variant="link"
+                class="reels-page__action-btn"
+                :aria-label="t('pages.reelsPage.comment')"
+                @click="toggleComments"
+              >
                 <Icon name="i-ph-chat-circle-bold" class="h-8 w-8" />
               </UButton>
-              <span class="reels-page__action-label">{{ formatCompact(commentsCount) }}</span>
+              <span class="reels-page__action-label">{{
+                formatCompact(commentsCount)
+              }}</span>
             </div>
 
-            <div v-if="activeReel.permissions.canShare" class="reels-page__action-item">
-              <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
-                :aria-label="t('pages.reelsPage.share')" @click="activeReel.permissions.canShare && (showShare = true)">
+            <div
+              v-if="activeReel.permissions.canShare"
+              class="reels-page__action-item"
+            >
+              <UButton
+                type="button"
+                color="info"
+                variant="link"
+                class="reels-page__action-btn"
+                :aria-label="t('pages.reelsPage.share')"
+                @click="activeReel.permissions.canShare && (showShare = true)"
+              >
                 <Icon name="i-ph-share-fat-bold" class="h-8 w-8" />
               </UButton>
-              <span class="reels-page__action-label">{{ formatCompact(sharesCount) }}</span>
+              <span class="reels-page__action-label">{{
+                formatCompact(sharesCount)
+              }}</span>
             </div>
 
             <div class="reels-page__action-item">
-              <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
-                :class="{ 'reels-page__action-btn--active': activeReel.isSaved }"
-                :aria-label="activeReel.isSaved ? t('pages.reelsPage.saved') : t('pages.reelsPage.save')"
-                @click="handleMenuAction(activeReel.isSaved ? 'unsave' : 'save')">
-                <Icon :name="activeReel.isSaved ? 'i-ph-bookmark-simple-fill' : 'i-ph-bookmark-simple-bold'" class="h-8 w-8" />
+              <UButton
+                type="button"
+                color="info"
+                variant="link"
+                class="reels-page__action-btn"
+                :class="{
+                  'reels-page__action-btn--active': activeReel.isSaved,
+                }"
+                :aria-label="
+                  activeReel.isSaved
+                    ? t('pages.reelsPage.saved')
+                    : t('pages.reelsPage.save')
+                "
+                @click="
+                  handleMenuAction(activeReel.isSaved ? 'unsave' : 'save')
+                "
+              >
+                <Icon
+                  :name="
+                    activeReel.isSaved
+                      ? 'i-ph-bookmark-simple-fill'
+                      : 'i-ph-bookmark-simple-bold'
+                  "
+                  class="h-8 w-8"
+                />
               </UButton>
-              <span class="reels-page__action-label">{{ activeReel.isSaved ? t("pages.reelsPage.saved") : t("pages.reelsPage.save") }}</span>
+              <span class="reels-page__action-label">{{
+                activeReel.isSaved
+                  ? t("pages.reelsPage.saved")
+                  : t("pages.reelsPage.save")
+              }}</span>
             </div>
 
             <div class="reels-page__action-item">
-              <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
-                :aria-label="t('pages.reelsPage.more')" @click="showOptions = true">
+              <UButton
+                type="button"
+                color="info"
+                variant="link"
+                class="reels-page__action-btn"
+                :aria-label="t('pages.reelsPage.more')"
+                @click="showOptions = true"
+              >
                 <Icon name="i-ph-dots-three-bold" class="h-8 w-8" />
               </UButton>
             </div>
@@ -155,17 +262,39 @@
       </main>
 
       <!-- Share Modal Integration -->
-      <FeedShareModal v-if="activeReel.permissions.canShare" :open="showShare"
-        :can-share="activeReel.permissions.canShare" :share-url="shareUrl"
-        :post="{ id: activeReel.id, author: activeReel.author, text: activeReel.text, authorAvatar: activeReel.authorAvatarUrl, authorVerified: activeReel.authorVerified }"
-        @close="showShare = false" @shared="handleShared" />
+      <FeedShareModal
+        v-if="activeReel.permissions.canShare"
+        :open="showShare"
+        :can-share="activeReel.permissions.canShare"
+        :share-url="shareUrl"
+        :post="{
+          id: activeReel.id,
+          author: activeReel.author,
+          text: activeReel.text,
+          authorAvatar: activeReel.authorAvatarUrl,
+          authorVerified: activeReel.authorVerified,
+        }"
+        @close="showShare = false"
+        @shared="handleShared"
+      />
 
-      <UModal v-model:open="showOptions" :title="t('pages.reelsPage.optionsTitle')"
-        :ui="{ content: 'sm:max-w-[420px]' }">
+      <UModal
+        v-model:open="showOptions"
+        :title="t('pages.reelsPage.optionsTitle')"
+        :ui="{ content: 'sm:max-w-[420px]' }"
+      >
         <template #body>
           <div class="reels-page__options">
-            <UButton type="button" color="error" variant="soft" size="lg" block icon="i-ph-flag-duotone"
-              class="justify-start rounded-xl" @click="reportActiveReel">
+            <UButton
+              type="button"
+              color="error"
+              variant="soft"
+              size="lg"
+              block
+              icon="i-ph-flag-duotone"
+              class="justify-start rounded-xl"
+              @click="reportActiveReel"
+            >
               <span class="reels-page__option-text">
                 <strong>{{ t("pages.reelsPage.report") }}</strong>
               </span>
@@ -175,7 +304,13 @@
 
         <template #footer>
           <div class="flex w-full justify-end">
-            <UButton type="button" color="neutral" variant="outline" class="rounded-xl" @click="showOptions = false">
+            <UButton
+              type="button"
+              color="neutral"
+              variant="outline"
+              class="rounded-xl"
+              @click="showOptions = false"
+            >
               {{ t("pages.reelsPage.cancel") }}
             </UButton>
           </div>
@@ -183,42 +318,75 @@
       </UModal>
 
       <!-- Comment Bottom Sheet -->
-      <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0"
-        enter-to-class="opacity-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100"
-        leave-to-class="opacity-0">
-        <div v-if="showComments" class="reels-page__overlay" @click="showComments = false"></div>
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="showComments"
+          class="reels-page__overlay"
+          @click="showComments = false"
+        ></div>
       </Transition>
-      <Transition enter-active-class="transition duration-400 cubic-bezier(0.33, 1, 0.68, 1)"
-        enter-from-class="translate-y-full" enter-to-class="translate-y-0"
-        leave-active-class="transition duration-300 ease-in" leave-from-class="translate-y-0"
-        leave-to-class="translate-y-full">
+      <Transition
+        enter-active-class="transition duration-400 cubic-bezier(0.33, 1, 0.68, 1)"
+        enter-from-class="translate-y-full"
+        enter-to-class="translate-y-0"
+        leave-active-class="transition duration-300 ease-in"
+        leave-from-class="translate-y-0"
+        leave-to-class="translate-y-full"
+      >
         <div v-if="showComments" class="reels-page__bottom-sheet">
           <div class="reels-page__sheet-handle"></div>
           <header class="reels-page__sheet-header">
             <div class="reels-page__sheet-title">
-              {{ t('pages.watchPage.commentsTitle') }} ({{ activeReel.stats.comments }})
+              {{ t("pages.watchPage.commentsTitle") }} ({{
+                activeReel.stats.comments
+              }})
             </div>
-            <UButton type="button" color="neutral" variant="soft" icon="i-ph-x-bold" class="reels-page__sheet-close"
-              :aria-label="t('pages.reelsPage.close')" @click="showComments = false" />
+            <UButton
+              type="button"
+              color="neutral"
+              variant="soft"
+              icon="i-ph-x-bold"
+              class="reels-page__sheet-close"
+              :aria-label="t('pages.reelsPage.close')"
+              @click="showComments = false"
+            />
           </header>
 
           <div class="reels-page__sheet-content scrollbar-hide">
             <div class="reels-page__comments">
-              <FeedCommentList v-if="localComments.length > 0" :comments="localComments" enable-reply enable-reaction
+              <FeedCommentList
+                v-if="localComments.length > 0"
+                :comments="localComments"
+                enable-reply
+                enable-reaction
                 :current-user-name="currentAuthUserStore.user?.name"
                 :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
-                :comment-action-repository="commentActionRepository" />
+                :comment-action-repository="commentActionRepository"
+              />
               <div v-else class="reels-page__comments-empty">
-                <Icon name="i-ph-chat-circle-text" class="h-10 w-10 opacity-20" />
-                <p>{{ t('feed.commentList.emptyDescription') }}</p>
+                <Icon
+                  name="i-ph-chat-circle-text"
+                  class="h-10 w-10 opacity-20"
+                />
+                <p>{{ t("feed.commentList.emptyDescription") }}</p>
               </div>
             </div>
           </div>
 
           <footer class="reels-page__sheet-composer">
-            <FeedCommentComposer :current-user-name="currentAuthUserStore.user?.name"
-              :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl" :submitting="commenting"
-              @submit="submitComment" />
+            <FeedCommentComposer
+              :current-user-name="currentAuthUserStore.user?.name"
+              :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+              :submitting="commenting"
+              @submit="submitComment"
+            />
           </footer>
         </div>
       </Transition>
@@ -227,9 +395,15 @@
     <!-- Empty State -->
     <div v-else class="reels-page__status">
       <div class="reels-page__loader">
-        <Icon name="i-ph-film-strip-duotone" class="mx-auto h-8 w-8 text-white/70" />
-        <p class="text-base font-black text-white">{{ t("pages.reelsPage.heroTitle") }}</p>
-        <p class="max-w-md text-sm leading-6 text-white/70">{{ errorMessage || t("pages.watchPage.emptyDescription") }}
+        <Icon
+          name="i-ph-film-strip-duotone"
+          class="reels-page__status-icon mx-auto h-8 w-8"
+        />
+        <p class="reels-page__status-title text-base font-black">
+          {{ t("pages.reelsPage.heroTitle") }}
+        </p>
+        <p class="reels-page__status-copy max-w-md text-sm leading-6">
+          {{ errorMessage || t("pages.watchPage.emptyDescription") }}
         </p>
       </div>
     </div>
@@ -237,23 +411,23 @@
 </template>
 
 <script setup lang="ts">
-import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
-import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
-import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
-import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
-import { useReelsPageVM } from "../../application/view-models/useReelsPageVM"
+import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue";
+import FeedCommentList from "../../../feed/presentation/components/CommentList.vue";
+import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue";
+import type { FeedPostRecord } from "../../../feed/domain/types/feed.types";
+import { useReelsPageVM } from "../../application/view-models/useReelsPageVM";
 
 const props = defineProps<{
-  postId?: number
-  initialPost?: FeedPostRecord
-  embedded?: boolean
-}>()
+  postId?: number;
+  initialPost?: FeedPostRecord;
+  embedded?: boolean;
+}>();
 const emit = defineEmits<{
-  close: []
-}>()
-const { t } = useI18n()
-const { locale } = useI18n()
-const showOptions = ref(false)
+  close: [];
+}>();
+const { t } = useI18n();
+const { locale } = useI18n();
+const showOptions = ref(false);
 const {
   loading,
   errorMessage,
@@ -302,34 +476,37 @@ const {
   postId: props.postId,
   initialPost: props.initialPost,
   onExit: props.embedded ? () => emit("close") : undefined,
-})
+});
 
-const compactFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
-  notation: "compact",
-  maximumFractionDigits: 1,
-}))
+const compactFormatter = computed(
+  () =>
+    new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }),
+);
 
 function formatCompact(value: number) {
-  return compactFormatter.value.format(value)
+  return compactFormatter.value.format(value);
 }
 
 async function reportActiveReel() {
-  await handleMenuAction("report")
-  showOptions.value = false
+  await handleMenuAction("report");
+  showOptions.value = false;
 }
 
 useSeoMeta({
   title: () => t("pages.reelsPage.seoTitle"),
   description: () => t("pages.reelsPage.seoDescription"),
-})
+});
 </script>
 
 <style scoped>
 .reels-page {
   height: 100%;
   min-height: 0;
-  background-color: #020617;
-  color: #ffffff;
+  background-color: var(--bg-media);
+  color: var(--text-media);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -346,13 +523,22 @@ useSeoMeta({
 
 .reels-page__loader {
   padding: 40px 32px;
-  background-color: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: color-mix(in srgb, var(--text-media) 6%, transparent);
+  border: 1px solid var(--border-media);
   border-radius: 28px;
   backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.reels-page__status-icon,
+.reels-page__status-copy {
+  color: var(--text-media-muted);
+}
+
+.reels-page__status-title {
+  color: var(--text-media);
 }
 
 .reels-page__container {
@@ -370,7 +556,7 @@ useSeoMeta({
   align-items: center;
   justify-content: center;
   position: relative;
-  background-color: var(--text-primary);
+  background-color: var(--bg-media);
 }
 
 .reels-page__stage {
@@ -386,7 +572,7 @@ useSeoMeta({
 .reels-page__player-box {
   height: 100%;
   width: 100%;
-  background-color: var(--text-primary);
+  background-color: var(--bg-media);
   position: relative;
   display: flex;
   align-items: center;
@@ -411,22 +597,24 @@ useSeoMeta({
   width: 44px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-media);
   border-radius: 9999px;
-  background: rgba(2, 6, 23, 0.68);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--bg-media) 68%, transparent);
+  color: var(--text-media);
   cursor: pointer;
   backdrop-filter: blur(10px);
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
 }
 
 .reels-page__back-button:hover {
-  background: rgba(2, 6, 23, 0.88);
+  background: color-mix(in srgb, var(--bg-media) 88%, transparent);
   transform: scale(1.06);
 }
 
 .reels-page__back-button:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--text-media);
   outline-offset: 2px;
 }
 
@@ -437,7 +625,6 @@ useSeoMeta({
   bottom: 56px;
   left: 0;
   z-index: 2;
-  /* background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 50%, rgba(0, 0, 0, 0.8) 100%); */
   pointer-events: none;
 }
 
@@ -473,7 +660,7 @@ useSeoMeta({
   height: 58px;
   padding: 0 !important;
   border-radius: 50%;
-  color: #ffffff;
+  color: var(--text-media);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -494,12 +681,12 @@ useSeoMeta({
 }
 
 .reels-page__action-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: color-mix(in srgb, var(--text-media) 20%, transparent);
   transform: scale(1.1);
 }
 
 .reels-page__action-btn--active {
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .reels-page__action-label {
@@ -508,10 +695,10 @@ useSeoMeta({
   overflow: hidden;
   text-align: center;
   text-overflow: ellipsis;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75);
+  text-shadow: 0 2px 10px color-mix(in srgb, var(--bg-media) 75%, transparent);
   font-size: 12px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-media);
   line-height: 1.1;
   white-space: nowrap;
 }
@@ -535,12 +722,12 @@ useSeoMeta({
 }
 
 .reels-page__nav-arrow-btn {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-media-muted);
   transition: all 0.2s ease;
 }
 
 .reels-page__nav-arrow-btn:hover:not(:disabled) {
-  color: #ffffff;
+  color: var(--text-media);
   transform: scale(1.1);
 }
 
@@ -567,7 +754,7 @@ useSeoMeta({
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--text-media);
 }
 
 .reels-page__author-name {
@@ -583,7 +770,7 @@ useSeoMeta({
 .reels-page__caption {
   font-size: 14px;
   line-height: 1.5;
-  color: #ffffff;
+  color: var(--text-media);
   max-width: 100%;
 }
 
@@ -591,7 +778,7 @@ useSeoMeta({
 .reels-page__overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: color-mix(in srgb, var(--bg-media) 40%, transparent);
   z-index: 40;
 }
 
@@ -603,20 +790,22 @@ useSeoMeta({
   width: 100%;
   max-width: 1200px;
   height: 65vh;
-  background-color: #ffffff;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-bottom: 0;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   z-index: 50;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -10px 40px color-mix(in srgb, var(--bg-media) 30%, transparent);
 }
 
 .reels-page__sheet-handle {
   width: 40px;
   height: 4px;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: color-mix(in srgb, var(--text-primary) 14%, transparent);
   border-radius: 2px;
   margin: 12px auto 0;
 }
@@ -626,7 +815,7 @@ useSeoMeta({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .reels-page__sheet-title {
@@ -639,7 +828,7 @@ useSeoMeta({
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -654,8 +843,8 @@ useSeoMeta({
 
 .reels-page__sheet-composer {
   padding: 16px 24px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: #f8f9fa;
+  border-top: 1px solid var(--border-light);
+  background-color: var(--bg-muted);
 }
 
 .reels-page__reaction-tray {
@@ -663,13 +852,15 @@ useSeoMeta({
   bottom: calc(100% + 12px);
   left: -100px;
   transform: translateX(-50%);
-  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-media);
+  background-color: color-mix(in srgb, var(--bg-media) 84%, transparent);
   border-radius: 999px;
   padding: 8px 16px;
   display: flex;
   gap: 12px;
   width: 280px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--bg-media) 40%, transparent);
+  backdrop-filter: blur(12px);
   z-index: 100;
   pointer-events: auto;
   white-space: nowrap;
@@ -691,7 +882,7 @@ useSeoMeta({
 }
 
 .reels-page__option-text strong {
-  color: #991b1b;
+  color: var(--color-error);
   font-size: 14px;
   font-weight: 800;
   line-height: 1.25;
@@ -732,7 +923,7 @@ useSeoMeta({
   left: 0;
   right: 0;
   height: calc(4px + env(safe-area-inset-bottom, 0px));
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--text-media) 10%, transparent);
   cursor: pointer;
   z-index: 35;
   transition: all 0.2s;
@@ -753,8 +944,8 @@ useSeoMeta({
   top: 0;
   left: 0;
   height: 100%;
-  background: var(--bg-surface);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  background: var(--text-media);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--text-media) 30%, transparent);
   transition: width 0.1s linear;
 }
 
@@ -767,9 +958,13 @@ useSeoMeta({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.1);
+  background: color-mix(in srgb, var(--bg-media) 10%, transparent);
   cursor: pointer;
   z-index: 25;
+}
+
+.reels-page__play-icon {
+  color: color-mix(in srgb, var(--text-media) 55%, transparent);
 }
 
 .reels-page__progress-container--visible {

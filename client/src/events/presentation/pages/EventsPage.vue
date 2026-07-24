@@ -1,15 +1,6 @@
 <!-- Description: Renders the backend-backed events directory using the legacy PHP tab order and list-first layout. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 pb-10">
-    <section class="wow-content">
-      <div class="wo-page-heading wo-page-heading--big">
-        <span class="wo-page-heading__icon">
-          <Icon name="i-ph-calendar-blank-fill" class="h-5 w-5" />
-        </span>
-        <span>{{ $t("pages.eventsPage.title") }}</span>
-      </div>
-    </section>
-
+  <div class="mt-1.5 space-y-4 pb-10">
     <section class="events-tabs-card">
       <div class="events-tabs-card__top">
         <div class="events-tabs-card__scroll">

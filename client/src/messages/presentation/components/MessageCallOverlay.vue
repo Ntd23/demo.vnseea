@@ -1,4 +1,4 @@
-<!-- Description: Responsive LiveKit one-to-one call surface for message audio and video calls. -->
+<!-- English description: Responsive LiveKit one-to-one call surface for message audio and video calls. -->
 <template>
   <Teleport to="body">
     <div class="message-call" :class="{ 'message-call--audio': session.type === 'audio' }">
@@ -405,8 +405,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: #070a12;
-  color: #ffffff;
+  background: var(--bg-media);
+  color: var(--text-media);
 }
 
 .message-call__stage {
@@ -419,14 +419,14 @@ onBeforeUnmount(() => {
 .message-call__remote {
   position: absolute;
   inset: 0;
-  background: #020617;
+  background: var(--bg-media);
 }
 
 .message-call__remote :deep(video) {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #020617;
+  background: var(--bg-media);
 }
 
 .message-call__poster {
@@ -440,14 +440,14 @@ onBeforeUnmount(() => {
   padding: 24px;
   text-align: center;
   background:
-    radial-gradient(circle at 50% 35%, rgba(88, 101, 242, 0.18), transparent 42%),
-    linear-gradient(180deg, #111827, #05070d);
+    radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--bg-brand) 18%, transparent), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-media) 90%, var(--bg-surface)), var(--bg-media));
 }
 
 .message-call__poster h2 {
   max-width: min(560px, 86vw);
   overflow: hidden;
-  color: #f8fafc;
+  color: var(--text-media);
   font-size: clamp(28px, 6vw, 56px);
   font-weight: 700;
   line-height: 1.05;
@@ -457,7 +457,7 @@ onBeforeUnmount(() => {
 
 .message-call__poster p,
 .message-call__poster span {
-  color: #cbd5e1;
+  color: var(--text-media-muted);
   font-size: 16px;
   font-weight: 600;
 }
@@ -485,10 +485,10 @@ onBeforeUnmount(() => {
   width: min(28vw, 220px);
   aspect-ratio: 3 / 4;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.24);
+  border: 2px solid var(--border-media);
   border-radius: 24px;
-  background: #111827;
-  box-shadow: 0 20px 40px rgba(2, 6, 23, 0.36);
+  background: var(--bg-media);
+  box-shadow: var(--shadow-xl);
 }
 
 .message-call__local :deep(video) {
@@ -525,7 +525,8 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 12px;
   border-radius: 999px;
-  background: rgba(9, 14, 26, 0.72);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--bg-media) 72%, transparent);
   padding: 12px;
   backdrop-filter: blur(18px);
 }
@@ -535,8 +536,8 @@ onBeforeUnmount(() => {
   height: 68px;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(51, 65, 85, 0.92);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--bg-media) 72%, var(--bg-surface));
+  color: var(--text-media);
   font-size: 28px;
 }
 
@@ -551,11 +552,11 @@ onBeforeUnmount(() => {
 }
 
 .message-call__control--muted {
-  background: #7f1d1d;
+  background: color-mix(in srgb, var(--color-error) 58%, var(--bg-media));
 }
 
 .message-call__control--end {
-  background: #ef4444;
+  background: var(--color-error);
 }
 
 .message-call__control--sound {

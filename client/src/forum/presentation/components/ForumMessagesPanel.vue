@@ -15,7 +15,6 @@
         loading-animation="carousel"
         :caption="t('pages.forumPage.myMessagesTitle')"
         :empty="t('pages.forumPage.myMessagesEmptyTitle')"
-        :ui="tableUi"
       >
         <template #subject-cell="{ row }">
           <div class="forum-messages__topic">
@@ -112,15 +111,7 @@ const columns = computed<TableColumn<ForumMessage>[]>(() => [
   },
 ])
 
-const tableUi = {
-  root: "forum-messages__table-root",
-  base: "w-full min-w-[680px]",
-  thead: "bg-[var(--bg-surface-hover)]",
-  th: "text-xs text-[var(--text-secondary)]",
-  td: "text-xs text-[var(--text-secondary)]",
-  empty: "p-0",
-  loading: "p-0",
-}
+
 </script>
 
 <style scoped>

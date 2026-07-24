@@ -99,7 +99,7 @@ const offerTitle = computed(() =>
   display: grid;
   grid-template-columns: 140px minmax(0, 1fr);
   gap: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   background: var(--bg-surface);
   padding: 14px;
@@ -113,7 +113,7 @@ const offerTitle = computed(() =>
   align-items: center;
   justify-content: center;
   border-radius: 16px;
-  background: #eef2ff;
+  background: var(--bg-muted);
 }
 
 .offer-card__image {
@@ -160,7 +160,7 @@ const offerTitle = computed(() =>
 
 .offer-card__title {
   margin: 0;
-  color: #020617;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 800;
   line-height: 1.25;
@@ -201,7 +201,7 @@ const offerTitle = computed(() =>
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #eef2ff;
+  background: var(--bg-muted);
   color: var(--bg-brand);
   object-fit: cover;
 }

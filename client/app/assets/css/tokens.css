@@ -50,6 +50,7 @@
   /* Brand contrast */
   --color-on-brand: #ffffff;
   --color-on-brand-secondary: #fee2e2;
+  --color-on-light-surface: #0f172a;
   --border-on-brand: rgba(255, 255, 255, 0.25);
 
   /* Secondary (neutral / slate) */
@@ -156,10 +157,15 @@
   --bg-muted: var(--color-secondary-100);
   --bg-brand: var(--color-primary-500);
   --bg-brand-hover: var(--color-primary-700);
+  --bg-media: #0f172a;
+
+  --text-media: #ffffff;
+  --text-media-muted: rgba(255, 255, 255, 0.72);
 
   --border-light: rgba(185, 28, 28, 0.08);
   --border-default: rgba(185, 28, 28, 0.12);
   --border-strong: rgba(185, 28, 28, 0.20);
+  --border-media: rgba(255, 255, 255, 0.16);
 
   /* Nuxt UI semantic aliases inherit the project tokens in every color mode. */
   --ui-text-dimmed: var(--text-tertiary);

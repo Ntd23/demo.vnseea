@@ -1,9 +1,9 @@
 <!-- Description: Renders the page hero banner and hides optional backend fields when they are empty. -->
 <template>
-  <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
+  <section class="overflow-hidden rounded-[32px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-lg)]">
     <div class="relative min-h-[220px] overflow-hidden px-5 py-6 text-white sm:min-h-[260px] sm:px-7">
       <div class="absolute inset-0" :style="{ background: page.banner }" />
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.32),transparent_38%),linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.38))]" />
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,color-mix(in srgb,var(--bg-surface)_32%,transparent),transparent_38%),linear-gradient(180deg,color-mix(in srgb,var(--color-secondary-900)_8%,transparent),color-mix(in srgb,var(--color-secondary-900)_38%,transparent))]" />
 
       <div class="relative flex h-full flex-col justify-between gap-6">
         <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/88">
@@ -20,7 +20,7 @@
 
         <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div class="flex items-end gap-4">
-            <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-[28px] border border-white/18 bg-white/12 text-[1.55rem] font-black text-white shadow-[0_16px_30px_rgba(15,23,42,0.22)] backdrop-blur sm:h-28 sm:w-28 sm:text-[1.8rem]">
+            <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-[28px] border border-white/18 bg-white/12 text-[1.55rem] font-black text-white shadow-[0_16px_30px_color-mix(in srgb,var(--color-secondary-900)_22%,transparent)] backdrop-blur sm:h-28 sm:w-28 sm:text-[1.8rem]">
               {{ avatarLabel }}
             </div>
 
@@ -53,7 +53,7 @@
               size="xl"
               :loading="followState === 'loading'"
               :disabled="followState === 'loading' || isFollowing"
-              class="rounded-[16px] bg-white px-5 text-[14px] font-extrabold text-[var(--text-brand)] shadow-[0_12px_24px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
+              class="rounded-[16px] bg-[var(--bg-surface)] px-5 text-[14px] font-extrabold text-[var(--text-brand)] shadow-[var(--shadow-md)] transition hover:-translate-y-0.5"
               @click="emit('follow')"
             >
               <Icon name="i-ph-bell-simple-ringing-bold" class="mr-2 h-4 w-4" />
@@ -79,7 +79,7 @@
               color="neutral"
               variant="soft"
               size="xl"
-              class="rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
+              class="rounded-[16px] border border-white/16 bg-[var(--color-secondary-900)]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[var(--color-secondary-900)]/40"
             >
               <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
               {{ t("pages.pageDetailPage.settingsButton") }}

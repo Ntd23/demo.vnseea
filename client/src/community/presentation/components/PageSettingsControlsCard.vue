@@ -135,7 +135,7 @@ const toggleItems = computed(() => [
   width: 100%;
   align-items: center;
   gap: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
   padding: 14px;
@@ -145,12 +145,12 @@ const toggleItems = computed(() => [
 
 .cta-card--active {
   border-color: var(--bg-brand);
-  background: #f0f7ff;
+  background: color-mix(in srgb, var(--bg-brand) 10%, transparent);
   box-shadow: 0 10px 25px -5px color-mix(in srgb, var(--bg-brand) 10%, transparent), 0 8px 10px -6px color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 
 .cta-card--inactive:hover {
-  border-color: #cbd5e1;
+  border-color: var(--border-light);
   background: var(--bg-muted);
 }
 
@@ -162,10 +162,10 @@ const toggleItems = computed(() => [
   height: 48px;
   flex: 0 0 48px;
   background: var(--bg-surface);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   color: var(--text-primary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .cta-card--active .cta-card__icon-wrap {
@@ -191,24 +191,13 @@ const toggleItems = computed(() => [
   min-width: 0;
 }
 
-.page-settings-controls__selected {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  background: var(--color-primary-50);
-  color: var(--bg-brand-hover);
-  padding: 8px 14px;
-  font-size: 12px;
-  font-weight: 800;
-}
-
 .page-settings-controls__info {
   display: flex;
   gap: 12px;
-  border: 1px solid var(--color-primary-200);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  background: var(--color-primary-50);
-  color: var(--bg-brand-hover);
+  background: var(--bg-surface);
+  color: var(--bg-brand);
   padding: 14px 16px;
 }
 
@@ -228,7 +217,7 @@ const toggleItems = computed(() => [
 }
 
 .page-settings-controls__toggle {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-muted);
   padding: 16px;

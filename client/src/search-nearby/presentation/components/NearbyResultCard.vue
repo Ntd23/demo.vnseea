@@ -166,7 +166,7 @@ async function shareResult() {
 .nearby-result-card {
   display: block;
   width: 100%;
-  border: 2px solid color-mix(in srgb, var(--bg-brand) 22%, var(--border-default));
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   background: color-mix(in srgb, var(--bg-surface) 96%, transparent);
   box-shadow: var(--shadow-lg);
@@ -311,7 +311,7 @@ async function shareResult() {
   min-height: 54px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-muted);
   color: var(--text-primary);

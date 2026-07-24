@@ -51,11 +51,11 @@ withDefaults(defineProps<{
 
 <style scoped>
 .settings-section-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 32px;
   background: var(--bg-surface);
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-section-card__header {
@@ -124,5 +124,20 @@ withDefaults(defineProps<{
     align-items: flex-start;
     justify-content: space-between;
   }
+}
+
+.settings-section-card :deep(input:not([type="checkbox"]):not([type="radio"])),
+.settings-section-card :deep(textarea),
+.settings-section-card :deep(select),
+.settings-section-card :deep(button[role="combobox"]),
+.settings-section-card :deep(.u-select-button) {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-light) !important;
+}
+
+.settings-section-card :deep(label),
+.settings-section-card :deep([data-slot="label"]) {
+  color: var(--text-primary) !important;
 }
 </style>

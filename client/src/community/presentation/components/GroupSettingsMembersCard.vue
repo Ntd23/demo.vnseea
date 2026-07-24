@@ -1,5 +1,5 @@
 <template>
-  <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-6 shadow-[0_12px_30px_rgba(15,35,110,0.06)] transition-all hover:shadow-[0_16px_40px_rgba(15,35,110,0.09)]">
+  <section class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-md)] transition-all hover:shadow-[var(--shadow-lg)]">
     <!-- Header with count and search input -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
@@ -14,7 +14,6 @@
           variant="outline"
           :placeholder="t('community.settings.members.searchPlaceholder')"
           class="w-full sm:w-64"
-          :ui="{ rounded: 'rounded-full' }"
         />
       </div>
     </div>
@@ -41,7 +40,7 @@
             />
             <div
               v-else
-              class="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-primary-100)_0%,#eef2ff_100%)] text-[13px] font-black text-[var(--text-brand)] shadow-sm"
+              class="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-primary-100)_0%,color-mix(in_srgb,var(--bg-brand)_10%,transparent)_100%)] text-[13px] font-black text-[var(--text-brand)] shadow-sm"
             >
               {{ getInitials(user.name) }}
             </div>
@@ -55,7 +54,7 @@
 
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
-              <p class="truncate text-[13.5px] font-bold text-[#243b63] transition-colors group-hover:text-[var(--text-brand)]">
+              <p class="truncate text-[13.5px] font-bold text-[var(--text-primary)] transition-colors group-hover:text-[var(--text-brand)]">
                 {{ user.name }}
               </p>
               <!-- Owner Badge -->
@@ -124,12 +123,12 @@
     <!-- Empty State -->
     <div
       v-else
-      class="mt-6 flex flex-col items-center justify-center rounded-[20px] bg-slate-50/50 border border-dashed border-slate-200 py-10 px-4 text-center transition-all hover:bg-slate-50"
+      class="mt-6 flex flex-col items-center justify-center rounded-[20px] bg-[var(--bg-muted)]/50 border border-dashed border-[var(--border-light)] py-10 px-4 text-center transition-all hover:bg-[var(--bg-muted)]"
     >
-      <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-[var(--text-tertiary)] shadow-sm mb-4">
+      <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--bg-muted)] text-[var(--text-tertiary)] shadow-sm mb-4">
         <Icon name="i-ph-users-bold" class="h-8 w-8" />
       </div>
-      <h4 class="text-[14px] font-black text-[#243b63]">
+      <h4 class="text-[14px] font-black text-[var(--text-primary)]">
         {{ t("community.settings.members.emptyState") }}
       </h4>
       <p class="mt-1 text-[12px] text-[var(--text-tertiary)] max-w-[280px]">

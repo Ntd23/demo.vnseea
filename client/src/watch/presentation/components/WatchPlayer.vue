@@ -64,10 +64,10 @@ const noop = () => {}
 .watch-player {
   overflow: hidden;
   border-radius: 18px;
-  border: 1px solid #1e293b;
-  background: #0b1120;
-  color: #ffffff;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-media);
+  background: var(--bg-media);
+  color: var(--text-media);
+  box-shadow: var(--shadow-lg);
 }
 
 .watch-player__video {
@@ -97,7 +97,12 @@ const noop = () => {}
 .watch-player__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(11,17,32,0.9), rgba(11,17,32,0.1), rgba(11,17,32,0.05));
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--bg-media) 90%, transparent),
+    color-mix(in srgb, var(--bg-media) 10%, transparent),
+    color-mix(in srgb, var(--bg-media) 5%, transparent)
+  );
 }
 
 /* Badges */
@@ -112,12 +117,12 @@ const noop = () => {}
 
 .watch-player__badge {
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--bg-media) 40%, transparent);
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-media);
   backdrop-filter: blur(8px);
 }
 
@@ -133,17 +138,17 @@ const noop = () => {}
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.18);
-  color: #ffffff;
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--text-media) 18%, transparent);
+  color: var(--text-media);
   cursor: pointer;
   backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow-lg);
   transition: all 0.25s ease;
 }
 
 .watch-player__play-btn:hover {
-  background: rgba(255,255,255,0.28);
+  background: color-mix(in srgb, var(--text-media) 28%, transparent);
   transform: translate(-50%, -50%) scale(1.1);
   box-shadow: 0 12px 40px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
@@ -175,7 +180,7 @@ const noop = () => {}
   cursor: pointer;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255,255,255,0.2);
+  background: color-mix(in srgb, var(--text-media) 20%, transparent);
 }
 
 .watch-player__progress-fill {
@@ -196,7 +201,7 @@ const noop = () => {}
 .watch-player__time {
   font-size: 12px;
   font-weight: 700;
-  color: rgba(255,255,255,0.8);
+  color: var(--text-media-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -205,7 +210,7 @@ const noop = () => {}
   text-align: center;
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255,255,255,0.4);
+  color: color-mix(in srgb, var(--text-media) 45%, transparent);
   user-select: none;
 }
 </style>

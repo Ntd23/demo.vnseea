@@ -192,14 +192,14 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
 
 <style scoped>
 .movies-page {
-  background: #f0f2f5;
+  background: var(--bg-base);
 }
 
 .movies-page__head {
   position: relative;
   z-index: 1;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-  background: #f9f9f9;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-surface);
 }
 
 .movies-page__title {
@@ -213,7 +213,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
 }
 
 .movies-page__title :deep(svg) {
-  color: #0a58ca;
+  color: var(--text-brand);
 }
 
 .movies-page__backdrop {
@@ -228,7 +228,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   align-items: center;
   gap: 12px;
   margin-top: -8px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   padding: 12px 16px;
   border-radius: var(--radius-lg);
@@ -254,7 +254,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
 .movies-page__search-input {
   width: 100%;
   height: 42px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface-hover);
   padding: 0 14px 0 46px;
@@ -281,7 +281,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   height: 42px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   color: var(--text-primary);
@@ -302,7 +302,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   max-height: min(70vh, 560px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   padding: 8px 0;
@@ -353,14 +353,14 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
 }
 
 .movies-page__reset {
-  border-top: 1px solid var(--border-default);
+  border-top: 1px solid var(--border-light);
   justify-content: flex-start;
   color: var(--text-brand);
 }
 
 .movies-page__tabs {
   margin-top: 18px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   padding: 12px 14px 4px; /* Reduced bottom padding since scrollbar has its own padding */
@@ -379,7 +379,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
 
 .movies-page__skeleton-poster,
 .movies-page__skeleton-line {
-  background: linear-gradient(90deg, #e5e7eb 25%, #f8fafc 50%, #e5e7eb 75%);
+  background: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-surface-hover) 50%, var(--bg-muted) 75%);
   background-size: 200% 100%;
   animation: movies-skeleton 1.2s ease-in-out infinite;
 }
@@ -410,7 +410,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   align-items: center;
   justify-content: center;
   gap: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   color: var(--text-secondary);
   font-weight: 800;
@@ -420,7 +420,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
 .movies-page__empty button {
   border: 0;
   background: transparent;
-  color: #0a58ca;
+  color: var(--text-brand);
   font-weight: 900;
   cursor: pointer;
 }
@@ -435,7 +435,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #dbe1ea;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   padding: 10px 22px;
   color: var(--text-primary);

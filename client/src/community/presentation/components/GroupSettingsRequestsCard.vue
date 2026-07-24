@@ -1,12 +1,12 @@
 <template>
-  <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-6 shadow-[0_12px_30px_rgba(15,35,110,0.06)] transition-all hover:shadow-[0_16px_40px_rgba(15,35,110,0.09)]">
+  <section class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-md)] transition-all hover:shadow-[var(--shadow-lg)]">
     <!-- Header with count badge and Approve All button -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
           {{ t("community.settings.defaultEyebrow") }}
         </p>
-        <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.03em] text-[#243b63]">
+        <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
           {{ t("community.settings.requests.title") }}
         </h3>
         <p class="mt-1 text-[13px] text-[var(--text-tertiary)]">
@@ -51,7 +51,7 @@
       <div
         v-for="user in visibleRequests"
         :key="user.id"
-        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[20px] bg-[#fbfcff] border border-slate-100/50 p-4 transition-all hover:border-[var(--color-primary-100)] hover:bg-[#f6f9ff]"
+        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[20px] bg-[var(--bg-muted)] border border-[var(--border-light)]/50 p-4 transition-all hover:border-[var(--color-primary-100)] hover:bg-[var(--bg-surface-hover)]"
       >
         <!-- User Info -->
         <div class="flex items-center gap-3.5 min-w-0">
@@ -63,7 +63,7 @@
             />
             <div
               v-else
-              class="flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-primary-100)_0%,#eef2ff_100%)] text-[14px] font-black text-[var(--text-brand)] shadow-sm"
+              class="flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-primary-100)_0%,color-mix(in_srgb,var(--bg-brand)_10%,transparent)_100%)] text-[14px] font-black text-[var(--text-brand)] shadow-sm"
             >
               {{ getInitials(user.name) }}
             </div>
@@ -76,7 +76,7 @@
           </div>
 
           <div class="min-w-0">
-            <p class="truncate text-[14px] font-extrabold text-[#243b63] transition-colors group-hover:text-[var(--text-brand)]">
+            <p class="truncate text-[14px] font-extrabold text-[var(--text-primary)] transition-colors group-hover:text-[var(--text-brand)]">
               {{ user.name }}
             </p>
             <p class="mt-0.5 truncate text-[12px] text-[var(--text-tertiary)]">
@@ -152,12 +152,12 @@
     <!-- Empty State -->
     <div
       v-else
-      class="mt-6 flex flex-col items-center justify-center rounded-[20px] bg-slate-50/50 border border-dashed border-slate-200 py-10 px-4 text-center transition-all hover:bg-slate-50"
+      class="mt-6 flex flex-col items-center justify-center rounded-[20px] bg-[var(--bg-muted)]/50 border border-dashed border-[var(--border-light)] py-10 px-4 text-center transition-all hover:bg-[var(--bg-muted)]"
     >
       <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[var(--text-brand)] shadow-sm mb-4">
         <Icon name="i-ph-users-four-bold" class="h-8 w-8" />
       </div>
-      <h4 class="text-[14px] font-black text-[#243b63]">
+      <h4 class="text-[14px] font-black text-[var(--text-primary)]">
         {{ t("community.settings.requests.emptyState") }}
       </h4>
       <p class="mt-1 text-[12px] text-[var(--text-tertiary)] max-w-[280px]">

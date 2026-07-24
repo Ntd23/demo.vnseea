@@ -1,6 +1,6 @@
 <!-- English description: Composes the backend event detail hero, attendee views, event feed, invitations, and owner actions. -->
 <template>
-  <main class="event-detail-page">
+  <main class="event-detail-page mt-1.5">
     <section v-if="!pending && !event" class="event-detail-page__state">
       <FoundationEmptyState
         icon="i-ph-calendar-x-fill"
@@ -213,11 +213,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.event-detail-page {
-  width: min(100%, 1180px);
-  margin: 0 auto;
-  padding-bottom: 40px;
-}
 
 .event-detail-page > * + * {
   margin-top: 16px;

@@ -57,7 +57,7 @@
     <div v-if="selectedMethod?.type === 'upload'" class="mt-5 space-y-3">
       <UFormField :label="t('pages.walletPage.receipt')">
         <input
-          class="block w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-4 py-3 text-body-primary"
+          class="block w-full rounded-2xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-4 py-3 text-body-primary"
           type="file"
           accept="image/*"
           @change="onReceiptChange"
@@ -201,7 +201,7 @@ function submit() {
   min-height: 80px;
   align-items: center;
   gap: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   padding: 12px 14px;

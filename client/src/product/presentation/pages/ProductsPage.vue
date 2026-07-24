@@ -9,7 +9,7 @@
             <Icon name="i-ph-storefront-fill" class="h-6 w-6" />
           </div>
           <div class="min-w-0">
-            <h1 class="products-hero__title truncate text-slate-950">
+            <h1 class="products-hero__title truncate text-[var(--text-primary)]">
               {{ $t("pages.productsPage.marketTitle") }}
             </h1>
             <p class="products-hero__description mt-1.5 line-clamp-2 max-w-3xl text-[var(--text-secondary)]">
@@ -26,18 +26,18 @@
       </div>
     </section>
 
-    <section class="products-filter relative mt-3 border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+    <section class="products-filter relative mt-3 border border-[var(--border-light)] bg-[var(--bg-surface)] p-3 shadow-[var(--shadow-sm)] sm:p-4">
       <div class="products-filter__top">
         <div class="products-filter__search">
           <UInput v-model="search" class="w-full" icon="i-ph-magnifying-glass" size="lg"
             :placeholder="$t('pages.productsPage.searchPlaceholder')"
-            :ui="{ base: 'h-12 rounded-xl border-[var(--border-light)] bg-[var(--bg-muted)] text-[14px] font-medium' }" />
+            :ui="{ base: 'h-12 rounded-xl text-[14px] font-medium' }" />
         </div>
       </div>
 
       <div class="products-filter__panel" :class="{ 'products-filter__panel--with-subcategory': hasSubCategories }">
         <USelect v-model="sortBy" class="w-full" :items="sortOptions" value-key="value" label-key="label" size="lg"
-          :ui="{ base: 'h-12 rounded-xl border-[var(--border-light)] bg-[var(--bg-muted)] text-[13px] font-semibold' }" />
+          :ui="{ base: 'h-12 rounded-xl text-[13px] font-semibold' }" />
 
         <USelect v-model="selectedCategory" class="w-full" :items="categoryOptions" value-key="value" label-key="label" size="lg"
           :ui="categorySelectUi" />
@@ -68,7 +68,7 @@
 
     <div v-if="status === 'pending'"
       class="mt-4 grid grid-cols-2 gap-4 min-[520px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-      <div v-for="index in 8" :key="index" class="rounded-2xl border border-slate-200 bg-white p-3">
+      <div v-for="index in 8" :key="index" class="rounded-2xl border border-[var(--border-light)] bg-[var(--bg-surface)] p-3">
         <USkeleton class="aspect-square rounded-xl" />
         <USkeleton class="mt-3 h-4 w-4/5 rounded-full" />
         <USkeleton class="mt-2 h-5 w-1/2 rounded-full" />
@@ -81,12 +81,12 @@
     <div v-else-if="visibleProducts.length > 0"
       class="mt-4 grid grid-cols-2 gap-4 min-[520px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
       <article v-for="product in visibleProducts" :key="product.id"
-        class="market-product-card group overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
-        <div class="market-product-image relative aspect-square overflow-visible bg-slate-100">
+        class="market-product-card group overflow-hidden rounded-[10px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)]">
+        <div class="market-product-image relative aspect-square overflow-visible bg-[var(--bg-muted)]">
           <NuxtLink :to="product.href" class="block h-full overflow-hidden rounded-t-[10px]">
             <NuxtImg v-if="product.imageUrl" :src="product.imageUrl" :alt="product.title"
               class="h-full w-full object-cover" loading="lazy" />
-            <div v-else class="flex h-full w-full items-center justify-center text-white"
+            <div v-else class="flex h-full w-full items-center justify-center text-[var(--text-media)]"
               :style="{ background: product.background }">
               <Icon :name="product.icon" class="h-16 w-16 opacity-80" />
             </div>
@@ -114,7 +114,7 @@
               <Icon name="i-ph-chat-text-fill" class="h-[29px] w-[29px]" />
             </button>
             <button v-if="!product.mine" type="button"
-              class="market-product-action-btn market-product-action-primary inline-flex items-center justify-center text-white transition disabled:opacity-60"
+              class="market-product-action-btn market-product-action-primary inline-flex items-center justify-center text-[var(--text-inverse)] transition disabled:opacity-60"
               :title="$t('pages.productsPage.addToCart')"
               :disabled="!product.canAddToCart || cartLoadingProductId === product.id" @pointerdown.stop
               @click.stop="addToCart(product.id)">
@@ -147,7 +147,7 @@
       </article>
     </div>
 
-    <div v-else class="mt-4 rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center text-[var(--text-secondary)]">
+    <div v-else class="mt-4 rounded-2xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-6 py-14 text-center text-[var(--text-secondary)]">
       <Icon name="i-ph-shopping-bag-open" class="mx-auto h-10 w-10" />
       <p class="mt-3 text-[15px] font-semibold">
         {{ $t("pages.productsPage.emptyTitle") }}
@@ -170,7 +170,7 @@ import { useProductMarketplace } from "../../application/composables/useProductM
 const { t } = useI18n()
 
 const categorySelectUi = {
-  base: "min-h-12 h-auto rounded-xl border-slate-200 bg-slate-50 py-2 text-left text-[13px] font-semibold",
+  base: "min-h-12 h-auto rounded-xl py-2 text-left text-[13px] font-semibold",
   value: "overflow-visible text-clip whitespace-normal break-words text-left leading-5",
   placeholder: "overflow-visible text-clip whitespace-normal break-words text-left leading-5",
   item: "min-h-10",
@@ -217,12 +217,12 @@ const {
 }
 
 .products-hero {
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--bg-brand) 8%, transparent), rgba(255, 255, 255, 0) 46%),
-    #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    linear-gradient(90deg, color-mix(in srgb, var(--bg-brand) 8%, transparent), transparent 46%),
+    var(--bg-surface);
+  box-shadow: var(--shadow-sm);
   isolation: isolate;
 }
 
@@ -241,7 +241,7 @@ const {
   bottom: -112px;
   width: 220px;
   height: 220px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 50%;
   content: "";
   pointer-events: none;
@@ -275,7 +275,7 @@ const {
   height: 46px;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 10%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   color: var(--product-brand);
@@ -302,7 +302,7 @@ const {
   gap: 8px;
   min-height: 44px;
   padding: 10px 16px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--product-brand);
@@ -313,13 +313,13 @@ const {
 
 .products-hero__link:hover {
   background: var(--product-brand);
-  color: #fff;
+  color: var(--text-inverse);
   transform: translateY(-1px);
 }
 
 .products-filter {
   border-radius: 16px;
-  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-sm);
   z-index: 2;
 }
 
@@ -341,7 +341,7 @@ const {
   justify-content: center;
   gap: 8px;
   padding: 0 16px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--product-brand);
@@ -356,7 +356,7 @@ const {
 .products-filter__nearby:focus-visible {
   border-color: var(--product-brand);
   background: var(--product-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 18%, transparent);
 }
 
@@ -367,7 +367,7 @@ const {
   height: 48px;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 12%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--product-brand);
@@ -378,7 +378,7 @@ const {
 .products-filter__reset-icon:focus-visible {
   border-color: var(--product-brand);
   background: var(--product-brand);
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .products-filter__panel {
@@ -388,7 +388,7 @@ const {
   gap: 12px;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
 }
 
 .products-filter__panel--with-subcategory {
@@ -398,9 +398,9 @@ const {
 .products-filter__distance {
   min-height: 48px;
   padding: 8px 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: linear-gradient(180deg, #fff 0%, #fafbfe 100%);
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-muted) 100%);
 }
 
 .products-filter__range {
@@ -456,12 +456,12 @@ const {
 
 .market-product-card {
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .market-product-card:hover {
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -471,7 +471,7 @@ const {
 }
 
 .market-product-overlay {
-  background-color: rgba(0, 0, 0, 0.41);
+  background-color: color-mix(in srgb, var(--bg-media) 41%, transparent);
   opacity: 0;
   z-index: 5;
   transition: opacity 0.3s cubic-bezier(0.33, 0.66, 0.66, 1);
@@ -486,10 +486,10 @@ const {
   z-index: 6;
   min-width: 132px;
   height: 44px;
-  background-color: rgba(255, 255, 255, 0.35);
+  background-color: color-mix(in srgb, var(--text-media) 35%, transparent);
   border-radius: 8px;
-  color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+  color: var(--text-media);
+  box-shadow: var(--shadow-sm);
   backdrop-filter: blur(4px);
   touch-action: manipulation;
   transition:
@@ -503,9 +503,9 @@ const {
 }
 
 .market-product-more:hover {
-  background-color: #fff;
+  background-color: var(--bg-surface);
   color: var(--text-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-sm);
 }
 
 .market-product-actions :deep(a),
@@ -544,7 +544,7 @@ const {
   padding: 0;
   border: 0;
   border-radius: 9999px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   line-height: 1;
   pointer-events: auto;
@@ -552,11 +552,11 @@ const {
 }
 
 .market-product-action-muted {
-  background-color: #dfe5ee;
+  background-color: var(--bg-muted);
 }
 
 .market-product-action-muted:hover {
-  background-color: #d3dbe7;
+  background-color: var(--bg-surface-active);
 }
 
 .market-product-action-primary {

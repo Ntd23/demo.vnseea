@@ -3,7 +3,6 @@
   <aside class="space-y-5">
     <UCard
       class="overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
-      :ui="{ body: 'p-0' }"
       role="status"
       aria-live="polite"
     >
@@ -33,7 +32,7 @@
           <span
             v-for="tag in tagList"
             :key="tag"
-            class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2.5 py-1 text-[11px] font-bold text-[var(--text-primary)]"
+            class="rounded-[var(--radius-full)] bg-[var(--bg-muted)] px-2.5 py-1 text-[11px] font-bold text-[var(--text-primary)]"
           >
             #{{ tag }}
           </span>
@@ -43,7 +42,6 @@
 
     <UCard
       class="rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
-      :ui="{ body: 'p-5' }"
     >
       <p id="create-blog-checklist-title" class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.createBlogPage.checklist") }}
@@ -53,12 +51,12 @@
           v-for="item in checklistItems"
           :key="item.label"
           class="flex items-start gap-3 rounded-[18px] border px-3.5 py-3"
-          :class="item.done ? 'border-[#b8f0c9] bg-[#f2fcf5]' : 'border-[var(--border-default)] bg-[var(--bg-surface-hover)]'"
+          :class="item.done ? 'border-[var(--border-light)] bg-[var(--bg-muted)]' : 'border-[var(--border-default)] bg-[var(--bg-surface-hover)]'"
           role="listitem"
         >
           <span
             class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-            :class="item.done ? 'bg-[var(--color-success)] text-white' : 'border border-[var(--border-default)] bg-white text-[var(--text-tertiary)]'"
+            :class="item.done ? 'bg-[var(--color-success)] text-white' : 'border border-[var(--border-default)] bg-[var(--bg-muted)] text-[var(--text-tertiary)]'"
           >
             <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-dot-outline'" class="h-3.5 w-3.5" />
           </span>

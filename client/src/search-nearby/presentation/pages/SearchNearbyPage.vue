@@ -1841,14 +1841,14 @@ onBeforeUnmount(() => {
   position: relative;
   min-height: calc(100dvh - 64px);
   overflow: hidden;
-  background: var(--color-secondary-200);
+  background: var(--bg-muted);
 }
 
 .nearby-map-page:fullscreen {
   width: 100vw;
   height: 100vh;
   min-height: 100vh;
-  background: var(--color-secondary-200);
+  background: var(--bg-muted);
 }
 
 .nearby-map-page__map,
@@ -1864,8 +1864,8 @@ onBeforeUnmount(() => {
   place-items: center;
   overflow-y: auto;
   background:
-    linear-gradient(color-mix(in srgb, var(--color-secondary-400) 16%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-secondary-400) 16%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--text-tertiary) 16%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--text-tertiary) 16%, transparent) 1px, transparent 1px),
     var(--bg-base);
   background-size: 44px 44px;
   padding: 40px 20px;
@@ -1876,7 +1876,7 @@ onBeforeUnmount(() => {
   width: min(100%, 520px);
   justify-items: center;
   gap: 14px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 28px;
   background: var(--bg-surface);
   box-shadow: var(--shadow-xl);
@@ -1954,8 +1954,8 @@ onBeforeUnmount(() => {
 
 .nearby-map-page__fallback {
   background:
-    linear-gradient(color-mix(in srgb, var(--color-secondary-400) 18%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-secondary-400) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--text-tertiary) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--text-tertiary) 18%, transparent) 1px, transparent 1px),
     var(--bg-base);
   background-size: 44px 44px;
 }
@@ -1985,7 +1985,7 @@ onBeforeUnmount(() => {
   height: 58px;
   align-items: center;
   gap: 10px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 999px;
   background: var(--bg-surface);
   box-shadow: var(--shadow-lg);
@@ -2031,7 +2031,7 @@ onBeforeUnmount(() => {
   max-height: min(360px, calc(100dvh - 116px));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 22px;
   background: var(--bg-surface);
   box-shadow: var(--shadow-xl);
@@ -2120,7 +2120,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   gap: 9px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--bg-surface) 94%, transparent);
   box-shadow: var(--shadow-lg);
@@ -2153,7 +2153,7 @@ onBeforeUnmount(() => {
   height: 46px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 999px;
   background: var(--bg-surface);
   box-shadow: var(--shadow-lg);
@@ -2193,7 +2193,7 @@ onBeforeUnmount(() => {
   width: min(360px, calc(100% - 104px));
   max-height: min(70dvh, 520px);
   overflow-y: auto;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   background: var(--bg-surface);
   box-shadow: var(--shadow-xl);
@@ -2265,10 +2265,10 @@ onBeforeUnmount(() => {
 .nearby-map-page__tab,
 .nearby-map-page__count,
 .nearby-map-page__distance {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--bg-surface) 90%, transparent);
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-size: var(--text-caption);
   font-weight: var(--weight-extrabold);
 }
@@ -2344,7 +2344,7 @@ onBeforeUnmount(() => {
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--bg-surface) 86%, transparent);
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-size: var(--text-body);
   font-weight: var(--weight-extrabold);
   text-align: center;
@@ -2354,7 +2354,7 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 10px;
   min-height: 130px;
-  border: 1px solid color-mix(in srgb, var(--border-default) 74%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
   padding: 12px;
@@ -2374,7 +2374,7 @@ onBeforeUnmount(() => {
 .nearby-map-page__skeleton-line {
   position: relative;
   overflow: hidden;
-  background: color-mix(in srgb, var(--color-secondary-200) 52%, var(--bg-surface));
+  background: color-mix(in srgb, var(--bg-muted) 52%, var(--bg-surface));
 }
 
 .nearby-map-page__skeleton-avatar::after,
@@ -2458,7 +2458,7 @@ onBeforeUnmount(() => {
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--bg-surface) 86%, transparent);
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-size: var(--text-body);
   font-weight: var(--weight-extrabold);
   padding: 18px;
@@ -2736,7 +2736,7 @@ onBeforeUnmount(() => {
   gap: 8px;
   width: 100%;
   min-height: 44px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 999px;
   background: color-mix(in srgb, var(--bg-surface) 60%, transparent);
   color: var(--text-secondary);
@@ -2762,11 +2762,11 @@ onBeforeUnmount(() => {
   width: 100%;
   max-width: 460px;
   margin-top: 20px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   background: color-mix(in srgb, var(--bg-muted) 40%, transparent);
   backdrop-filter: blur(10px);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), var(--shadow-md);
+  box-shadow: inset 0 1px 1px color-mix(in srgb, var(--text-primary) 10%, transparent), var(--shadow-md);
   padding: 16px;
   overflow: hidden;
   text-align: left;
@@ -2822,7 +2822,7 @@ onBeforeUnmount(() => {
 
 /* Android active style override */
 .nearby-map-page__guide-tab--active:has(.i-ph-android-logo-fill) {
-  color: #16a34a;
+  color: var(--text-success);
 }
 
 .nearby-map-page__guide-steps {
@@ -2845,19 +2845,19 @@ onBeforeUnmount(() => {
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  color: #fff;
+  color: var(--text-inverse);
   font-size: 12px;
   font-weight: var(--weight-extrabold);
 }
 
 .nearby-map-page__step-badge--ios {
-  background: linear-gradient(135deg, #94a3b8, #475569);
-  box-shadow: 0 2px 6px rgba(71, 85, 105, 0.25);
+  background: linear-gradient(135deg, var(--text-tertiary), var(--text-secondary));
+  box-shadow: var(--shadow-sm);
 }
 
 .nearby-map-page__step-badge--android {
-  background: linear-gradient(135deg, #4ade80, #16a34a);
-  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-success) 65%, var(--text-inverse)), var(--color-success));
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-success) 25%, transparent);
 }
 
 .nearby-map-page__step-badge--desktop {

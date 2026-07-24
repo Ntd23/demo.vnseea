@@ -76,10 +76,10 @@ const formattedWithdrawableBalance = computed(() =>
   display: grid;
   gap: 16px;
   padding: 20px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .wallet-hero__main {
@@ -148,7 +148,7 @@ const formattedWithdrawableBalance = computed(() =>
 
 .wallet-hero__available strong {
   overflow-wrap: anywhere;
-  color: #16a34a;
+  color: var(--text-success);
   font-size: 14px;
   font-weight: 800;
   line-height: 1.2;
@@ -160,7 +160,7 @@ const formattedWithdrawableBalance = computed(() =>
   align-items: flex-start;
   gap: 6px;
   margin-top: 10px;
-  color: #92400e;
+  color: var(--color-warning);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.45;
@@ -180,7 +180,7 @@ const formattedWithdrawableBalance = computed(() =>
 .wallet-hero__stat {
   min-width: 0;
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   padding: 12px;
 }
 

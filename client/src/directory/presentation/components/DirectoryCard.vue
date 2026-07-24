@@ -5,7 +5,7 @@
     class="group block"
     :aria-label="t('pages.directoryPage.openItemAria', { title: item.title })"
   >
-    <UCard class="overflow-hidden rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)] transition group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-lg)]" :ui="{ body: 'p-0' }">
+    <UCard class="overflow-hidden rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)] transition group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-lg)]">
       <div class="relative min-h-[190px] p-5 text-white" :style="{ background: item.accent }">
         <div class="absolute inset-0 bg-black/10" />
         <div class="relative z-10 flex h-full flex-col justify-between gap-8">
@@ -34,14 +34,18 @@
 
       <div class="p-4">
         <div class="grid grid-cols-2 gap-2">
-          <UCard class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-3' }">
+          <UCard class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]">
+          <div class="p-3">
             <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.directoryPage.metaLabel") }}</p>
             <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ item.meta }}</p>
-          </UCard>
-          <UCard class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-3' }">
+          </div>
+        </UCard>
+          <UCard class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]">
+          <div class="p-3">
             <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.directoryPage.activityLabel") }}</p>
             <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ item.count }}</p>
-          </UCard>
+          </div>
+        </UCard>
         </div>
 
         <div class="mt-4 flex flex-wrap gap-2">

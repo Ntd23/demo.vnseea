@@ -13,11 +13,11 @@
       <NavigationHeaderBar />
 
       <template v-slot:fallback>
-        <div class="h-16 border-b border-[#dfe6ff] bg-white"></div>
+        <div class="h-16 border-b border-[var(--border-light)] bg-[var(--bg-surface)]"></div>
       </template>
     </ClientOnly>
 
-    <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden bg-black xl:h-[calc(100dvh-73px)]' : ''">
+    <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden bg-[var(--bg-media)] xl:h-[calc(100dvh-73px)]' : ''">
       <div class="mx-auto grid w-full grid-cols-1 gap-4 xl:items-start" :class="shellClass">
         <aside v-if="showLeftSidebar && !isReelsPage"
           class="hidden mt-2 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-[16px] min-w-0 xl:sticky xl:top-17 xl:z-10 xl:block xl:h-[calc(92dvh)] xl:overflow-hidden">
@@ -31,7 +31,7 @@
           <ClientOnly>
             <div
               v-if="showHeaderIconNav"
-              class="sticky z-[50] mb-4 mt-2 rounded-b-3xl border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[0_12px_28px_rgba(13,38,76,0.05)] transition-[top] duration-100"
+              class="sticky z-[50] mb-4 mt-2 rounded-b-3xl border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)] transition-[top] duration-100"
               :class="isHeaderHidden ? 'top-0' : 'top-[56px] xl:top-[64px]'">
               <NavigationHeaderIconNav />
             </div>

@@ -628,10 +628,10 @@ onBeforeUnmount(() => {
 <style scoped>
 .new-product-heading,
 .new-product-form {
-  border: 1px solid var(--border-light, #e2e8f0);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .new-product-heading {
@@ -653,13 +653,13 @@ onBeforeUnmount(() => {
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  color: #ffffff;
+  color: var(--text-inverse);
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--color-brand, var(--bg-brand)) 100%);
 }
 
 .new-product-heading h1 {
   margin: 0;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 800;
 }
@@ -712,7 +712,7 @@ onBeforeUnmount(() => {
 }
 
 .new-product-media > label {
-  color: var(--text-secondary, #334155);
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -739,14 +739,14 @@ onBeforeUnmount(() => {
   flex: 0 0 92px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-light, #e2e8f0);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #eef3fb;
+  background: var(--bg-muted);
 }
 
 .new-product-upload {
   padding: 0;
-  color: #344258;
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
@@ -769,8 +769,8 @@ onBeforeUnmount(() => {
   left: 0;
   overflow: hidden;
   padding: 16px 7px 6px;
-  color: #ffffff;
-  background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.82) 100%);
+  color: var(--text-media);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--bg-media) 82%, transparent) 100%);
   font-size: 10px;
   font-weight: 600;
   line-height: 1.2;
@@ -790,8 +790,8 @@ onBeforeUnmount(() => {
   height: 22px;
   border: 0;
   border-radius: 999px;
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.68);
+  color: var(--text-media);
+  background: color-mix(in srgb, var(--bg-media) 68%, transparent);
   cursor: pointer;
   padding: 0;
 }
@@ -839,13 +839,13 @@ onBeforeUnmount(() => {
 }
 
 .new-product-back {
-  color: #344258;
-  background: #eef3fb;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
 }
 
 .new-product-submit {
   min-width: 124px;
-  color: #ffffff;
+  color: var(--text-inverse);
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--color-brand, var(--bg-brand)) 100%);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }

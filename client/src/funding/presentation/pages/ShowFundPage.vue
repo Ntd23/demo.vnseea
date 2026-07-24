@@ -1,6 +1,6 @@
 <!-- English description: Backend-backed funding detail page for the show_fund route with donation sidebar. -->
 <template>
-  <main class="fund-detail">
+  <main class="fund-detail mt-1.5">
     <USkeleton v-if="pending" class="fund-detail__skeleton" />
 
     <UAlert v-else-if="error" color="error" variant="soft" :title="String(error.message || error)" />
@@ -67,15 +67,18 @@
                 icon="i-ph-magnifying-glass-duotone"
                 :placeholder="t('pages.fundingPage.donorSearchPlaceholder')"
                 class="fund-detail__donor-search"
+                size="md"
               />
-              <label class="fund-detail__donor-sort">
-                <span>{{ t("pages.fundingPage.donorSortLabel") }}</span>
-                <select v-model="donorSort">
-                  <option value="newest">{{ t("pages.fundingPage.donorSortNewest") }}</option>
-                  <option value="amount_asc">{{ t("pages.fundingPage.donorSortAmountAsc") }}</option>
-                  <option value="amount_desc">{{ t("pages.fundingPage.donorSortAmountDesc") }}</option>
-                </select>
-              </label>
+              <div class="fund-detail__donor-sort">
+                <span class="text-xs font-bold text-[var(--text-secondary)]">{{ t("pages.fundingPage.donorSortLabel") }}</span>
+                <USelect
+                  v-model="donorSort"
+                  :items="donorSortOptions"
+                  value-key="value"
+                  size="md"
+                  class="w-full"
+                />
+              </div>
             </div>
 
             <div v-if="filteredDonations.length" class="fund-detail__donor-list">
@@ -144,7 +147,7 @@
             <button
               v-if="campaign.canDonate"
               type="button"
-              class="fund-detail__donate"
+              class="fund-detail__donate btn-primary"
               @click="openDonate"
             >
               <Icon name="i-ph-hand-heart-duotone" class="h-4 w-4" />
@@ -203,6 +206,12 @@ const {
   submitDonation,
 } = useShowFundPageVM()
 
+const donorSortOptions = computed(() => [
+  { value: "newest", label: t("pages.fundingPage.donorSortNewest") },
+  { value: "amount_asc", label: t("pages.fundingPage.donorSortAmountAsc") },
+  { value: "amount_desc", label: t("pages.fundingPage.donorSortAmountDesc") },
+])
+
 const formatMoney = (amount: number) =>
   formatCurrency(amount, {
     currency: currency.value,
@@ -220,7 +229,7 @@ const ownerInitials = (name: string) =>
 
 const formatDonationDate = (value: string) => {
   if (!value) return "-"
-  return new Intl.DateTimeFormat(locale.value, {
+  return new Intl.DateTimeFormat(locale.value === 'vi' ? 'vi-VN' : 'en-US', {
     dateStyle: "short",
     timeStyle: "short",
   }).format(new Date(value))
@@ -231,8 +240,6 @@ const formatDonationDate = (value: string) => {
 <style scoped>
 .fund-detail {
   width: min(100%, 1120px);
-  margin: 0 auto;
-  padding: 18px 12px 42px;
 }
 
 .fund-detail__skeleton {
@@ -245,10 +252,10 @@ const formatDonationDate = (value: string) => {
 .fund-detail__donors,
 .fund-detail__panel {
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .fund-detail__hero {
@@ -259,7 +266,7 @@ const formatDonationDate = (value: string) => {
   width: 100%;
   max-height: 460px;
   object-fit: cover;
-  background: #eef2ff;
+  background: var(--bg-muted);
 }
 
 .fund-detail__image--empty {
@@ -282,7 +289,7 @@ const formatDonationDate = (value: string) => {
   min-height: 40px;
   align-items: center;
   gap: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 999px;
   background: var(--bg-surface);
   padding: 9px 14px;
@@ -394,17 +401,6 @@ const formatDonationDate = (value: string) => {
   font-weight: 800;
 }
 
-.fund-detail__donor-sort select {
-  min-height: 40px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: var(--bg-surface);
-  padding: 8px 12px;
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 800;
-}
-
 .fund-detail__donor-list {
   display: grid;
   gap: 10px;
@@ -415,7 +411,7 @@ const formatDonationDate = (value: string) => {
   grid-template-columns: 42px minmax(0, 1fr);
   gap: 10px;
   align-items: center;
-  border: 1px solid #eef2f7;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-muted);
   padding: 10px;
@@ -499,13 +495,23 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__amount-row div {
-  display: grid;
-  gap: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 10px;
+}
+
+.fund-detail__amount-row div:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .fund-detail__amount-row strong {
   color: var(--text-primary);
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 900;
 }
 
@@ -516,48 +522,39 @@ const formatDonationDate = (value: string) => {
 
 .fund-detail__progress div:first-child {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .fund-progress {
-  overflow: hidden;
   height: 10px;
+  overflow: hidden;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--bg-muted);
 }
 
 .fund-progress span {
   display: block;
   height: 100%;
-  border-radius: inherit;
+  border-radius: 999px;
   background: var(--bg-brand);
+  transition: width 0.3s ease;
 }
 
 .fund-progress--completed span {
-  background: #16a34a;
+  background: var(--color-success);
 }
 
 .fund-detail__donate {
   display: inline-flex;
-  min-height: 44px;
+  width: 100%;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid var(--bg-brand);
-  border-radius: 999px;
-  background: var(--bg-brand);
-  padding: 10px 14px;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.fund-detail__donate--disabled,
-.fund-detail__donate--disabled:hover {
-  cursor: not-allowed;
-  border-color: #cbd5e1;
-  background: var(--bg-muted);
-  color: var(--text-secondary);
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
 }
 
 .fund-detail__modal-body {
@@ -566,31 +563,30 @@ const formatDonationDate = (value: string) => {
 }
 
 .fund-detail__modal-body p {
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.5;
+  color: var(--text-primary);
+  font-size: 14px;
 }
 
 .fund-detail__modal-actions {
   display: flex;
-  flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 8px;
-  width: 100%;
+  gap: 10px;
 }
 
-@media (min-width: 860px) {
-  .fund-detail {
-    padding: 22px 20px 48px;
+@media (min-width: 900px) {
+  .fund-detail__hero-body {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    padding: 24px;
   }
 
   .fund-detail__layout {
     grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
   }
 
   .fund-detail__donor-tools {
-    grid-template-columns: minmax(0, 1fr) 210px;
+    grid-template-columns: minmax(0, 1fr) 220px;
     align-items: end;
   }
 
@@ -600,11 +596,6 @@ const formatDonationDate = (value: string) => {
 
   .fund-detail__donor-item b {
     grid-column: auto;
-  }
-
-  .fund-detail__panel {
-    position: sticky;
-    top: 18px;
   }
 }
 </style>

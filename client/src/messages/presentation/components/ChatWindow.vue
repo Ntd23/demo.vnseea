@@ -1,8 +1,8 @@
-<!-- Description: Renders the active conversation pane with a PHP-style header shell, thread content, one-to-one typing state, and the scoped message composer. -->
+<!-- English description: Renders the active conversation pane with a PHP-style header shell, thread content, one-to-one typing state, and the scoped message composer. -->
 <template>
-  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
+  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-[var(--bg-surface)]">
     <template v-if="contact">
-      <div class="border-b border-[var(--border-light)] bg-[#fcfdff] px-4 py-4 sm:px-6">
+      <div class="border-b border-[var(--border-light)] bg-[var(--bg-surface)] px-4 py-4 sm:px-6">
         <div class="flex items-center justify-between gap-4">
           <div class="flex min-w-0 flex-1 items-center gap-3">
             <UButton
@@ -242,8 +242,8 @@
       />
     </template>
 
-    <div v-else-if="inboxPending" class="flex min-h-0 flex-1 flex-col bg-white">
-      <div class="border-b border-[var(--border-light)] bg-[#fcfdff] px-4 py-4 sm:px-6">
+    <div v-else-if="inboxPending" class="flex min-h-0 flex-1 flex-col bg-[var(--bg-surface)]">
+      <div class="border-b border-[var(--border-light)] bg-[var(--bg-surface)] px-4 py-4 sm:px-6">
         <div class="flex items-center justify-between gap-4">
           <div class="flex min-w-0 flex-1 items-center gap-3">
             <USkeleton class="chat-window-header-skeleton__avatar" />
@@ -269,15 +269,15 @@
     <div v-else class="flex flex-1 items-center justify-center p-6 sm:p-10">
       <div class="max-w-[520px] text-center">
         <div class="mx-auto flex w-[210px] flex-col items-center gap-5">
-          <div class="relative h-[58px] w-[148px] rounded-[3px] bg-[#fff0cf]">
-            <span class="absolute -left-4 top-5 h-0 w-0 border-y-[12px] border-r-[18px] border-y-transparent border-r-[#fff0cf]" />
-            <span class="absolute left-7 top-4 h-1.5 w-[105px] rounded-full bg-[#ffd76a]" />
-            <span class="absolute left-7 top-8 h-1.5 w-[74px] rounded-full bg-[#ffd76a]" />
+          <div class="relative h-[58px] w-[148px] rounded-[3px] bg-[color-mix(in_srgb,var(--color-warning)_14%,var(--bg-surface))]">
+            <span class="absolute -left-4 top-5 h-0 w-0 border-y-[12px] border-r-[18px] border-y-transparent border-r-[color-mix(in_srgb,var(--color-warning)_14%,var(--bg-surface))]" />
+            <span class="absolute left-7 top-4 h-1.5 w-[105px] rounded-full bg-[color-mix(in_srgb,var(--color-warning)_55%,transparent)]" />
+            <span class="absolute left-7 top-8 h-1.5 w-[74px] rounded-full bg-[color-mix(in_srgb,var(--color-warning)_55%,transparent)]" />
           </div>
-          <div class="relative ml-16 h-[58px] w-[132px] rounded-[3px] bg-[#c9eff2]">
-            <span class="absolute -right-4 top-5 h-0 w-0 border-y-[12px] border-l-[18px] border-y-transparent border-l-[#c9eff2]" />
-            <span class="absolute left-4 top-4 h-1.5 w-[103px] rounded-full bg-[#88b7bd]" />
-            <span class="absolute left-4 top-8 h-1.5 w-[73px] rounded-full bg-[#88b7bd]" />
+          <div class="relative ml-16 h-[58px] w-[132px] rounded-[3px] bg-[var(--bg-surface-active)]">
+            <span class="absolute -right-4 top-5 h-0 w-0 border-y-[12px] border-l-[18px] border-y-transparent border-l-[var(--bg-surface-active)]" />
+            <span class="absolute left-4 top-4 h-1.5 w-[103px] rounded-full bg-[var(--border-strong)]" />
+            <span class="absolute left-4 top-8 h-1.5 w-[73px] rounded-full bg-[var(--border-strong)]" />
           </div>
         </div>
       </div>
@@ -420,7 +420,7 @@ function handleStartCall(type: MessageCallType) {
   height: 44px !important;
   flex: 0 0 44px;
   border-radius: 999px !important;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .chat-window-header-skeleton__copy {
@@ -432,7 +432,7 @@ function handleStartCall(type: MessageCallType) {
   width: 158px !important;
   height: 18px !important;
   border-radius: 999px !important;
-  background: #dfe5ee !important;
+  background: var(--bg-muted) !important;
 }
 
 .chat-window-header-skeleton__status {
@@ -440,7 +440,7 @@ function handleStartCall(type: MessageCallType) {
   height: 14px !important;
   margin-top: 7px;
   border-radius: 999px !important;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .chat-window-header-skeleton__actions {
@@ -454,7 +454,7 @@ function handleStartCall(type: MessageCallType) {
   width: 40px !important;
   height: 40px !important;
   border-radius: 999px !important;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .chat-window-reply {
@@ -462,8 +462,8 @@ function handleStartCall(type: MessageCallType) {
   grid-template-columns: 3px minmax(0, 1fr) 36px;
   gap: 10px;
   align-items: center;
-  border-top: 1px solid #eef2f7;
-  background: #fbfcfe;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-surface);
   padding: 9px 14px;
 }
 
@@ -471,7 +471,7 @@ function handleStartCall(type: MessageCallType) {
   width: 3px;
   height: 34px;
   border-radius: 999px;
-  background: var(--bg-brand, #a84849);
+  background: var(--bg-brand);
 }
 
 .chat-window-reply__copy {
@@ -499,7 +499,7 @@ function handleStartCall(type: MessageCallType) {
   height: 46px;
   margin-top: 4px;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-light);
   object-fit: cover;
 }
 
@@ -512,8 +512,8 @@ function handleStartCall(type: MessageCallType) {
 
 .chat-window-product-context {
   flex-shrink: 0;
-  border-top: 1px solid #e7ecf3;
-  background: #f8faff;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-surface);
   padding: 10px 12px;
 }
 
@@ -522,10 +522,10 @@ function handleStartCall(type: MessageCallType) {
   display: flex;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #dfe6f1;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
-  box-shadow: 0 4px 14px rgb(15 23 42 / 5%);
+  box-shadow: var(--shadow-sm);
 }
 
 .chat-window-product-card__link {
@@ -547,8 +547,8 @@ function handleStartCall(type: MessageCallType) {
   justify-content: center;
   overflow: hidden;
   border-radius: 10px;
-  background: #eef2ff;
-  color: var(--color-primary-600, #4f46e5);
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
 }
 
 .chat-window-product-card__image {
@@ -568,7 +568,7 @@ function handleStartCall(type: MessageCallType) {
 
 .chat-window-product-card__title {
   overflow: hidden;
-  color: #172033;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 750;
   line-height: 1.35;
@@ -579,7 +579,7 @@ function handleStartCall(type: MessageCallType) {
 .chat-window-product-card__price {
   margin-top: 3px;
   overflow: hidden;
-  color: var(--color-primary-600, #4f46e5);
+  color: var(--text-brand);
   font-size: 14px;
   font-weight: 800;
   line-height: 1.3;
@@ -629,7 +629,7 @@ function handleStartCall(type: MessageCallType) {
 .chat-window-product-suggestions__item {
   flex: 0 0 auto;
   max-width: min(78vw, 300px);
-  border: 1px solid #dbe4f2;
+  border: 1px solid var(--border-light);
   border-radius: 999px;
   background: var(--bg-surface);
   padding: 7px 11px;
@@ -642,16 +642,16 @@ function handleStartCall(type: MessageCallType) {
 }
 
 .chat-window-product-suggestions__item:hover {
-  border-color: var(--color-primary-300, #a5b4fc);
-  background: var(--color-primary-50, #eef2ff);
-  color: var(--color-primary-700, #4338ca);
+  border-color: var(--border-strong);
+  background: var(--bg-surface-hover);
+  color: var(--text-brand);
 }
 
 .chat-window-product-skeleton {
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   padding: 8px;

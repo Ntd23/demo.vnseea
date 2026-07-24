@@ -12,7 +12,7 @@
 
     <section
       v-if="loading && posts.length === 0"
-      class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
+      class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
     >
       <div class="flex items-center justify-center gap-3 text-sm font-bold text-[var(--text-secondary)]">
         <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
@@ -22,7 +22,7 @@
 
     <section
       v-else-if="posts.length === 0"
-      class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
+      class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
     >
       <FoundationEmptyState
         icon="i-ph-video-camera-duotone"

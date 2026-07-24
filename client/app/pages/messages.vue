@@ -1,3 +1,4 @@
+<!-- English description: Exposes the messages bounded-context page through Nuxt file-based routing. -->
 <template>
   <div class="h-full min-h-0">
     <MessagesPresentationMessagesPage />

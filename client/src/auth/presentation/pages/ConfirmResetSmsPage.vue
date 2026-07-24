@@ -139,7 +139,7 @@ const {
   border: 0;
   border-radius: 14px !important;
   background: var(--bg-brand) !important;
-  color: #ffffff !important;
+  color: var(--text-inverse) !important;
   height: 3.5rem !important;
   font-size: 1rem !important;
   font-weight: 800 !important;

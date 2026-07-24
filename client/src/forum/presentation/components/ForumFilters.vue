@@ -2,7 +2,6 @@
 <template>
   <UCard
     class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
-    :ui="{ body: 'p-5 sm:p-6' }"
   >
     <div class="space-y-5">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

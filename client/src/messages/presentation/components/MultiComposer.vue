@@ -1,7 +1,7 @@
-<!-- Description: Renders the real multi-send composer and forwards payloads to the backend bridge used by the PHP messages page. -->
+<!-- English description: Renders the real multi-send composer and forwards payloads to the backend bridge used by the PHP messages page. -->
 <template>
-  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
-    <div class="border-b border-[#e2e8f0] px-5 py-5">
+  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-[var(--bg-surface)]">
+    <div class="border-b border-[var(--border-light)] px-5 py-5">
       <div class="flex items-center gap-3">
         <UButton
           variant="ghost"
@@ -54,7 +54,7 @@
           </UBadge>
         </div>
 
-        <div v-else class="mt-3 rounded-[18px] border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-4 py-4 text-sm text-[var(--text-secondary)]">
+        <div v-else class="mt-3 rounded-[18px] border border-dashed border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-4 text-sm text-[var(--text-secondary)]">
           {{ $t("pages.messagesPage.noRecipientsSelected") }}
         </div>
       </section>
@@ -66,7 +66,7 @@
         <textarea
           v-model="textModel"
           rows="4"
-          class="w-full rounded-[20px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-primary-500 focus:bg-white"
+          class="w-full rounded-[20px] border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--border-strong)] focus:bg-[var(--bg-surface)]"
           :placeholder="$t('pages.messagesPage.messagePlaceholder')"
         />
       </section>
@@ -84,11 +84,11 @@
         <input
           ref="fileInput"
           type="file"
-          class="block w-full rounded-[16px] border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-4 py-3 text-sm text-[var(--text-secondary)] file:mr-3 file:rounded-full file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:font-semibold file:text-primary-700 hover:file:bg-primary-100"
+          class="block w-full rounded-[16px] border border-dashed border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 text-sm text-[var(--text-secondary)] file:mr-3 file:rounded-full file:border-0 file:bg-[var(--bg-surface-active)] file:px-4 file:py-2 file:font-semibold file:text-[var(--text-brand)] hover:file:bg-[var(--bg-surface-hover)]"
           @change="handleFileChange"
         >
 
-        <div v-if="fileModel" class="flex items-center justify-between gap-3 rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3">
+        <div v-if="fileModel" class="flex items-center justify-between gap-3 rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3">
           <div class="min-w-0">
             <p class="truncate text-sm font-semibold text-[var(--text-primary)]">
               {{ fileModel.name }}
@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <div class="flex items-center justify-between gap-3 border-t border-[#e2e8f0] px-5 py-4">
+    <div class="flex items-center justify-between gap-3 border-t border-[var(--border-light)] px-5 py-4">
       <p class="text-xs font-semibold text-[var(--text-secondary)]">
         {{ $t("pages.messagesPage.multiSubmitHint") }}
       </p>
@@ -172,18 +172,18 @@ const selectedCountLabel = computed(() =>
 
 const statusClass = computed(() => {
   if (props.statusTone === "success") {
-    return "bg-emerald-50 text-emerald-700"
+    return "bg-[color-mix(in_srgb,var(--color-success)_10%,transparent)] text-[var(--text-success)]"
   }
 
   if (props.statusTone === "warning") {
-    return "bg-amber-50 text-amber-700"
+    return "bg-[color-mix(in_srgb,var(--color-warning)_12%,transparent)] text-[var(--color-warning)]"
   }
 
   if (props.statusTone === "error") {
-    return "bg-rose-50 text-rose-700"
+    return "bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)] text-[var(--text-danger)]"
   }
 
-  return "bg-slate-100 text-[var(--text-primary)]"
+  return "bg-[var(--bg-muted)] text-[var(--text-primary)]"
 })
 
 function handleFileChange(event: Event) {

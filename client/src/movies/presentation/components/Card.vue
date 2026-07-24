@@ -45,8 +45,8 @@ defineProps<{
   display: block;
   overflow: hidden;
   border-radius: 3px;
-  background: #e5e7eb;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.16);
+  background: var(--bg-muted);
+  box-shadow: var(--shadow-sm);
 }
 
 .movie-card__poster {
@@ -93,13 +93,13 @@ defineProps<{
 }
 
 .movie-card__title a:hover {
-  color: #0a58ca;
+  color: var(--text-brand);
 }
 
 .movie-card__genre {
   margin: 4px 0 0;
   overflow: hidden;
-  color: #7c8798;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   text-overflow: ellipsis;
