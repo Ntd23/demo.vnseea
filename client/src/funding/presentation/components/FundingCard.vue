@@ -1,7 +1,8 @@
+<!-- English description: Renders a funding campaign result card. -->
 <template>
   <article>
     <UCard
-      class="group h-full overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
+      class="group h-full overflow-hidden rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
       :ui="{ body: 'p-0' }"
     >
       <div class="relative aspect-[16/10] overflow-hidden bg-[var(--bg-surface-hover)]">

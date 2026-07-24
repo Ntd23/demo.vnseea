@@ -417,8 +417,8 @@
       v-model:open="endConfirmationOpen"
       :dismissible="!ending"
       :ui="{
-        overlay: 'z-[200] bg-slate-950/65 backdrop-blur-sm',
-        content: 'z-[201] w-[calc(100%-2rem)] max-w-sm overflow-hidden rounded-2xl bg-white p-0 shadow-2xl ring-1 ring-slate-200',
+        overlay: 'z-[200] bg-elevated/75 backdrop-blur-sm',
+        content: 'z-[201] w-[calc(100%-2rem)] max-w-sm overflow-hidden rounded-2xl bg-[var(--bg-surface)] p-0 shadow-[var(--shadow-xl)] ring-1 ring-[var(--border-light)]',
       }"
     >
       <template #content>

@@ -1,7 +1,8 @@
+<!-- English description: Renders a selectable pro subscription plan card. -->
 <template>
   <article>
     <UCard
-      class="relative flex h-full flex-col overflow-hidden rounded-[18px] border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_color-mix(in srgb, var(--bg-brand) 12%, transparent)]"
+      class="relative flex h-full flex-col overflow-hidden rounded-[18px] border bg-[var(--bg-surface)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
       :class="cardClass"
       :ui="{ body: 'p-5' }"
     >

@@ -86,7 +86,7 @@
           color="neutral"
           variant="ghost"
           size="xl"
-          class="h-12 w-12 rounded-full bg-slate-100 hover:bg-slate-200 text-[var(--text-primary)] justify-center"
+      class="h-12 w-12 rounded-full bg-[var(--bg-muted)] hover:bg-[var(--bg-surface-hover)] text-[var(--text-primary)] justify-center"
         >
           <Icon name="i-ph-gear-six-bold" class="h-6 w-6" />
         </UButton>

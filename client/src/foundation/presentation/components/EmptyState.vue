@@ -1,7 +1,8 @@
+<!-- English description: Renders the shared empty-state surface. -->
 <template>
   <UCard
     :as="as"
-    class="rounded-[28px] border-dashed border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
+    class="rounded-[28px] border-dashed border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
     :ui="cardUi"
     v-bind="attrs"
   >

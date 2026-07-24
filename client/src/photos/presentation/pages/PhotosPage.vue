@@ -47,7 +47,7 @@
           variant="ghost"
           :aria-label="photo.title || photo.photographer || t('pages.photosPage.heroTitle')"
           :ui="{ base: 'h-auto w-full justify-stretch overflow-hidden rounded-[18px] p-0' }"
-          class="border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]"
+          class="border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]"
           @click="openPhoto(photo.id)"
         >
           <NuxtPicture

@@ -1,7 +1,8 @@
+<!-- English description: Renders supporting guidance for the blog creation form. -->
 <template>
   <aside class="space-y-5">
     <UCard
-      class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
+      class="overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
       :ui="{ body: 'p-0' }"
       role="status"
       aria-live="polite"
@@ -41,7 +42,7 @@
     </UCard>
 
     <UCard
-      class="rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
+      class="rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
       :ui="{ body: 'p-5' }"
     >
       <p id="create-blog-checklist-title" class="text-label-secondary text-[var(--text-primary)]">

@@ -6,7 +6,7 @@
     :class="{ 'header-bar--hidden': isHeaderHidden }"
   >
     <!-- ─── Desktop header ────────────────────────────────── -->
-    <div class="hidden px-[7.5] rounded-b-3xl border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[0_12px_28px_rgba(13,38,76,0.05)] xl:block">
+    <div class="hidden rounded-b-3xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-[7.5] shadow-[var(--shadow-sm)] xl:block">
       <div class="mx-auto flex h-16 w-full max-w-[1880px] items-center gap-4 px-2.5">
         <NuxtLink
           :to="appRoutes.feed"
@@ -146,7 +146,7 @@
   <NavigationHeaderUserMenu />
 
   <template #fallback>
-    <div class="h-[38px] w-[156px] rounded-full border border-[#e2e8f0] bg-white"></div>
+    <div class="h-[38px] w-[156px] rounded-full border border-[var(--border-light)] bg-[var(--bg-surface)]"></div>
   </template>
 </ClientOnly>
         
@@ -405,35 +405,35 @@ const createActions = [
     label: "Tạo quảng cáo",
     to: appRoutes.adsCreate,
     icon: "i-ph-currency-circle-dollar-bold",
-    color: "#c065d9",
+    color: "var(--color-warning)",
   },
   {
     id: "blog",
     label: "Tạo bài viết",
     to: appRoutes.createBlog,
     icon: "i-ph-article-bold",
-    color: "#28b8c9",
+    color: "var(--color-info)",
   },
   {
     id: "event",
     label: "Tạo sự kiện",
     to: appRoutes.createEvent,
     icon: "i-ph-calendar-plus-bold",
-    color: "#ff3f7f",
+    color: "var(--color-primary-500)",
   },
   {
     id: "group",
     label: "Tạo nhóm",
     to: appRoutes.createGroup,
     icon: "i-ph-users-three-bold",
-    color: "#2aa7e8",
+    color: "var(--color-info)",
   },
   {
     id: "page",
     label: "Tạo trang",
     to: appRoutes.createPage,
     icon: "i-ph-flag-bold",
-    color: "#ffb15a",
+    color: "var(--color-warning)",
   },
 ] as const
 const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
@@ -592,8 +592,8 @@ async function toggleCreateMenu() {
 }
 
 .desktop-pill--active {
-  background: linear-gradient(180deg, #2749ff 0%, var(--bg-brand) 100%);
-  color: #fff;
+  background: var(--bg-brand);
+  color: var(--color-on-brand);
   box-shadow: 0 8px 18px color-mix(in srgb, var(--bg-brand) 22%, transparent);
 }
 
@@ -601,7 +601,7 @@ async function toggleCreateMenu() {
 
 .desktop-pill--inactive:hover {
   color: var(--bg-brand);
-  background: #f5f8ff;
+  background: var(--bg-surface-hover);
 }
 
 .header-home-link,
@@ -641,7 +641,7 @@ async function toggleCreateMenu() {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   color: var(--text-primary);
   cursor: pointer;
@@ -650,14 +650,14 @@ async function toggleCreateMenu() {
 }
 
 .header-action-btn:hover {
-  border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
+  border-color: var(--border-light);
   color: var(--bg-brand);
   background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .header-action-btn--active {
-  border-color: var(--bg-brand);
+  border-color: var(--border-light);
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--bg-brand);
 }
@@ -673,11 +673,11 @@ async function toggleCreateMenu() {
   justify-content: center;
   border-radius: 999px;
   background: var(--bg-brand);
-  border: 2px solid #ffffff;
+  border: 2px solid var(--bg-surface);
   padding: 0 4px;
   font-size: 9px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--color-on-brand);
   line-height: 1;
 }
 
@@ -701,7 +701,7 @@ async function toggleCreateMenu() {
   width: 250px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
   background: var(--bg-surface);
   padding: 10px;
@@ -786,7 +786,7 @@ async function toggleCreateMenu() {
 /* ─── Mobile bar ───────────────────────────────────────── */
 .mobile-bar {
   background: var(--bg-surface);
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   box-shadow: 0 2px 12px color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 8px 16px;
 }
@@ -814,7 +814,7 @@ async function toggleCreateMenu() {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  border: 1px solid #e8edf5;
+  border: 1px solid var(--border-light);
   background: var(--bg-muted);
   color: var(--text-primary);
   cursor: pointer;
@@ -823,15 +823,15 @@ async function toggleCreateMenu() {
 }
 
 .mobile-icon-btn:hover {
-  border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
+  border-color: var(--border-light);
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: var(--bg-brand);
 }
 
 .mobile-icon-btn--active {
-  border-color: var(--bg-brand);
+  border-color: var(--border-light);
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--color-on-brand);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 22%, transparent);
 }
 
@@ -852,7 +852,7 @@ async function toggleCreateMenu() {
   gap: 10px;
   padding: 8px 12px 10px;
   background: var(--bg-surface);
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   box-shadow: 0 4px 16px color-mix(in srgb, var(--bg-brand) 6%, transparent);
 }
 
@@ -869,7 +869,7 @@ async function toggleCreateMenu() {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-muted);
   color: var(--text-primary);
   cursor: pointer;
@@ -878,7 +878,7 @@ async function toggleCreateMenu() {
 
 .mobile-search__close:hover {
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
-  border-color: color-mix(in srgb, var(--bg-brand) 15%, transparent);
+  border-color: var(--border-light);
   color: var(--bg-brand);
 }
 

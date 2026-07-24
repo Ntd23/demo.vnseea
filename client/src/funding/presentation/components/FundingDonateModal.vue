@@ -1,3 +1,4 @@
+<!-- English description: Renders the funding donation modal form. -->
 <template>
   <UModal
     :open="Boolean(campaign)"
@@ -30,7 +31,7 @@
 
         <UCard
           v-if="campaign"
-          class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]"
+          class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]"
           :ui="{ body: 'p-4' }"
         >
           <div class="space-y-3">
@@ -138,7 +139,7 @@
             :disabled="isBusy || !campaign"
             :placeholder="t('pages.fundingPage.messagePlaceholder')"
             :ui="{
-              base: 'min-h-[120px] resize-y rounded-[20px] border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 py-3 text-[14px] leading-6 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
+              base: 'min-h-[120px] resize-y rounded-[20px] border-[var(--border-light)] bg-[var(--bg-surface-hover)] px-4 py-3 text-[14px] leading-6 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
             }"
           />
         </UFormField>

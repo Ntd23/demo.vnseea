@@ -63,7 +63,7 @@
               placeholder="Tìm bài viết trong nhóm..."
               size="xl"
               class="mt-3 w-full"
-              :ui="{ base: 'h-12 rounded-[14px] bg-white' }"
+      :ui="{ base: 'h-12 rounded-[14px] bg-[var(--bg-surface)]' }"
             />
           </section>
 

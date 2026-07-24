@@ -113,7 +113,7 @@
           variant="soft"
           size="xl"
           icon="i-ph-chat-circle-dots-duotone"
-          class="rounded-2xl border border-secondary-200 bg-white hover:bg-secondary-50 text-secondary-900 font-black text-xs uppercase tracking-widest h-12 shadow-sm transition-all active:scale-95"
+        class="rounded-2xl border border-[var(--border-light)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] text-[var(--text-primary)] font-black text-xs uppercase tracking-widest h-12 shadow-sm transition-all active:scale-95"
         >
           {{ $t("orders.card.contactBuyer", { buyer: order.buyerName }) }}
         </UButton>

@@ -161,7 +161,7 @@
           v-model="mapPinRequestedModel"
           label="Yêu cầu ghim trên bản đồ"
           description="Admin sẽ duyệt trước khi tên trang hiển thị trực tiếp trên bản đồ tìm kiếm gần đây."
-          class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+      class="rounded-2xl border border-[var(--border-light)] bg-[var(--bg-muted)] p-4"
         />
 
         <!-- Buttons -->

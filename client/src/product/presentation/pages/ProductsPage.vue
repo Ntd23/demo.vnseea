@@ -31,13 +31,13 @@
         <div class="products-filter__search">
           <UInput v-model="search" class="w-full" icon="i-ph-magnifying-glass" size="lg"
             :placeholder="$t('pages.productsPage.searchPlaceholder')"
-            :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[14px] font-medium' }" />
+            :ui="{ base: 'h-12 rounded-xl border-[var(--border-light)] bg-[var(--bg-muted)] text-[14px] font-medium' }" />
         </div>
       </div>
 
       <div class="products-filter__panel" :class="{ 'products-filter__panel--with-subcategory': hasSubCategories }">
         <USelect v-model="sortBy" class="w-full" :items="sortOptions" value-key="value" label-key="label" size="lg"
-          :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
+          :ui="{ base: 'h-12 rounded-xl border-[var(--border-light)] bg-[var(--bg-muted)] text-[13px] font-semibold' }" />
 
         <USelect v-model="selectedCategory" class="w-full" :items="categoryOptions" value-key="value" label-key="label" size="lg"
           :ui="categorySelectUi" />

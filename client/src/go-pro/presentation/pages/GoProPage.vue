@@ -28,7 +28,7 @@
       <UPricingTable
         :tiers="tiers"
         :sections="sections"
-        class="mt-6 border border-slate-200 rounded-[18px] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]"
+        class="mt-6 border border-[var(--border-light)] rounded-[18px] bg-[var(--bg-surface)] p-5 shadow-[var(--shadow-md)]"
       >
         <template #tier-title="{ tier }">
           <div class="flex items-center justify-center gap-2 mb-2">

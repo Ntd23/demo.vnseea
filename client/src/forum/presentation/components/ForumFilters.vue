@@ -1,6 +1,7 @@
+<!-- English description: Renders forum filtering controls and active criteria. -->
 <template>
   <UCard
-    class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
+    class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
     :ui="{ body: 'p-5 sm:p-6' }"
   >
     <div class="space-y-5">

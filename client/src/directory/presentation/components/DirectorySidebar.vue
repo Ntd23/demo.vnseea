@@ -1,6 +1,7 @@
+<!-- English description: Renders contextual directory filters and recommendations. -->
 <template>
   <aside class="space-y-4">
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.sidebarCategoriesEyebrow") }}</p>
@@ -57,7 +58,7 @@
       </div>
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.sidebarFeaturedEyebrow") }}</p>
       <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.directoryPage.sidebarFeaturedTitle") }}</h2>
 
@@ -66,7 +67,7 @@
           v-for="item in featured"
           :key="item.id"
           :to="item.href"
-          class="block rounded-[20px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3 transition hover:border-[var(--border-strong)] hover:bg-[var(--color-primary-50)]"
+          class="block rounded-[20px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)] p-3 transition hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-active)]"
         >
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">

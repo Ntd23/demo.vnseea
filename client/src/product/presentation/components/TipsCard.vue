@@ -1,6 +1,7 @@
+<!-- English description: Renders product publishing tips. -->
 <template>
   <UCard 
-    class="surface-card group ring-1 ring-secondary-200/50 shadow-2xl bg-white transition-all duration-500 hover:shadow-3xl"
+    class="surface-card group ring-1 ring-[var(--border-light)] shadow-2xl bg-[var(--bg-surface)] transition-all duration-500 hover:shadow-3xl"
     :ui="{ body: { padding: 'p-8 sm:p-10' } }"
   >
     <div class="space-y-8">

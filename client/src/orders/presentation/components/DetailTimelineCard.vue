@@ -1,3 +1,4 @@
+<!-- English description: Renders the order status timeline. -->
 <template>
   <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
     <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
@@ -31,7 +32,7 @@
             <p class="text-[15px] font-black text-secondary-900 group-hover/event:text-secondary-900 transition-colors">
               {{ $t(event.label) }}
             </p>
-            <UBadge v-if="event.time" variant="soft" color="white" class="rounded-lg bg-white/50 ring-1 ring-secondary-100 font-black text-[10px] px-2.5 py-1 text-secondary-400">
+            <UBadge v-if="event.time" variant="soft" color="neutral" class="rounded-lg bg-[var(--bg-muted)] ring-1 ring-[var(--border-light)] font-black text-[10px] px-2.5 py-1 text-[var(--text-secondary)]">
               {{ $t(event.time) }}
             </UBadge>
           </div>

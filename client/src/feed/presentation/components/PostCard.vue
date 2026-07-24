@@ -1027,7 +1027,6 @@ function handleMediaOpen(index: number) {
   height: 22px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.9);
   background: var(--bg-surface);
   transition: transform 0.15s ease;
 }
@@ -1399,10 +1398,7 @@ function handleMediaOpen(index: number) {
   gap: 10px;
   transform: translateX(-50%);
   border-radius: 999px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  background: rgba(255, 255, 255, 0.98);
   padding: 8px 10px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
   filter: none;
   transform-origin: 50% 100%;
   animation: post-reaction-tray-in 0.16s ease-out both;

@@ -34,11 +34,11 @@
       </div>
 
       <div class="flex flex-wrap gap-2 pt-1">
-        <UBadge color="white" variant="soft" class="rounded-lg bg-white ring-1 ring-secondary-100 px-3 py-1.5 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
+        <UBadge color="neutral" variant="soft" class="rounded-lg bg-[var(--bg-muted)] ring-1 ring-[var(--border-light)] px-3 py-1.5 font-black text-[10px] uppercase tracking-widest text-[var(--text-secondary)] shadow-sm">
           <Icon name="i-ph-hash-duotone" class="mr-1.5 h-3.5 w-3.5" />
           {{ $t("orders.card.qty", { count: item.quantity }) }}
         </UBadge>
-        <UBadge v-if="paymentMethod" color="white" variant="soft" class="rounded-lg bg-white ring-1 ring-secondary-100 px-3 py-1.5 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
+        <UBadge v-if="paymentMethod" color="neutral" variant="soft" class="rounded-lg bg-[var(--bg-muted)] ring-1 ring-[var(--border-light)] px-3 py-1.5 font-black text-[10px] uppercase tracking-widest text-[var(--text-secondary)] shadow-sm">
           <Icon name="i-ph-credit-card-duotone" class="mr-1.5 h-3.5 w-3.5" />
           {{ displayOrderPaymentMethod(paymentMethod) }}
         </UBadge>

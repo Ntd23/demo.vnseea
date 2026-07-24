@@ -1,5 +1,6 @@
+<!-- English description: Renders the jobs result count and active state summary. -->
 <template>
-  <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
+  <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div class="min-w-0 flex-1">
         <p class="text-label-secondary text-[var(--text-primary)]">

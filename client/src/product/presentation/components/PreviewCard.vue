@@ -1,6 +1,7 @@
+<!-- English description: Renders the live product form preview. -->
 <template>
   <UCard 
-    class="surface-card group overflow-hidden ring-1 ring-secondary-100 hover:ring-primary-400/50 transition-all duration-500 hover:shadow-[0_48px_80px_-32px_rgba(0,0,0,0.15)] hover:-translate-y-3 bg-white" 
+    class="surface-card group overflow-hidden ring-1 ring-[var(--border-light)] hover:ring-primary-400/50 transition-all duration-500 hover:shadow-[var(--shadow-xl)] hover:-translate-y-3 bg-[var(--bg-surface)]"
     :ui="{ body: { padding: 'p-0' }, base: 'overflow-hidden' }"
   >
     <!-- Media Preview Layer -->

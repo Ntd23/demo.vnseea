@@ -1,6 +1,7 @@
+<!-- English description: Renders contextual game discovery sidebar content. -->
 <template>
   <aside class="space-y-4">
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--text-primary)]">
@@ -53,7 +54,7 @@
       </div>
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.gamesPage.leaderboardEyebrow") }}
       </p>
@@ -95,7 +96,7 @@
       />
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.gamesPage.achievementsEyebrow") }}
       </p>

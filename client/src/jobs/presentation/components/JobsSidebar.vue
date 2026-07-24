@@ -1,6 +1,7 @@
+<!-- English description: Renders contextual jobs sidebar content. -->
 <template>
   <aside class="space-y-4">
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--text-primary)]">
@@ -34,7 +35,7 @@
       />
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.jobsPage.sidebarQuickStats") }}
       </p>
@@ -55,7 +56,7 @@
       </div>
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.jobsPage.sidebarHiringCategories") }}
       </p>

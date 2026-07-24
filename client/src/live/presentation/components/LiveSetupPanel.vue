@@ -46,7 +46,7 @@
             color="primary"
             size="xl"
             class="w-full"
-            :ui="{ base: 'rounded-2xl bg-white border-slate-200' }"
+            :ui="{ base: 'rounded-2xl bg-[var(--bg-surface)] border-[var(--border-light)]' }"
           />
         </div> -->
 
@@ -60,7 +60,7 @@
             color="primary"
             size="xl"
             class="w-full"
-            :ui="{ base: 'rounded-2xl bg-white border-slate-200' }"
+            :ui="{ base: 'rounded-2xl bg-[var(--bg-surface)] border-[var(--border-light)]' }"
             @update:model-value="emit('update:privacy', String($event))"
           />
         </div>
@@ -70,7 +70,7 @@
           <UInput
             :model-value="title"
             :placeholder="t('pages.livePage.studio.titlePlaceholder')"
-            :ui="{ base: 'rounded-2xl bg-white border-slate-200 focus:border-blue-500' }"
+            :ui="{ base: 'rounded-2xl bg-[var(--bg-surface)] border-[var(--border-light)] focus:border-[var(--color-primary-500)]' }"
             @update:model-value="emit('update:title', String($event))"
           />
         </div>

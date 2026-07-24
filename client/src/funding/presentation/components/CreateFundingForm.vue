@@ -1,3 +1,4 @@
+<!-- English description: Renders the funding campaign creation and editing form. -->
 <template>
   <UForm :state="form" class="space-y-5" @submit="submit">
     <FormsFormSection
@@ -137,7 +138,7 @@
           :disabled="isBusy"
           :placeholder="$t('pages.createFundingPage.descriptionPlaceholder')"
           :ui="{
-            base: 'min-h-[200px] resize-y rounded-[20px] border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 py-3 text-[14px] leading-7 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
+            base: 'min-h-[200px] resize-y rounded-[20px] border-[var(--border-light)] bg-[var(--bg-surface-hover)] px-4 py-3 text-[14px] leading-7 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
           }"
         />
       </UFormField>

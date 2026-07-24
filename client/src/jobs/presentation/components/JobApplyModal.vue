@@ -16,7 +16,7 @@
         :title="errorMessage"
       />
 
-      <UCard class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-4' }">
+      <UCard class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-4' }">
         <div class="flex items-start gap-4">
           <div class="h-16 w-16 overflow-hidden rounded-[18px] bg-[var(--bg-muted)]">
             <NuxtImg
@@ -55,7 +55,7 @@
         </UFormField>
       </div>
 
-      <UCard class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
+      <UCard class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
         <div class="space-y-4">
           <p class="text-sm font-[700] text-[var(--text-primary)]">
             {{ $t("pages.jobsPage.experience") }}
@@ -111,7 +111,7 @@
       <UCard
         v-for="question in job.questions"
         :key="question.slot"
-        class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface)]"
+        class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)]"
         :ui="{ body: 'p-5' }"
       >
         <div class="space-y-4">

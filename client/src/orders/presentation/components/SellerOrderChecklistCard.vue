@@ -1,3 +1,4 @@
+<!-- English description: Renders the seller order fulfillment checklist. -->
 <template>
   <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-secondary-50 pb-6">
@@ -89,7 +90,7 @@
               <UBadge
                 variant="soft"
                 class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2.5 py-1 ring-1 ring-inset"
-                :class="task.done ? 'bg-primary-50 text-primary-600 ring-primary-100' : 'bg-secondary-50 text-secondary-400 ring-secondary-100'"
+                :class="task.done ? 'bg-primary-50 text-primary-600 ring-primary-100' : 'bg-[var(--bg-muted)] text-[var(--text-secondary)] ring-[var(--border-light)]'"
               >
                 {{ $t(task.done ? 'orders.detail.taskStatus.done' : 'orders.detail.taskStatus.pending') }}
               </UBadge>

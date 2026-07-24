@@ -1,6 +1,7 @@
+<!-- English description: Renders funding campaign actions and sidebar metadata. -->
 <template>
   <aside class="space-y-4">
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start gap-3">
         <div
           class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[14px] font-black text-white"
@@ -48,7 +49,7 @@
       </UButton>
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--text-primary)]">
@@ -110,7 +111,7 @@
 
     <UCard
       v-if="campaign.isOwner"
-      class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
+      class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
       :ui="{ body: 'p-4' }"
     >
       <p class="text-label-secondary text-[var(--text-primary)]">

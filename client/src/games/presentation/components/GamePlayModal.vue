@@ -1,3 +1,4 @@
+<!-- English description: Renders the selected game play modal. -->
 <template>
   <FoundationModalShell
     :open="Boolean(game)"
@@ -12,7 +13,7 @@
   >
     <div v-if="game" class="space-y-5">
       <UCard
-        class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]"
+        class="overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]"
         :ui="{ body: 'p-0' }"
       >
         <div class="grid gap-0 lg:grid-cols-[320px_minmax(0,1fr)]">
@@ -56,7 +57,7 @@
             </div>
 
             <UCard
-              class="rounded-[24px] border border-[var(--border-default)] bg-white"
+              class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)]"
               :ui="{ body: 'p-5' }"
             >
               <div class="text-center">

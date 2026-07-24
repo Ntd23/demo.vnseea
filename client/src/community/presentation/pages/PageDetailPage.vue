@@ -294,7 +294,7 @@
                 placeholder=""
                 size="xl"
                 class="w-full"
-                :ui="{ base: 'h-12 rounded-xl bg-white' }"
+      :ui="{ base: 'h-12 rounded-xl bg-[var(--bg-surface)]' }"
                 clearable
               />
             </div>

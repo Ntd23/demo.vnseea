@@ -1,6 +1,6 @@
 <!-- Description: Renders the inbox sidebar with search, user/group tabs, and the multi-send panel for text, file, and recording drafts. -->
 <template>
-  <div class="flex h-full flex-col bg-white">
+  <div class="flex h-full flex-col bg-[var(--bg-surface)]">
 
     <!-- ── Header: Search + Actions ─────────────────── -->
     <div class="shrink-0 px-4 pt-5 pb-3">
@@ -83,7 +83,7 @@
             :rows="5"
             :placeholder="$t('pages.messagesPage.messagePlaceholder')"
             class="w-full"
-            :ui="{ base: 'min-h-28 rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white shadow-none text-sm' }"
+            :ui="{ base: 'min-h-28 rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-none text-sm' }"
             @update:model-value="emit('update:multiText', String($event || ''))"
           />
 
@@ -135,7 +135,7 @@
               clear
               class="w-full"
               :ui="{
-                base: 'w-full rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white shadow-none',
+                base: 'w-full rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-none',
               }"
             />
 

@@ -93,7 +93,7 @@
           v-if="item.action"
           size="sm"
           variant="outline"
-          class="rounded-[10px] text-[12px] font-semibold border-[color-mix(in srgb, var(--bg-brand) 20%, transparent)] text-[var(--text-brand)] bg-white hover:bg-[var(--bg-brand)] hover:text-white hover:border-[var(--bg-brand)] active:scale-[0.98] transition-all shrink-0"
+            class="rounded-[10px] text-[12px] font-semibold border-[var(--border-light)] text-[var(--text-brand)] bg-[var(--bg-surface)] hover:bg-[var(--bg-brand)] hover:text-white hover:border-[var(--bg-brand)] active:scale-[0.98] transition-all shrink-0"
           @click="onAction?.(item)"
         >
           {{ item.action }}
