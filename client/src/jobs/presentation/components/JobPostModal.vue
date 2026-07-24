@@ -110,7 +110,7 @@
         <UTextarea v-model="form.description" :rows="6" autoresize />
       </UFormField>
 
-      <UCard class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
+      <UCard class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
         <div class="space-y-4">
           <p class="text-sm font-[700] text-[var(--text-primary)]">
             {{ $t("pages.jobsPage.jobImageSource") }}
@@ -150,7 +150,7 @@
         </div>
       </UCard>
 
-      <UCard class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
+      <UCard class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
         <div class="space-y-5">
           <p class="text-sm font-[700] text-[var(--text-primary)]">
             {{ $t("pages.jobsPage.questions") }}

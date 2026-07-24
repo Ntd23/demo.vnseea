@@ -11,26 +11,26 @@
     shortcut="ctrl_k"
     :fuse="{ fuseOptions: { includeMatches: true, threshold: 0.35 } }"
     :ui="{
-      modal: 'search-content-modal sm:max-w-[680px] h-auto max-h-[min(680px,calc(100dvh-32px))] overflow-hidden rounded-2xl border border-indigo-100 bg-[#f4f6ff] shadow-[0_22px_70px_rgba(30,41,100,0.20)]',
-      root: 'search-content-root min-h-0 bg-transparent divide-y divide-indigo-100/80',
-      input: 'search-content-input border-0 bg-white/65 px-2 text-[var(--text-primary)] backdrop-blur-xl',
-      close: 'search-content-close me-3 rounded-xl text-[var(--text-secondary)] hover:bg-slate-100 hover:text-[var(--text-primary)]',
-      content: 'min-h-0 bg-transparent',
+      modal: 'search-content-modal sm:max-w-[680px] h-auto max-h-[min(680px,calc(100dvh-32px))] overflow-hidden rounded-2xl border border-[var(--border-light)]',
+      root: 'search-content-root min-h-0 divide-y',
+      input: 'search-content-input border-0 px-2 backdrop-blur-xl',
+      close: 'search-content-close me-3 rounded-xl',
+      content: 'min-h-0',
       viewport: 'search-content-viewport max-h-[min(560px,calc(100dvh-150px))] scroll-py-2 overflow-y-auto px-2 py-2',
       group: 'search-content-group px-1 py-2',
-      label: 'px-3 pb-2 pt-1 text-[11px] font-bold uppercase tracking-[0.05em] text-[var(--text-tertiary)]',
-      item: 'search-content-item min-h-14 cursor-pointer gap-3 rounded-xl px-3 py-2.5 text-[var(--text-primary)] before:rounded-xl data-highlighted:before:bg-[#f2f4ff]',
-      itemLeadingIcon: 'size-9 rounded-xl bg-slate-100 p-2 text-[var(--text-secondary)] group-data-highlighted:text-[var(--text-brand)]',
-      itemLeadingAvatar: 'size-10 rounded-full ring-1 ring-slate-200',
+      label: 'px-3 pb-2 pt-1 text-[11px] font-bold uppercase tracking-[0.05em]',
+      item: 'search-content-item min-h-14 cursor-pointer gap-3 rounded-xl px-3 py-2.5 before:rounded-xl',
+      itemLeadingIcon: 'size-9 rounded-xl bg-[var(--bg-muted)] p-2 group-data-highlighted:text-[var(--text-brand)]',
+      itemLeadingAvatar: 'size-10 rounded-full ring-1 ring-[var(--border-light)]',
       itemLeadingAvatarSize: 'sm',
       itemWrapper: 'min-w-0 gap-0.5',
-      itemLabel: 'text-[13px] font-bold text-[var(--text-primary)]',
-      itemLabelBase: 'text-[var(--text-primary)] [&>mark]:rounded-sm [&>mark]:bg-[#e8eaff] [&>mark]:text-[var(--text-brand)]',
-      itemLabelSuffix: 'ms-2 inline-flex rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-[var(--text-secondary)]',
-      itemDescription: 'truncate text-[12px] font-medium text-[var(--text-secondary)]',
-      itemTrailing: 'text-[11px] font-semibold text-[var(--text-tertiary)]',
-      empty: 'py-10 text-sm font-medium text-[var(--text-secondary)]',
-      footer: 'border-t border-indigo-100 bg-white/45 px-4 py-2.5 text-xs text-[var(--text-secondary)]',
+      itemLabel: 'text-[13px] font-bold',
+      itemLabelBase: '[&>mark]:rounded-sm',
+      itemLabelSuffix: 'ms-2 inline-flex rounded-md bg-[var(--bg-muted)] px-1.5 py-0.5 text-[10px] font-bold',
+      itemDescription: 'truncate text-[12px] font-medium',
+      itemTrailing: 'text-[11px] font-semibold',
+      empty: 'py-10 text-sm font-medium',
+      footer: 'border-t bg-[var(--bg-muted)] px-4 py-2.5 text-xs'
     }"
   />
 </template>
@@ -163,40 +163,36 @@ function selectSuggestion(href: string) {
 </script>
 
 <style>
-/* Glass morphism search palette — brand blue tint + blur */
+/* Search palette surfaces inherit the shared light and dark mode tokens. */
 .search-content-modal {
-  background:
-    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.96) 0, rgba(255, 255, 255, 0) 38%),
-    linear-gradient(145deg, #f8faff 0%, #f0f2ff 58%, #f5f3ff 100%) !important;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9) inset,
-    0 22px 70px rgba(30, 41, 100, 0.2) !important;
+  background: var(--bg-surface) !important;
+  box-shadow: var(--shadow-xl) !important;
 }
 
 .search-content-input {
-  border-bottom: 1px solid rgba(199, 210, 254, 0.7) !important;
-  background: rgba(255, 255, 255, 0.62) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  background: var(--bg-surface) !important;
   backdrop-filter: blur(18px);
 }
 
 .search-content-input input {
   height: 58px !important;
-  color: #0f172a !important;
+  color: var(--text-primary) !important;
   font-size: 15px !important;
   font-weight: 650 !important;
 }
 
 .search-content-input input::placeholder {
-  color: #94a3b8 !important;
+  color: var(--text-secondary) !important;
   font-weight: 500 !important;
 }
 
 .search-content-input svg {
-  color: #64748b !important;
+  color: var(--icon-secondary) !important;
 }
 
 .search-content-group + .search-content-group {
-  border-top: 1px solid rgba(224, 231, 255, 0.9);
+  border-top: 1px solid var(--border-light);
 }
 
 .search-content-item {
@@ -205,13 +201,13 @@ function selectSuggestion(href: string) {
 
 .search-content-item[data-highlighted],
 .search-content-item:hover {
-  background: rgba(255, 255, 255, 0.58) !important;
-  color: var(--bg-brand) !important;
-  box-shadow: 0 4px 18px rgba(79, 70, 229, 0.07);
+  background: var(--bg-surface-hover) !important;
+  color: var(--text-brand) !important;
+  box-shadow: var(--shadow-sm);
 }
 
 .search-content-viewport {
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--border-strong) transparent;
   scrollbar-width: thin;
 }
 

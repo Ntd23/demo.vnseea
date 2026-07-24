@@ -1,6 +1,7 @@
+<!-- English description: Renders forum statistics and supporting sidebar content. -->
 <template>
   <aside class="space-y-4">
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--text-primary)]">
@@ -33,7 +34,7 @@
       />
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <p class="text-label-secondary text-[var(--text-tertiary)]">
         {{ t("pages.forumPage.sectionsEyebrow") }}
       </p>

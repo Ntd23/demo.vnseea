@@ -27,7 +27,7 @@
         label-key="label"
         size="lg"
         class="jobs-tabs-bar__select"
-        :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-primary)] font-bold' }"
+        :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-light)] text-[var(--text-primary)] font-bold' }"
       />
 
       <USelect
@@ -37,7 +37,7 @@
         label-key="label"
         size="lg"
         class="jobs-tabs-bar__select"
-        :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-primary)] font-bold' }"
+        :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-light)] text-[var(--text-primary)] font-bold' }"
       />
 
       <div

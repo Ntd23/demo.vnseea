@@ -33,7 +33,7 @@
           </div>
         </div>
 
-        <UBadge color="neutral" variant="soft" class="shrink-0 rounded-full bg-[#eef3ff] px-3 py-1 text-[11px] font-bold text-[#243b63]">
+        <UBadge color="neutral" variant="soft" class="shrink-0 rounded-full bg-[var(--bg-muted)] px-3 py-1 text-[11px] font-bold text-[var(--text-primary)]">
           {{ user.mutualLabel }}
         </UBadge>
       </div>

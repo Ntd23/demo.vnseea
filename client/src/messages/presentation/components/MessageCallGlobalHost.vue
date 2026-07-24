@@ -3,7 +3,7 @@
   <UModal
     v-model:open="ringingModalOpen"
     :ui="{
-      content: 'sm:max-w-[420px] overflow-hidden rounded-[28px] border-0 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.24)] ring-1 ring-black/5'
+      content: 'sm:max-w-[420px] overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-xl)] ring-0'
     }"
   >
     <template #body>
@@ -69,7 +69,7 @@
   <UModal
     v-model:open="groupRingingModalOpen"
     :ui="{
-      content: 'sm:max-w-[420px] overflow-hidden rounded-[28px] border-0 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.24)] ring-1 ring-black/5'
+      content: 'sm:max-w-[420px] overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-xl)] ring-0'
     }"
   >
     <template #body>

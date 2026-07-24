@@ -1,3 +1,4 @@
+<!-- English description: Renders the global Nuxt error recovery screen. -->
 <template>
   <UApp>
     <div class="min-h-screen bg-[#f1f4fb] px-4 py-10 sm:px-6 lg:px-8">
@@ -40,9 +41,9 @@
               </UButton>
               <UButton
                 size="xl"
-                color="white"
+                color="neutral"
                 variant="soft"
-                class="justify-center rounded-2xl px-6 font-black uppercase tracking-[0.18em] text-secondary-700 ring-1 ring-secondary-200 hover:ring-primary-500"
+                class="justify-center rounded-2xl px-6 font-black uppercase tracking-[0.18em] text-[var(--text-primary)] ring-1 ring-[var(--border-light)] hover:ring-primary-500"
                 @click="recoverToHome"
               >
                 Ve trang chu

@@ -161,6 +161,21 @@
   --border-default: rgba(185, 28, 28, 0.12);
   --border-strong: rgba(185, 28, 28, 0.20);
 
+  /* Nuxt UI semantic aliases inherit the project tokens in every color mode. */
+  --ui-text-dimmed: var(--text-tertiary);
+  --ui-text-muted: var(--text-secondary);
+  --ui-text-toned: var(--text-secondary);
+  --ui-text: var(--text-primary);
+  --ui-text-highlighted: var(--text-primary);
+  --ui-text-inverted: var(--color-on-brand);
+  --ui-bg: var(--bg-surface);
+  --ui-bg-muted: var(--bg-muted);
+  --ui-bg-elevated: var(--bg-surface-hover);
+  --ui-bg-accented: var(--bg-surface-active);
+  --ui-border: var(--border-light);
+  --ui-border-muted: var(--border-light);
+  --ui-border-accented: var(--border-light);
+
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 18px;
@@ -301,21 +316,6 @@ html.dark,
   --border-light: rgba(255, 255, 255, 0.08);
   --border-default: rgba(255, 255, 255, 0.12);
   --border-strong: rgba(255, 255, 255, 0.20);
-
-  /* Nuxt UI semantic tokens mapped to the project dark-mode system. */
-  --ui-text-dimmed: var(--text-tertiary);
-  --ui-text-muted: var(--text-secondary);
-  --ui-text-toned: var(--text-secondary);
-  --ui-text: var(--text-primary);
-  --ui-text-highlighted: var(--text-primary);
-  --ui-text-inverted: var(--color-on-brand);
-  --ui-bg: var(--bg-surface);
-  --ui-bg-muted: var(--bg-muted);
-  --ui-bg-elevated: var(--bg-surface-hover);
-  --ui-bg-accented: var(--bg-surface-active);
-  --ui-border: var(--border-light);
-  --ui-border-muted: var(--border-light);
-  --ui-border-accented: var(--border-light);
 
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);

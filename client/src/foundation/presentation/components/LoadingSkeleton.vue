@@ -1,3 +1,4 @@
+<!-- English description: Renders reusable loading skeleton surfaces. -->
 <template>
   <div class="space-y-4" role="status" aria-live="polite" aria-busy="true">
     <span class="sr-only">{{ label }}</span>
@@ -5,7 +6,7 @@
     <UCard
       v-for="item in skeletonItems"
       :key="item"
-      class="rounded-[28px] border border-[var(--border-light)] bg-white shadow-[var(--shadow-md)]"
+      class="rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
       :ui="cardUi"
     >
       <template v-if="variant === 'detail'">

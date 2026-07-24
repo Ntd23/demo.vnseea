@@ -1,8 +1,9 @@
+<!-- English description: Renders a game discovery card. -->
 <template>
   <article>
     <UCard
-      class="group h-full overflow-hidden rounded-[30px] border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
-      :class="selected ? 'border-[var(--color-primary-500)] shadow-[var(--shadow-xl)] ring-4 ring-[var(--color-primary-50)]' : 'border-[var(--border-default)] shadow-[var(--shadow-md)]'"
+      class="group h-full overflow-hidden rounded-[30px] border bg-[var(--bg-surface)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
+      :class="selected ? 'border-[var(--color-primary-500)] shadow-[var(--shadow-xl)] ring-4 ring-[var(--bg-surface-active)]' : 'border-[var(--border-light)] shadow-[var(--shadow-md)]'"
       :ui="{ body: 'p-0' }"
     >
       <div class="relative aspect-[16/10] overflow-hidden bg-[var(--bg-surface-hover)]">

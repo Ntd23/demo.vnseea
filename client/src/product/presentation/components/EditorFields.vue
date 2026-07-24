@@ -1,6 +1,7 @@
+<!-- English description: Renders shared product editor fields. -->
 <template>
   <UCard
-    class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]"
+    class="rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
     :ui="{ body: 'p-5 sm:p-6' }"
   >
     <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_360px]">

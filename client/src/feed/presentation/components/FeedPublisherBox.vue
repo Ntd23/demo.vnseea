@@ -265,7 +265,7 @@
             type="button"
             variant="outline"
             icon="i-ph-video-camera-bold"
-            class="rounded-xl px-4 py-2 font-semibold !border-[var(--border-default)] !bg-[var(--bg-surface)] hover:!bg-[var(--bg-surface-hover)] !text-[var(--text-primary)] transition-all"
+              class="rounded-xl px-4 py-2 font-semibold !border-[var(--border-light)] !bg-[var(--bg-surface)] hover:!bg-[var(--bg-surface-hover)] !text-[var(--text-primary)] transition-all"
             @click="goToLive"
           >
             {{ locale === 'vi' ? 'Trực tiếp' : 'Go Live' }}

@@ -9,7 +9,7 @@
         <UButton
           variant="soft"
           size="sm"
-          class="rounded-full border border-[var(--border-light)] bg-white px-4 text-[11px] font-semibold text-[var(--text-secondary)] shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition-all hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+      class="rounded-full border border-[var(--border-light)] bg-[var(--bg-surface)] px-4 text-[11px] font-semibold text-[var(--text-secondary)] shadow-[var(--shadow-sm)] transition-all hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
           @click="$emit('load-more')"
         >
           {{ $t('pages.messagesPage.loadOlder') }}

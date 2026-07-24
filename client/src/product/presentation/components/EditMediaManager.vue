@@ -1,3 +1,4 @@
+<!-- English description: Renders existing and replacement product media controls. -->
 <template>
   <div class="space-y-8">
     <div class="space-y-3">
@@ -13,7 +14,7 @@
           <UCard
             v-for="image in currentImages"
             :key="image.id"
-            class="overflow-hidden rounded-[20px] border border-[#dbe3f2] bg-white"
+            class="overflow-hidden rounded-[20px] border border-[var(--border-light)] bg-[var(--bg-surface)]"
             :ui="{ body: 'p-3' }"
           >
             <div class="relative overflow-hidden rounded-[16px]">

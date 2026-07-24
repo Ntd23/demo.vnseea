@@ -1,6 +1,6 @@
 <!-- English description: Desktop directory sidebar navigation for category shortcuts and nearby search access. -->
 <template>
-  <div class="bg-white border border-[var(--border-default)] rounded-[24px] p-3.5 shadow-[0_4px_20px_-2px_rgba(0,0,100,0.02)] space-y-0.5">
+  <div class="bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-[24px] p-3.5 shadow-[var(--shadow-sm)] space-y-0.5">
     <button
       v-for="category in categories"
       :key="category.value"

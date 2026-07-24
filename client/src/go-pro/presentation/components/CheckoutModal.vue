@@ -1,3 +1,4 @@
+<!-- English description: Renders the pro plan checkout confirmation modal. -->
 <template>
   <FoundationModalShell
     :open="Boolean(plan)"
@@ -22,7 +23,7 @@
 
       <UCard
         v-if="plan"
-        class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]"
+        class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]"
         :ui="{ body: 'p-4' }"
       >
         <div class="space-y-3">

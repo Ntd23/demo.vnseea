@@ -1,6 +1,7 @@
+<!-- English description: Renders shared form submission actions and progress. -->
 <template>
   <UCard
-    class="rounded-[28px] border border-[#dbe3f2] bg-white/90 shadow-[0_14px_34px_rgba(15,35,110,0.07)]"
+    class="rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
     :ui="{ body: 'p-4 sm:p-5' }"
   >
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

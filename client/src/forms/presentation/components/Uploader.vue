@@ -1,6 +1,7 @@
+<!-- English description: Renders shared media upload actions and status feedback. -->
 <template>
   <UCard
-    class="rounded-[28px] border border-dashed border-[var(--bg-brand)]/20 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)] shadow-[0_14px_34px_rgba(15,35,110,0.05)]"
+    class="rounded-[28px] border border-dashed border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
     :ui="{ body: 'p-4 sm:p-5' }"
     v-bind="attrs"
   >
@@ -10,7 +11,7 @@
           <p v-if="eyebrow" class="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--text-brand)]/70">
             {{ eyebrow }}
           </p>
-          <h3 class="mt-1 text-lg font-black tracking-[-0.03em] text-[#243b63]">
+          <h3 class="mt-1 text-lg font-black tracking-[-0.03em] text-[var(--text-primary)]">
             {{ title }}
           </h3>
           <p v-if="description" class="mt-1 text-sm leading-6 text-[var(--text-secondary)]">

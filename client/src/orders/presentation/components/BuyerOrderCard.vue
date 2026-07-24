@@ -1,3 +1,4 @@
+<!-- English description: Renders a buyer order summary and actions. -->
 <template>
   <article class="surface-card group overflow-hidden p-6 sm:p-8 ring-1 ring-secondary-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_12px_32px_color-mix(in srgb, var(--bg-brand) 12%, transparent)]">
     <div class="flex flex-col gap-6 border-b border-secondary-50 pb-6 xl:flex-row xl:items-start xl:justify-between">
@@ -28,13 +29,13 @@
 
       <!-- Quick Stats -->
       <div class="flex flex-wrap gap-2 pt-2 xl:pt-1">
-        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 shadow-sm transition-all hover:border-primary-100 hover:bg-white hover:text-primary-600">
+        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-sm transition-all hover:border-primary-100 hover:bg-[var(--bg-surface-hover)] hover:text-primary-600">
           {{ order.placedAt }}
         </UBadge>
-        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 shadow-sm transition-all hover:border-primary-100 hover:bg-white hover:text-primary-600">
+        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-sm transition-all hover:border-primary-100 hover:bg-[var(--bg-surface-hover)] hover:text-primary-600">
           {{ $t("orders.card.items", { count: totalItems }) }}
         </UBadge>
-        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 shadow-sm transition-all hover:border-primary-100 hover:bg-white hover:text-primary-600">
+        <UBadge color="neutral" variant="soft" size="lg" class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--text-secondary)] shadow-sm transition-all hover:border-primary-100 hover:bg-[var(--bg-surface-hover)] hover:text-primary-600">
           {{ displayOrderPaymentMethod(order.paymentMethod) }}
         </UBadge>
       </div>
@@ -131,7 +132,7 @@
         variant="soft"
         size="xl"
         icon="i-ph-chat-circle-dots-duotone"
-        class="rounded-xl border border-secondary-200 bg-white px-6 text-xs font-semibold uppercase tracking-[0.06em] text-secondary-900 shadow-sm transition-all hover:bg-secondary-50 active:scale-95"
+        class="rounded-xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-6 text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-primary)] shadow-sm transition-all hover:bg-[var(--bg-surface-hover)] active:scale-95"
       >
         {{ $t("orders.card.contactShop") }}
       </UButton>

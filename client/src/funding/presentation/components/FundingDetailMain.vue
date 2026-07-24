@@ -1,6 +1,7 @@
+<!-- English description: Renders primary funding campaign details and activity. -->
 <template>
   <section class="space-y-4">
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p class="text-label-secondary text-[var(--text-primary)]">
@@ -68,7 +69,7 @@
       </div>
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
       <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.showFundPage.descriptionEyebrow") }}
       </p>
@@ -77,7 +78,7 @@
       </p>
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
       <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.showFundPage.impactEyebrow") }}
       </p>
@@ -93,7 +94,7 @@
       </ul>
     </UCard>
 
-    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
+    <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
       <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.showFundPage.rewardsEyebrow") }}
       </p>

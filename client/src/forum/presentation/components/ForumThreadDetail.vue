@@ -111,7 +111,7 @@
             color="primary"
             class="forum-thread-detail__textarea"
             :ui="{
-              base: 'min-h-[112px] resize-y rounded-[12px] border-[#e2e8f0] bg-[#fafbfe] px-3 py-3 text-[13px] leading-6 text-[#334155] placeholder:text-[#94a3b8]',
+        base: 'min-h-[112px] resize-y rounded-[12px] border-[var(--border-light)] bg-[var(--bg-surface)] px-3 py-3 text-[13px] leading-6 text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]',
             }"
           />
         </UFormField>

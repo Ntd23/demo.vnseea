@@ -1,5 +1,6 @@
+<!-- English description: Renders the directory page heading and summary controls. -->
 <template>
-  <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]" :ui="{ body: 'p-5 sm:p-7' }">
+  <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-lg)]" :ui="{ body: 'p-5 sm:p-7' }">
     <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-[760px]">
         <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em]">
@@ -38,7 +39,7 @@
         <UCard
           v-for="item in stats"
           :key="item.label"
-          class="rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]"
+          class="rounded-[22px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]"
           :ui="{ body: 'p-4' }"
         >
           <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-tertiary)]">{{ item.label }}</p>

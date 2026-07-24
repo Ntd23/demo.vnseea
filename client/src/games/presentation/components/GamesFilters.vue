@@ -1,6 +1,7 @@
+<!-- English description: Renders game discovery filters. -->
 <template>
   <UCard
-    class="relative z-10 overflow-hidden rounded-[30px] border border-white/70 bg-white/95 shadow-[var(--shadow-xl)] backdrop-blur"
+    class="relative z-10 overflow-hidden rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-xl)] backdrop-blur"
     :ui="{ body: 'p-4 sm:p-5' }"
   >
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -66,7 +67,7 @@
     </div>
 
     <UCard
-      class="mt-5 rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]"
+      class="mt-5 rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]"
       :ui="{ body: 'p-4' }"
     >
       <p class="text-label-secondary text-[var(--text-tertiary)]">

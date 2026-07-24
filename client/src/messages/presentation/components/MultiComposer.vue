@@ -6,7 +6,7 @@
         <UButton
           variant="ghost"
           color="neutral"
-          class="md:hidden -ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-[var(--text-secondary)] hover:bg-slate-100"
+      class="md:hidden -ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-[var(--text-secondary)] hover:bg-[var(--bg-surface-hover)]"
           @click="$emit('close')"
         >
           <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />

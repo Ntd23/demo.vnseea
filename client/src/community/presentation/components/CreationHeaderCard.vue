@@ -1,3 +1,4 @@
+<!-- English description: Renders the shared community creation header card. -->
 <template>
   <section class="relative overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-[linear-gradient(135deg,#ffffff_0%,#f7f9ff_52%,#eef3ff_100%)] px-5 py-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:px-7">
     <div class="pointer-events-none absolute right-[-8%] top-[-20%] h-44 w-44 rounded-full bg-[var(--bg-brand)]/8 blur-3xl" />
@@ -34,7 +35,7 @@
           :key="highlight"
           color="neutral"
           variant="soft"
-          class="rounded-full border border-[#dbe3f2] bg-white/85 px-3.5 py-2 text-[12px] font-semibold text-[var(--text-secondary)] shadow-[0_8px_18px_rgba(15,35,110,0.04)] backdrop-blur-[8px]"
+        class="rounded-full border border-[var(--border-light)] bg-[var(--bg-surface)] px-3.5 py-2 text-[12px] font-semibold text-[var(--text-secondary)] shadow-[var(--shadow-sm)] backdrop-blur-[8px]"
         >
           {{ $t(highlight) }}
         </UBadge>

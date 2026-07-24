@@ -1,6 +1,7 @@
+<!-- English description: Renders a reusable themed form section card. -->
 <template>
   <UCard
-    class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]"
+    class="rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
     :ui="cardUi"
     v-bind="attrs"
   >
@@ -28,14 +29,14 @@
           <div class="mt-1 flex flex-wrap items-center gap-3">
             <div
               v-if="icon"
-              class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#eef4ff] text-[var(--text-brand)]"
+              class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--bg-surface-active)] text-[var(--text-brand)]"
             >
               <Icon :name="icon" class="h-5 w-5" />
             </div>
 
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
-                <h3 class="text-lg font-black tracking-[-0.03em] text-[#243b63]">
+                <h3 class="text-lg font-black tracking-[-0.03em] text-[var(--text-primary)]">
                   {{ title }}
                 </h3>
 

@@ -1,13 +1,14 @@
+<!-- English description: Renders themed previews for selected media files. -->
 <template>
   <div class="space-y-3">
     <div
       v-if="!items.length"
-      class="flex min-h-40 flex-col items-center justify-center rounded-[24px] border border-dashed border-[#dbe3f2] bg-[#f8fbff] px-5 py-8 text-center"
+      class="flex min-h-40 flex-col items-center justify-center rounded-[24px] border border-dashed border-[var(--border-light)] bg-[var(--bg-muted)] px-5 py-8 text-center"
     >
-      <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-white text-[var(--text-brand)] shadow-[0_10px_24px_rgba(15,35,110,0.1)]">
+      <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-[var(--bg-surface)] text-[var(--text-brand)] shadow-[var(--shadow-sm)]">
         <Icon name="i-ph-images-square-fill" class="h-7 w-7" />
       </div>
-      <p class="mt-4 text-sm font-bold text-[#243b63]">
+      <p class="mt-4 text-sm font-bold text-[var(--text-primary)]">
         {{ emptyTitle }}
       </p>
       <p class="mt-2 max-w-[340px] text-sm leading-6 text-[var(--text-secondary)]">
@@ -19,7 +20,7 @@
       <UCard
         v-for="(item, index) in items"
         :key="item.id ?? `${item.name}-${index}`"
-        class="overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-white shadow-[0_10px_24px_rgba(15,35,110,0.06)]"
+        class="overflow-hidden rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)]"
         :ui="{ body: 'p-0' }"
       >
         <div class="flex min-h-full flex-col">

@@ -1,7 +1,8 @@
+<!-- English description: Renders the funding campaign detail hero. -->
 <template>
   <article>
     <UCard
-      class="overflow-hidden rounded-[32px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]"
+      class="overflow-hidden rounded-[32px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-lg)]"
       :ui="{ body: 'p-0' }"
     >
       <div class="relative min-h-[380px] overflow-hidden sm:min-h-[460px]">
