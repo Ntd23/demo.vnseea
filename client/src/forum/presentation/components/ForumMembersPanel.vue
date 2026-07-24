@@ -39,7 +39,6 @@
         loading-animation="carousel"
         :caption="t('pages.forumPage.membersTitle')"
         :empty="t('pages.forumPage.membersEmptyTitle')"
-        :ui="tableUi"
       >
         <template #name-cell="{ row }">
           <NuxtLink :to="row.original.profileUrl" class="forum-members__identity">
@@ -149,15 +148,7 @@ const columns = computed<TableColumn<ForumMember>[]>(() => [
   },
 ])
 
-const tableUi = {
-  root: "forum-members__table-root",
-  base: "w-full min-w-[800px]",
-  thead: "bg-[var(--bg-surface-hover)]",
-  th: "text-xs text-[var(--text-secondary)]",
-  td: "text-xs text-[var(--text-secondary)]",
-  empty: "p-0",
-  loading: "p-0",
-}
+
 
 const roleLabel = (role: string) =>
   role === "admin"

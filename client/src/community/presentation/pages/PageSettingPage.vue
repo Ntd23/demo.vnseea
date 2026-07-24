@@ -1,7 +1,7 @@
 <!-- Description: Renders the page settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP page settings structure. -->
 <template>
   <div v-if="page && previewPage" class="page-settings mt-1.5 max-w-[1120px] space-y-4">
-    <section class="page-settings__hero border-b border-slate-100">
+    <section class="page-settings__hero border-b border-[var(--border-light)]">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="page-settings__title text-2xl font-black text-[var(--text-primary)]">
@@ -35,106 +35,101 @@
       </div>
     </section>
 
-
-
     <div class="page-settings__content-container">
-
-
-      
       <div class="min-w-0 space-y-4">
-          <div v-if="statusAlert" class="page-settings__alert mb-5"
-            :class="`page-settings__alert--${statusAlert.color}`" aria-live="polite">
-            <Icon :name="statusAlert.icon" class="h-5 w-5 mt-0.5" />
-            <div>
-              <p class="font-bold">{{ statusAlert.title }}</p>
-              <span>{{ statusAlert.description }}</span>
-            </div>
+        <div v-if="statusAlert" class="page-settings__alert mb-5"
+          :class="`page-settings__alert--${statusAlert.color}`" aria-live="polite">
+          <Icon :name="statusAlert.icon" class="h-5 w-5 mt-0.5" />
+          <div>
+            <p class="font-bold">{{ statusAlert.title }}</p>
+            <span>{{ statusAlert.description }}</span>
           </div>
-
-          <section v-if="activeTab === 'basics'" id="basics">
-            <CommunityPageSettingsBasicsCard
-              v-model="draft"
-              :page-path="pagePath"
-              :category-options="categoryOptions"
-              :category-creating="isCreatingCategory"
-              @create-category="handleCreateCategory"
-            >
-              <template #trailing>
-                <button
-                  type="button"
-                  :disabled="isSaveDisabled"
-                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
-                  @click="handleSave"
-                >
-                  <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
-                  {{ $t("community.pageSettings.finish.save") }}
-                </button>
-              </template>
-            </CommunityPageSettingsBasicsCard>
-          </section>
-
-          <section v-if="activeTab === 'media'" id="media">
-            <CommunityPageSettingsMediaCard v-model="draft" :page-path="pagePath" :preview-page="previewPage">
-              <template #trailing>
-                <button
-                  type="button"
-                  :disabled="isBusy"
-                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
-                  @click="handleSave"
-                >
-                  <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
-                  {{ $t("community.pageSettings.finish.save") }}
-                </button>
-              </template>
-            </CommunityPageSettingsMediaCard>
-          </section>
-
-          <section v-if="activeTab === 'controls'" id="controls">
-            <CommunityPageSettingsControlsCard v-model="draft">
-              <template #trailing>
-                <button
-                  type="button"
-                  :disabled="isBusy"
-                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
-                  @click="handleSave"
-                >
-                  <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
-                  {{ $t("community.pageSettings.finish.save") }}
-                </button>
-              </template>
-            </CommunityPageSettingsControlsCard>
-          </section>
-          <section v-if="activeTab === 'analytics'" id="analytics">
-            <CommunityPageSettingsAnalyticCard
-              :analytics="pageAnalytics"
-              :period="analyticsPeriod"
-              :loading="analyticsLoading"
-              :error-message="analyticsError"
-              @update:period="setAnalyticsPeriod"
-            />
-          </section>
-
-          <section v-if="activeTab === 'delete'" id="delete">
-            <CommunityPageSettingsDeleteCard
-              v-if="page"
-              :page-id="page.id"
-              :slug="page.slug"
-              @delete="onDeletePage"
-            />
-          </section>
         </div>
+
+        <section v-if="activeTab === 'basics'" id="basics">
+          <CommunityPageSettingsBasicsCard
+            v-model="draft"
+            :page-path="pagePath"
+            :category-options="categoryOptions"
+            :category-creating="isCreatingCategory"
+            @create-category="handleCreateCategory"
+          >
+            <template #trailing>
+              <button
+                type="button"
+                :disabled="isSaveDisabled"
+                class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
+                @click="handleSave"
+              >
+                <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                {{ $t("community.pageSettings.finish.save") }}
+              </button>
+            </template>
+          </CommunityPageSettingsBasicsCard>
+        </section>
+
+        <section v-if="activeTab === 'media'" id="media">
+          <CommunityPageSettingsMediaCard v-model="draft" :page-path="pagePath" :preview-page="previewPage">
+            <template #trailing>
+              <button
+                type="button"
+                :disabled="isBusy"
+                class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
+                @click="handleSave"
+              >
+                <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                {{ $t("community.pageSettings.finish.save") }}
+              </button>
+            </template>
+          </CommunityPageSettingsMediaCard>
+        </section>
+
+        <section v-if="activeTab === 'controls'" id="controls">
+          <CommunityPageSettingsControlsCard v-model="draft">
+            <template #trailing>
+              <button
+                type="button"
+                :disabled="isBusy"
+                class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
+                @click="handleSave"
+              >
+                <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                {{ $t("community.pageSettings.finish.save") }}
+              </button>
+            </template>
+          </CommunityPageSettingsControlsCard>
+        </section>
+        <section v-if="activeTab === 'analytics'" id="analytics">
+          <CommunityPageSettingsAnalyticCard
+            :analytics="pageAnalytics"
+            :period="analyticsPeriod"
+            :loading="analyticsLoading"
+            :error-message="analyticsError"
+            @update:period="setAnalyticsPeriod"
+          />
+        </section>
+
+        <section v-if="activeTab === 'delete'" id="delete">
+          <CommunityPageSettingsDeleteCard
+            v-if="page"
+            :page-id="page.id"
+            :slug="page.slug"
+            @delete="onDeletePage"
+          />
+        </section>
       </div>
     </div>
+  </div>
 
   <div v-else class="mx-auto max-w-[960px] px-3 pb-10 pt-4 sm:px-5">
     <section
-      class="rounded-[18px] border border-[#e2e8f0] bg-white px-6 py-10 text-center shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:px-8 sm:py-16">
+      class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface)] px-6 py-10 text-center shadow-[var(--shadow-sm)] sm:px-8 sm:py-16">
       <FoundationEmptyState icon="i-ph-sliders-horizontal-fill" :title="$t('community.pageSettings.empty.title')"
         :description="$t('community.pageSettings.empty.desc')" />
 
       <div class="mt-6 flex justify-center">
         <NuxtLink to="/pages"
-          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[var(--bg-brand)] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 24%, transparent)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]">
+          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[var(--bg-brand)] px-5 text-[14px] font-extrabold text-[var(--text-inverse)] shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 24%, transparent)] transition hover:-translate-y-0.5 hover:bg-[var(--bg-brand-hover)]">
           {{ $t("community.pageSettings.empty.back") }}
         </NuxtLink>
       </div>
@@ -143,6 +138,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityPageSettingsBasicsCard from "../components/PageSettingsBasicsCard.vue"
 import CommunityPageSettingsControlsCard from "../components/PageSettingsControlsCard.vue"
@@ -205,10 +201,10 @@ function onDeletePage(pageId: number, password: string) {
 <style scoped>
 .page-settings__hero,
 .page-settings__nav-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .page-settings__hero {
@@ -287,11 +283,11 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .settings-section-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .page-settings__stepper-container {
@@ -310,12 +306,11 @@ function onDeletePage(pageId: number, password: string) {
   margin: 0 auto;
 }
 
-
 .page-settings__nav-step-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   cursor: pointer;
@@ -337,13 +332,13 @@ function onDeletePage(pageId: number, password: string) {
   color: var(--text-tertiary);
   font-size: 14px;
   font-weight: 800;
-  border: 2px solid #f1f5f9;
+  border: 2px solid var(--border-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .page-settings__nav-step-circle--active {
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   border-color: var(--bg-brand);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
@@ -476,12 +471,11 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-preview-avatar-wrap {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
-
 .page-settings__finish-note {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-muted);
   color: var(--text-secondary);
@@ -516,15 +510,15 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__alert--success {
-  border-color: #bae6fd;
-  background: #f0f9ff;
-  color: #0284c7;
+  border-color: color-mix(in srgb, var(--color-success) 20%, transparent);
+  background: color-mix(in srgb, var(--color-success) 10%, transparent);
+  color: var(--color-success);
 }
 
 .page-settings__alert--error {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #dc2626;
+  border-color: color-mix(in srgb, var(--color-error) 20%, transparent);
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
+  color: var(--color-error);
 }
 
 .page-settings__button {
@@ -545,7 +539,7 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__button--secondary {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border-default);
   background: var(--bg-surface);
   color: var(--text-primary);
 }
@@ -559,7 +553,7 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__button--primary {
   border: 1px solid var(--bg-brand);
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   box-shadow: 0 10px 22px color-mix(in srgb, var(--bg-brand) 18%, transparent);
 }
 
@@ -584,7 +578,7 @@ function onDeletePage(pageId: number, password: string) {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
   padding: 14px 16px;
@@ -606,10 +600,10 @@ function onDeletePage(pageId: number, password: string) {
   justify-content: center;
   overflow: hidden;
   border-radius: 999px;
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 18px;
   font-weight: 900;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .page-settings__admin-avatar-img {
@@ -647,7 +641,7 @@ function onDeletePage(pageId: number, password: string) {
   flex: 0 0 40px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 999px;
   background: var(--bg-surface);
   color: var(--text-secondary);
@@ -655,7 +649,7 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__admin-menu:hover {
-  border-color: #cbd5e1;
+  border-color: var(--border-default);
   background: var(--bg-muted);
   color: var(--text-primary);
 }

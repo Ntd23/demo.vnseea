@@ -1,4 +1,4 @@
-<!-- Description: Renders native-compatible /map chat messages as an accessible location preview card. -->
+<!-- English description: Renders native-compatible /map chat messages as an accessible location preview card. -->
 <template>
   <NuxtLink
     :to="resolvedWebMapUrl"
@@ -172,17 +172,17 @@ onBeforeUnmount(() => {
   min-width: 0;
   box-sizing: border-box;
   overflow: hidden;
-  border: 1px solid #d8e1ee;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
   color: var(--text-primary);
   text-decoration: none;
-  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-md);
   transition: box-shadow 0.16s ease, transform 0.16s ease;
 }
 
 .message-location-card:hover {
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.17);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-1px);
 }
 
@@ -191,7 +191,7 @@ onBeforeUnmount(() => {
   display: block;
   height: 145px;
   overflow: hidden;
-  background: #dcebdc;
+  background: var(--bg-muted);
 }
 
 .message-location-card__canvas {
@@ -209,9 +209,9 @@ onBeforeUnmount(() => {
   display: grid;
   place-items: center;
   background:
-    linear-gradient(30deg, transparent 48%, rgba(255, 255, 255, 0.72) 49% 51%, transparent 52%),
-    linear-gradient(150deg, #d7ead8, #dceafb);
-  color: #3567e8;
+    linear-gradient(30deg, transparent 48%, color-mix(in srgb, var(--bg-surface) 72%, transparent) 49% 51%, transparent 52%),
+    linear-gradient(150deg, color-mix(in srgb, var(--color-success) 12%, var(--bg-muted)), color-mix(in srgb, var(--color-info) 12%, var(--bg-muted)));
+  color: var(--text-brand);
 }
 
 .message-location-card__map-fallback :deep(svg) {
@@ -222,7 +222,7 @@ onBeforeUnmount(() => {
 .message-location-card__shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 58%, rgba(15, 23, 42, 0.08));
+  background: linear-gradient(180deg, transparent 58%, color-mix(in srgb, var(--bg-media) 8%, transparent));
 }
 
 .message-location-card__marker {
@@ -234,11 +234,11 @@ onBeforeUnmount(() => {
   height: 52px;
   place-items: center;
   overflow: hidden;
-  border: 4px solid #ffffff;
+  border: 4px solid var(--text-media);
   border-radius: 999px;
-  background: #3567e8;
-  color: #ffffff;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.28);
+  background: var(--bg-brand);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-lg);
   transform: translate(-50%, -50%);
 }
 
@@ -263,7 +263,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 14px;
   padding: 12px 14px;
-  background: linear-gradient(135deg, #d9f4ff, #c5ecfb);
+  background: linear-gradient(135deg, var(--bg-surface-active), var(--bg-muted));
 }
 
 .message-location-card__copy {
@@ -283,7 +283,7 @@ onBeforeUnmount(() => {
 }
 
 .message-location-card__copy small {
-  color: #526172;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
 }

@@ -43,9 +43,9 @@ type WatchCategoryOption = {
 
 const gradientPalette = [
   "linear-gradient(135deg,var(--bg-brand) 0%,var(--color-primary-400) 100%)",
-  "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
-  "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",
-  "linear-gradient(135deg,#7c3aed 0%,#c084fc 100%)",
+  "linear-gradient(135deg,var(--color-success) 0%,var(--color-secondary-400) 100%)",
+  "linear-gradient(135deg,var(--color-secondary-700) 0%,var(--color-secondary-400) 100%)",
+  "linear-gradient(135deg,var(--color-accent-700) 0%,var(--color-warning) 100%)",
 ] as const
 
 const createInitials = (value: string, fallback = "VN") => {

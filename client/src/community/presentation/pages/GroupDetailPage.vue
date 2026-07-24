@@ -63,7 +63,6 @@
               placeholder="Tìm bài viết trong nhóm..."
               size="xl"
               class="mt-3 w-full"
-      :ui="{ base: 'h-12 rounded-[14px] bg-[var(--bg-surface)]' }"
             />
           </section>
 
@@ -134,7 +133,7 @@
 
     <!-- ── Empty State ───────────────────────────────────── -->
     <div v-else class="mx-auto max-w-[960px] pt-4">
-      <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
+      <section class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] px-6 py-10 text-center shadow-[var(--shadow-md)] sm:px-8 sm:py-16">
         <FoundationEmptyState
           icon="i-ph-users-three-fill"
           :title="t('pages.groupDetailPage.emptyTitle')"
@@ -225,7 +224,7 @@ function handlePostCreated() {
 /* ── Page shell ───────────────────────────────────────── */
 .profile-page {
   min-height: 100vh;
-  background: #f0f2f5;
+  background: var(--bg-base);
   margin-top: 8px;
   overflow-x: hidden;
 }
@@ -280,10 +279,10 @@ function handlePostCreated() {
 
 .profile-card {
   overflow: hidden;
-  border: 1px solid #dbe3f2;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
-  box-shadow: 0 12px 30px rgba(15, 35, 110, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 .profile-card--search {
@@ -298,7 +297,7 @@ function handlePostCreated() {
 
 .profile-card__head--bordered {
   padding: 14px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .profile-card__title {
@@ -320,7 +319,7 @@ function handlePostCreated() {
 
 .profile-card__icon--blue {
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .profile-card__rows {
@@ -334,7 +333,7 @@ function handlePostCreated() {
   align-items: center;
   gap: 12px;
   width: 100%;
-  color: #374151;
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 1.3;
 }
@@ -360,7 +359,7 @@ function handlePostCreated() {
   width: 18px;
   height: 18px;
   flex: 0 0 auto;
-  color: #7b8190;
+  color: var(--text-secondary);
 }
 
 .profile-card__intro-value {
@@ -370,14 +369,14 @@ function handlePostCreated() {
 
 .profile-card__weekly {
   margin-left: auto;
-  color: #31a24c;
+  color: var(--color-success);
   white-space: nowrap;
 }
 
 .profile-card__about-text {
   margin: 0;
   padding: 18px 16px;
-  color: #374151;
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
   white-space: pre-wrap;

@@ -101,20 +101,20 @@ function formatCheckoutCurrency(value: number) {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #e5f7e8;
-  color: #42b653;
+  background: color-mix(in srgb, var(--color-success) 12%, var(--bg-surface));
+  color: var(--text-success);
 }
 
 .order-confirm h2 {
   margin: 12px 0 0;
-  color: var(--color-secondary-900);
+  color: var(--text-primary);
   font-size: 25px;
   font-weight: 800;
 }
 
 .order-confirm > p {
   margin: 18px 0;
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.55;
 }
@@ -125,14 +125,14 @@ function formatCheckoutCurrency(value: number) {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 0;
-  border-top: 1px solid var(--color-secondary-200);
-  border-bottom: 1px solid var(--color-secondary-200);
-  color: var(--color-secondary-600);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
 .order-confirm__summary strong {
-  color: var(--color-secondary-900);
+  color: var(--text-primary);
   font-size: 17px;
 }
 

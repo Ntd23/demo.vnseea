@@ -1,7 +1,7 @@
 <!-- English description: Renders the shared community create form with optional page location and map pin request controls. -->
 <template>
   <div class="space-y-6" :class="{ 'creation-form--page': isPage || isGroup }">
-    <div class="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
+    <div class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-6 shadow-sm sm:p-10">
       <div class="mb-10">
         <h1 class="text-2xl font-bold text-[var(--text-primary)] sm:text-3xl">
           {{ title || $t("community.creation.common.fillInfo", { entity: entityText }) }}
@@ -29,7 +29,6 @@
             icon="i-ph-users-three-bold"
             size="xl"
             class="w-full"
-            :ui="{ base: 'h-12 rounded-xl' }"
           />
         </UFormField>
 
@@ -40,8 +39,8 @@
           required
         >
           <div v-if="isPage || isGroup" class="w-full">
-            <div class="flex w-full items-center rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20">
-              <div class="flex items-center justify-center bg-slate-50 border-r border-slate-200 px-4 h-12 text-[var(--text-secondary)] text-[14px] font-medium whitespace-nowrap select-none">
+            <div class="flex w-full items-center rounded-xl border border-[var(--border-light)] bg-[var(--bg-surface)] overflow-hidden shadow-sm focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20">
+              <div class="flex items-center justify-center bg-[var(--bg-muted)] border-r border-[var(--border-light)] px-4 h-12 text-[var(--text-secondary)] text-[14px] font-medium whitespace-nowrap select-none">
                 {{ urlPrefix }}
               </div>
               <input
@@ -62,7 +61,6 @@
             icon="i-ph-link-bold"
             size="xl"
             class="w-full"
-            :ui="{ base: 'h-12 rounded-xl' }"
           />
           <template #hint>
             <span v-if="!(isPage || isGroup)" class="text-[11px] font-medium text-[var(--text-tertiary)]">
@@ -84,7 +82,6 @@
             autoresize
             :rows="4"
             class="w-full"
-            :ui="{ base: 'rounded-xl px-4 py-3' }"
           />
         </UFormField>
 
@@ -104,7 +101,6 @@
               icon="i-ph-shield-check-bold"
               size="xl"
               class="w-full"
-              :ui="{ base: 'h-12 rounded-xl' }"
             />
           </UFormField>
 
@@ -125,7 +121,6 @@
               :disabled="categoryCreating"
               size="xl"
               class="w-full"
-              :ui="{ base: 'h-12 rounded-xl' }"
               @create="emit('create-category', $event)"
             />
             <USelect
@@ -137,7 +132,6 @@
               :icon="(isPage || isGroup) ? undefined : 'i-ph-tag-bold'"
               size="xl"
               class="w-full"
-              :ui="{ base: 'h-12 rounded-xl' }"
             />
           </UFormField>
         </div>
@@ -366,28 +360,29 @@ const validateForm = (state: CommunityDraft): CreationFormError[] => {
 </script>
 
 <style scoped>
-.creation-form--page :deep(select),
-.creation-form--page :deep(button[role="combobox"]),
-.creation-form--page :deep(.u-select-button) {
-  border: 1px solid var(--color-primary-200) !important;
+:deep(label),
+:deep([data-slot="label"]),
+:deep(label span) {
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  font-size: 15px !important;
+}
+
+:deep(select),
+:deep(button[role="combobox"]),
+:deep(.u-select-button) {
+  border: 1px solid var(--border-light) !important;
   border-radius: 12px !important;
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-sm) !important;
   outline: none !important;
 }
 
-.creation-form--page :deep(select:focus),
-.creation-form--page :deep(button[role="combobox"]:focus-within),
-.creation-form--page :deep(.u-select-button:focus-within) {
+:deep(select:focus),
+:deep(button[role="combobox"]:focus-within),
+:deep(.u-select-button:focus-within) {
   border-color: var(--bg-brand) !important;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--bg-brand) 15%, transparent) !important;
-}
-
-/* Make sure UFormField labels are bold, matching the mockup */
-.creation-form--page :deep(label) {
-  font-weight: 700 !important;
-  color: #0f172a !important;
-  font-size: 15px !important;
 }
 </style>

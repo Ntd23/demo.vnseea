@@ -79,7 +79,7 @@ async function handleDelete() {
 }
 
 .group-delete__input {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border-light); background: var(--bg-surface);
   border-radius: 10px;
   color: var(--text-primary);
   height: 56px;

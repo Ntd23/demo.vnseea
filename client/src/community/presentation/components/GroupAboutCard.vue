@@ -1,16 +1,16 @@
 <template>
-  <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
+  <section class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-5 shadow-[var(--shadow-md)]">
     <div class="flex items-start justify-between gap-3">
       <div>
         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-brand)]/70">
           {{ compact ? t("pages.groupDetailPage.aboutCompactEyebrow") : t("pages.groupDetailPage.aboutEyebrow") }}
         </p>
-        <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
+        <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.04em] text-[var(--text-primary)]">
           {{ compact ? t("pages.groupDetailPage.aboutCompactTitle") : groupName }}
         </h3>
       </div>
 
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[#eef3ff] text-[var(--text-brand)]">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[color-mix(in_srgb,var(--bg-brand)_10%,transparent)] text-[var(--text-brand)]">
         <Icon :name="compact ? 'i-ph-info-bold' : 'i-ph-identification-card-bold'" class="h-5 w-5" />
       </div>
     </div>
@@ -20,14 +20,14 @@
     </p>
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
-      <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+      <div class="rounded-[18px] bg-[var(--bg-muted)] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.groupDetailPage.privacyTitle") }}</p>
-        <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ privacyLabel }}</p>
+        <p class="mt-1 text-[13px] font-semibold text-[var(--text-primary)]">{{ privacyLabel }}</p>
         <p class="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">{{ privacyDescription }}</p>
       </div>
-      <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+      <div class="rounded-[18px] bg-[var(--bg-muted)] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-brand)]/65">{{ t("pages.groupDetailPage.categoryTitle") }}</p>
-        <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ categoryLabel }}</p>
+        <p class="mt-1 text-[13px] font-semibold text-[var(--text-primary)]">{{ categoryLabel }}</p>
         <p class="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">{{ locationLabel }}</p>
       </div>
     </div>
@@ -61,7 +61,7 @@
         <div
           v-for="rule in group.guidelines"
           :key="rule"
-          class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-[var(--text-secondary)]"
+          class="rounded-[18px] bg-[var(--bg-muted)] px-4 py-3 text-[13px] leading-6 text-[var(--text-secondary)]"
         >
           {{ translateText(rule) }}
         </div>

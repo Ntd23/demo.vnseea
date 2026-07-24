@@ -17,80 +17,93 @@
         @touchstart.passive="handleEdgeTouchStart"
         @touchend.passive="handleEdgeTouchEnd"
       >
-        <ReelsPresentationReelsPage :post-id="viewer.post.id" :initial-post="viewer.post" embedded @close="close" />
+        <ReelsPresentationReelsPage
+          :post-id="viewer.post.id"
+          :initial-post="viewer.post"
+          embedded
+          @close="close"
+        />
       </div>
     </Transition>
   </Teleport>
 </template>
 
 <script setup lang="ts">
-import { useReelsViewerOverlay } from "../../application/composables/useReelsViewerOverlay"
-import ReelsPresentationReelsPage from "../pages/ReelsPage.vue"
+import { useReelsViewerOverlay } from "../../application/composables/useReelsViewerOverlay";
+import ReelsPresentationReelsPage from "../pages/ReelsPage.vue";
 
-const { viewer, close } = useReelsViewerOverlay()
+const { viewer, close } = useReelsViewerOverlay();
 
-const modalTouchStart = ref<{ x: number, y: number } | null>(null)
-let overlayHistoryEntryActive = false
+const modalTouchStart = ref<{ x: number; y: number } | null>(null);
+let overlayHistoryEntryActive = false;
 
 function handleOverlayPopState() {
-  if (!overlayHistoryEntryActive) return
+  if (!overlayHistoryEntryActive) return;
 
-  overlayHistoryEntryActive = false
-  close()
+  overlayHistoryEntryActive = false;
+  close();
 }
 
-watch(viewer, (currentViewer, previousViewer) => {
-  if (!import.meta.client) return
+watch(
+  viewer,
+  (currentViewer, previousViewer) => {
+    if (!import.meta.client) return;
 
-  if (currentViewer && !previousViewer && !overlayHistoryEntryActive) {
-    window.history.pushState({ ...window.history.state, reelsViewerOverlay: true }, "", window.location.href)
-    overlayHistoryEntryActive = true
-    return
-  }
+    if (currentViewer && !previousViewer && !overlayHistoryEntryActive) {
+      window.history.pushState(
+        { ...window.history.state, reelsViewerOverlay: true },
+        "",
+        window.location.href,
+      );
+      overlayHistoryEntryActive = true;
+      return;
+    }
 
-  if (!currentViewer && previousViewer && overlayHistoryEntryActive) {
-    overlayHistoryEntryActive = false
-    window.history.back()
-  }
-}, { flush: "sync" })
+    if (!currentViewer && previousViewer && overlayHistoryEntryActive) {
+      overlayHistoryEntryActive = false;
+      window.history.back();
+    }
+  },
+  { flush: "sync" },
+);
 
 onMounted(() => {
-  window.addEventListener("popstate", handleOverlayPopState)
-})
+  window.addEventListener("popstate", handleOverlayPopState);
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener("popstate", handleOverlayPopState)
-})
+  window.removeEventListener("popstate", handleOverlayPopState);
+});
 
 function handleEdgeTouchStart(event: TouchEvent) {
-  const touch = event.changedTouches[0]
-  const target = event.target instanceof Element ? event.target : null
+  const touch = event.changedTouches[0];
+  const target = event.target instanceof Element ? event.target : null;
 
-  if (target?.closest("button, a, input, textarea, .reels-page__bottom-sheet")) {
-    modalTouchStart.value = null
-    return
+  if (
+    target?.closest("button, a, input, textarea, .reels-page__bottom-sheet")
+  ) {
+    modalTouchStart.value = null;
+    return;
   }
 
-  modalTouchStart.value = touch
-    ? { x: touch.clientX, y: touch.clientY }
-    : null
+  modalTouchStart.value = touch ? { x: touch.clientX, y: touch.clientY } : null;
 }
 
 function handleEdgeTouchEnd(event: TouchEvent) {
-  const start = modalTouchStart.value
-  const touch = event.changedTouches[0]
-  modalTouchStart.value = null
+  const start = modalTouchStart.value;
+  const touch = event.changedTouches[0];
+  modalTouchStart.value = null;
 
-  if (!start || !touch) return
+  if (!start || !touch) return;
 
-  const deltaX = touch.clientX - start.x
-  const deltaY = touch.clientY - start.y
-  const isHorizontalGesture = Math.abs(deltaX) > Math.abs(deltaY)
-  const isLeftEdgeBackGesture = start.x <= 40 && deltaX > 72
-  const isContentSwipeLeft = deltaX < -72
+  const deltaX = touch.clientX - start.x;
+  const deltaY = touch.clientY - start.y;
+  const isHorizontalGesture = Math.abs(deltaX) > Math.abs(deltaY);
+  const isLeftEdgeBackGesture = start.x <= 40 && deltaX > 72;
+  const isContentSwipeLeft = deltaX < -72;
 
   if (isHorizontalGesture && (isLeftEdgeBackGesture || isContentSwipeLeft)) {
-    close()
+    close();
   }
 }
 </script>
@@ -102,7 +115,7 @@ function handleEdgeTouchEnd(event: TouchEvent) {
   z-index: 300;
   height: 100dvh;
   width: 100vw;
-  background: #020617;
+  background: var(--bg-media);
   overscroll-behavior-x: contain;
   touch-action: pan-y;
 }

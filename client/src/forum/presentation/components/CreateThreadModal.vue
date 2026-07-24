@@ -9,10 +9,10 @@
     <template #body>
       <UForm :state="form" class="space-y-5" @submit="submit">
         <div class="space-y-2">
-          <p class="text-[12px] font-bold text-[#0f172a]">
+          <p class="text-[12px] font-bold text-[var(--text-primary)]">
             {{ t("pages.forumPage.modalEyebrow") }}
           </p>
-          <p class="text-[13px] font-medium leading-6 text-[#334155]">
+          <p class="text-[13px] font-medium leading-6 text-[var(--text-secondary)]">
             {{ t("pages.forumPage.modalDescription") }}
           </p>
         </div>
@@ -84,15 +84,12 @@
               color="primary"
               size="xl"
               class="w-full"
-              :ui="{
-        base: 'min-h-[160px] resize-y rounded-[12px] border-[var(--border-light)] bg-[var(--bg-surface)] px-3 py-3 text-[13px] leading-6 text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]',
-              }"
             />
           </UFormField>
         </div>
 
-        <div class="flex flex-col gap-3 rounded-[12px] bg-[#fafbfe] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p class="text-[12px] font-semibold leading-5 text-[#334155]">
+        <div class="flex flex-col gap-3 rounded-[12px] bg-[var(--bg-muted)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p class="text-[12px] font-semibold leading-5 text-[var(--text-secondary)]">
             {{ t("pages.forumPage.modalHelper") }}
           </p>
           <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">

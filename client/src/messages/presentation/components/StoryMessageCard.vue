@@ -1,4 +1,4 @@
-<!-- Description: Renders a Messenger-style story reply preview with adaptive portrait, landscape, and square media. -->
+<!-- English description: Renders a Messenger-style story reply preview with adaptive portrait, landscape, and square media. -->
 <template>
   <div
     class="message-story"
@@ -233,7 +233,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   align-items: center;
   gap: 7px;
   margin: 0 2px 8px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.35;
@@ -258,10 +258,10 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   overflow: hidden;
   border: 0;
   border-radius: 16px;
-  background: #0f172a;
+  background: var(--bg-media);
   padding: 0;
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-md);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -282,7 +282,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
 
 .message-story__media-card:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.16);
+  box-shadow: var(--shadow-lg);
 }
 
 .message-story__media-card--disabled {
@@ -308,8 +308,8 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
 }
 
 .message-story__fallback {
-  background: linear-gradient(145deg, #312e81, #7c3aed 52%, #ec4899);
-  color: #fff;
+  background: linear-gradient(145deg, var(--bg-media), color-mix(in srgb, var(--bg-brand) 58%, var(--bg-media)));
+  color: var(--text-media);
 }
 
 .message-story__fallback svg {
@@ -326,10 +326,10 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   align-items: center;
   justify-content: center;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border-media);
   border-radius: 999px;
-  background: rgba(2, 6, 23, 0.56);
-  color: #fff;
+  background: color-mix(in srgb, var(--bg-media) 56%, transparent);
+  color: var(--text-media);
   backdrop-filter: blur(8px);
 }
 
@@ -344,9 +344,9 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(2, 6, 23, 0.68);
+  background: color-mix(in srgb, var(--bg-media) 68%, transparent);
   padding: 20px;
-  color: #fff;
+  color: var(--text-media);
   font-size: 12px;
   font-weight: 700;
   text-align: center;
@@ -360,22 +360,22 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   max-width: min(78%, 280px);
   margin: 0;
   border-radius: 16px 16px 16px 5px;
-  background: #f1f0f0;
+  background: var(--bg-muted);
   padding: 10px 15px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
   overflow-wrap: anywhere;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .message-story__reply-bubble--mine {
   right: -8px;
   left: auto;
   border-radius: 16px 16px 5px 16px;
-  background: var(--bg-brand, #a84849);
-  color: #fff;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
 }
 
 .message-story__viewer {
@@ -385,7 +385,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(2, 6, 23, 0.94);
+  background: color-mix(in srgb, var(--bg-media) 94%, transparent);
   padding: 24px;
   backdrop-filter: blur(14px);
 }
@@ -396,10 +396,10 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   max-width: calc(100vw - 48px);
   max-height: calc(100dvh - 48px);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border-media);
   border-radius: 18px;
-  background: #020617;
-  box-shadow: 0 20px 64px rgba(0, 0, 0, 0.38);
+  background: var(--bg-media);
+  box-shadow: var(--shadow-xl);
 }
 
 .message-story__stage--portrait {
@@ -427,8 +427,8 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   align-items: center;
   gap: 10px;
   padding: 18px;
-  background: linear-gradient(to bottom, rgba(2, 6, 23, 0.86), transparent);
-  color: #fff;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg-media) 86%, transparent), transparent);
+  color: var(--text-media);
 }
 
 .message-story__header div {
@@ -449,7 +449,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
 }
 
 .message-story__header span {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-media-muted);
   font-size: 11px;
 }
 
@@ -457,7 +457,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #020617;
+  background: var(--bg-media);
 }
 
 .message-story__caption {
@@ -466,8 +466,8 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   bottom: 0;
   left: 0;
   padding: 48px 20px 20px;
-  background: linear-gradient(to top, rgba(2, 6, 23, 0.9), transparent);
-  color: #fff;
+  background: linear-gradient(to top, color-mix(in srgb, var(--bg-media) 90%, transparent), transparent);
+  color: var(--text-media);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -482,10 +482,10 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
   height: 44px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid var(--border-media);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.68);
-  color: #fff;
+  background: color-mix(in srgb, var(--bg-media) 68%, transparent);
+  color: var(--text-media);
   cursor: pointer;
   backdrop-filter: blur(10px);
 }

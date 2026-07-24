@@ -16,11 +16,7 @@
       mode="out-in"
     >
       <div :key="reel.id" class="reel-card">
-        <img
-          :src="reel.cover"
-          :alt="reel.title"
-          class="reel-card__bg"
-        >
+        <img :src="reel.cover" :alt="reel.title" class="reel-card__bg" />
 
         <!-- Top gradient -->
         <div class="reel-card__grad-top" />
@@ -33,8 +29,12 @@
             <span class="reel-pill__dot-ping" />
             <span class="reel-pill__dot-core" />
           </span>
-          <span class="reel-pill__label">{{ $t('pages.reelsPage.playing') }}</span>
-          <span class="reel-pill__counter">{{ currentIndex + 1 }}/{{ total }}</span>
+          <span class="reel-pill__label">{{
+            $t("pages.reelsPage.playing")
+          }}</span>
+          <span class="reel-pill__counter"
+            >{{ currentIndex + 1 }}/{{ total }}</span
+          >
         </div>
 
         <!-- More button -->
@@ -58,98 +58,101 @@
     <!-- Swipe hint -->
     <div class="reel-hint">
       <div class="reel-hint__inner">
-        <p class="reel-hint__text">{{ $t('pages.reelsPage.swipeHint') }}</p>
+        <p class="reel-hint__text">{{ $t("pages.reelsPage.swipeHint") }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import ReelsOverlay from './ReelsOverlay.vue'
+import ReelsOverlay from "./ReelsOverlay.vue";
 
 const props = defineProps<{
   reel: {
-    id: number
-    title: string
-    author: string
-    subtitle: string
-    description: string
-    likes: number
-    comments: number
-    shares: number
-    views: number
-    music: string
-    tags: string[]
-    cover: string
-    avatar: string
-    authorPath: string
-  }
-  currentIndex: number
-  total: number
-}>()
+    id: number;
+    title: string;
+    author: string;
+    subtitle: string;
+    description: string;
+    likes: number;
+    comments: number;
+    shares: number;
+    views: number;
+    music: string;
+    tags: string[];
+    cover: string;
+    avatar: string;
+    authorPath: string;
+  };
+  currentIndex: number;
+  total: number;
+}>();
 
 const emit = defineEmits<{
-  (event: 'next'): void
-  (event: 'prev'): void
-}>()
+  (event: "next"): void;
+  (event: "prev"): void;
+}>();
 
-const touchStartY = ref<number | null>(null)
-const wheelLock = ref(false)
+const touchStartY = ref<number | null>(null);
+const wheelLock = ref(false);
 
-const progressWidth = computed(() => `${((props.currentIndex + 1) / props.total) * 100}%`)
+const progressWidth = computed(
+  () => `${((props.currentIndex + 1) / props.total) * 100}%`,
+);
 
 const onTouchStart = (event: TouchEvent) => {
-  touchStartY.value = event.changedTouches[0]?.clientY ?? null
-}
+  touchStartY.value = event.changedTouches[0]?.clientY ?? null;
+};
 
 const onTouchEnd = (event: TouchEvent) => {
-  const startY = touchStartY.value
-  const endY = event.changedTouches[0]?.clientY ?? null
-  touchStartY.value = null
+  const startY = touchStartY.value;
+  const endY = event.changedTouches[0]?.clientY ?? null;
+  touchStartY.value = null;
 
-  if (startY == null || endY == null) return
-  const deltaY = startY - endY
-  if (Math.abs(deltaY) < 50) return
+  if (startY == null || endY == null) return;
+  const deltaY = startY - endY;
+  if (Math.abs(deltaY) < 50) return;
 
-  if (deltaY > 0) emit('next')
-  else emit('prev')
-}
+  if (deltaY > 0) emit("next");
+  else emit("prev");
+};
 
 const onWheel = (event: WheelEvent) => {
-  if (wheelLock.value) return
-  if (Math.abs(event.deltaY) < 12) return
+  if (wheelLock.value) return;
+  if (Math.abs(event.deltaY) < 12) return;
 
-  wheelLock.value = true
-  if (event.deltaY > 0) emit('next')
-  else emit('prev')
+  wheelLock.value = true;
+  if (event.deltaY > 0) emit("next");
+  else emit("prev");
 
   window.setTimeout(() => {
-    wheelLock.value = false
-  }, 520)
-}
+    wheelLock.value = false;
+  }, 520);
+};
 
 const onKeydown = (event: KeyboardEvent) => {
-  const target = event.target as HTMLElement | null
-  if (target?.closest('input, textarea, select, [contenteditable="true"]')) return
+  const target = event.target as HTMLElement | null;
+  if (target?.closest('input, textarea, select, [contenteditable="true"]'))
+    return;
 
-  if (event.key === 'ArrowDown' || event.key === 'PageDown') {
-    event.preventDefault()
-    emit('next')
+  if (event.key === "ArrowDown" || event.key === "PageDown") {
+    event.preventDefault();
+    emit("next");
   }
 
-  if (event.key === 'ArrowUp' || event.key === 'PageUp') {
-    event.preventDefault()
-    emit('prev')
+  if (event.key === "ArrowUp" || event.key === "PageUp") {
+    event.preventDefault();
+    emit("prev");
   }
-}
+};
 
 onMounted(() => {
-  window.addEventListener('keydown', onKeydown)
-})
+  window.addEventListener("keydown", onKeydown);
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onKeydown)
-})
+  window.removeEventListener("keydown", onKeydown);
+});
 </script>
 
 <style scoped>
@@ -172,9 +175,9 @@ onBeforeUnmount(() => {
   max-height: 100%;
   width: 100%;
   overflow: hidden;
-  background: #000;
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-media);
+  box-shadow: 0 0 80px color-mix(in srgb, var(--bg-media) 75%, transparent);
+  border: 1px solid var(--border-media);
 }
 
 @media (min-width: 640px) {
@@ -204,7 +207,12 @@ onBeforeUnmount(() => {
   inset: 0;
   top: 0;
   height: 144px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.24), transparent);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-media) 75%, transparent),
+    color-mix(in srgb, var(--bg-media) 24%, transparent),
+    transparent
+  );
 }
 
 .reel-card__grad-bottom {
@@ -213,7 +221,12 @@ onBeforeUnmount(() => {
   inset: 0;
   top: auto;
   height: 58%;
-  background: linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0.46), transparent);
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--bg-media) 92%, transparent),
+    color-mix(in srgb, var(--bg-media) 46%, transparent),
+    transparent
+  );
 }
 
 /* Playing pill */
@@ -226,16 +239,19 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(0,0,0,0.42);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--bg-media) 42%, transparent);
   padding: 8px 14px;
-  color: white;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+  color: var(--text-media);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--bg-media) 22%, transparent);
   backdrop-filter: blur(10px);
 }
 
 @media (min-width: 640px) {
-  .reel-pill { left: 1.25rem; top: 1.25rem; }
+  .reel-pill {
+    left: 1.25rem;
+    top: 1.25rem;
+  }
 }
 
 .reel-pill__dot {
@@ -252,7 +268,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: #4d88ff;
+  background: var(--bg-brand);
   opacity: 0.7;
   animation: ping 1s ease-in-out infinite;
 }
@@ -267,8 +283,15 @@ onBeforeUnmount(() => {
 }
 
 @keyframes ping {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.8); opacity: 0; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 
 .reel-pill__label {
@@ -283,7 +306,7 @@ onBeforeUnmount(() => {
 .reel-pill__counter {
   font-size: 11px;
   font-weight: 700;
-  color: rgba(255,255,255,0.45);
+  color: var(--text-media-muted);
 }
 
 /* More button */
@@ -297,22 +320,25 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(0,0,0,0.42);
-  color: white;
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--bg-media) 42%, transparent);
+  color: var(--text-media);
   cursor: pointer;
   backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--bg-media) 22%, transparent);
   transition: background 0.15s ease;
 }
 
 .reel-more-btn:hover {
-  background: rgba(0,0,0,0.62);
-  color: #4d88ff;
+  background: color-mix(in srgb, var(--bg-media) 62%, transparent);
+  color: var(--text-brand);
 }
 
 @media (min-width: 640px) {
-  .reel-more-btn { right: 1.25rem; top: 1.25rem; }
+  .reel-more-btn {
+    right: 1.25rem;
+    top: 1.25rem;
+  }
 }
 
 /* Progress bar */
@@ -322,7 +348,7 @@ onBeforeUnmount(() => {
   inset-x: 0;
   bottom: 0;
   height: 3px;
-  background: rgba(255,255,255,0.1);
+  background: color-mix(in srgb, var(--text-media) 10%, transparent);
 }
 
 .reel-progress__fill {
@@ -343,13 +369,15 @@ onBeforeUnmount(() => {
 }
 
 @media (min-width: 768px) {
-  .reel-hint { display: block; }
+  .reel-hint {
+    display: block;
+  }
 }
 
 .reel-hint__inner {
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--text-media) 7%, transparent);
   padding: 8px 20px;
   backdrop-filter: blur(10px);
 }
@@ -358,15 +386,19 @@ onBeforeUnmount(() => {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.05em;
-  color: rgba(255,255,255,0.55);
+  color: var(--text-media-muted);
 }
 
 /* Transitions */
 .reel-transition-enter-active {
-  transition: opacity 400ms ease, transform 400ms ease;
+  transition:
+    opacity 400ms ease,
+    transform 400ms ease;
 }
 .reel-transition-leave-active {
-  transition: opacity 300ms ease, transform 300ms ease;
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease;
 }
 .reel-transition-enter-from {
   opacity: 0;

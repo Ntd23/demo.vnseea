@@ -1,4 +1,4 @@
-<!-- Description: Renders the inbox sidebar with search, user/group tabs, and the multi-send panel for text, file, and recording drafts. -->
+<!-- English description: Renders the inbox sidebar with search, user/group tabs, and the multi-send panel for text, file, and recording drafts. -->
 <template>
   <div class="flex h-full flex-col bg-[var(--bg-surface)]">
 
@@ -44,7 +44,7 @@
           <div class="relative">
             <span
               v-if="tab.id === 'multi' && selectedRecipients.length > 0"
-              class="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white"
+              class="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--color-error)] text-[9px] font-bold text-[var(--text-inverse)]"
             >
               {{ selectedRecipients.length }}
             </span>
@@ -107,7 +107,7 @@
             <input
               type="checkbox"
               :checked="allVisibleRecipientsSelected"
-              class="h-4 w-4 rounded border-slate-300 text-[var(--text-primary)] focus:ring-primary-500"
+              class="h-4 w-4 rounded border-[var(--border-light)] bg-[var(--bg-surface)] text-[var(--text-brand)] focus:ring-[var(--border-strong)]"
               @change="emit('toggle-all-recipients')"
             >
             <span>{{ $t("pages.messagesPage.selectAll") }}</span>
@@ -298,7 +298,7 @@
 
         <div
           v-else-if="contacts.length === 0"
-          class="flex flex-col items-center gap-2 rounded-[var(--radius-md)] border border-dashed border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-10 text-center"
+          class="flex flex-col items-center gap-2 rounded-[var(--radius-md)] border border-dashed border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-10 text-center"
         >
           <Icon name="i-ph-chat-circle-dashed-duotone" class="h-8 w-8 text-[var(--text-tertiary)]" />
           <span class="text-sm text-[var(--text-secondary)]">{{ emptyLabel }}</span>
@@ -577,15 +577,15 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   transition: all var(--duration-fast) var(--ease-default);
   flex-shrink: 0;
 }
-.cl-icon-btn:hover { background: var(--bg-surface-hover); color: var(--text-primary); border-color: var(--border-default); }
+.cl-icon-btn:hover { background: var(--bg-surface-hover); color: var(--text-primary); border-color: var(--border-strong); }
 .cl-icon-btn:disabled { opacity: 0.5; cursor: default; }
 
 .cl-icon-btn--primary {
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   border-color: transparent;
 }
-.cl-icon-btn--primary:hover { background: var(--bg-brand-hover); color: #ffffff; }
+.cl-icon-btn--primary:hover { background: var(--bg-brand-hover); color: var(--text-inverse); }
 
 /* Tab pills */
 .cl-tab {
@@ -607,14 +607,14 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   white-space: nowrap;
 }
 .cl-tab:hover:not(.cl-tab--active) {
-  background: rgba(255,255,255,0.6);
+  background: var(--bg-surface-hover);
   color: var(--text-primary);
 }
 .cl-tab--active {
   background: var(--bg-surface);
   color: var(--color-primary-600);
   font-weight: var(--weight-semibold);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px var(--border-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .cl-multi-panel {
@@ -658,7 +658,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 
 .cl-multi-stack::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: #cbd5e1;
+  background: color-mix(in srgb, var(--text-tertiary) 55%, transparent);
 }
 
 .cl-filter-card,
@@ -689,13 +689,13 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 
 .cl-field-label {
   display: block;
-  color: black;
+  color: var(--text-primary);
   font-size: var(--text-caption);
   font-weight: var(--weight-semibold);
 }
 
 .cl-field-label span {
-  color: black;
+  color: var(--text-primary);
   font-weight: var(--weight-medium);
 }
 
@@ -746,7 +746,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 .cl-stacked-avatar,
 .cl-stacked-more {
   margin-left: -6px;
-  box-shadow: 0 0 0 2px #ffffff;
+  box-shadow: 0 0 0 2px var(--bg-surface);
 }
 
 .cl-stacked-more {
@@ -756,8 +756,8 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #eef2ff;
-  color: var(--color-primary-600);
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
   font-size: 10px;
   font-weight: 800;
 }
@@ -771,7 +771,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   display: flex;
   align-items: center;
   border-style: dashed;
-  background: #fafbfe;
+  background: var(--bg-muted);
   padding: 11px 12px;
 }
 
@@ -812,9 +812,9 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   line-height: 1.45;
 }
 
-.cl-send-status--success { color: var(--color-success-600, #16a34a); }
-.cl-send-status--warning { color: var(--color-warning-700, #a16207); }
-.cl-send-status--error { color: var(--color-error-600, #dc2626); }
+.cl-send-status--success { color: var(--text-success); }
+.cl-send-status--warning { color: var(--color-warning); }
+.cl-send-status--error { color: var(--text-danger); }
 .cl-send-status--neutral { color: var(--text-secondary); }
 
 .cl-multi-users {
@@ -862,10 +862,10 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   height: 16px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: 4px;
   background: var(--bg-surface);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .cl-multi-checkbox--checked {
@@ -896,7 +896,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px dashed var(--border-default);
+  border: 1px dashed var(--border-light);
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   font-size: var(--text-caption);
@@ -907,7 +907,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: color-mix(in srgb, var(--text-tertiary) 55%, transparent) transparent;
 }
 
 .cl-scroll-list::-webkit-scrollbar {
@@ -916,7 +916,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 
 .cl-scroll-list::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: #cbd5e1;
+  background: color-mix(in srgb, var(--text-tertiary) 55%, transparent);
 }
 
 .cl-skeleton-item {
@@ -932,8 +932,8 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
 }
 
 .cl-skeleton-item--active {
-  border-color: #dbe3ff;
-  background: #f6f8ff;
+  border-color: var(--border-strong);
+  background: var(--bg-surface-active);
 }
 
 .cl-skeleton-avatar {
@@ -947,7 +947,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   width: 44px !important;
   height: 44px !important;
   border-radius: 999px !important;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .cl-skeleton-online-dot {
@@ -957,8 +957,8 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  border: 2px solid #ffffff;
-  background: #3b82c4;
+  border: 2px solid var(--bg-surface);
+  background: var(--color-success);
 }
 
 .cl-skeleton-body {
@@ -983,7 +983,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   width: 96px;
   height: 19px;
   border-radius: 999px;
-  background: #dfe5ee !important;
+  background: var(--bg-muted) !important;
 }
 
 .cl-skeleton-name--wide {
@@ -995,7 +995,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   height: 14px;
   flex-shrink: 0;
   border-radius: 999px;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .cl-skeleton-status {
@@ -1003,7 +1003,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   height: 14px;
   margin-top: 7px;
   border-radius: 999px;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .cl-skeleton-status--group {
@@ -1014,7 +1014,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   width: 170px;
   height: 17px;
   border-radius: 999px;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .cl-skeleton-preview--wide {
@@ -1032,13 +1032,13 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   width: 28px;
   height: 20px;
   border-radius: 999px;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .cl-skeleton-color-tag {
   width: 12px;
   height: 12px;
   border-radius: 4px;
-  background: #fde68a !important;
+  background: color-mix(in srgb, var(--color-warning) 35%, transparent) !important;
 }
 </style>

@@ -1,3 +1,4 @@
+<!-- English description: Displays the current user's marketplace products and management actions. -->
 <template>
   <div class="my-products-page mx-auto w-full max-w-[1520px] pb-12 mt-2">
     <section class="my-products-nav">
@@ -88,7 +89,7 @@
               loading="lazy"
             >
             <div v-else class="my-product-card__fallback" :style="{ background: product.background }">
-              <Icon :name="product.icon" class="h-9 w-9 text-white" />
+              <Icon :name="product.icon" class="h-9 w-9 text-[var(--text-media)]" />
             </div>
           </div>
 
@@ -238,10 +239,10 @@ const submitDeleteProduct = async () => {
 <style scoped>
 .my-products-page {
   --product-brand: var(--color-brand, var(--bg-brand));
-  --product-card: var(--surface-card, #ffffff);
-  --product-border: var(--border-light, #e2e8f0);
-  --product-text: var(--text-primary, #0f172a);
-  --product-muted: var(--text-tertiary, #64748b);
+  --product-card: var(--bg-surface);
+  --product-border: var(--border-light);
+  --product-text: var(--text-primary);
+  --product-muted: var(--text-tertiary);
 }
 
 .my-products-heading,
@@ -251,7 +252,7 @@ const submitDeleteProduct = async () => {
   border: 1px solid var(--product-border);
   border-radius: 16px;
   background: var(--product-card);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .my-products-delete-copy {
@@ -356,7 +357,7 @@ const submitDeleteProduct = async () => {
   border: 1px solid var(--product-border);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   text-decoration: none;
 }
 
@@ -369,7 +370,7 @@ const submitDeleteProduct = async () => {
   width: 100%;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #eef3fb;
+  background: var(--bg-muted);
 }
 
 .my-product-card__image img {
@@ -432,11 +433,11 @@ const submitDeleteProduct = async () => {
   height: 32px;
   border: 0;
   border-radius: 999px;
-  color: var(--product-text);
-  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-on-light-surface);
+  background: color-mix(in srgb, var(--text-media) 90%, transparent);
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
 }
 
@@ -446,7 +447,7 @@ const submitDeleteProduct = async () => {
 }
 
 .my-product-card__action--danger:hover {
-  color: #dc2626;
+  color: var(--text-danger);
 }
 
 .my-product-card__action:disabled {
@@ -495,7 +496,7 @@ const submitDeleteProduct = async () => {
     height: 74px;
     width: 34px;
     pointer-events: none;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0), var(--product-card) 78%);
+    background: linear-gradient(90deg, transparent, var(--product-card) 78%);
     content: "";
   }
 

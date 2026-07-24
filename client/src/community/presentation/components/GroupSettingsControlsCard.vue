@@ -19,7 +19,6 @@
           :items="privacyItems"
           size="xl"
           class="w-full"
-          :ui="selectUi"
         />
       </div>
 
@@ -31,7 +30,6 @@
           :items="joinApprovalItems"
           size="xl"
           class="w-full"
-          :ui="selectUi"
         />
       </div>
     </div>
@@ -49,9 +47,7 @@ type GroupSettingsPrivacy = Exclude<CommunityPrivacy, "secret">
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
 
-const selectUi = {
-  base: "h-14 rounded-[10px] px-4 text-[15px]",
-}
+
 
 const privacyItems: Array<{ value: GroupSettingsPrivacy; label: string }> = [
   { value: "public", label: "Công cộng" },

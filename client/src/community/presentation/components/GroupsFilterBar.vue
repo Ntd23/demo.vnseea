@@ -49,7 +49,7 @@ defineProps<{
   box-shadow: var(--shadow-sm);
   overflow-x: scroll; /* Force scrollbar state to be active */
   scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #94a3b8 #f1f5f9; /* Firefox */
+  scrollbar-color: var(--color-secondary-400) var(--bg-muted); /* Firefox */
 }
 
 .groups-filter-bar__tabs {
@@ -120,23 +120,23 @@ defineProps<{
 /* Global CSS block to style the webkit scrollbar without Vue scoped attribute restriction */
 .groups-filter-bar::-webkit-scrollbar {
   height: 6px !important;
-  background-color: #e2e8f0 !important;
+  background-color: var(--color-secondary-200) !important;
   display: block !important;
 }
 
 .groups-filter-bar::-webkit-scrollbar-track {
-  background-color: #e2e8f0 !important;
+  background-color: var(--color-secondary-200) !important;
   border-radius: 999px !important;
 }
 
 .page-tabs-bar__top::-webkit-scrollbar-thumb,
 .groups-filter-bar::-webkit-scrollbar-thumb {
-  background-color: #475569 !important; /* Higher contrast slate-600 */
+  background-color: var(--color-secondary-600) !important; /* Higher contrast slate-600 */
   border-radius: 999px !important;
 }
 
 .page-tabs-bar__top::-webkit-scrollbar-thumb:hover,
 .groups-filter-bar::-webkit-scrollbar-thumb:hover {
-  background-color: #1e293b !important;
+  background-color: var(--color-secondary-800) !important;
 }
 </style>

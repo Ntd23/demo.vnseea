@@ -1,7 +1,7 @@
 <!-- English description: Renders the backend-backed LiveKit host studio for the /live route with real setup, preview, heartbeat, and end-live controls. -->
 <template>
   <div
-    class="studio"
+    class="studio mt-1.5"
     :class="{
       'studio--setup': !session,
       'studio--broadcasting': Boolean(session),
@@ -47,7 +47,7 @@
       </aside>
 
       <!-- ── CENTER: Stage ────────────────────────────── -->
-      <main class="studio__main">
+      <main class="studio__main mt-1.5">
 
         <!-- Video stage -->
         <div class="studio__stage-card">
@@ -92,11 +92,6 @@
                     variant="soft"
                     class="studio__mobile-privacy"
                     :aria-label="t('pages.livePage.studio.privacyLabel')"
-                    :ui="{
-                      base: 'h-8 rounded-xl bg-white/95 px-2.5 text-xs font-bold text-slate-950 shadow-lg ring-0 hover:bg-white focus-visible:ring-2 focus-visible:ring-blue-500',
-                      content: 'z-[200] min-w-52 overflow-hidden rounded-xl bg-white text-slate-950 shadow-2xl ring-1 ring-slate-200',
-                      item: 'cursor-pointer rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--text-primary)] data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-700',
-                    }"
                   />
                 </div>
               </header>
@@ -277,7 +272,6 @@
               size="lg"
               square
               class="studio__fullscreen-btn"
-              :ui="{ base: 'absolute right-3.5 top-3.5 z-[80] rounded-full bg-black/60 text-white shadow-lg ring-1 ring-white/20 hover:bg-black/75' }"
               @click="toggleFullscreen"
             />
             <template v-if="false">
@@ -465,10 +459,6 @@
     <UModal
       v-model:open="endConfirmationOpen"
       :dismissible="!ending"
-      :ui="{
-        overlay: 'z-[200] bg-elevated/75 backdrop-blur-sm',
-        content: 'z-[201] w-[calc(100%-2rem)] max-w-sm overflow-hidden rounded-2xl bg-[var(--bg-surface)] p-0 shadow-[var(--shadow-xl)] ring-1 ring-[var(--border-light)]',
-      }"
     >
       <template #content>
         <div class="studio__end-confirmation">
@@ -920,8 +910,7 @@ onBeforeUnmount(() => {
 /* ── Page shell ───────────────────────────────────────── */
 .studio {
   min-height: calc(100vh - 65px);
-  background: #f1f4fb;
-  padding: 12px 16px 16px;
+  background: var(--bg-base);
 }
 
 .studio__shell {
@@ -929,8 +918,6 @@ onBeforeUnmount(() => {
   grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
   gap: 16px;
   align-items: start;
-  max-width: 1480px;
-  margin: 0 auto;
 }
 
 .studio__shell--2col {
@@ -943,7 +930,7 @@ onBeforeUnmount(() => {
 
 .studio__side-panel {
   position: sticky;
-  top: 82px;
+  top: 72px;
   display: flex;
   height: min(680px, calc(100vh - 104px));
   min-height: 0;
@@ -965,7 +952,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 16px;
   position: sticky;
-  top: 82px;
+  top: 72px;
 }
 
 .studio__skeleton-stack {

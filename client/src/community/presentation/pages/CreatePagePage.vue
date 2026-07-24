@@ -1,6 +1,6 @@
 <!-- Description: Renders the create-page route with a heading-first shell and the existing ordered form fields, aligned to the legacy PHP page creation flow. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-5 pb-24">
+  <div class="mt-1.5 space-y-5 pb-24">
     <CommunityCreationForm
       v-model="draft"
       is-page

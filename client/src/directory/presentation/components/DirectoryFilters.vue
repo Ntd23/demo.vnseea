@@ -1,7 +1,7 @@
 <!-- English description: Renders directory filtering controls using shared form tokens. -->
 <template>
-  <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]" :ui="{ body: 'p-4 sm:p-5' }">
-    <div class="space-y-4">
+  <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]">
+    <div class="space-y-4 p-4 sm:p-5">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="max-w-[640px]">
           <p class="text-label-secondary text-[var(--text-primary)]">{{ t("pages.directoryPage.filtersEyebrow") }}</p>

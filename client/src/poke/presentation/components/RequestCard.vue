@@ -96,11 +96,11 @@ const displayTime = computed(() => {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
   padding: 14px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .poke-request-card__person {
@@ -119,7 +119,7 @@ const displayTime = computed(() => {
   flex-shrink: 0;
   place-items: center;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-muted);
 }
@@ -176,8 +176,8 @@ const displayTime = computed(() => {
 }
 
 .poke-request-card__pill[data-online="true"] {
-  background: #ecfdf5;
-  color: #047857;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--color-success);
 }
 
 .poke-request-card__dot {

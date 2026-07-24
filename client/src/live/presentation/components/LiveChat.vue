@@ -24,7 +24,6 @@
             :text="item.author?.charAt(0) || '?'"
             size="sm"
             class="shrink-0 mt-0.5"
-            :ui="{ rounded: 'rounded-xl', background: 'bg-blue-100', text: 'text-blue-700 font-bold' }"
           />
           <div class="min-w-0">
             <div class="chat__item-meta">
@@ -217,7 +216,7 @@ watch(
   padding: 12px;
   border-radius: 14px;
   background: var(--bg-muted);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   transition: background 0.15s;
 }
 
@@ -234,7 +233,7 @@ watch(
 .chat__item-name {
   font-size: 12px;
   font-weight: 700;
-  color: #374151;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -280,7 +279,7 @@ watch(
 .chat__empty-title {
   font-size: 15px;
   font-weight: 700;
-  color: #374151;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -299,7 +298,7 @@ watch(
   flex-shrink: 0;
   gap: 6px;
   padding: 10px 12px 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
   background: var(--bg-surface);
 }
 
@@ -307,7 +306,7 @@ watch(
   min-width: 0;
   width: 100%;
   height: 38px;
-  border: 1px solid #dbe3f2;
+  border: 1px solid var(--border-light);
   border-radius: 13px;
   background: var(--bg-surface);
   padding: 0 12px;

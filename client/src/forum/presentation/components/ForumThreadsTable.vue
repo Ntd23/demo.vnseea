@@ -9,7 +9,6 @@
     loading-animation="carousel"
     :empty="emptyTitle"
     class="forum-threads-table"
-    :ui="tableUi"
   >
     <template #title-cell="{ row }">
       <div class="forum-threads-table__topic">
@@ -94,15 +93,7 @@ const columns = computed<TableColumn<ForumThread>[]>(() => [
   },
 ])
 
-const tableUi = {
-  root: "forum-threads-table__root",
-  base: "w-full min-w-[720px]",
-  thead: "bg-[var(--bg-surface-hover)]",
-  th: "text-xs text-[var(--text-secondary)]",
-  td: "text-xs text-[var(--text-secondary)]",
-  empty: "p-0",
-  loading: "p-0",
-}
+
 
 const tableMeta = computed(() => ({
   class: {

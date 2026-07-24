@@ -68,9 +68,9 @@ const submit = () => {
 <style scoped>
 .watch-comments {
   background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -127,8 +127,8 @@ const submit = () => {
   flex: 1;
   padding: 10px 14px;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: #fafbfe;
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
   font-size: 13px;
   font-weight: 500;
   color: var(--text-primary);
@@ -155,7 +155,7 @@ const submit = () => {
   border-radius: 12px;
   border: none;
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
   cursor: pointer;
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
   transition: all 0.15s ease;
@@ -185,7 +185,7 @@ const submit = () => {
   gap: 14px;
   border-radius: 14px;
   background: color-mix(in srgb, var(--bg-brand) 2%, transparent);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  border: 1px solid var(--border-light);
   padding: 14px;
   transition: background 0.12s ease;
 }
@@ -205,7 +205,7 @@ const submit = () => {
   background: linear-gradient(145deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   font-size: 11px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .watch-comment__body {

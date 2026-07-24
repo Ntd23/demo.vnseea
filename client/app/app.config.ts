@@ -153,6 +153,8 @@ export default defineAppConfig({
     },
     formField: {
       slots: {
+        root: "w-full",
+        container: "w-full",
         label: "text-[var(--text-primary)]",
         description: "text-[var(--text-secondary)]",
         hint: "text-[var(--text-secondary)]",
@@ -194,16 +196,26 @@ export default defineAppConfig({
     },
     fileUpload: {
       slots: {
-        base: "border-[var(--border-light)] bg-[var(--bg-surface)]",
+        base:
+          "border border-solid border-[var(--border-light)] bg-[var(--bg-surface)]",
         label: "text-[var(--text-primary)]",
         description: "text-[var(--text-secondary)]",
+        file: "border border-solid border-[var(--border-light)] bg-[var(--bg-surface)]",
         fileName: "text-[var(--text-primary)]",
         fileSize: "text-[var(--text-secondary)]",
+      },
+      variants: {
+        highlight: {
+          true: {
+            base: "border-[var(--border-light)]",
+          },
+        },
       },
     },
     input: {
       slots: {
-        base: "text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]",
+        root: "w-full",
+        base: "w-full text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]",
         leadingIcon: "text-[var(--icon-secondary)]",
         trailingIcon: "text-[var(--icon-secondary)]",
       },
@@ -218,7 +230,8 @@ export default defineAppConfig({
     },
     inputDate: {
       slots: {
-        base: "text-[var(--text-primary)]",
+        root: "w-full",
+        base: "w-full text-[var(--text-primary)]",
         leadingIcon: "text-[var(--icon-secondary)]",
         trailingIcon: "text-[var(--icon-secondary)]",
         segment:
@@ -237,7 +250,8 @@ export default defineAppConfig({
     },
     inputNumber: {
       slots: {
-        base: "text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]",
+        root: "w-full",
+        base: "w-full text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]",
         increment: "text-[var(--icon-secondary)]",
         decrement: "text-[var(--icon-secondary)]",
       },
@@ -267,7 +281,8 @@ export default defineAppConfig({
     },
     textarea: {
       slots: {
-        base: "text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]",
+        root: "w-full",
+        base: "w-full text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]",
         leadingIcon: "text-[var(--icon-secondary)]",
         trailingIcon: "text-[var(--icon-secondary)]",
       },

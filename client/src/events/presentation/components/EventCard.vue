@@ -112,7 +112,7 @@ watch(
   display: block;
   height: 260px;
   overflow: hidden;
-  background: #eef2f7;
+  background: var(--bg-muted);
 }
 
 .event-cover__fallback,
@@ -132,10 +132,11 @@ watch(
   right: 14px;
   top: 14px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.94);
-  padding: 7px 11px;
-  color: var(--text-primary);
-  font-size: 13px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-light);
+  padding: 6px 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
   font-weight: 700;
   box-shadow: var(--shadow-sm);
 }

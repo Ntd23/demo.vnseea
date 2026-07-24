@@ -599,9 +599,9 @@ const submitDelete = async () => {
 }
 
 .forum-hero__stats div {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   padding: 12px;
 }
 
@@ -756,7 +756,7 @@ const submitDelete = async () => {
 .forum-sidebar__sections button:hover,
 .forum-sidebar__forum--active {
   border-color: color-mix(in srgb, var(--bg-brand) 12%, transparent) !important;
-  background: #fafbfe !important;
+  background: var(--bg-surface-hover) !important;
 }
 
 .forum-list-icon {
@@ -820,7 +820,8 @@ const submitDelete = async () => {
 
 .forum-section-card header > span {
   border-radius: 999px;
-  background: #fafbfe;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-light);
   padding: 5px 9px;
   color: var(--text-secondary);
   font-size: 12px;
@@ -841,7 +842,7 @@ const submitDelete = async () => {
   align-items: center;
   gap: 10px;
   margin-top: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   padding: 10px;
@@ -850,7 +851,7 @@ const submitDelete = async () => {
 
 .forum-section-card__forum:hover {
   border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .forum-section-card__forum em {
@@ -1037,21 +1038,21 @@ const submitDelete = async () => {
 /* Global CSS block to style the webkit scrollbar for Forum Tabs */
 .forum-tabs::-webkit-scrollbar {
   height: 6px !important;
-  background-color: #e2e8f0 !important;
+  background-color: var(--bg-muted) !important;
   display: block !important;
 }
 
 .forum-tabs::-webkit-scrollbar-track {
-  background-color: #e2e8f0 !important;
+  background-color: var(--bg-muted) !important;
   border-radius: 999px !important;
 }
 
 .forum-tabs::-webkit-scrollbar-thumb {
-  background-color: #475569 !important; /* Higher contrast slate-600 */
+  background-color: var(--text-tertiary) !important; /* Higher contrast slate-600 */
   border-radius: 999px !important;
 }
 
 .forum-tabs::-webkit-scrollbar-thumb:hover {
-  background-color: #1e293b !important;
+  background-color: var(--text-secondary) !important;
 }
 </style>

@@ -21,7 +21,6 @@
           :items="periodOptions"
           size="lg"
           class="group-analytics__period"
-          :ui="selectUi"
           @update:model-value="handlePeriodChange"
         />
       </div>
@@ -90,9 +89,7 @@ const emit = defineEmits<{
   "update:period": [period: AnalyticsPeriod]
 }>()
 
-const selectUi = {
-  base: "h-11 min-w-[160px] rounded-[8px] text-[13px]",
-}
+
 
 const periodOptions: Array<{ value: AnalyticsPeriod; label: string }> = [
   { value: "day", label: "Hôm nay" },
@@ -116,11 +113,16 @@ const memberTotalLabel = computed(() =>
   formatNumber(props.analytics?.followers ?? 0),
 )
 
+const resolveToken = (varName: string) => {
+  if (!import.meta.client) return ""
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim()
+}
+
 const chartOption = computed<EChartsOption>(() => {
   const points = props.analytics?.chart ?? []
 
   return {
-    color: ["#6abd46"],
+    color: [resolveToken('--color-success')],
     grid: {
       top: 26,
       right: 18,
@@ -129,10 +131,10 @@ const chartOption = computed<EChartsOption>(() => {
     },
     tooltip: {
       trigger: "axis",
-      backgroundColor: "rgba(15, 23, 42, 0.92)",
+      backgroundColor: resolveToken('--color-secondary-900'),
       borderWidth: 0,
       textStyle: {
-        color: "#ffffff",
+        color: resolveToken('--text-inverse'),
         fontSize: 12,
         fontWeight: 700,
       },
@@ -143,7 +145,7 @@ const chartOption = computed<EChartsOption>(() => {
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: "#94a3b8",
+        color: resolveToken('--text-tertiary'),
         fontSize: 10,
       },
     },
@@ -152,11 +154,11 @@ const chartOption = computed<EChartsOption>(() => {
       minInterval: 1,
       splitLine: {
         lineStyle: {
-          color: "#eef2f7",
+          color: resolveToken('--border-light'),
         },
       },
       axisLabel: {
-        color: "#94a3b8",
+        color: resolveToken('--text-tertiary'),
         fontSize: 10,
       },
     },
@@ -171,7 +173,7 @@ const chartOption = computed<EChartsOption>(() => {
         width: 3,
       },
       areaStyle: {
-        color: "rgba(106, 189, 70, 0.12)",
+        color: `color-mix(in srgb, ${resolveToken('--color-success')} 12%, transparent)`,
       },
     }],
   }
@@ -194,7 +196,7 @@ const chartOption = computed<EChartsOption>(() => {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #6abd46;
+  color: var(--color-success);
   font-size: 16px;
   font-weight: 900;
 }
@@ -210,7 +212,7 @@ const chartOption = computed<EChartsOption>(() => {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #dbf4d0;
+  background: color-mix(in srgb, var(--color-success) 18%, transparent);
 }
 
 .group-analytics__period {
@@ -219,7 +221,7 @@ const chartOption = computed<EChartsOption>(() => {
 
 .group-analytics__state {
   align-items: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   color: var(--text-secondary);
   display: flex;
@@ -231,9 +233,7 @@ const chartOption = computed<EChartsOption>(() => {
 }
 
 .group-analytics__state--error {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #dc2626;
+  border-color: color-mix(in srgb, var(--color-error) 20%, transparent); background: color-mix(in srgb, var(--color-error) 10%, transparent); color: var(--color-error);
 }
 
 .group-analytics__chart-wrap {
@@ -265,7 +265,7 @@ const chartOption = computed<EChartsOption>(() => {
 }
 
 .group-analytics__legend span {
-  background: #6abd46;
+  background: var(--color-success);
   border-radius: 999px;
   display: inline-flex;
   height: 8px;

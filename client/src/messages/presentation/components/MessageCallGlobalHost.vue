@@ -1,4 +1,4 @@
-<!-- Description: Hosts global one-to-one message call notifications and the active LiveKit surface. -->
+<!-- English description: Hosts global one-to-one message call notifications and the active LiveKit surface. -->
 <template>
   <UModal
     v-model:open="ringingModalOpen"
@@ -385,8 +385,8 @@ onBeforeUnmount(() => {
   padding: 18px 10px 8px;
   text-align: center;
   background:
-    radial-gradient(circle at 50% 0%, rgba(168, 72, 73, 0.12), transparent 42%),
-    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--bg-brand) 12%, transparent), transparent 42%),
+    linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-muted) 100%);
 }
 
 .message-call-modal__halo {
@@ -397,8 +397,8 @@ onBeforeUnmount(() => {
   place-items: center;
   border-radius: 999px;
   background:
-    radial-gradient(circle, rgba(168, 72, 73, 0.16) 0 52%, transparent 53%),
-    conic-gradient(from 180deg, rgba(168, 72, 73, 0.04), rgba(168, 72, 73, 0.34), rgba(168, 72, 73, 0.04));
+    radial-gradient(circle, color-mix(in srgb, var(--bg-brand) 16%, transparent) 0 52%, transparent 53%),
+    conic-gradient(from 180deg, color-mix(in srgb, var(--bg-brand) 4%, transparent), color-mix(in srgb, var(--bg-brand) 34%, transparent), color-mix(in srgb, var(--bg-brand) 4%, transparent));
 }
 
 .message-call-modal__halo--incoming {
@@ -408,8 +408,8 @@ onBeforeUnmount(() => {
 .message-call-modal__avatar {
   width: 86px !important;
   height: 86px !important;
-  border: 4px solid #ffffff;
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+  border: 4px solid var(--bg-surface);
+  box-shadow: var(--shadow-xl);
 }
 
 .message-call-modal__type {
@@ -420,11 +420,11 @@ onBeforeUnmount(() => {
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 3px solid #ffffff;
+  border: 3px solid var(--bg-surface);
   border-radius: 999px;
-  background: var(--bg-brand, #a84849);
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(168, 72, 73, 0.28);
+  background: var(--bg-brand);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-brand);
 }
 
 .message-call-modal__type :deep(.iconify) {
@@ -453,7 +453,7 @@ onBeforeUnmount(() => {
 }
 
 .message-call-modal__eyebrow {
-  color: var(--bg-brand, #a84849);
+  color: var(--text-brand);
   font-size: 12px;
   font-weight: 850;
   letter-spacing: 0.08em;
@@ -482,7 +482,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   border-radius: 999px;
   font-size: 24px;
-  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .message-call-modal__button :deep(.iconify) {
@@ -501,11 +501,11 @@ onBeforeUnmount(() => {
 @keyframes call-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(168, 72, 73, 0.2);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--bg-brand) 20%, transparent);
   }
 
   50% {
-    box-shadow: 0 0 0 16px rgba(168, 72, 73, 0);
+    box-shadow: 0 0 0 16px transparent;
   }
 }
 </style>

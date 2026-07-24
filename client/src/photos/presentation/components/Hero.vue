@@ -1,33 +1,33 @@
-<!-- Description: Renders the optional photos hero with normalized API-backed photo records. -->
+<!-- English description: Renders the optional photos hero with normalized API-backed photo records. -->
 <template>
-  <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
+  <section class="overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]">
     <!-- Gradient background -->
     <div class="relative">
-      <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f172a_0%,var(--color-primary-900)_45%,var(--bg-brand)_100%)]" />
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_50%)]" />
+      <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,var(--bg-media)_0%,var(--color-primary-900)_45%,var(--bg-brand)_100%)]" />
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,color-mix(in_srgb,var(--text-media)_8%,transparent),transparent_50%)]" />
 
       <div class="relative grid gap-5 p-5 sm:p-7 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-center">
         <!-- Left: Info -->
-        <div class="min-w-0 text-white">
-          <p class="text-[10px] font-black uppercase tracking-[0.22em] text-white/60">
+        <div class="min-w-0 text-[var(--text-media)]">
+          <p class="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--text-media-muted)]">
             {{ eyebrow }}
           </p>
           <h1 class="mt-2 text-[1.8rem] font-black leading-tight tracking-[-0.03em] sm:text-[2.4rem]">
             {{ title }}
           </h1>
-          <p class="mt-3 max-w-[600px] text-[13.5px] leading-6 text-white/70">
+          <p class="mt-3 max-w-[600px] text-[13.5px] leading-6 text-[var(--text-media-muted)]">
             {{ description }}
           </p>
 
           <!-- Meta chips -->
           <div class="mt-4 flex flex-wrap gap-2">
-            <span class="rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur">
+            <span class="rounded-full bg-[color-mix(in_srgb,var(--text-media)_15%,transparent)] px-3 py-1.5 text-[11px] font-bold text-[var(--text-media)] backdrop-blur">
               {{ photo.albumTitle }}
             </span>
-            <span class="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-bold text-white/80 backdrop-blur">
+            <span class="rounded-full bg-[color-mix(in_srgb,var(--text-media)_10%,transparent)] px-3 py-1.5 text-[11px] font-bold text-[var(--text-media-muted)] backdrop-blur">
               <Icon name="i-ph-map-pin-bold" class="mr-1 inline h-3 w-3" />{{ photo.location }}
             </span>
-            <span class="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-bold text-white/80 backdrop-blur">
+            <span class="rounded-full bg-[color-mix(in_srgb,var(--text-media)_10%,transparent)] px-3 py-1.5 text-[11px] font-bold text-[var(--text-media-muted)] backdrop-blur">
               {{ photo.timeLabel }}
             </span>
           </div>
@@ -37,7 +37,7 @@
             <span
               v-for="tag in photo.tags"
               :key="tag"
-              class="rounded-full border border-white/15 px-3 py-1 text-[11px] font-semibold text-white/60"
+              class="rounded-full border border-[var(--border-media)] px-3 py-1 text-[11px] font-semibold text-[var(--text-media-muted)]"
             >
               {{ tag }}
             </span>
@@ -46,7 +46,7 @@
           <!-- Actions -->
           <div class="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
             <button
-              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-6 text-[13px] font-black text-[#0f172a] shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 sm:w-auto"
+              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--bg-surface)] px-6 text-[13px] font-black text-[var(--text-primary)] shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 sm:w-auto"
               type="button"
               @click="$emit('open')"
             >
@@ -56,7 +56,7 @@
 
             <NuxtLink
               :to="photo.companionTo"
-              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 text-[13px] font-black text-white backdrop-blur transition hover:bg-white/20 sm:w-auto"
+              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--text-media)_10%,transparent)] px-6 text-[13px] font-black text-[var(--text-media)] backdrop-blur transition hover:bg-[color-mix(in_srgb,var(--text-media)_20%,transparent)] sm:w-auto"
             >
               <Icon name="i-ph-arrow-up-right-bold" class="h-4 w-4" />
               {{ secondaryLabel }}
@@ -66,7 +66,7 @@
 
         <!-- Right: Featured photo -->
         <button
-          class="group relative block overflow-hidden rounded-[22px] bg-slate-200 text-left shadow-[0_20px_40px_rgba(0,0,0,0.28)]"
+          class="group relative block overflow-hidden rounded-[22px] bg-[var(--bg-muted)] text-left shadow-[var(--shadow-lg)]"
           type="button"
           @click="$emit('open')"
         >
@@ -76,11 +76,11 @@
             class="h-[240px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[290px]"
             loading="lazy"
           >
-          <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(8,16,40,0.84)_0%,rgba(8,16,40,0.1)_60%,transparent_100%)]" />
-          <div class="absolute inset-x-0 bottom-0 p-4 text-white">
-            <p class="text-[10px] font-black uppercase tracking-[0.16em] text-white/60">{{ photo.photographerRole }}</p>
+          <div class="absolute inset-0 bg-[linear-gradient(to_top,color-mix(in_srgb,var(--bg-media)_84%,transparent)_0%,color-mix(in_srgb,var(--bg-media)_10%,transparent)_60%,transparent_100%)]" />
+          <div class="absolute inset-x-0 bottom-0 p-4 text-[var(--text-media)]">
+            <p class="text-[10px] font-black uppercase tracking-[0.16em] text-[var(--text-media-muted)]">{{ photo.photographerRole }}</p>
             <h2 class="mt-1.5 text-[1.15rem] font-black leading-tight">{{ photo.title }}</h2>
-            <p class="mt-1 text-[12px] font-semibold text-white/70">
+            <p class="mt-1 text-[12px] font-semibold text-[var(--text-media-muted)]">
               {{ photo.photographer }} · {{ photo.location }}
             </p>
           </div>
@@ -93,12 +93,12 @@
       <article
         v-for="item in stats"
         :key="item.label"
-        class="rounded-[18px] border border-[var(--border-light)] bg-white px-4 py-3.5"
+        class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface)] px-4 py-3.5"
       >
         <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--color-primary-500)]/60">
           {{ item.label }}
         </p>
-        <p class="mt-2 text-[1.4rem] font-black tracking-[-0.03em] text-[#0f172a]">
+        <p class="mt-2 text-[1.4rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
           {{ item.value }}
         </p>
         <p class="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">

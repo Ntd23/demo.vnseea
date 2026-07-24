@@ -1,7 +1,7 @@
 <!-- English description: Renders the directory page heading and summary controls. -->
 <template>
-  <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-lg)]" :ui="{ body: 'p-5 sm:p-7' }">
-    <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+  <UCard class="rounded-[30px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-lg)]">
+    <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between p-5 sm:p-7">
       <div class="max-w-[760px]">
         <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em]">
           {{ t("pages.directoryPage.heroEyebrow") }}
@@ -40,12 +40,13 @@
           v-for="item in stats"
           :key="item.label"
           class="rounded-[22px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)]"
-          :ui="{ body: 'p-4' }"
         >
+          <div class="p-4">
           <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-tertiary)]">{{ item.label }}</p>
           <p class="mt-2 text-[1.55rem] font-black leading-none text-[var(--text-primary)]">{{ item.value }}</p>
           <p class="mt-1 text-[12px] font-semibold text-[var(--text-secondary)]">{{ item.description }}</p>
-        </UCard>
+        </div>
+      </UCard>
       </div>
     </div>
   </UCard>

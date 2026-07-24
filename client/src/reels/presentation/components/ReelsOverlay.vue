@@ -6,7 +6,11 @@
       <div class="reel-overlay__left">
         <div class="reel-author">
           <div class="reel-author__avatar">
-            <img :src="reel.avatar" :alt="reel.author" class="reel-author__avatar-img">
+            <img
+              :src="reel.avatar"
+              :alt="reel.author"
+              class="reel-author__avatar-img"
+            />
           </div>
 
           <div class="reel-author__info">
@@ -29,7 +33,9 @@
         </div>
 
         <div class="reel-tags">
-          <span v-for="tag in reel.tags" :key="tag" class="reel-tag">{{ tag }}</span>
+          <span v-for="tag in reel.tags" :key="tag" class="reel-tag">{{
+            tag
+          }}</span>
         </div>
       </div>
 
@@ -55,37 +61,56 @@
 <script setup lang="ts">
 const props = defineProps<{
   reel: {
-    id: number
-    title: string
-    author: string
-    subtitle: string
-    description: string
-    likes: number
-    comments: number
-    shares: number
-    views: number
-    avatar: string
-    music: string
-    tags: string[]
-    authorPath: string
-  }
-}>()
+    id: number;
+    title: string;
+    author: string;
+    subtitle: string;
+    description: string;
+    likes: number;
+    comments: number;
+    shares: number;
+    views: number;
+    avatar: string;
+    music: string;
+    tags: string[];
+    authorPath: string;
+  };
+}>();
 
-const { t, locale } = useI18n()
+const { t, locale } = useI18n();
 
-const compactFormatter = computed(() => new Intl.NumberFormat(locale.value === 'vi' ? 'vi-VN' : 'en-US', {
-  notation: 'compact',
-  maximumFractionDigits: 1,
-}))
+const compactFormatter = computed(
+  () =>
+    new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }),
+);
 
-const formatCompact = (value: number) => compactFormatter.value.format(value)
+const formatCompact = (value: number) => compactFormatter.value.format(value);
 
 const actionItems = computed(() => [
-  { label: t('pages.reelsPage.like'), value: formatCompact(props.reel.likes), icon: 'i-ph-heart-fill' },
-  { label: t('pages.reelsPage.comment'), value: formatCompact(props.reel.comments), icon: 'i-ph-chat-circle-text-fill' },
-  { label: t('pages.reelsPage.share'), value: formatCompact(props.reel.shares), icon: 'i-ph-share-network-fill' },
-  { label: t('pages.reelsPage.save'), value: t('pages.reelsPage.save'), icon: 'i-ph-bookmark-simple-fill' },
-])
+  {
+    label: t("pages.reelsPage.like"),
+    value: formatCompact(props.reel.likes),
+    icon: "i-ph-heart-fill",
+  },
+  {
+    label: t("pages.reelsPage.comment"),
+    value: formatCompact(props.reel.comments),
+    icon: "i-ph-chat-circle-text-fill",
+  },
+  {
+    label: t("pages.reelsPage.share"),
+    value: formatCompact(props.reel.shares),
+    icon: "i-ph-share-network-fill",
+  },
+  {
+    label: t("pages.reelsPage.save"),
+    value: t("pages.reelsPage.save"),
+    icon: "i-ph-bookmark-simple-fill",
+  },
+]);
 </script>
 
 <style scoped>
@@ -156,7 +181,7 @@ const actionItems = computed(() => [
 .reel-author__name {
   font-size: 14px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-media);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -165,27 +190,27 @@ const actionItems = computed(() => [
 .reel-author__follow {
   flex-shrink: 0;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.14);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--text-media) 14%, transparent);
   padding: 4px 12px;
   font-size: 11px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-media);
   cursor: pointer;
   backdrop-filter: blur(8px);
   transition: all 0.15s ease;
 }
 
 .reel-author__follow:hover {
-  background: var(--bg-surface);
-  color: var(--text-primary);
+  background: var(--text-media);
+  color: var(--bg-media);
 }
 
 .reel-author__subtitle {
   margin-top: 2px;
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255,255,255,0.62);
+  color: var(--text-media-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -197,8 +222,8 @@ const actionItems = computed(() => [
   font-size: 1.18rem;
   font-weight: 800;
   line-height: 1.08;
-  color: #ffffff;
-  text-shadow: 0 2px 16px rgba(0,0,0,0.55);
+  color: var(--text-media);
+  text-shadow: 0 2px 16px color-mix(in srgb, var(--bg-media) 55%, transparent);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -207,7 +232,10 @@ const actionItems = computed(() => [
 }
 
 @media (min-width: 640px) {
-  .reel-title { font-size: 1.65rem; margin-top: 16px; }
+  .reel-title {
+    font-size: 1.65rem;
+    margin-top: 16px;
+  }
 }
 
 .reel-desc {
@@ -215,8 +243,8 @@ const actionItems = computed(() => [
   font-size: 12px;
   font-weight: 500;
   line-height: 1.45;
-  color: rgba(255,255,255,0.78);
-  text-shadow: 0 2px 14px rgba(0,0,0,0.55);
+  color: var(--text-media-muted);
+  text-shadow: 0 2px 14px color-mix(in srgb, var(--bg-media) 55%, transparent);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -225,7 +253,11 @@ const actionItems = computed(() => [
 }
 
 @media (min-width: 640px) {
-  .reel-desc { font-size: 13px; line-height: 1.55; margin-top: 8px; }
+  .reel-desc {
+    font-size: 13px;
+    line-height: 1.55;
+    margin-top: 8px;
+  }
 }
 
 /* Music row */
@@ -236,8 +268,8 @@ const actionItems = computed(() => [
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(0,0,0,0.28);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--bg-media) 28%, transparent);
   padding: 6px 12px;
   backdrop-filter: blur(8px);
 }
@@ -246,13 +278,13 @@ const actionItems = computed(() => [
   width: 14px;
   height: 14px;
   flex-shrink: 0;
-  color: #4d88ff;
+  color: var(--bg-brand);
 }
 
 .reel-music__text {
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255,255,255,0.75);
+  color: var(--text-media-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -268,11 +300,11 @@ const actionItems = computed(() => [
 
 .reel-tag {
   border-radius: 999px;
-  background: rgba(255,255,255,0.12);
+  background: color-mix(in srgb, var(--text-media) 12%, transparent);
   padding: 4px 12px;
   font-size: 11px;
   font-weight: 700;
-  color: rgba(255,255,255,0.86);
+  color: var(--text-media);
   backdrop-filter: blur(8px);
 }
 
@@ -287,7 +319,9 @@ const actionItems = computed(() => [
 }
 
 @media (min-width: 640px) {
-  .reel-overlay__actions { gap: 12px; }
+  .reel-overlay__actions {
+    gap: 12px;
+  }
 }
 
 .reel-action {
@@ -302,7 +336,10 @@ const actionItems = computed(() => [
 }
 
 @media (min-width: 640px) {
-  .reel-action { width: 64px; gap: 6px; }
+  .reel-action {
+    width: 64px;
+    gap: 6px;
+  }
 }
 
 .reel-action__circle {
@@ -312,22 +349,25 @@ const actionItems = computed(() => [
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(0,0,0,0.36);
-  color: #ffffff;
-  box-shadow: 0 8px 26px rgba(0,0,0,0.25);
+  border: 1px solid var(--border-media);
+  background: color-mix(in srgb, var(--bg-media) 36%, transparent);
+  color: var(--text-media);
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--bg-media) 25%, transparent);
   backdrop-filter: blur(8px);
   transition: all 0.2s ease;
 }
 
 @media (min-width: 640px) {
-  .reel-action__circle { height: 48px; width: 48px; }
+  .reel-action__circle {
+    height: 48px;
+    width: 48px;
+  }
 }
 
 .reel-action:hover .reel-action__circle {
   transform: translateY(-2px);
-  background: var(--bg-surface);
-  color: var(--text-primary);
+  background: var(--text-media);
+  color: var(--bg-media);
 }
 
 .reel-action__icon {
@@ -336,7 +376,10 @@ const actionItems = computed(() => [
 }
 
 @media (min-width: 640px) {
-  .reel-action__icon { width: 22px; height: 22px; }
+  .reel-action__icon {
+    width: 22px;
+    height: 22px;
+  }
 }
 
 .reel-action__value {
@@ -347,11 +390,14 @@ const actionItems = computed(() => [
   text-align: center;
   font-size: 10px;
   font-weight: 800;
-  color: #ffffff;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.65);
+  color: var(--text-media);
+  text-shadow: 0 2px 10px color-mix(in srgb, var(--bg-media) 65%, transparent);
 }
 
 @media (min-width: 640px) {
-  .reel-action__value { max-width: 64px; font-size: 11px; }
+  .reel-action__value {
+    max-width: 64px;
+    font-size: 11px;
+  }
 }
 </style>

@@ -5767,7 +5767,8 @@
   "navigation": {
     "theme": {
       "darkMode": "Dark Mode",
-      "darkModeDescription": "Switch to Slate Tech dark mode"
+      "darkModeDescription": "Switch to Slate Tech dark mode",
+      "themeMode": "Theme Mode"
     },
     "headerBar": {
       "home": "Home",

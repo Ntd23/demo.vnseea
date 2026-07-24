@@ -82,7 +82,7 @@ const search = defineModel<string>("search", { default: "" })
   gap: 12px;
   overflow-x: scroll;
   scrollbar-width: thin;
-  scrollbar-color: #64748b #f1f5f9;
+  scrollbar-color: var(--color-secondary-500) var(--bg-base);
   padding-bottom: 8px; /* Room for scrollbar */
 }
 
@@ -258,21 +258,21 @@ const search = defineModel<string>("search", { default: "" })
 /* Global CSS block to style the webkit scrollbar for Page Directory Tabs Bar */
 .page-tabs-bar__top::-webkit-scrollbar {
   height: 6px !important;
-  background-color: #e2e8f0 !important;
+  background-color: var(--color-secondary-200) !important;
   display: block !important;
 }
 
 .page-tabs-bar__top::-webkit-scrollbar-track {
-  background-color: #e2e8f0 !important;
+  background-color: var(--color-secondary-200) !important;
   border-radius: 999px !important;
 }
 
 .page-tabs-bar__top::-webkit-scrollbar-thumb {
-  background-color: #475569 !important; /* Higher contrast slate-600 */
+  background-color: var(--color-secondary-600) !important; /* Higher contrast slate-600 */
   border-radius: 999px !important;
 }
 
 .page-tabs-bar__top::-webkit-scrollbar-thumb:hover {
-  background-color: #1e293b !important;
+  background-color: var(--color-secondary-800) !important;
 }
 </style>

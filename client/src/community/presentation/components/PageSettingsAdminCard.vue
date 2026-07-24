@@ -88,7 +88,7 @@ function handleRemoveAdmin(id: number) {
   padding-left: 40px;
   padding-right: 16px;
   background: var(--bg-muted);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   font-size: 14px;
   transition: all 0.2s ease;
@@ -107,8 +107,8 @@ function handleRemoveAdmin(id: number) {
   justify-content: center;
   min-height: 44px;
   padding: 0 20px;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
   border-radius: 12px;
   font-size: 14px;
   font-weight: 700;
@@ -117,7 +117,7 @@ function handleRemoveAdmin(id: number) {
 }
 
 .admin-add-button:hover:not(:disabled) {
-  background: #1e293b;
+  background: var(--bg-brand-hover);
   transform: translateY(-1px);
 }
 
@@ -132,7 +132,7 @@ function handleRemoveAdmin(id: number) {
   justify-content: space-between;
   padding: 12px 16px;
   background: var(--bg-surface);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
 }
 
@@ -173,12 +173,12 @@ function handleRemoveAdmin(id: number) {
 }
 
 .admin-remove-btn:hover {
-  background: #fef2f2;
-  color: #dc2626;
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  color: var(--color-error);
 }
 
 .owner-badge {
-  color: #f59e0b;
+  color: var(--color-warning);
   padding: 8px;
 }
 </style>

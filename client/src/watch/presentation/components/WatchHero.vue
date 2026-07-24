@@ -1,3 +1,4 @@
+<!-- English description: Renders the watch overview hero with API-backed summary statistics. -->
 <template>
   <section class="watch-hero">
     <div class="watch-hero__inner">
@@ -27,9 +28,9 @@ defineProps<{
 <style scoped>
 .watch-hero {
   background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   padding: 24px;
 }
 
@@ -99,7 +100,7 @@ defineProps<{
 
 .watch-stat {
   background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   padding: 16px;
   display: flex;

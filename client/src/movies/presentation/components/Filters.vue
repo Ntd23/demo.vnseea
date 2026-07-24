@@ -1,11 +1,12 @@
+<!-- English description: Renders movie search and category filtering controls. -->
 <template>
-  <div class="flex flex-col gap-3 rounded-2xl border border-[var(--border-default)] bg-white p-2 shadow-sm sm:flex-row sm:items-center">
+  <div class="flex flex-col gap-3 rounded-2xl border border-[var(--border-light)] bg-[var(--bg-surface)] p-2 shadow-sm sm:flex-row sm:items-center">
     <!-- Search Input -->
     <div class="relative flex-1">
       <Icon name="i-ph-magnifying-glass-bold" class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-tertiary)]" />
       <input
         :value="search"
-        class="h-12 w-full rounded-xl bg-[var(--bg-surface-hover)] py-2 pr-4 text-[14px] font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:bg-white focus:ring-1 focus:ring-[var(--color-primary-500)]"
+        class="h-12 w-full rounded-xl bg-[var(--bg-surface-hover)] py-2 pr-4 text-[14px] font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:bg-[var(--bg-surface)] focus:ring-1 focus:ring-[var(--color-primary-500)]"
         style="padding-left: 56px !important;"
         :placeholder="placeholder"
         @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
@@ -16,7 +17,7 @@
       <!-- Category Dropdown -->
       <div ref="filterDropdownRef" class="relative flex items-center">
         <button
-          class="flex h-10 items-center gap-2 rounded-xl border border-[var(--border-default)] bg-white px-3 text-[14px] font-bold text-[var(--text-primary)] transition hover:bg-[var(--bg-surface-hover)]"
+          class="flex h-10 items-center gap-2 rounded-xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-3 text-[14px] font-bold text-[var(--text-primary)] transition hover:bg-[var(--bg-surface-hover)]"
           type="button"
           @click="isOpen = !isOpen"
         >
@@ -27,13 +28,13 @@
 
         <div
           v-if="isOpen"
-          class="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-[var(--border-default)] bg-white p-2 shadow-xl space-y-1"
+          class="absolute right-0 top-full z-50 mt-2 w-64 space-y-1 rounded-xl border border-[var(--border-light)] bg-[var(--bg-surface)] p-2 shadow-xl"
         >
           <button
             v-for="cat in categories"
             :key="cat.value"
             class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-[14px] font-bold transition hover:bg-[var(--bg-surface-hover)] whitespace-nowrap"
-            :class="selectedCategory === cat.value ? 'bg-[var(--color-primary-50)] text-[#0a58ca]' : 'text-[var(--text-secondary)]'"
+            :class="selectedCategory === cat.value ? 'bg-[var(--bg-surface-active)] text-[var(--text-brand)]' : 'text-[var(--text-secondary)]'"
             @click="selectCategory(cat.value)"
           >
             <Icon :name="cat.icon" class="h-5 w-5" />
@@ -43,7 +44,7 @@
       </div>
 
       <button
-        class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--border-default)] bg-white px-3 text-[14px] font-bold text-[var(--text-secondary)] transition hover:bg-[var(--bg-surface-hover)] hover:text-[var(--color-primary-600)] sm:min-w-[132px]"
+        class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-3 text-[14px] font-bold text-[var(--text-secondary)] transition hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-brand)] sm:min-w-[132px]"
         type="button"
         @click="resetFilters"
       >

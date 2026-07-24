@@ -102,15 +102,15 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 <style scoped>
 .page-card {
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .page-card:hover {
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
@@ -133,7 +133,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   position: absolute;
   inset: 0;
   content: "";
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.6) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-secondary-900) 0%, transparent) 0%, color-mix(in srgb, var(--color-secondary-900) 60%, transparent) 100%);
   z-index: 0;
 }
 
@@ -144,10 +144,10 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.3);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--color-secondary-900) 30%, transparent);
+  color: var(--text-inverse);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--bg-surface) 10%, transparent);
 }
 
 .page-card__category {
@@ -210,26 +210,26 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 .page-card__title {
   display: block;
   overflow: hidden;
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 18px;
   font-weight: 900;
   text-overflow: ellipsis;
   text-decoration: none;
   white-space: nowrap;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 4px color-mix(in srgb, var(--color-secondary-900) 20%, transparent);
 }
 
 .page-card__title:hover {
-  color: #ffffff;
+  color: var(--text-inverse);
   opacity: 0.9;
 }
 
 .page-card__slug {
   margin: 1px 0 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--bg-surface) 80%, transparent);
   font-size: 12px;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--color-secondary-900) 20%, transparent);
 }
 
 .page-card__summary {
@@ -286,11 +286,11 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__chip {
-  background: rgba(15, 23, 42, 0.3);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--color-secondary-900) 30%, transparent);
+  color: var(--text-inverse);
   padding: 6px 12px;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--bg-surface) 10%, transparent);
   border-radius: 999px;
 }
 
@@ -303,7 +303,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 .page-card__meta {
   display: grid;
   gap: 8px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
   padding-top: 12px;
 }
 
@@ -348,28 +348,28 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__action--secondary {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-surface);
   color: var(--text-primary);
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border-light);
   transition: all 0.2s ease;
 }
 
 .page-card__action--secondary:hover {
-  border-color: var(--color-primary-300);
-  background: var(--color-primary-50);
-  color: var(--bg-brand-hover);
+  border-color: var(--border-light);
+  background: var(--bg-surface-hover);
+  color: var(--bg-brand);
 }
 
 .page-card__action--primary {
-  background: var(--color-primary-500, var(--bg-brand));
-  color: #ffffff;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 30%, transparent);
   border: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
 .page-card__action--primary:hover {
-  background: var(--color-primary-600, var(--bg-brand));
+  background: var(--bg-brand-hover);
 }
 </style>

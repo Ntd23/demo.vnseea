@@ -1,3 +1,4 @@
+<!-- English description: Exposes the purchased orders view through Nuxt file-based routing. -->
 <template>
   <PagesOrdersPage active-section="purchased" />
 </template>

@@ -1,12 +1,6 @@
 <template>
   <section class="blogs-filters" aria-labelledby="blogs-filters-title">
     <div class="blogs-filters__header">
-      <div class="min-w-0">
-        <p class="blogs-filters__eyebrow">{{ $t("pages.blogsPage.filtersEyebrow") }}</p>
-        <h2 id="blogs-filters-title" class="blogs-filters__title">
-          {{ $t("pages.blogsPage.filtersTitle") }}
-        </h2>
-      </div>
       <div class="blogs-filters__actions">
         <button
           type="button"
@@ -27,7 +21,7 @@
 
     <div class="blogs-filters__search-wrap">
       <Icon name="i-ph-magnifying-glass"
-        class="pointer-events-none absolute left-8 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-[#94a3b8]" />
+        class="pointer-events-none absolute left-8 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-[var(--text-tertiary)]" />
       <input id="blogs-search-input" :value="search" type="search" autocomplete="off"
         :placeholder="$t('pages.blogsPage.searchPlaceholder')" class="blogs-search-input"
         @input="$emit('update:search', ($event.target as HTMLInputElement).value)" />
@@ -59,10 +53,10 @@
     </div>
 
     <div class="blogs-filters__summary" role="status" aria-live="polite">
-      <Icon name="i-ph-funnel-fill" class="h-3.5 w-3.5 shrink-0 text-[#94a3b8]" />
+      <Icon name="i-ph-funnel-fill" class="h-3.5 w-3.5 shrink-0 text-[var(--text-tertiary)]" />
       <p>
         {{ $t("pages.blogsPage.matchingArticles", { count: articleCount }) }}
-        <span class="mx-1 text-[#cbd5e1]">/</span>
+        <span class="mx-1 text-[var(--text-tertiary)]">/</span>
         {{ activeSummary }}
       </p>
     </div>
@@ -131,7 +125,7 @@ const sortIcon = (value: string) => {
 .blogs-filters__header {
   justify-content: space-between;
   gap: 14px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   padding: 16px;
 }
 
@@ -148,7 +142,7 @@ const sortIcon = (value: string) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   color: var(--text-primary);
@@ -208,15 +202,15 @@ const sortIcon = (value: string) => {
 
 .blogs-filters__search-wrap {
   position: relative;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   padding: 12px 14px;
 }
 
 .blogs-search-input {
   width: 100%;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-surface);
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
@@ -236,7 +230,7 @@ const sortIcon = (value: string) => {
 }
 
 .blogs-filters__group {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   padding: 13px 14px;
 }
 
@@ -281,7 +275,7 @@ const sortIcon = (value: string) => {
 .blogs-filters__chip--active,
 .blogs-filters__sort--active {
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
@@ -315,14 +309,14 @@ const sortIcon = (value: string) => {
 }
 
 .blogs-filters__mine--idle {
-  border-color: #e2e8f0;
+  border-color: var(--border-light);
   background: var(--bg-muted);
   color: var(--text-primary);
 }
 
 .blogs-filters__summary {
   gap: 8px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
   background: var(--bg-muted);
   padding: 10px 16px;
 }

@@ -157,7 +157,7 @@ const inviteButtonLabel = computed(() => {
 /* ── Hero ─────────────────────────────────────────────── */
 .profile-page__hero {
   background: var(--bg-surface);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 12px;
   border-radius: 16px;
   overflow: hidden;
@@ -175,7 +175,7 @@ const inviteButtonLabel = computed(() => {
   position: relative;
   height: 280px;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
+  background: linear-gradient(135deg, var(--color-secondary-900) 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 .profile-page__cover--viewable {
@@ -204,13 +204,13 @@ const inviteButtonLabel = computed(() => {
 .profile-page__cover-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
+  background: linear-gradient(135deg, var(--color-secondary-900) 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 .profile-page__cover-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.15) 0%, transparent 40%);
+  background: linear-gradient(to top, color-mix(in srgb, var(--color-secondary-900) 15%, transparent) 0%, transparent 40%);
 }
 
 /* Identity bar */
@@ -252,8 +252,8 @@ const inviteButtonLabel = computed(() => {
 .profile-page__avatar {
   width: 100%;
   height: 100%;
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  border: 4px solid var(--bg-surface);
+  box-shadow: var(--shadow-md);
   display: block;
   object-fit: cover;
 }
@@ -276,10 +276,10 @@ const inviteButtonLabel = computed(() => {
   display: inline-flex;
   max-width: 100%;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.58);
+  border: 1px solid color-mix(in srgb, var(--bg-surface) 58%, transparent);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
+  background: color-mix(in srgb, var(--bg-surface) 72%, transparent);
+  box-shadow: var(--shadow-md);
   backdrop-filter: blur(18px);
   padding: 6px 16px;
   font-size: clamp(1.5rem, 3vw, 2rem);

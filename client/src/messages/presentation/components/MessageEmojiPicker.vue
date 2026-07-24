@@ -1,16 +1,17 @@
+<!-- English description: Renders the compact emoji picker used by the message composer. -->
 <template>
   <UPopover :popper="{ placement: 'top-end' }">
     <UButton
       variant="soft"
       color="white"
-      class="h-10 w-10 flex items-center justify-center text-[var(--text-primary)] hover:text-secondary-900 transition-colors shadow-none p-0"
+      class="flex h-10 w-10 items-center justify-center p-0 text-[var(--text-primary)] shadow-none transition-colors hover:text-[var(--text-brand)]"
       square
     >
       <Icon name="i-ph-smiley-duotone" class="h-6 w-6" />
     </UButton>
 
     <template #panel>
-      <div class="p-4 grid grid-cols-6 gap-2 bg-white rounded-2xl shadow-2xl ring-1 ring-secondary-100 max-w-[280px]">
+      <div class="grid max-w-[280px] grid-cols-6 gap-2 rounded-2xl border border-[var(--border-light)] bg-[var(--bg-surface)] p-4 shadow-[var(--shadow-lg)]">
         <button
           v-for="emoji in popularEmojis"
           :key="emoji"

@@ -2,7 +2,6 @@
 <template>
   <UCard
     class="overflow-hidden rounded-[30px] border border-[var(--border-light)] bg-[linear-gradient(135deg,#0f172a_0%,#1447e6_58%,#0369a1_132%)] text-white shadow-[var(--shadow-xl)]"
-    :ui="{ body: 'relative p-5 sm:p-7 lg:p-8' }"
   >
     <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
     <div class="pointer-events-none absolute right-[-8%] top-[-22%] h-[280px] w-[280px] rounded-full bg-white/12 blur-3xl" />
@@ -61,7 +60,6 @@
           v-for="item in stats"
           :key="item.label"
           class="rounded-[24px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
-          :ui="{ body: 'p-4' }"
         >
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
             {{ item.label }}

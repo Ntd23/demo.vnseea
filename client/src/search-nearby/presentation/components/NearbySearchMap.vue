@@ -238,13 +238,22 @@ function clearRoute() {
   }
 }
 
+function getThemeToken(token: string, fallback: string) {
+  if (!import.meta.client) {
+    return fallback
+  }
+
+  return getComputedStyle(document.documentElement).getPropertyValue(token).trim() || fallback
+}
+
 function createPinIcon(color: string, selected = false): google.maps.Icon {
   const width = selected ? 42 : 38
   const height = selected ? 54 : 48
+  const mediaColor = getThemeToken("--text-media", "#ffffff")
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 38 48">
-      <path d="M19 46S3 28.5 3 17.5C3 8.4 10.2 1 19 1s16 7.4 16 16.5C35 28.5 19 46 19 46Z" fill="${color}" stroke="#fff" stroke-width="3"/>
-      <circle cx="19" cy="17" r="8" fill="#fff"/>
+      <path d="M19 46S3 28.5 3 17.5C3 8.4 10.2 1 19 1s16 7.4 16 16.5C35 28.5 19 46 19 46Z" fill="${color}" stroke="${mediaColor}" stroke-width="3"/>
+      <circle cx="19" cy="17" r="8" fill="${mediaColor}"/>
     </svg>
   `.trim()
 
@@ -258,8 +267,11 @@ function createPinIcon(color: string, selected = false): google.maps.Icon {
 
 function createItemMarkerIcon(item: NearbySearchItem): google.maps.Icon {
   const selected = item.id === props.selectedItemId
+  const brandColor = getThemeToken("--bg-brand", "#b91c1c")
+  const successColor = getThemeToken("--color-success", "#0ea5e9")
+  const errorColor = getThemeToken("--color-error", "#ef4444")
 
-  return createPinIcon(item.type === "page" ? "#16a34a" : item.type === "place" ? "var(--bg-brand)" : "#ef4444", selected)
+  return createPinIcon(item.type === "page" ? successColor : item.type === "place" ? brandColor : errorColor, selected)
 }
 
 function createPlaceOverlayMarker(
@@ -271,7 +283,7 @@ function createPlaceOverlayMarker(
   const iconUrl = item.mapIconUrl || item.avatarUrl
   const safeColor = /^#[\da-f]{6}$/i.test(item.mapIconBackgroundColor || "")
     ? item.mapIconBackgroundColor as string
-    : "#ff9e67"
+    : getThemeToken("--color-accent-500", "#f59e0b")
   const size = selected ? 40 : 34
   const innerSize = selected ? 30 : 25
   const glyphSize = selected ? 22 : 18
@@ -289,12 +301,12 @@ function createPlaceOverlayMarker(
     button.setAttribute("aria-label", item.title)
     Object.assign(button.style, {
       alignItems: "center",
-      background: "#ffffff",
-      border: "1px solid #d5dbe3",
+      background: "var(--bg-surface)",
+      border: "1px solid var(--border-light)",
       borderRadius: "999px",
       boxShadow: selected
-        ? "0 4px 10px rgba(15, 23, 42, 0.26)"
-        : "0 2px 6px rgba(15, 23, 42, 0.2)",
+        ? "var(--shadow-lg)"
+        : "var(--shadow-md)",
       cursor: "pointer",
       display: "flex",
       height: `${size}px`,
@@ -314,7 +326,7 @@ function createPlaceOverlayMarker(
       width: `${innerSize}px`,
     })
     Object.assign(glyph.style, {
-      background: "#ffffff",
+      background: "var(--text-inverse)",
       display: "block",
       height: `${glyphSize}px`,
       mask: `url("${iconUrl}") center / contain no-repeat`,
@@ -380,11 +392,11 @@ function createAvatarOverlayMarker(
     Object.assign(button.style, {
       alignItems: "center",
       background: "var(--bg-brand)",
-      border: "4px solid #ffffff",
+      border: "4px solid var(--text-media)",
       borderRadius: "999px",
       boxShadow: selected
-        ? "0 8px 22px rgba(15, 23, 42, 0.38)"
-        : "0 5px 14px rgba(15, 23, 42, 0.3)",
+        ? "var(--shadow-xl)"
+        : "var(--shadow-lg)",
       cursor: "pointer",
       display: "flex",
       height: `${size}px`,
@@ -397,11 +409,12 @@ function createAvatarOverlayMarker(
     })
     fallback.innerHTML = `
       <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <path fill="#fff" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/>
+        <path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/>
       </svg>
     `.trim()
     Object.assign(fallback.style, {
       alignItems: "center",
+      color: "var(--text-inverse)",
       display: "flex",
       inset: "0",
       justifyContent: "center",
@@ -458,11 +471,11 @@ function createOriginIcon(selected = false, heading: number | null = null): goog
   return {
     path: "M 0 -18 L 11 15 L 0 9 L -11 15 Z",
     anchor: new window.google.maps.Point(0, 0),
-    fillColor: "var(--bg-brand)",
+    fillColor: getThemeToken("--bg-brand", "#b91c1c"),
     fillOpacity: 1,
     rotation: heading ?? 0,
     scale: selected ? 1.16 : 1,
-    strokeColor: "#ffffff",
+    strokeColor: getThemeToken("--text-media", "#ffffff"),
     strokeOpacity: 1,
     strokeWeight: selected ? 3.2 : 2.8,
   }
@@ -1161,28 +1174,30 @@ function syncOriginRadiusCircle(force = false) {
   }
 
   if (originRadiusCircle.value) {
+    const brandColor = getThemeToken("--bg-brand", "#b91c1c")
     originRadiusCircle.value.setOptions({
       map,
       center,
       radius: radiusMeters,
       clickable: false,
-      fillColor: "var(--bg-brand)",
+      fillColor: brandColor,
       fillOpacity: 0.08,
-      strokeColor: "var(--bg-brand)",
+      strokeColor: brandColor,
       strokeOpacity: 0.45,
       strokeWeight: 2,
       zIndex: 1,
     })
   }
   else {
+    const brandColor = getThemeToken("--bg-brand", "#b91c1c")
     originRadiusCircle.value = new window.google.maps.Circle({
       map,
       center,
       radius: radiusMeters,
       clickable: false,
-      fillColor: "var(--bg-brand)",
+      fillColor: brandColor,
       fillOpacity: 0.08,
-      strokeColor: "var(--bg-brand)",
+      strokeColor: brandColor,
       strokeOpacity: 0.45,
       strokeWeight: 2,
       zIndex: 1,
@@ -1357,7 +1372,7 @@ function renderMarkers() {
       label: pinnedPage
         ? {
             text: item.title.slice(0, 22),
-            color: "#0f172a",
+            color: getThemeToken("--text-primary", "#0f172a"),
             fontSize: "12px",
             fontWeight: "800",
             className: "nearby-map__pin-label",
@@ -1640,7 +1655,7 @@ function renderRoute() {
       suppressMarkers: true,
       preserveViewport: true,
       polylineOptions: {
-        strokeColor: isMobileViewport() ? "#3b00ff" : "var(--bg-brand)",
+        strokeColor: getThemeToken("--bg-brand", "#b91c1c"),
         strokeOpacity: 1,
         strokeWeight: isMobileViewport() ? 9 : 5,
       },
@@ -1884,7 +1899,7 @@ onBeforeUnmount(() => {
 }
 
 .nearby-map__canvas {
-  background: var(--color-secondary-200);
+  background: var(--bg-muted);
   overscroll-behavior: contain;
   touch-action: none;
   user-select: none;
@@ -1899,7 +1914,7 @@ onBeforeUnmount(() => {
   transform: translateX(-50%);
   align-items: center;
   gap: 8px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--bg-surface) 96%, transparent);
   box-shadow: var(--shadow-lg);
@@ -1917,10 +1932,11 @@ onBeforeUnmount(() => {
 
 :global(.nearby-map__pin-label) {
   position: relative;
-  border: 1px solid rgba(203, 213, 225, 0.9);
+  border: 1px solid var(--border-light);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+  background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
   padding: 6px 10px;
   transform: translateX(2px);
   white-space: nowrap;
@@ -1932,9 +1948,9 @@ onBeforeUnmount(() => {
   left: -6px;
   width: 10px;
   height: 10px;
-  border-bottom: 1px solid rgba(203, 213, 225, 0.9);
-  border-left: 1px solid rgba(203, 213, 225, 0.9);
-  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid var(--border-light);
+  border-left: 1px solid var(--border-light);
+  background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
   content: "";
   transform: translateY(-50%) rotate(45deg);
 }

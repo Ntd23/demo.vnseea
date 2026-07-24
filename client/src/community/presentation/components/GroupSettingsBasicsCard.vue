@@ -18,7 +18,6 @@
             placeholder="Nhập tên nhóm"
             size="xl"
             class="w-full"
-            :ui="inputUi"
           />
         </UFormField>
 
@@ -28,7 +27,6 @@
             :items="categoryItems"
             size="xl"
             class="w-full"
-            :ui="selectUi"
           />
         </UFormField>
       </div>
@@ -41,7 +39,6 @@
             placeholder="duong-dan-nhom"
             size="xl"
             class="w-full"
-            :ui="slugInputUi"
           />
         </div>
 
@@ -79,17 +76,11 @@ import type { CommunityGroupSettingsDraft } from "../../domain/types/community.t
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
 const { t } = useI18n()
 
-const inputUi = {
-  base: "h-14 rounded-[10px] px-4 text-[15px]",
-}
 
-const slugInputUi = {
-  base: "h-14 rounded-[10px] pl-[9.25rem] pr-4 text-[15px]",
-}
 
-const selectUi = {
-  base: "h-14 rounded-[10px] px-4 text-[15px]",
-}
+
+
+
 
 const urlPrefix = "https://vnseea.vn/"
 
@@ -130,7 +121,7 @@ const suggestedSlug = computed(() =>
   min-width: 132px;
   align-items: center;
   justify-content: center;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--border-light);
   border-radius: 10px 0 0 10px;
   background: var(--bg-muted);
   color: var(--text-secondary);
@@ -157,7 +148,7 @@ const suggestedSlug = computed(() =>
   min-height: 130px;
   width: 100%;
   resize: vertical;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-primary);

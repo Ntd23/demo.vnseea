@@ -109,10 +109,10 @@ function closeModal() {
 .invite-card {
   background: var(--bg-surface);
   border-radius: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 20px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-md);
   margin-bottom: 16px;
   overflow: hidden;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
 }
 
 /* Header */
@@ -121,7 +121,7 @@ function closeModal() {
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .invite-card__back-btn {
@@ -181,8 +181,8 @@ function closeModal() {
   height: 44px;
   padding: 0 16px 0 44px;
   border-radius: 12px;
-  border: 1.5px solid #e2e8f0;
-  background: #fafafa;
+  border: 1.5px solid var(--border-light);
+  background: var(--bg-surface);
   font-size: 14px;
   color: var(--text-primary);
   outline: none;
@@ -256,7 +256,7 @@ function closeModal() {
 }
 
 .invite-list::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: var(--color-secondary-200);
   border-radius: 99px;
 }
 
@@ -272,7 +272,7 @@ function closeModal() {
 
 .invite-item:hover {
   background: var(--bg-muted);
-  border-color: #f1f5f9;
+  border-color: var(--border-light);
 }
 
 .invite-item__info {
@@ -292,8 +292,8 @@ function closeModal() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 2px solid #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 2px solid var(--bg-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .invite-item__avatar img {
@@ -348,7 +348,7 @@ function closeModal() {
   border-radius: 999px;
   border: none;
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;

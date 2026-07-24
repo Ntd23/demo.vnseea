@@ -114,7 +114,7 @@ const groupSettingsTo = computed(() => getCommunityGroupSettingsPath(props.group
 .group-card__avatar-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.36));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-secondary-900) 12%, transparent), color-mix(in srgb, var(--color-secondary-900) 36%, transparent));
 }
 
 .group-card__avatar-icon {
@@ -122,7 +122,7 @@ const groupSettingsTo = computed(() => getCommunityGroupSettingsPath(props.group
   z-index: 1;
   width: 28px;
   height: 28px;
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .group-card__content {

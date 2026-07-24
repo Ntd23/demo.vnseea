@@ -55,7 +55,7 @@ function goBack() {
 .checkout-shell {
   min-height: calc(100dvh - 64px);
   padding: 20px 16px 48px;
-  background: #f1f4fb;
+  background: var(--bg-base);
 }
 
 .checkout-shell__inner {
@@ -65,7 +65,7 @@ function goBack() {
 
 .checkout-shell__back {
   margin-bottom: 14px;
-  color: var(--color-secondary-700);
+  color: var(--text-secondary);
   font-weight: 700;
 }
 

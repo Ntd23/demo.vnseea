@@ -1,12 +1,12 @@
 <!-- English description: Renders the seller order fulfillment checklist. -->
 <template>
-  <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-secondary-50 pb-6">
+  <section class="surface-card group space-y-8 border border-[var(--border-light)] p-6 shadow-[var(--shadow-xl)] transition-all duration-500 sm:p-8">
+    <div class="flex flex-col gap-4 border-b border-[var(--border-light)] pb-6 sm:flex-row sm:items-start sm:justify-between">
       <div class="space-y-1">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
+        <p class="pl-1 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">
           {{ $t("orders.detail.operating") }}
         </p>
-        <h3 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
+        <h3 class="text-2xl font-black leading-tight tracking-tight text-[var(--text-primary)]">
           {{ $t("orders.detail.checklist") }}
         </h3>
       </div>
@@ -72,30 +72,30 @@
         v-for="task in order.tasks"
         :key="task.key"
         class="surface-card p-5 ring-1 transition-all duration-300 group/task"
-        :class="task.done ? 'bg-primary-50/20 ring-primary-50' : 'bg-white ring-secondary-100'"
+        :class="task.done ? 'border-[var(--border-strong)] bg-[var(--bg-surface-active)]' : 'border-[var(--border-light)] bg-[var(--bg-surface)]'"
       >
         <div class="flex items-start gap-4">
           <div
             class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-500"
-            :class="task.done ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30 ring-1 ring-primary-500' : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100 group-hover/task:bg-secondary-100'"
+            :class="task.done ? 'bg-[var(--bg-brand)] text-[var(--text-inverse)] shadow-[var(--shadow-brand)] ring-1 ring-[var(--border-strong)]' : 'bg-[var(--bg-muted)] text-[var(--text-tertiary)] ring-1 ring-[var(--border-light)] group-hover/task:bg-[var(--bg-surface-hover)]'"
           >
             <Icon :name="task.done ? 'i-ph-check-bold' : 'i-ph-hourglass-duotone'" class="h-5 w-5" />
           </div>
 
           <div class="min-w-0 flex-1 space-y-2">
             <div class="flex flex-wrap items-center gap-3">
-              <p class="text-sm font-black text-secondary-900 group-hover/task:text-secondary-900 transition-colors">
+              <p class="text-sm font-black text-[var(--text-primary)] transition-colors group-hover/task:text-[var(--text-primary)]">
                 {{ $t(task.label) }}
               </p>
               <UBadge
                 variant="soft"
                 class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2.5 py-1 ring-1 ring-inset"
-                :class="task.done ? 'bg-primary-50 text-primary-600 ring-primary-100' : 'bg-[var(--bg-muted)] text-[var(--text-secondary)] ring-[var(--border-light)]'"
+                :class="task.done ? 'bg-[var(--bg-surface-active)] text-[var(--text-brand)] ring-[var(--border-strong)]' : 'bg-[var(--bg-muted)] text-[var(--text-secondary)] ring-[var(--border-light)]'"
               >
                 {{ $t(task.done ? 'orders.detail.taskStatus.done' : 'orders.detail.taskStatus.pending') }}
               </UBadge>
             </div>
-            <p class="text-xs font-medium leading-relaxed text-secondary-500">
+            <p class="text-xs font-medium leading-relaxed text-[var(--text-secondary)]">
               {{ $t(task.description) }}
             </p>
           </div>
@@ -117,10 +117,10 @@ const { statusMeta } = useOrderPresentation(computed(() => props.order))
 
 const shippingStageClass = computed(() => {
   if (props.order.status === "shipping" || props.order.status === "delivered") {
-    return "ring-primary-100 bg-primary-50/50 text-secondary-900"
+    return "ring-[var(--border-strong)] bg-[var(--bg-surface-active)] text-[var(--text-primary)]"
   }
 
-  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-secondary-900"
+  return "ring-[var(--border-light)] bg-[var(--bg-surface)] text-[var(--text-tertiary)] hover:ring-[var(--border-strong)] hover:text-[var(--text-primary)]"
 })
 
 const completedStageClass = computed(() => {
@@ -128,6 +128,6 @@ const completedStageClass = computed(() => {
     return "ring-sky-100 bg-sky-50/50 text-sky-700"
   }
 
-  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-secondary-900"
+  return "ring-[var(--border-light)] bg-[var(--bg-surface)] text-[var(--text-tertiary)] hover:ring-[var(--border-strong)] hover:text-[var(--text-primary)]"
 })
 </script>

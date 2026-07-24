@@ -15,7 +15,6 @@
         loading-animation="carousel"
         :caption="t('pages.forumPage.myThreadsTitle')"
         :empty="t('pages.forumPage.myThreadsEmptyTitle')"
-        :ui="tableUi"
       >
         <template #title-cell="{ row }">
           <div class="forum-managed__topic">
@@ -128,15 +127,7 @@ const columns = computed<TableColumn<ForumThread>[]>(() => [
   },
 ])
 
-const tableUi = {
-  root: "forum-managed__table-root",
-  base: "w-full min-w-[720px]",
-  thead: "bg-[var(--bg-surface-hover)]",
-  th: "text-xs text-[var(--text-secondary)]",
-  td: "text-xs text-[var(--text-secondary)]",
-  empty: "p-0",
-  loading: "p-0",
-}
+
 </script>
 
 <style scoped>

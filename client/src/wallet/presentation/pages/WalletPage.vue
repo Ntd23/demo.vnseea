@@ -387,10 +387,10 @@ const toggleHistoryItem = (itemId: string) => {
 .wallet-points-header,
 .wallet-points-hero,
 .wallet-points-panel {
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .wallet-points-header {
@@ -460,7 +460,7 @@ const toggleHistoryItem = (itemId: string) => {
   height: 54px;
   border-radius: 15px;
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
@@ -509,7 +509,7 @@ const toggleHistoryItem = (itemId: string) => {
 
 .wallet-points-tab {
   min-height: 50px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   color: var(--text-primary);
   font-size: 13px;
@@ -541,7 +541,7 @@ const toggleHistoryItem = (itemId: string) => {
   width: 36px;
   height: 36px;
   flex: 0 0 auto;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   color: var(--text-secondary);
 }
@@ -568,10 +568,10 @@ const toggleHistoryItem = (itemId: string) => {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   outline: none;
-  background: #fafbfe;
+  background: var(--bg-muted);
   color: var(--text-primary);
   font: inherit;
   font-size: 14px;
@@ -596,11 +596,11 @@ const toggleHistoryItem = (itemId: string) => {
   display: grid;
   max-height: 268px;
   overflow-y: auto;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   padding: 6px;
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow-lg);
 }
 
 .wallet-points-recipient,
@@ -643,7 +643,7 @@ const toggleHistoryItem = (itemId: string) => {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #e2e8f0;
+  background: var(--bg-muted);
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
@@ -679,7 +679,7 @@ const toggleHistoryItem = (itemId: string) => {
 
 .wallet-points-secondary {
   min-height: 42px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   padding: 0 16px;
   color: var(--text-primary);
@@ -691,7 +691,7 @@ const toggleHistoryItem = (itemId: string) => {
   border: 0;
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
   padding: 0 18px;
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 13px;
 }
 
@@ -708,9 +708,9 @@ const toggleHistoryItem = (itemId: string) => {
 .wallet-points-scan {
   overflow: hidden;
   margin-top: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-media);
   border-radius: 14px;
-  background: #0f172a;
+  background: var(--bg-media);
 }
 
 .wallet-points-scan--modal {
@@ -734,7 +734,7 @@ const toggleHistoryItem = (itemId: string) => {
 .wallet-points-empty-line,
 .wallet-points-empty {
   border-radius: 14px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
@@ -745,7 +745,7 @@ const toggleHistoryItem = (itemId: string) => {
   flex-direction: column;
   gap: 8px;
   margin-top: 12px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   padding: 12px;
 }
 
@@ -757,7 +757,7 @@ const toggleHistoryItem = (itemId: string) => {
 .wallet-points-selected {
   grid-template-columns: 40px minmax(0, 1fr) 34px;
   margin-top: 12px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 14%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 10px;
@@ -786,7 +786,7 @@ const toggleHistoryItem = (itemId: string) => {
   height: 34px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-secondary);
@@ -797,8 +797,8 @@ const toggleHistoryItem = (itemId: string) => {
   margin: 12px 0 0;
   padding: 10px 12px;
   border-radius: 12px;
-  background: #fef2f2;
-  color: #dc2626;
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
+  color: var(--text-danger);
   font-size: 12px;
   font-weight: 700;
 }
@@ -816,9 +816,9 @@ const toggleHistoryItem = (itemId: string) => {
   align-items: center;
   gap: 10px;
   padding: 11px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   color: inherit;
   cursor: pointer;
   text-align: left;
@@ -880,14 +880,14 @@ const toggleHistoryItem = (itemId: string) => {
 
 .wallet-points-history__item strong {
   flex: 0 0 auto;
-  color: #16a34a;
+  color: var(--text-success);
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .wallet-points-history__amount--negative {
-  color: #dc2626 !important;
+  color: var(--text-danger) !important;
 }
 
 .wallet-points-empty {
@@ -898,7 +898,7 @@ const toggleHistoryItem = (itemId: string) => {
   justify-content: center;
   gap: 8px;
   margin-top: 14px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--border-light);
 }
 
 .wallet-points-empty p {
@@ -919,7 +919,7 @@ const toggleHistoryItem = (itemId: string) => {
   position: absolute;
   inset: 0;
   border: 0;
-  background: rgba(15, 23, 42, 0.48);
+  background: color-mix(in srgb, var(--bg-media) 48%, transparent);
   cursor: pointer;
 }
 
@@ -928,10 +928,10 @@ const toggleHistoryItem = (itemId: string) => {
   z-index: 1;
   width: min(100%, 480px);
   padding: 18px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
-  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-lg);
 }
 
 .wallet-points-modal__panel--wide {
@@ -958,7 +958,7 @@ const toggleHistoryItem = (itemId: string) => {
   border-radius: 14px;
   background: var(--bg-surface);
   padding: 10px;
-  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .wallet-points-modal__hint {
@@ -971,9 +971,9 @@ const toggleHistoryItem = (itemId: string) => {
   align-items: center;
   gap: 12px;
   margin-top: 14px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   padding: 12px;
 }
 
@@ -1002,7 +1002,7 @@ const toggleHistoryItem = (itemId: string) => {
   min-width: 0;
   padding: 11px;
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .wallet-points-summary strong {

@@ -3,11 +3,10 @@
   <UCard
     :as="as"
     class="rounded-[28px] border-dashed border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]"
-    :ui="cardUi"
     v-bind="attrs"
   >
     <div
-      :class="wrapperClass"
+      :class="[wrapperClass, compact ? 'p-5 sm:p-6' : 'p-6 sm:p-8']"
       role="status"
       aria-live="polite"
     >
@@ -137,17 +136,13 @@ const emit = defineEmits<{
   secondary: []
 }>()
 
-const cardUi = computed(() => ({
-  body: props.compact ? "p-5 sm:p-6" : "p-6 sm:p-8",
-}))
-
 const wrapperClass = computed(() => [
   "space-y-5",
   props.align === "center" ? "text-center" : "text-left",
 ])
 
 const iconWrapperClass = computed(() => [
-  "flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-primary-50)] text-[var(--text-primary)]",
+  "flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--bg-muted)] border border-[var(--border-light)] text-[var(--bg-brand)]",
   props.align === "center" ? "mx-auto" : "",
 ])
 

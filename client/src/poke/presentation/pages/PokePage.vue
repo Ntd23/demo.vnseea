@@ -73,11 +73,11 @@ await fetchPokes()
   flex-direction: column;
   gap: 14px;
   justify-content: space-between;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
   padding: 18px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .poke-page__title {
@@ -94,7 +94,7 @@ await fetchPokes()
   flex-shrink: 0;
   place-items: center;
   border-radius: 16px;
-  background: #eef2ff;
+  background: color-mix(in srgb, var(--bg-brand) 10%, transparent);
   color: var(--bg-brand);
 }
 
@@ -130,7 +130,7 @@ await fetchPokes()
 .poke-page__stats div {
   display: grid;
   gap: 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   padding: 14px;
@@ -188,7 +188,7 @@ await fetchPokes()
   display: grid;
   min-height: 260px;
   place-items: center;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--border-default);
   border-radius: 18px;
   background: var(--bg-surface);
   padding: 28px;

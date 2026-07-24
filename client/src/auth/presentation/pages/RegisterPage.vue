@@ -243,20 +243,20 @@ const strength = computed(() => {
   height: 3px;
   flex: 1;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--bg-muted);
   transition: background 0.2s ease;
 }
 
 .auth-strength__bar--weak {
-  background: #ef4444;
+  background: var(--color-error);
 }
 
 .auth-strength__bar--fair {
-  background: #f59e0b;
+  background: var(--color-warning);
 }
 
 .auth-strength__bar--good {
-  background: #22c55e;
+  background: var(--color-success);
 }
 
 .auth-strength__bar--strong {
@@ -295,8 +295,8 @@ const strength = computed(() => {
   justify-content: space-between;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1.5px solid #e2e8f0;
-  background: #fafbfe;
+  border: 1.5px solid var(--border-light);
+  background: var(--bg-muted);
   cursor: pointer;
   transition: all 0.12s ease;
 }
@@ -334,7 +334,7 @@ const strength = computed(() => {
   border: 0;
   border-radius: 14px !important;
   background: var(--bg-brand) !important;
-  color: #ffffff !important;
+  color: var(--text-inverse) !important;
   height: 3.5rem !important;
   font-size: 1rem !important;
   font-weight: 800 !important;

@@ -1,7 +1,7 @@
 <!-- Description: Renders the group settings route with a settings-nav-first layout and ordered panes that match page-setting layout. -->
 <template>
   <div v-if="(group && previewGroup) || status === 'pending'" class="group-settings mt-1.5 max-w-[1120px] space-y-4" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
-    <section class="group-settings__hero border-b border-slate-100">
+    <section class="group-settings__hero border-b border-[var(--border-light)]">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="group-settings__title text-2xl font-black text-[var(--text-primary)]">
@@ -158,7 +158,7 @@
   </div>
 
   <div v-else-if="status === 'error' || (status === 'success' && !group)" class="mx-auto max-w-[960px] px-3 pb-10 pt-4 sm:px-5">
-    <section class="rounded-[18px] border border-[#e2e8f0] bg-white px-6 py-10 text-center shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:px-8 sm:py-16">
+    <section class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-surface)] px-6 py-10 text-center shadow-[var(--shadow-sm)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-gear-six-fill"
         :title="$t('community.settings.empty.title')"
@@ -168,7 +168,7 @@
       <div class="mt-6 flex justify-center">
         <NuxtLink
           :to="appRoutes.groups"
-          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[var(--bg-brand)] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 24%, transparent)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
+          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[var(--bg-brand)] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_color-mix(in srgb, var(--bg-brand) 24%, transparent)] transition hover:-translate-y-0.5 hover:bg-[var(--bg-brand-hover)]"
         >
           {{ $t("community.settings.empty.back") }}
         </NuxtLink>
@@ -232,10 +232,10 @@ function onTabClick(tabId: string) {
 <style scoped>
 .group-settings__hero,
 .group-settings__nav-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .group-settings__hero {
@@ -279,7 +279,7 @@ function onTabClick(tabId: string) {
   display: flex;
   align-items: center;
   gap: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   cursor: pointer;
@@ -301,13 +301,13 @@ function onTabClick(tabId: string) {
   color: var(--text-tertiary);
   font-size: 14px;
   font-weight: 800;
-  border: 2px solid #f1f5f9;
+  border: 2px solid var(--bg-muted);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .group-settings__nav-step-circle--active {
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   border-color: var(--bg-brand);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
@@ -436,15 +436,15 @@ function onTabClick(tabId: string) {
 }
 
 .group-settings__alert--success {
-  border-color: #bae6fd;
-  background: #f0f9ff;
-  color: #0284c7;
+  border-color: var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-success);
 }
 
 .group-settings__alert--error {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #dc2626;
+  border-color: var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-danger);
 }
 
 .group-settings__button {
@@ -465,21 +465,19 @@ function onTabClick(tabId: string) {
 }
 
 .group-settings__button--secondary {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border-default);
   background: var(--bg-surface);
   color: var(--text-primary);
 }
 
 .group-settings__button--secondary:hover {
-  border-color: var(--color-primary-300);
-  background: var(--color-primary-50);
-  color: var(--bg-brand-hover);
+  border-color: var(--border-light); background: var(--bg-surface-hover); color: var(--bg-brand);
 }
 
 .group-settings__button--primary {
   border: 1px solid var(--bg-brand);
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   box-shadow: 0 10px 22px color-mix(in srgb, var(--bg-brand) 18%, transparent);
 }
 

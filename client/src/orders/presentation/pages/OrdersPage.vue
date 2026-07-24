@@ -1,7 +1,7 @@
 <!-- English description: Wowonder-aligned marketplace order list for purchased and store orders. -->
 
 <template>
-  <div class="market-orders-page w-full">
+  <div class="market-orders-page mt-1.5">
 
     <section class="market-orders-nav">
       <nav class="market-orders-tabs" aria-label="Marketplace sections">
@@ -90,7 +90,7 @@
               class="market-order-card__image-bg"
               :style="{ backgroundImage: order.items[0].imageStyle || orderItemFallbackBackground }"
             />
-            <Icon v-else name="i-ph-package-fill" class="h-7 w-7 text-white" />
+            <Icon v-else name="i-ph-package-fill" class="h-7 w-7 text-[var(--text-inverse)]" />
           </NuxtLink>
 
           <div class="market-order-card__body">
@@ -240,10 +240,10 @@ const formatOrderCurrency = (value: number) =>
 <style scoped>
 .market-orders-page {
   --wowonder-blue: var(--bg-brand);
-  --wowonder-card: #ffffff;
-  --wowonder-border: #dbe3f2;
-  --wowonder-text: #111827;
-  --wowonder-muted: #66758b;
+  --wowonder-card: var(--bg-surface);
+  --wowonder-border: var(--border-light);
+  --wowonder-text: var(--text-primary);
+  --wowonder-muted: var(--text-secondary);
 }
 
 .market-orders-heading,
@@ -253,7 +253,7 @@ const formatOrderCurrency = (value: number) =>
   border: 1px solid var(--wowonder-border);
   border-radius: 12px;
   background: var(--wowonder-card);
-  box-shadow: 0 2px 6px rgba(13, 38, 76, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .market-orders-heading__inner {
@@ -271,7 +271,7 @@ const formatOrderCurrency = (value: number) =>
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  color: #ffffff;
+  color: var(--text-inverse);
   background: var(--wowonder-blue);
 }
 
@@ -297,8 +297,6 @@ const formatOrderCurrency = (value: number) =>
   display: flex;
   min-height: 74px;
   align-items: center;
-  margin-top: 22px;
-  padding: 0 12px;
 }
 
 .market-orders-tabs {
@@ -309,7 +307,7 @@ const formatOrderCurrency = (value: number) =>
   overflow-x: auto;
   overscroll-behavior-x: contain;
   padding-bottom: 7px;
-  scrollbar-color: #9eb1cc transparent;
+  scrollbar-color: var(--border-strong) transparent;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scroll-snap-type: x proximity;
@@ -325,7 +323,7 @@ const formatOrderCurrency = (value: number) =>
 
 .market-orders-tabs::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: #9eb1cc;
+  background: var(--border-strong);
 }
 
 .market-orders-tab {
@@ -337,7 +335,7 @@ const formatOrderCurrency = (value: number) =>
   gap: 8px;
   padding: 0 13px;
   border-radius: 8px 8px 0 0;
-  color: #555555;
+  color: var(--text-secondary);
   font-size: 18px;
   font-weight: 500;
   text-decoration: none;
@@ -352,7 +350,7 @@ const formatOrderCurrency = (value: number) =>
 }
 
 .market-orders-tab--active {
-  color: #555555;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
@@ -397,9 +395,9 @@ const formatOrderCurrency = (value: number) =>
   min-width: 24px;
   justify-content: center;
   border-radius: 999px;
-  background: #eef3fb;
+  background: var(--bg-muted);
   padding: 2px 7px;
-  color: #66758b;
+  color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.3;
 }
@@ -423,7 +421,7 @@ const formatOrderCurrency = (value: number) =>
   border-radius: 8px;
   background: var(--bg-surface);
   padding: 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .market-order-card__image {
@@ -435,7 +433,7 @@ const formatOrderCurrency = (value: number) =>
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  background: #e8eef8;
+  background: var(--bg-muted);
 }
 
 .market-order-card__image-bg {
@@ -459,7 +457,7 @@ const formatOrderCurrency = (value: number) =>
 
 .market-order-card__number {
   margin: 0;
-  color: #8b9bb2;
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -469,7 +467,7 @@ const formatOrderCurrency = (value: number) =>
 .market-order-card__title {
   overflow: hidden;
   margin: 3px 0 0;
-  color: #333333;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 800;
   line-height: 1.25;
@@ -495,7 +493,7 @@ const formatOrderCurrency = (value: number) =>
   flex-wrap: wrap;
   gap: 7px;
   margin-top: 8px;
-  color: #66758b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -503,7 +501,7 @@ const formatOrderCurrency = (value: number) =>
 .market-order-card__meta span,
 .market-order-card__items span {
   border-radius: 6px;
-  background: #f4f7fb;
+  background: var(--bg-muted);
   padding: 4px 8px;
 }
 
@@ -516,7 +514,7 @@ const formatOrderCurrency = (value: number) =>
 }
 
 .market-order-card__side strong {
-  color: #4caf50;
+  color: var(--text-success);
   font-size: 16px;
   font-weight: 800;
 }
@@ -529,7 +527,7 @@ const formatOrderCurrency = (value: number) =>
   border-radius: 7px;
   background: var(--wowonder-blue);
   padding: 0 12px;
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
@@ -573,7 +571,7 @@ const formatOrderCurrency = (value: number) =>
     bottom: 10px;
     width: 34px;
     pointer-events: none;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0), var(--wowonder-card) 78%);
+    background: linear-gradient(90deg, transparent, var(--wowonder-card) 78%);
     content: "";
   }
 

@@ -1,7 +1,7 @@
-<!-- Description: Renders a mapped photo record from API-backed feed media instead of the previous mock gallery entry type. -->
+<!-- English description: Renders a mapped photo record from API-backed feed media instead of the previous mock gallery entry type. -->
 <template>
   <article
-    class="photo-card group overflow-hidden rounded-[24px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]"
+    class="photo-card group overflow-hidden rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]"
   >
     <!-- Image — click to open lightbox -->
     <button class="block w-full text-left" type="button" @click="$emit('open', photo.id)">
@@ -14,25 +14,25 @@
           loading="lazy"
         >
         <!-- Dark overlay -->
-        <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(8,16,40,0.78)_0%,transparent_55%)]" />
+        <div class="absolute inset-0 bg-[linear-gradient(to_top,color-mix(in_srgb,var(--bg-media)_78%,transparent)_0%,transparent_55%)]" />
 
         <!-- Single category badge top-left -->
-        <span class="absolute left-3 top-3 rounded-[10px] bg-black/50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white backdrop-blur-sm">
+        <span class="absolute left-3 top-3 rounded-[10px] bg-[color-mix(in_srgb,var(--bg-media)_50%,transparent)] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[var(--text-media)] backdrop-blur-sm">
           {{ photo.albumTitle }}
         </span>
 
         <!-- Engagement badge top-right -->
-        <span class="absolute right-3 top-3 flex items-center gap-1 rounded-[10px] bg-black/40 px-2.5 py-1 text-[11px] font-black text-white backdrop-blur-sm">
+        <span class="absolute right-3 top-3 flex items-center gap-1 rounded-[10px] bg-[color-mix(in_srgb,var(--bg-media)_40%,transparent)] px-2.5 py-1 text-[11px] font-black text-[var(--text-media)] backdrop-blur-sm">
           <Icon name="i-ph-heart-fill" class="h-3 w-3 text-rose-400" />
           {{ formattedEngagement }}
         </span>
 
         <!-- Bottom: title + location only -->
-        <div class="absolute inset-x-0 bottom-0 p-3.5 text-white">
+        <div class="absolute inset-x-0 bottom-0 p-3.5 text-[var(--text-media)]">
           <p class="photo-card-title font-black leading-tight text-[1rem] sm:text-[1.05rem]">
             {{ photo.title }}
           </p>
-          <p class="mt-1 text-[11.5px] font-semibold text-white/65">
+          <p class="mt-1 text-[11.5px] font-semibold text-[var(--text-media-muted)]">
             <Icon name="i-ph-map-pin-fill" class="mr-0.5 inline h-3 w-3" />{{ photo.location }}
           </p>
         </div>
@@ -43,7 +43,7 @@
     <div class="flex items-center gap-3 px-4 py-3">
       <!-- Avatar initials -->
       <div
-        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-black text-white"
+        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-black text-[var(--text-inverse)]"
         :style="{ background: `linear-gradient(135deg, var(--color-primary-900), var(--bg-brand))` }"
       >
         {{ photo.photographer.charAt(0) }}
@@ -57,7 +57,7 @@
 
       <!-- Single CTA: open lightbox -->
       <button
-        class="shrink-0 inline-flex h-8 items-center gap-1.5 rounded-full bg-[var(--color-primary-500)] px-3.5 text-[12px] font-black text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 active:scale-95"
+        class="shrink-0 inline-flex h-8 items-center gap-1.5 rounded-full bg-[var(--bg-brand)] px-3.5 text-[12px] font-black text-[var(--text-inverse)] shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 active:scale-95"
         type="button"
         @click="$emit('open', photo.id)"
       >

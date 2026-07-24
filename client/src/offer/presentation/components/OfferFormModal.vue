@@ -1,6 +1,6 @@
 <!-- English description: Renders the phtml-compatible create and edit form for page offers. -->
 <template>
-  <UModal v-model:open="isOpen" :ui="{ content: 'sm:max-w-[800px]' }">
+  <UModal v-model:open="isOpen">
     <template #content>
       <form class="offer-form" @submit.prevent="handleSubmit">
         <header class="offer-form__header">

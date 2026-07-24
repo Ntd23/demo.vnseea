@@ -1,9 +1,9 @@
-<!-- Description: Renders the photos sidebar using API-backed quick links, hashtag rollups, and creator summaries. -->
+<!-- English description: Renders the photos sidebar using API-backed quick links, hashtag rollups, and creator summaries. -->
 <template>
   <aside class="min-w-0 space-y-4">
 
     <!-- Hashtags -->
-    <section class="rounded-[24px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
+    <section class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-4 shadow-[var(--shadow-md)]">
       <div class="mb-3 flex items-center justify-between">
         <div>
           <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-primary-500)]/70">{{ hashtagsEyebrow }}</p>
@@ -17,16 +17,16 @@
           v-for="item in hashtags"
           :key="item.to"
           :to="item.to"
-          class="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-default)] bg-[var(--bg-base)] px-3 py-1.5 text-[12px] font-semibold text-[var(--text-primary)] transition hover:border-[var(--color-primary-200)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]"
+          class="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-1.5 text-[12px] font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-brand)]"
         >
           {{ item.label }}
-          <span class="rounded-full bg-white px-1.5 py-0.5 text-[10px] font-bold text-[var(--text-tertiary)]">{{ item.score }}</span>
+          <span class="rounded-full bg-[var(--bg-surface)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--text-tertiary)]">{{ item.score }}</span>
         </NuxtLink>
       </div>
     </section>
 
     <!-- Top Creators -->
-    <section class="rounded-[24px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
+    <section class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-4 shadow-[var(--shadow-md)]">
       <div class="mb-3 flex items-center justify-between">
         <div>
           <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-primary-500)]/70">{{ creatorsEyebrow }}</p>
@@ -50,7 +50,7 @@
 
           <!-- Avatar -->
           <div
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] text-[12px] font-black text-white"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] text-[12px] font-black text-[var(--text-inverse)]"
             :style="{ background: item.accent }"
           >{{ item.initials }}</div>
 
@@ -67,9 +67,9 @@
     </section>
 
     <!-- Quick Links — branded dark -->
-    <section class="overflow-hidden rounded-[24px] border border-[var(--border-default)] shadow-[var(--shadow-md)]">
-      <div class="bg-[linear-gradient(135deg,#0f172a_0%,var(--color-primary-900)_55%,var(--bg-brand)_100%)] p-4 text-white">
-        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/55">{{ linksEyebrow }}</p>
+    <section class="overflow-hidden rounded-[24px] border border-[var(--border-light)] shadow-[var(--shadow-md)]">
+      <div class="bg-[linear-gradient(135deg,var(--bg-media)_0%,var(--color-primary-900)_55%,var(--bg-brand)_100%)] p-4 text-[var(--text-media)]">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-media-muted)]">{{ linksEyebrow }}</p>
         <h3 class="mt-1 text-[1.05rem] font-extrabold leading-snug">{{ linksTitle }}</h3>
 
         <div class="mt-3.5 space-y-2">
@@ -77,19 +77,19 @@
             v-for="item in quickLinks"
             :key="item.to"
             :to="item.to"
-            class="flex items-center gap-3 rounded-[16px] border border-white/10 bg-white/8 px-3 py-2.5 transition hover:bg-white/15"
+            class="flex items-center gap-3 rounded-[16px] border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--text-media)_8%,transparent)] px-3 py-2.5 transition hover:bg-[color-mix(in_srgb,var(--text-media)_15%,transparent)]"
           >
             <div
               class="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]"
               :style="{ background: item.accent }"
             >
-              <Icon :name="item.icon" class="h-3.5 w-3.5 text-white" />
+              <Icon :name="item.icon" class="h-3.5 w-3.5 text-[var(--text-media)]" />
             </div>
             <div class="min-w-0 flex-1">
               <p class="truncate text-[12.5px] font-bold">{{ item.title }}</p>
-              <p class="mt-0.5 truncate text-[11px] text-white/60">{{ item.description }}</p>
+              <p class="mt-0.5 truncate text-[11px] text-[var(--text-media-muted)]">{{ item.description }}</p>
             </div>
-            <Icon name="i-ph-arrow-right-bold" class="h-3.5 w-3.5 shrink-0 text-white/35" />
+            <Icon name="i-ph-arrow-right-bold" class="h-3.5 w-3.5 shrink-0 text-[var(--text-media-muted)] opacity-60" />
           </NuxtLink>
         </div>
       </div>

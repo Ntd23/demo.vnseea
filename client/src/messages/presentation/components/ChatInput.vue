@@ -1,6 +1,6 @@
-<!-- Description: Renders the active thread composer with a PHP-style core shell for text, file, and voice note sending plus one-to-one typing events. -->
+<!-- English description: Renders the active thread composer with a PHP-style core shell for text, file, and voice note sending plus one-to-one typing events. -->
 <template>
-  <div class="border-t border-[var(--border-light)] bg-[#fcfdff] px-4 py-4 sm:px-6">
+  <div class="border-t border-[var(--border-light)] bg-[var(--bg-surface)] px-4 py-4 sm:px-6">
     <div class="chat-input-shell">
       <div class="chat-input-main-row">
         <div class="chat-input-body">
@@ -381,7 +381,7 @@ function submitMessage() {
   border: 1px solid var(--border-light);
   background: var(--bg-surface);
   padding: 12px;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .chat-input-main-row {
@@ -454,7 +454,7 @@ function submitMessage() {
   border-radius: 999px !important;
   /* position: absolute !important; */
   /* right: 4px !important; */
-  box-shadow: 0 10px 24px rgba(0, 42, 255, 0.18);
+  box-shadow: var(--shadow-brand);
 }
 
 .chat-input-panel {

@@ -2,14 +2,14 @@
 <template>
   <article
     v-if="variant === 'detail'"
-    class="surface-card group order-item-article-detail p-5 transition-all duration-500 hover:bg-white hover:ring-primary-100 ring-1 ring-secondary-100 bg-secondary-50/10"
+    class="surface-card order-item-article-detail group border border-[var(--border-light)] bg-[var(--bg-surface)] p-5 transition-all duration-500 hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)]"
   >
     <div class="order-item-image-wrapper">
       <div class="order-item-image-bg" :style="{ backgroundImage: item.imageStyle || orderItemFallbackBackground }" />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-      <div class="absolute inset-0 ring-1 ring-inset ring-black/5" />
+      <div class="absolute inset-0 bg-[linear-gradient(to_top,color-mix(in_srgb,var(--bg-media)_20%,transparent),transparent)]" />
+      <div class="absolute inset-0 ring-1 ring-inset ring-[var(--border-media)]" />
       
-      <div class="absolute left-2.5 top-2.5 rounded-lg bg-black/60 shadow-lg px-2 py-1 text-[9px] font-black uppercase tracking-widest text-white backdrop-blur-md border border-white/10 z-10">
+      <div class="absolute left-2.5 top-2.5 z-10 rounded-lg border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--bg-media)_60%,transparent)] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-[var(--text-media)] shadow-[var(--shadow-lg)] backdrop-blur-md">
         {{ variant === 'detail' ? $t('orders.card.itemLabel') : $t('orders.card.qtyCompact', { count: item.quantity }) }}
       </div>
     </div>
@@ -17,18 +17,18 @@
     <div class="min-w-0 flex-1 space-y-4">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="min-w-0 space-y-1">
-          <p class="order-item-title text-lg font-black text-secondary-900 tracking-tight group-hover:text-secondary-900 transition-colors">
+          <p class="order-item-title text-lg font-black tracking-tight text-[var(--text-primary)] transition-colors group-hover:text-[var(--text-primary)]">
             {{ displayOrderText(item.name) }}
           </p>
           <div class="flex items-center gap-2">
-            <div class="h-1.5 w-1.5 rounded-full bg-primary-500" />
-            <p class="order-item-meta text-[11px] font-black uppercase tracking-widest text-secondary-400">
+            <div class="h-1.5 w-1.5 rounded-full bg-[var(--bg-brand)]" />
+            <p class="order-item-meta text-[11px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">
               {{ detailMetaText }}
             </p>
           </div>
         </div>
 
-        <p class="order-item-price text-xl font-black text-secondary-900 tracking-tight">
+        <p class="order-item-price text-xl font-black tracking-tight text-[var(--text-primary)]">
           {{ formatOrderCurrency(item.price * item.quantity) }}
         </p>
       </div>
@@ -48,28 +48,28 @@
 
   <div
     v-else
-    class="surface-card group flex gap-4 p-3.5 transition-all duration-300 ring-1 ring-secondary-100 bg-white hover:ring-primary-100 hover:shadow-lg"
+    class="surface-card group flex gap-4 border border-[var(--border-light)] bg-[var(--bg-surface)] p-3.5 transition-all duration-300 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-lg)]"
   >
-    <div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-secondary-100 bg-secondary-100 shadow-sm transition-transform group-hover:scale-105">
+    <div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] shadow-[var(--shadow-sm)] transition-transform group-hover:scale-105">
       <div
         class="absolute inset-0 bg-cover bg-no-repeat bg-center"
         :style="{ backgroundImage: item.imageStyle || orderItemFallbackBackground }"
       />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+      <div class="absolute inset-0 bg-[linear-gradient(to_top,color-mix(in_srgb,var(--bg-media)_12%,transparent),transparent)]" />
     </div>
 
     <div class="min-w-0 flex-1 space-y-1">
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
-          <p class="truncate text-sm font-black text-secondary-900 group-hover:text-secondary-900 transition-colors">
+          <p class="truncate text-sm font-black text-[var(--text-primary)] transition-colors group-hover:text-[var(--text-primary)]">
             {{ displayOrderText(item.name) }}
           </p>
-          <p class="text-[10px] font-black uppercase tracking-widest text-secondary-900">
+          <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
             {{ $t("orders.card.qtyCompact", { count: item.quantity }) }}
           </p>
         </div>
 
-        <p class="text-sm font-black text-secondary-900 tracking-tight">
+        <p class="text-sm font-black tracking-tight text-[var(--text-primary)]">
           {{ formatOrderCurrency(item.price * item.quantity) }}
         </p>
       </div>
@@ -134,9 +134,9 @@ const detailMetaText = computed(() =>
   aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  background-color: #f1f5f9;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-light);
+  background-color: var(--bg-muted);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

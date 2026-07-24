@@ -1,32 +1,32 @@
 <!-- English description: Renders the global Nuxt error recovery screen. -->
 <template>
   <UApp>
-    <div class="min-h-screen bg-[#f1f4fb] px-4 py-10 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-[var(--bg-base)] px-4 py-10 sm:px-6 lg:px-8">
       <div class="mx-auto flex min-h-[calc(100dvh-80px)] max-w-3xl items-center justify-center">
-        <section class="surface-card w-full overflow-hidden border-none ring-1 ring-secondary-100 shadow-2xl">
-          <div class="bg-gradient-to-r from-primary-600 via-primary-700 to-secondary-900 px-8 py-10 text-white sm:px-10">
-            <p class="text-[11px] font-black uppercase tracking-[0.32em] text-white/70">
+        <section class="surface-card w-full overflow-hidden border border-[var(--border-light)] shadow-[var(--shadow-xl)]">
+          <div class="bg-[linear-gradient(135deg,var(--bg-brand)_0%,var(--bg-brand-hover)_58%,var(--bg-media)_100%)] px-8 py-10 text-[var(--text-media)] sm:px-10">
+            <p class="text-[11px] font-black uppercase tracking-[0.32em] text-[var(--text-media-muted)]">
               Loi dieu huong
             </p>
             <h1 class="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
               {{ statusTitle }}
             </h1>
-            <p class="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-white/78">
+            <p class="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-[var(--text-media-muted)]">
               {{ statusDescription }}
             </p>
           </div>
 
           <div class="space-y-6 px-8 py-8 sm:px-10 sm:py-10">
-            <div class="rounded-[24px] border border-secondary-100 bg-secondary-50/70 p-5">
+            <div class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-muted)] p-5">
               <div class="flex flex-wrap items-center gap-3">
                 <UBadge color="primary" variant="soft" class="rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
                   {{ error.statusCode || 500 }}
                 </UBadge>
-                <span class="text-xs font-black uppercase tracking-[0.2em] text-secondary-500">
+                <span class="text-xs font-black uppercase tracking-[0.2em] text-[var(--text-secondary)]">
                   {{ route.fullPath }}
                 </span>
               </div>
-              <p class="mt-4 text-sm font-medium leading-relaxed text-secondary-600">
+              <p class="mt-4 text-sm font-medium leading-relaxed text-[var(--text-secondary)]">
                 {{ errorMessage }}
               </p>
             </div>
@@ -34,7 +34,7 @@
             <div class="flex flex-col gap-3 sm:flex-row">
               <UButton
                 size="xl"
-                class="justify-center rounded-2xl bg-primary-600 px-6 font-black uppercase tracking-[0.18em] shadow-xl shadow-primary-500/20 hover:bg-primary-700"
+                class="justify-center rounded-2xl bg-[var(--bg-brand)] px-6 font-black uppercase tracking-[0.18em] text-[var(--text-inverse)] shadow-[var(--shadow-brand)] hover:bg-[var(--bg-brand-hover)]"
                 @click="recoverToLastSafeRoute"
               >
                 Quay lai trang truoc
@@ -43,14 +43,14 @@
                 size="xl"
                 color="neutral"
                 variant="soft"
-                class="justify-center rounded-2xl px-6 font-black uppercase tracking-[0.18em] text-[var(--text-primary)] ring-1 ring-[var(--border-light)] hover:ring-primary-500"
+                class="justify-center rounded-2xl px-6 font-black uppercase tracking-[0.18em] text-[var(--text-primary)] ring-1 ring-[var(--border-light)] hover:ring-[var(--border-strong)]"
                 @click="recoverToHome"
               >
                 Ve trang chu
               </UButton>
             </div>
 
-            <p class="text-xs font-semibold text-secondary-400">
+            <p class="text-xs font-semibold text-[var(--text-tertiary)]">
               Trang se tu dong quay ve trong giay lat de ban tiep tuc dieu huong ma khong can reload.
             </p>
           </div>

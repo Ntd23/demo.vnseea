@@ -44,8 +44,8 @@
             :ui="{
               fieldset: 'gap-3',
               item: 'p-4',
-              label: 'font-bold text-[var(--color-secondary-900)]',
-              description: 'mt-1 whitespace-normal leading-5 text-[var(--color-secondary-600)]',
+              label: 'font-bold text-[var(--text-primary)]',
+              description: 'mt-1 whitespace-normal leading-5 text-[var(--text-secondary)]',
             }"
           >
             <template #label="{ item }">
@@ -151,36 +151,36 @@
     v-model:open="showDeleteAddressModal"
     :dismissible="!isDeletingAddress"
     :ui="{
-      content: 'w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-lg p-0 ring-1 ring-[var(--color-secondary-200)]',
+      content: 'w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-lg p-0 ring-1 ring-[var(--border-light)]',
     }"
   >
     <template #content>
       <div class="p-6 sm:p-7">
-        <div class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-red-50 text-red-600">
+        <div class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[color-mix(in_srgb,var(--color-error)_12%,var(--bg-surface))] text-[var(--text-danger)]">
           <Icon name="i-ph-trash-duotone" class="h-7 w-7" aria-hidden="true" />
         </div>
 
         <div class="mt-4 text-center">
-          <h2 class="m-0 text-xl font-extrabold text-[var(--color-secondary-900)]">
+          <h2 class="m-0 text-xl font-extrabold text-[var(--text-primary)]">
             {{ $t("checkout.shippingForm.deleteAddress") }}
           </h2>
-          <p class="mt-2 text-sm leading-6 text-[var(--color-secondary-600)]">
+          <p class="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
             {{ $t("checkout.shippingForm.confirmDeleteAddress") }}
           </p>
         </div>
 
         <div
           v-if="savedAddress"
-          class="mt-5 rounded-md border border-[var(--color-secondary-200)] bg-[var(--color-secondary-50)] p-4 text-left"
+          class="mt-5 rounded-md border border-[var(--border-light)] bg-[var(--bg-muted)] p-4 text-left"
         >
-          <p class="m-0 font-bold text-[var(--color-secondary-900)]">{{ savedAddress.fullName }}</p>
-          <p class="mt-1 text-sm leading-5 text-[var(--color-secondary-600)]">{{ savedAddress.phone }}</p>
-          <p class="mt-1 text-sm leading-5 text-[var(--color-secondary-600)]">
+          <p class="m-0 font-bold text-[var(--text-primary)]">{{ savedAddress.fullName }}</p>
+          <p class="mt-1 text-sm leading-5 text-[var(--text-secondary)]">{{ savedAddress.phone }}</p>
+          <p class="mt-1 text-sm leading-5 text-[var(--text-secondary)]">
             {{ formatAddress(savedAddress) }}
           </p>
         </div>
 
-        <div class="mt-6 grid grid-cols-2 gap-3 border-t border-[var(--color-secondary-200)] pt-5">
+        <div class="mt-6 grid grid-cols-2 gap-3 border-t border-[var(--border-light)] pt-5">
           <UButton
             type="button"
             color="neutral"
@@ -340,10 +340,10 @@ async function confirmPurchase() {
 <style scoped>
 .address-panel,
 .summary-skeleton {
-  border: 1px solid #dfe6f3;
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   background: var(--bg-surface);
-  box-shadow: 0 4px 14px rgb(31 51 92 / 7%);
+  box-shadow: var(--shadow-sm);
 }
 
 .address-panel {
@@ -362,7 +362,7 @@ async function confirmPurchase() {
   margin: 0;
   font-size: 19px;
   font-weight: 800;
-  color: var(--color-secondary-900);
+  color: var(--text-primary);
 }
 
 .address-panel__add {
@@ -380,9 +380,9 @@ async function confirmPurchase() {
 
 .address-panel__list,
 .address-panel__empty {
-  border: 1px solid var(--color-secondary-200);
+  border: 1px solid var(--border-light);
   border-radius: 8px;
-  background: var(--color-secondary-50);
+  background: var(--bg-muted);
 }
 
 .address-panel__list {
@@ -396,7 +396,7 @@ async function confirmPurchase() {
   gap: 12px;
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid var(--color-secondary-200);
+  border-top: 1px solid var(--border-light);
 }
 
 .address-panel__option-text {
@@ -410,7 +410,7 @@ async function confirmPurchase() {
 }
 
 .address-panel__option-description {
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -420,7 +420,7 @@ async function confirmPurchase() {
   gap: 10px;
   min-height: 64px;
   padding: 14px;
-  color: var(--color-secondary-600);
+  color: var(--text-secondary);
 }
 
 .address-panel__empty p {
@@ -450,7 +450,7 @@ async function confirmPurchase() {
 
 .address-modal__eyebrow {
   margin: 0 0 4px;
-  color: var(--color-primary-600, #1b08ff);
+  color: var(--text-brand);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -458,7 +458,7 @@ async function confirmPurchase() {
 
 .address-modal__title {
   margin: 0;
-  color: var(--color-secondary-900);
+  color: var(--text-primary);
   font-size: 22px;
   font-weight: 800;
 }

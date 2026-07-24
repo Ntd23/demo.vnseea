@@ -160,11 +160,11 @@ const viewsLabel = computed(() =>
   display: grid;
   grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
   gap: 24px;
-  border: 1px solid var(--color-border, #e2e8f0);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  background: var(--color-surface, #ffffff);
+  background: var(--bg-surface);
   padding: 20px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .movie-overview__poster-shell {
@@ -172,7 +172,7 @@ const viewsLabel = computed(() =>
   align-self: start;
   overflow: hidden;
   border-radius: 12px;
-  background: #e2e8f0;
+  background: var(--bg-muted);
   aspect-ratio: 2 / 3;
 }
 
@@ -323,7 +323,7 @@ const viewsLabel = computed(() =>
   height: 34px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dbe3ef;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-primary);

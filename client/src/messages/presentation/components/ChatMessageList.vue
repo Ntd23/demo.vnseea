@@ -1,8 +1,8 @@
-<!-- Description: Renders the current thread stack, load-older control, and typing indicator for the active conversation shell. -->
+<!-- English description: Renders the current thread stack, load-older control, and typing indicator for the active conversation shell. -->
 <template>
   <div
     ref="listContainer"
-    class="scrollbar-hide flex-1 min-h-0 overflow-y-auto bg-white px-4 py-5 sm:px-6"
+    class="scrollbar-hide flex-1 min-h-0 overflow-y-auto bg-[var(--bg-surface)] px-4 py-5 sm:px-6"
   >
     <div class="mx-auto flex w-full flex-col gap-3" :class="threadWidthClass">
       <div v-if="messages.length > 0" class="flex justify-center pb-2">
@@ -101,7 +101,7 @@
         </div>
       </div>
 
-      <div v-else-if="messages.length === 0" class="rounded-[20px] border border-dashed border-[#dbe3f2] bg-white/80 px-5 py-8 text-center text-sm text-[var(--text-secondary)]">
+      <div v-else-if="messages.length === 0" class="rounded-[20px] border border-dashed border-[var(--border-light)] bg-[var(--bg-surface)] px-5 py-8 text-center text-sm text-[var(--text-secondary)]">
         {{ emptyLabel }}
       </div>
 
@@ -110,7 +110,7 @@
           v-if="contactAvatar"
           :src="contactAvatar"
           size="xs"
-          class="messages-typing-avatar ring-1 ring-white shadow-sm"
+          class="messages-typing-avatar ring-1 ring-[var(--border-light)] shadow-[var(--shadow-sm)]"
         />
         <div v-else class="messages-typing-avatar-placeholder" />
         <div class="messages-typing-bubble" aria-label="Typing">
@@ -380,9 +380,9 @@ defineExpose({ scrollToBottom })
   gap: 5px;
   border-radius: 20px;
   border-bottom-left-radius: 6px;
-  background: #f1f0f0;
+  background: var(--bg-muted);
   padding: 12px 16px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 :deep(.messages-reply-target--highlighted .chat-bubble__wrapper) {
@@ -410,7 +410,7 @@ defineExpose({ scrollToBottom })
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: #7c8799;
+  background: var(--text-tertiary);
   animation: messages-typing-bounce 1s infinite ease-in-out;
 }
 
@@ -447,14 +447,14 @@ defineExpose({ scrollToBottom })
   height: 32px !important;
   flex: 0 0 32px;
   border-radius: 999px !important;
-  background: #e8edf4 !important;
+  background: var(--bg-muted) !important;
 }
 
 .messages-thread-skeleton__bubble {
   width: 220px;
   max-width: min(84%, 420px);
   padding: 13px 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .messages-thread-skeleton__bubble--sm {
@@ -475,12 +475,12 @@ defineExpose({ scrollToBottom })
 
 .messages-thread-skeleton__bubble--mine {
   border-radius: 18px 18px 6px 18px;
-  background: rgba(168, 72, 73, 0.10);
+  background: color-mix(in srgb, var(--bg-brand) 10%, transparent);
 }
 
 .messages-thread-skeleton__bubble--theirs {
   border-radius: 18px 18px 18px 6px;
-  background: #f1f0f0;
+  background: var(--bg-muted);
 }
 
 .messages-thread-skeleton__author {
@@ -488,14 +488,14 @@ defineExpose({ scrollToBottom })
   height: 12px;
   margin-bottom: 8px;
   border-radius: 999px;
-  background: #dbe3ed !important;
+  background: var(--bg-muted) !important;
 }
 
 .messages-thread-skeleton__line {
   height: 15px;
   margin-top: 0;
   border-radius: 999px;
-  background: #e1e7ef !important;
+  background: var(--bg-muted) !important;
 }
 
 .messages-thread-skeleton__line + .messages-thread-skeleton__line {

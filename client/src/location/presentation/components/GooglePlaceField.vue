@@ -444,9 +444,9 @@ function syncManualAddress() {
   height: var(--google-place-field-control-height, 48px);
   width: 100%;
   min-width: 0;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-surface);
   padding: 0 14px;
   transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
@@ -458,8 +458,8 @@ function syncManualAddress() {
 }
 
 .google-place-field__control--selected {
-  border-color: var(--color-primary-200);
-  background: #f8fbff;
+  border-color: var(--border-light);
+  background: var(--bg-surface-hover);
 }
 
 .google-place-field__control--disabled {
@@ -513,7 +513,7 @@ function syncManualAddress() {
 }
 
 .google-place-field__clear:hover {
-  background: #e2e8f0;
+  background: var(--bg-surface-hover);
   color: var(--text-primary);
 }
 
@@ -529,7 +529,7 @@ function syncManualAddress() {
   left: 0;
   right: 0;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   box-shadow: 0 18px 46px rgba(15, 23, 42, 0.14);

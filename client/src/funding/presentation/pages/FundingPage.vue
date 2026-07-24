@@ -282,7 +282,7 @@ const formatDate = (value: string) => {
   const date = new Date(value)
   if (!value || Number.isNaN(date.getTime())) return "-"
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -313,7 +313,7 @@ const clampProgress = (value: number) =>
 .funding-toolbar,
 .funding-card,
 .funding-empty {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   box-shadow: var(--shadow-sm);
 }
@@ -329,7 +329,7 @@ const clampProgress = (value: number) =>
   padding: 12px 14px 16px; /* Increased bottom padding to host the scrollbar on mobile */
   overflow-x: scroll;
   scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
+  scrollbar-color: var(--text-tertiary) var(--bg-muted);
 }
 
 .funding-tabs {

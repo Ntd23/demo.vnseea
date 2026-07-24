@@ -113,7 +113,7 @@ async function handleOfferSaved() {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 22px;
   background: var(--bg-surface);
   padding: 22px;
@@ -129,7 +129,7 @@ async function handleOfferSaved() {
 
 .offers-page__hero h1 {
   margin: 0;
-  color: #020617;
+  color: var(--text-primary);
   font-size: clamp(28px, 4vw, 40px);
   font-weight: 800;
   line-height: 1.05;
@@ -161,7 +161,7 @@ async function handleOfferSaved() {
 }
 
 .offers-page__empty {
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--border-light);
   border-radius: 22px;
   background: var(--bg-surface);
   padding: 32px 18px;
@@ -176,7 +176,7 @@ async function handleOfferSaved() {
 
 .offers-page__empty h2 {
   margin: 10px 0 6px;
-  color: #020617;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 800;
 }

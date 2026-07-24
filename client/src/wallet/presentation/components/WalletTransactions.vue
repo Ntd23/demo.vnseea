@@ -129,11 +129,11 @@ const {
 
 <style scoped>
 .wallet-activity {
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
   padding: 18px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .wallet-activity__header {
@@ -172,7 +172,7 @@ const {
   flex-shrink: 0;
   align-items: center;
   gap: 7px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   padding: 8px 10px;
@@ -242,38 +242,38 @@ const {
 }
 
 .wallet-activity__icon--received {
-  background: rgba(14, 165, 233, 0.1);
-  color: #0284c7;
+  background: color-mix(in srgb, var(--color-success) 10%, transparent);
+  color: var(--color-success);
 }
 
 .wallet-activity__icon--sent {
-  background: rgba(99, 102, 241, 0.11);
-  color: #4f46e5;
+  background: color-mix(in srgb, var(--bg-brand) 11%, transparent);
+  color: var(--text-brand);
 }
 
 .wallet-activity__icon--wallet {
-  background: rgba(22, 163, 74, 0.1);
-  color: #15803d;
+  background: color-mix(in srgb, var(--color-success) 10%, transparent);
+  color: var(--color-success);
 }
 
 .wallet-activity__icon--points_exchange {
-  background: rgba(245, 158, 11, 0.12);
-  color: #b45309;
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
 }
 
 .wallet-activity__icon--affiliate_reward {
-  background: rgba(22, 163, 74, 0.12);
-  color: #15803d;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--color-success);
 }
 
 .wallet-activity__icon--sale {
-  background: rgba(245, 158, 11, 0.12);
-  color: #b45309;
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
 }
 
 .wallet-activity__icon--donate {
-  background: rgba(236, 72, 153, 0.12);
-  color: #db2777;
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  color: var(--color-error);
 }
 
 .wallet-activity__icon--other {
@@ -282,18 +282,18 @@ const {
 }
 
 .wallet-activity__icon--warning {
-  background: rgba(245, 158, 11, 0.12);
-  color: #b45309;
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
 }
 
 .wallet-activity__icon--danger {
-  background: rgba(220, 38, 38, 0.1);
-  color: #dc2626;
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
+  color: var(--color-error);
 }
 
 .wallet-activity__content {
   min-width: 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   padding-bottom: 12px;
 }
 
@@ -329,17 +329,17 @@ const {
 }
 
 .wallet-activity__amount--positive {
-  color: #15803d;
+  color: var(--text-success);
 }
 
 .wallet-activity__amount--negative {
-  color: #dc2626;
+  color: var(--text-danger);
 }
 
 .wallet-activity__empty {
   margin-top: 14px;
   border-radius: 14px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   padding: 32px;
   text-align: center;
 }
@@ -361,7 +361,7 @@ const {
   height: 34px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-secondary);
@@ -375,7 +375,7 @@ const {
 .wallet-activity__page--active {
   border-color: var(--bg-brand);
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .wallet-activity__page-btn:disabled {

@@ -1,15 +1,15 @@
 <!-- English description: Renders order search and status filters. -->
 <template>
-  <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl">
-    <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between border-b border-secondary-50 pb-6">
+  <section class="surface-card group space-y-8 border border-[var(--border-light)] p-6 shadow-[var(--shadow-xl)] sm:p-8">
+    <div class="flex flex-col gap-6 border-b border-[var(--border-light)] pb-6 lg:flex-row lg:items-start lg:justify-between">
       <div class="space-y-1">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
+        <p class="pl-1 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">
           {{ $t("orders.filter.title") }}
         </p>
-        <h2 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
+        <h2 class="text-2xl font-black leading-tight tracking-tight text-[var(--text-primary)]">
           {{ $t("orders.filter.matched", { count: visibleCount }) }}
         </h2>
-        <p class="text-sm font-medium leading-relaxed text-secondary-500">
+        <p class="text-sm font-medium leading-relaxed text-[var(--text-secondary)]">
           {{ $t("orders.filter.current", { label: $t(activeFilterLabel) }) }}
         </p>
       </div>
@@ -23,7 +23,7 @@
           :ui="{ 
             rounded: 'rounded-2xl', 
             size: { xl: 'h-[56px] px-6 text-base' }, 
-            base: 'bg-[var(--bg-muted)] hover:bg-[var(--bg-surface-hover)] focus:bg-[var(--bg-surface)] ring-1 ring-[var(--border-light)] focus:ring-primary-500 transition-all duration-300'
+            base: 'bg-[var(--bg-muted)] hover:bg-[var(--bg-surface-hover)] focus:bg-[var(--bg-surface)] ring-1 ring-[var(--border-light)] focus:ring-[var(--border-strong)] transition-all duration-300'
           }"
         />
       </div>
@@ -38,8 +38,8 @@
         size="md"
         class="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 py-2.5 transition-all active:scale-95 border"
         :class="activeFilterModel === filter.key
-          ? 'bg-primary-600 text-white border-primary-500 shadow-lg shadow-primary-500/30'
-          : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-primary-200 hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-primary)]'"
+          ? 'border-[var(--border-strong)] bg-[var(--bg-brand)] text-[var(--text-inverse)] shadow-[var(--shadow-brand)]'
+          : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-primary)]'"
         @click="activeFilterModel = filter.key"
       >
         <span>{{ $t(filter.label) }}</span>
@@ -47,7 +47,7 @@
           variant="soft"
           :color="activeFilterModel === filter.key ? 'white' : 'primary'"
           class="rounded-lg font-black text-[9px] min-w-[20px] justify-center transition-colors px-1.5 py-0.5"
-          :class="activeFilterModel === filter.key ? 'bg-white/20 text-white' : 'bg-primary-50 text-[var(--text-primary)]'"
+          :class="activeFilterModel === filter.key ? 'bg-[color-mix(in_srgb,var(--text-inverse)_20%,transparent)] text-[var(--text-inverse)]' : 'bg-[var(--bg-surface-active)] text-[var(--text-primary)]'"
         >
           {{ filter.count }}
         </UBadge>

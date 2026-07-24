@@ -1,4 +1,4 @@
-<!-- Description: Renders the create-group modal with phtml-style member search, selected participants, and optional avatar upload. -->
+<!-- English description: Renders the create-group modal with phtml-style member search, selected participants, and optional avatar upload. -->
 <template>
   <UModal v-model:open="openModel" :title="$t('pages.messagesPage.groupCreateTitle')" :ui="{ content: 'sm:max-w-[720px]' }">
     <template #body>
@@ -43,7 +43,7 @@
               :placeholder="$t('pages.messagesPage.groupCreateParticipantsPlaceholder')"
             />
 
-            <div class="rounded-[20px] border border-[var(--border-light)] bg-white">
+            <div class="rounded-[20px] border border-[var(--border-light)] bg-[var(--bg-surface)]">
               <div v-if="searchPending" class="space-y-2 p-3">
                 <USkeleton v-for="item in 4" :key="item" class="h-[58px] rounded-[16px]" />
               </div>
@@ -298,7 +298,7 @@ const onFileChange = (event: Event) => {
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  border: 2px dashed var(--border-default);
+  border: 2px dashed var(--border-light);
   background: var(--bg-muted);
   overflow: hidden;
   display: flex;
@@ -316,12 +316,12 @@ const onFileChange = (event: Event) => {
 .messages-group-create__avatar-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: color-mix(in srgb, var(--bg-media) 45%, transparent);
   opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--text-media);
   border-radius: 50%;
   transition: opacity 0.2s ease;
 }

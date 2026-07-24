@@ -12,15 +12,17 @@
       </div>
     </ClientOnly>
 
-    <UAlert
-      v-if="posts.length === 0"
-      color="neutral"
-      variant="subtle"
-      icon="i-ph-newspaper-clipping-bold"
-      :title="emptyTitle || t('pages.groupDetailPage.feedEmptyTitle')"
-      :description="emptyDescription || t('pages.groupDetailPage.feedEmptyDescription')"
-      class="rounded-[24px]"
-    />
+    <div v-if="posts.length === 0" class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-8 text-center shadow-sm">
+      <div class="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--bg-muted)] text-[var(--bg-brand)] mb-3">
+        <Icon name="i-ph-newspaper-clipping-duotone" class="h-7 w-7" />
+      </div>
+      <h3 class="text-base font-extrabold text-[var(--text-primary)]">
+        {{ emptyTitle || t('pages.groupDetailPage.feedEmptyTitle') }}
+      </h3>
+      <p class="mt-1 text-xs font-semibold text-[var(--text-secondary)]">
+        {{ emptyDescription || t('pages.groupDetailPage.feedEmptyDescription') }}
+      </p>
+    </div>
 
     <template v-else>
       <FeedPostCard

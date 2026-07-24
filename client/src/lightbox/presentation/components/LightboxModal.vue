@@ -574,7 +574,7 @@ onBeforeUnmount(() => {
   display: grid;
   min-height: 100vh;
   overflow-y: auto;
-  background: #000000;;
+  background: var(--color-secondary-900);
 }
 
 @media (min-width: 1024px) {
@@ -594,7 +594,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   box-sizing: border-box;
   padding: 24px 16px 72px;
-  background: #000000;;
+  background: var(--color-secondary-900);
 }
 
 @media (min-width: 768px) {
@@ -641,7 +641,7 @@ onBeforeUnmount(() => {
 }
 
 .lightbox-modal__video {
-  background: #000000;;
+  background: var(--color-secondary-900);
 }
 
 .lightbox-modal__empty {
@@ -652,7 +652,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   gap: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--text-inverse) 80%, transparent);
 }
 
 .lightbox-modal__nav {
@@ -667,15 +667,15 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: 9999px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--text-inverse) 80%, transparent);
   cursor: pointer;
   transform: translateY(-50%);
   transition: color 0.15s ease, background 0.15s ease;
 }
 
 .lightbox-modal__nav:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--text-inverse) 8%, transparent);
+  color: var(--text-inverse);
 }
 
 .lightbox-modal__nav--left {
@@ -693,7 +693,7 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--text-inverse) 90%, transparent);
   font-size: 14px;
 }
 
@@ -707,15 +707,15 @@ onBeforeUnmount(() => {
 }
 
 .lightbox-modal__stage-divider {
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--text-inverse) 45%, transparent);
 }
 
 .lightbox-modal__sidebar {
   display: flex;
   min-height: 44vh;
   flex-direction: column;
-  background: var(--bg-surface, #ffffff);
-  color: var(--text-primary, #0f172a);
+  background: var(--bg-surface);
+  color: var(--text-primary);
   overflow: hidden;
 }
 
@@ -731,7 +731,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 16px;
   padding: 24px 20px 16px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid var(--border-light);
   flex-shrink: 0;
 }
 
@@ -805,7 +805,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 20px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid var(--border-light);
   color: var(--text-secondary);
   font-size: 12px;
   flex-shrink: 0;
@@ -856,20 +856,20 @@ onBeforeUnmount(() => {
 .lightbox-modal__primary-action {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid var(--border-light);
   flex-shrink: 0;
 }
 
 .lightbox-modal__reaction-action {
   position: relative;
-  border-right: 1px solid rgba(15, 23, 42, 0.08);
+  border-right: 1px solid var(--border-light);
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
 }
 
 .lightbox-modal__comment-btn {
-  border-right: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-right: 1px solid var(--border-light) !important;
 }
 
 .lightbox-modal__like-btn,
@@ -916,10 +916,10 @@ onBeforeUnmount(() => {
   gap: 4px;
   max-width: calc(100vw - 32px);
   padding: 6px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 1px solid var(--border-light);
   border-radius: 9999px;
   background: var(--bg-surface);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--shadow-lg);
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
@@ -962,7 +962,7 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
   overflow-y: auto;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .lightbox-modal__caption,
@@ -1032,9 +1032,9 @@ onBeforeUnmount(() => {
 
 .lightbox-modal__composer {
   flex-shrink: 0;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  border-top: 1px solid var(--border-light);
   padding: 14px 20px 18px;
-  background: var(--bg-surface, #ffffff);
+  background: var(--bg-surface);
 }
 
 @media (max-width: 1180px) and (min-width: 1024px) {

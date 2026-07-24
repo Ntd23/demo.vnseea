@@ -103,7 +103,7 @@
             <button
               v-if="page.canManage"
               type="button"
-              class="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-white hover:bg-slate-100 text-[var(--text-primary)] transition-all shadow-md border border-slate-200 cursor-pointer z-10"
+              class="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--bg-surface)] hover:bg-[var(--bg-muted)] text-[var(--text-primary)] transition-all shadow-md border border-[var(--border-light)] cursor-pointer z-10"
               @click="triggerAvatarUpload"
             >
               <Icon name="i-ph-camera-bold" class="h-4 w-4" />
@@ -263,21 +263,23 @@
                   :post="post"
                 />
               </div>
-              <div v-else class="rounded-[20px] bg-white p-8 text-center text-[var(--text-secondary)] shadow-sm border border-slate-200">
+              <div v-else class="rounded-[20px] bg-[var(--bg-surface)] p-8 text-center text-[var(--text-secondary)] shadow-sm border border-[var(--border-light)]">
                 <Icon name="i-ph-magnifying-glass-duotone" class="mx-auto h-12 w-12 text-[var(--text-tertiary)] mb-2" />
                 <p class="font-semibold text-[var(--text-primary)]">Không tìm thấy bài viết nào phù hợp</p>
                 <p class="text-sm text-[var(--text-tertiary)] mt-1">Thử lại với từ khóa khác</p>
               </div>
             </div>
-            <UAlert
-              v-else
-              color="neutral"
-              variant="subtle"
-              icon="i-ph-newspaper-clipping-duotone"
-              :title="t('pages.pageDetailPage.feedEmptyTitle')"
-              :description="t('pages.pageDetailPage.feedEmptyDescription')"
-              class="rounded-[20px]"
-            />
+            <div v-else class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-8 text-center shadow-sm">
+              <div class="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--bg-muted)] text-[var(--bg-brand)] mb-3">
+                <Icon name="i-ph-newspaper-clipping-duotone" class="h-7 w-7" />
+              </div>
+              <h3 class="text-base font-extrabold text-[var(--text-primary)]">
+                {{ t('pages.pageDetailPage.feedEmptyTitle') }}
+              </h3>
+              <p class="mt-1 text-xs font-semibold text-[var(--text-secondary)]">
+                {{ t('pages.pageDetailPage.feedEmptyDescription') }}
+              </p>
+            </div>
           </div>
         </main>
 
@@ -294,7 +296,6 @@
                 placeholder=""
                 size="xl"
                 class="w-full"
-      :ui="{ base: 'h-12 rounded-xl bg-[var(--bg-surface)]' }"
                 clearable
               />
             </div>
@@ -561,13 +562,13 @@ async function handleOfferSaved() {
 /* ── Root ────────────────────────────────────────────── */
 .page-detail {
   min-height: 100vh;
-  background: #f0f2f5;
+  background: var(--bg-base);
 }
 
 /* ── Hero ────────────────────────────────────────────── */
 .page-detail__hero {
   background: var(--bg-surface);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 12px;
   border-bottom-left-radius: 18px;
   border-bottom-right-radius: 18px;
@@ -578,7 +579,7 @@ async function handleOfferSaved() {
   position: relative;
   height: 280px;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
+  background: linear-gradient(135deg, var(--color-secondary-900) 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 @media (min-width: 640px) { .page-detail__cover { height: 350px; } }
@@ -594,7 +595,7 @@ async function handleOfferSaved() {
 .page-detail__cover-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.18) 0%, transparent 42%);
+  background: linear-gradient(to top, color-mix(in srgb, var(--color-secondary-900) 18%, transparent) 0%, transparent 42%);
 }
 
 .page-detail__cover-actions {
@@ -615,7 +616,7 @@ async function handleOfferSaved() {
   height: 32px;
   font-size: 12px;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.9);
+  background: color-mix(in srgb, var(--bg-surface) 90%, transparent);
   color: var(--text-primary);
   text-decoration: none;
   backdrop-filter: blur(4px);
@@ -661,8 +662,8 @@ async function handleOfferSaved() {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  border: 4px solid var(--bg-surface);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -677,7 +678,7 @@ async function handleOfferSaved() {
 }
 
 .page-detail__avatar-initials {
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 2.5rem;
   font-weight: 900;
 }
@@ -753,13 +754,13 @@ async function handleOfferSaved() {
 
 @media (min-width: 1024px) {
   .page-detail__body {
-    grid-template-columns: minmax(0, 1fr) 360px;
+    grid-template-columns: 360px minmax(0, 1fr);
     align-items: start;
   }
 }
 
 @media (min-width: 1280px) {
-  .page-detail__body { grid-template-columns: minmax(0, 1fr) 380px; }
+  .page-detail__body { grid-template-columns: 380px minmax(0, 1fr); }
 }
 
 .page-detail__sidebar {
@@ -775,6 +776,7 @@ async function handleOfferSaved() {
   .page-detail__sidebar {
     position: sticky;
     top: 68px;
+    order: 1;
   }
 }
 
@@ -787,6 +789,12 @@ async function handleOfferSaved() {
   order: 1;
 }
 
+@media (min-width: 1024px) {
+  .page-detail__feed {
+    order: 2;
+  }
+}
+
 .page-detail__post-stack {
   display: flex;
   flex-direction: column;
@@ -795,19 +803,19 @@ async function handleOfferSaved() {
 
 .page-detail__icon-nav {
   overflow: hidden;
-  border: 1px solid #dbe3f2;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── Shared profile-card styles (mirrors ProfilePage) ── */
 .profile-card {
   overflow: hidden;
-  border: 1px solid #dbe3f2;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   padding: 16px;
 }
 
@@ -830,7 +838,7 @@ async function handleOfferSaved() {
 
 .profile-card__head--bordered {
   min-height: 52px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-light);
   padding: 12px 16px;
 }
 
@@ -850,7 +858,7 @@ async function handleOfferSaved() {
   justify-content: center;
   border-radius: 999px;
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .profile-card__rows {
@@ -862,9 +870,9 @@ async function handleOfferSaved() {
   min-height: 32px;
   align-items: center;
   gap: 14px;
-  border-bottom: 1px solid #eef2f7;
+  border-bottom: 1px solid var(--border-light);
   padding: 5px 16px;
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.3;
 }
@@ -877,7 +885,7 @@ async function handleOfferSaved() {
   width: 17px;
   height: 17px;
   flex: 0 0 auto;
-  color: #7b8190;
+  color: var(--text-tertiary);
 }
 
 .profile-card__row-value {
@@ -887,20 +895,20 @@ async function handleOfferSaved() {
 
 .profile-card__row-tail {
   margin-left: auto;
-  color: #374151;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .profile-card__weekly {
   margin-left: auto;
-  color: #31a24c;
+  color: var(--text-success);
   white-space: nowrap;
 }
 
 .profile-card__about-text {
   margin: 0;
   padding: 18px 16px 22px;
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -913,7 +921,7 @@ async function handleOfferSaved() {
 }
 
 .suggested-page + .suggested-page {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-light);
 }
 
 .suggested-page__cover {
@@ -938,11 +946,11 @@ async function handleOfferSaved() {
   justify-content: center;
   overflow: hidden;
   border-radius: 999px;
-  border: 2px solid #ffffff;
-  color: #ffffff;
+  border: 2px solid var(--bg-surface);
+  color: var(--text-inverse);
   font-size: 13px;
   font-weight: 900;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+  box-shadow: var(--shadow-sm);
 }
 
 .suggested-page__avatar-img {
@@ -1015,7 +1023,7 @@ async function handleOfferSaved() {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  border: 4px solid #ffffff;
+  border: 4px solid var(--bg-surface);
 }
 
 @media (min-width: 768px) {
@@ -1044,7 +1052,7 @@ async function handleOfferSaved() {
 
 @media (min-width: 1024px) {
   .page-detail__skeleton-body {
-    grid-template-columns: minmax(0, 1fr) 360px;
+    grid-template-columns: 360px minmax(0, 1fr);
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 16px;

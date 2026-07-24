@@ -62,9 +62,9 @@ defineEmits<{ select: [id: string] }>()
 <style scoped>
 .related {
   background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -121,7 +121,7 @@ defineEmits<{ select: [id: string] }>()
 .related-item {
   width: 100%;
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   padding: 10px;
   text-align: left;
@@ -160,7 +160,7 @@ defineEmits<{ select: [id: string] }>()
   aspect-ratio: 16/9;
   overflow: hidden;
   border-radius: 10px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
 }
 
 .related-item__img {
@@ -179,11 +179,11 @@ defineEmits<{ select: [id: string] }>()
   bottom: 6px;
   right: 6px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.72);
+  background: color-mix(in srgb, var(--bg-media) 72%, transparent);
   padding: 2px 6px;
   font-size: 10px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-media);
   backdrop-filter: blur(4px);
 }
 
@@ -229,7 +229,7 @@ defineEmits<{ select: [id: string] }>()
 }
 
 .related-item__dot {
-  color: #cbd5e1;
+  color: var(--text-tertiary);
 }
 
 .related-item__category {

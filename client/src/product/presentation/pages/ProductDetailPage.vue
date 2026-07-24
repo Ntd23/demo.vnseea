@@ -80,7 +80,7 @@
                 :key="star"
                 name="i-ph-star-fill"
                 class="h-4 w-4"
-                :class="star <= ratingValue ? 'text-[#f6b600]' : 'text-[#d6deea]'"
+                :class="star <= ratingValue ? 'text-[var(--color-warning)]' : 'text-[var(--text-tertiary)]'"
               />
             </span>
             <button type="button">{{ $t("pages.productDetailPage.reviews", { count: 0 }) }}</button>
@@ -129,7 +129,7 @@
 
           <ul class="product-detail-info">
             <li v-if="product.location">
-              <span><Icon name="i-ph-map-pin-fill" class="text-[#0ea5e9]" /> {{ $t("pages.productDetailPage.location") }}</span>
+              <span><Icon name="i-ph-map-pin-fill" class="text-[var(--color-success)]" /> {{ $t("pages.productDetailPage.location") }}</span>
               <strong>{{ product.location }}</strong>
             </li>
             <li>
@@ -386,7 +386,7 @@ useSeoMeta({
   margin-bottom: 16px;
   border: 0;
   background: transparent;
-  color: var(--text-secondary, #334155);
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: 16px;
   font-weight: 800;
@@ -394,10 +394,10 @@ useSeoMeta({
 
 .product-detail-card,
 .product-detail-related {
-  border: 1px solid var(--border-light, #e2e8f0);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .product-detail-card {
@@ -425,7 +425,7 @@ useSeoMeta({
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 14px;
-  background: #eef3fb;
+  background: var(--bg-muted);
   object-fit: cover;
 }
 
@@ -435,7 +435,7 @@ useSeoMeta({
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: #8b9bb2;
+  color: var(--text-tertiary);
   font-size: 16px;
   font-weight: 800;
   text-align: center;
@@ -456,7 +456,7 @@ useSeoMeta({
   flex: 0 0 auto;
   border: 2px solid transparent;
   border-radius: 12px;
-  background: #eef3fb;
+  background: var(--bg-muted);
   cursor: pointer;
   padding: 0;
 }
@@ -478,7 +478,7 @@ useSeoMeta({
 
 .product-detail-title {
   margin: 0;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   font-size: 31px;
   font-weight: 800;
   line-height: 1.16;
@@ -506,7 +506,7 @@ useSeoMeta({
 .product-detail-rating button {
   border: 0;
   background: transparent;
-  color: var(--text-tertiary, #64748b);
+  color: var(--text-tertiary);
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
@@ -527,20 +527,20 @@ useSeoMeta({
   width: 42px;
   height: 42px;
   border-radius: 999px;
-  color: #ffffff;
+  color: var(--text-inverse);
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--color-brand, var(--bg-brand)) 100%);
   font-weight: 800;
 }
 
 .product-detail-seller p {
   margin: 0 0 2px;
-  color: var(--text-tertiary, #64748b);
+  color: var(--text-tertiary);
   font-size: 12px;
   font-weight: 800;
 }
 
 .product-detail-seller strong {
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -564,8 +564,8 @@ useSeoMeta({
   justify-content: center;
   gap: 8px;
   padding: 0 14px;
-  color: var(--text-secondary, #334155);
-  background: #eef3fb;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
   text-decoration: none;
 }
 
@@ -582,7 +582,7 @@ useSeoMeta({
   grid-template-columns: 126px minmax(0, 1fr);
   align-items: flex-start;
   column-gap: 12px;
-  border-bottom: 1px solid #eef2f8;
+  border-bottom: 1px solid var(--border-light);
   padding: 12px 0;
 }
 
@@ -592,7 +592,7 @@ useSeoMeta({
   justify-content: flex-start;
   min-width: 0;
   gap: 6px;
-  color: var(--text-tertiary, #64748b);
+  color: var(--text-tertiary);
   font-weight: 800;
   line-height: 1.25;
   text-align: left;
@@ -607,7 +607,7 @@ useSeoMeta({
 
 .product-detail-info strong {
   min-width: 0;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   font-weight: 800;
   justify-self: end;
   text-align: right;
@@ -616,7 +616,7 @@ useSeoMeta({
 
 .product-detail-section {
   grid-column: 1 / -1;
-  border-top: 1px solid #eef2f8;
+  border-top: 1px solid var(--border-light);
   padding-top: 22px;
 }
 
@@ -626,21 +626,21 @@ useSeoMeta({
   align-items: center;
   gap: 8px;
   margin: 0 0 12px;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   font-size: 19px;
   font-weight: 800;
 }
 
 .product-detail-section p {
   margin: 0;
-  color: var(--text-secondary, #334155);
+  color: var(--text-secondary);
   font-size: 15px;
   line-height: 1.7;
   white-space: pre-line;
 }
 
 .product-detail-muted {
-  color: var(--text-muted, #94a3b8) !important;
+  color: var(--text-tertiary) !important;
 }
 
 .product-detail-map {
@@ -650,10 +650,10 @@ useSeoMeta({
   justify-content: center;
   flex-direction: column;
   gap: 10px;
-  border: 1px solid #e5eaf1;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  color: #5f6368;
-  background: linear-gradient(135deg, #f7f4ed 0%, #f2f0ea 100%);
+  color: var(--text-secondary);
+  background: var(--bg-muted);
   text-align: center;
   text-decoration: none;
 }
@@ -683,16 +683,16 @@ useSeoMeta({
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: #eef3fb;
+  background: var(--bg-muted);
   object-fit: cover;
-  color: #8b9bb2;
+  color: var(--text-tertiary);
 }
 
 .product-detail-related-card strong {
   display: block;
   overflow: hidden;
   margin-top: 8px;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 700;
   text-overflow: ellipsis;

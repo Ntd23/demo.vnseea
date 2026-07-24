@@ -36,16 +36,16 @@ const { t } = useI18n()
   min-height: 100svh;
   background:
     radial-gradient(circle at top left, color-mix(in srgb, var(--bg-brand) 8%, transparent), transparent 34rem),
-    var(--surface-app, #f1f4fb);
-  color: var(--text-primary, #0f172a);
+    var(--bg-base);
+  color: var(--text-primary);
 }
 
 .public-layout__header {
   position: sticky;
   top: 0;
   z-index: 30;
-  border-bottom: 1px solid var(--border-light, #dbe3f2);
-  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid var(--border-light);
+  background: color-mix(in srgb, var(--bg-surface) 90%, transparent);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
@@ -67,7 +67,7 @@ const { t } = useI18n()
 }
 
 .public-layout__nav-link {
-  color: var(--text-secondary, #475569);
+  color: var(--text-secondary);
   font-size: 0.86rem;
   font-weight: 750;
   text-decoration: none;
