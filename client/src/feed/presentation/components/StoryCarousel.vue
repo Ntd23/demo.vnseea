@@ -101,7 +101,7 @@
               :key="`video-${activeStoryData.id}`"
               :src="activeStoryData.media"
               :poster="activeStoryData.poster || undefined"
-              class="story-viewer__media"
+              class="story-viewer__media story-viewer__media--video"
               autoplay
               muted
               playsinline
@@ -142,7 +142,10 @@
               </div>
             </div>
 
-            <div class="story-viewer__author">
+            <div
+              class="story-viewer__author"
+              :class="{ 'story-viewer__author--mine': activeStoryIsMine }"
+            >
               <div class="story-viewer__author-avatar">
                 <NuxtImg
                   v-if="activeStoryData?.avatarUrl"
@@ -170,13 +173,31 @@
               </UBadge>
             </div>
 
-            <button
-              class="story-viewer__close"
-              type="button"
-              @click="closeStory"
+            <div
+              class="story-viewer__actions"
+              @touchstart.stop
+              @touchend.stop
             >
-              <Icon name="i-ph-x-bold" class="h-4 w-4" />
-            </button>
+              <button
+                v-if="activeStoryIsMine"
+                class="story-viewer__action story-viewer__action--delete"
+                type="button"
+                :aria-label="t('feed.storyCarousel.deleteStory')"
+                :title="t('feed.storyCarousel.deleteStory')"
+                :disabled="storyActionState === 'loading'"
+                @click.stop="requestDeleteStory"
+              >
+                <Icon name="i-ph-trash-fill" class="h-4 w-4" />
+              </button>
+              <button
+                class="story-viewer__action"
+                type="button"
+                :aria-label="t('feed.storyCarousel.closeStory')"
+                @click="closeStory"
+              >
+                <Icon name="i-ph-x-bold" class="h-4 w-4" />
+              </button>
+            </div>
 
             <button
               class="story-viewer__nav story-viewer__nav--previous"
@@ -303,6 +324,46 @@
       </Transition>
     </Teleport>
 
+    <UModal
+      :open="deleteConfirmOpen"
+      :dismissible="storyActionState !== 'loading'"
+      :title="t('feed.storyCarousel.deleteConfirmTitle')"
+      :ui="{
+        overlay: 'z-[2147483600]',
+        content: 'z-[2147483647] sm:max-w-[420px]',
+      }"
+      @update:open="handleDeleteModalOpenChange"
+    >
+      <template #body>
+        <p class="story-delete-modal__copy">
+          {{ t("feed.storyCarousel.deleteConfirmDescription") }}
+        </p>
+        <p v-if="storyActionError" class="story-delete-modal__error">
+          {{ storyActionError }}
+        </p>
+      </template>
+      <template #footer>
+        <div class="story-delete-modal__actions">
+          <UButton
+            color="neutral"
+            variant="soft"
+            :disabled="storyActionState === 'loading'"
+            @click="cancelDeleteStory"
+          >
+            {{ t("feed.storyCarousel.cancel") }}
+          </UButton>
+          <UButton
+            color="error"
+            icon="i-ph-trash-fill"
+            :loading="storyActionState === 'loading'"
+            @click="deleteStory"
+          >
+            {{ t("feed.storyCarousel.confirmDelete") }}
+          </UButton>
+        </div>
+      </template>
+    </UModal>
+
     <StoryAppInterstitial v-model="appPromptOpen" />
   </div>
 </template>
@@ -336,6 +397,7 @@ const {
   activeVideoPaused,
   storyActionState,
   storyActionError,
+  deleteConfirmOpen,
   storyReactionOptions,
   storyGroups,
   storyQueue,
@@ -356,6 +418,10 @@ const {
   rememberStoryPointer,
   openStoryFromPointer,
   closeStory,
+  requestDeleteStory,
+  cancelDeleteStory,
+  handleDeleteModalOpenChange,
+  deleteStory,
   focusReply,
   startReactionPress,
   finishReactionPress,
@@ -388,7 +454,7 @@ async function handleCreateStory() {
 .story-viewer {
   position: fixed;
   inset: 0;
-  z-index: 2147483647;
+  z-index: 2147483500;
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -438,6 +504,10 @@ async function handleCreateStory() {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.story-viewer__media--video {
+  object-fit: contain;
 }
 
 .story-viewer__fallback {
@@ -519,6 +589,10 @@ async function handleCreateStory() {
   color: #ffffff;
 }
 
+.story-viewer__author--mine {
+  right: 100px;
+}
+
 .story-viewer__author-avatar {
   display: flex;
   width: 38px;
@@ -555,11 +629,16 @@ async function handleCreateStory() {
   color: rgba(255, 255, 255, 0.72);
 }
 
-.story-viewer__close {
+.story-viewer__actions {
   position: absolute;
   right: 12px;
   top: 24px;
   z-index: 5;
+  display: flex;
+  gap: 8px;
+}
+
+.story-viewer__action {
   display: flex;
   width: 34px;
   height: 34px;
@@ -573,8 +652,58 @@ async function handleCreateStory() {
   transition: background 0.15s ease;
 }
 
-.story-viewer__close:hover {
+.story-viewer__action:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.32);
+}
+
+.story-viewer__action:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.story-viewer__action--delete {
+  background: rgba(127, 29, 29, 0.72);
+}
+
+.story-viewer__action--delete:hover:not(:disabled) {
+  background: rgba(185, 28, 28, 0.88);
+}
+
+.story-delete-modal__copy {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.story-delete-modal__error {
+  margin-top: 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-error-500) 12%, transparent);
+  padding: 10px 12px;
+  color: var(--color-error-600);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.story-delete-modal__actions {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 639px) {
+  .story-viewer__actions {
+    top: max(16px, env(safe-area-inset-top, 0px));
+  }
+
+  .story-delete-modal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .story-delete-modal__actions :deep(button) {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .story-viewer__nav {

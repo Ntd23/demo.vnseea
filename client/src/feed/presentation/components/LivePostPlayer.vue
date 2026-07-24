@@ -5,11 +5,20 @@
       ref="stageElement"
       class="feed-live-player__stage"
       :class="[
-        { 'feed-live-player__stage--fullscreen': isFullscreen },
+        {
+          'feed-live-player__stage--fullscreen': isFullscreen,
+          'feed-live-player__stage--has-poster': Boolean(posterUrl),
+        },
         `feed-live-player__stage--${videoOrientation}`,
       ]"
     >
       <div ref="stageHost" class="feed-live-player__video-host" />
+      <img
+        v-if="!connected && posterUrl"
+        :src="posterUrl"
+        :alt="author || t('pages.livePage.viewer.ended')"
+        class="feed-live-player__poster"
+      >
 
       <!-- Placeholder before viewer joins -->
       <div v-if="!connected" class="feed-live-player__placeholder">
@@ -258,7 +267,7 @@
       </TransitionGroup>
     </div>
 
-    <p v-if="errorMessage || joinError" class="feed-live-player__error">
+    <p v-if="liveState !== 'offline' && (errorMessage || joinError)" class="feed-live-player__error">
       {{ errorMessage || joinError }}
     </p>
   </section>
@@ -281,6 +290,7 @@ const props = defineProps<{
   authorUserId?: number
   author?: string
   authorAvatarUrl?: string
+  posterUrl?: string
   canShare?: boolean
 }>()
 
@@ -332,6 +342,7 @@ watch(stageHost, element => setStageHost(element), { flush: "post", immediate: t
 watch(connected, (nextConnected, wasConnected) => {
   if (!nextConnected && wasConnected && liveState.value === "live") {
     liveState.value = "stale"
+    void refreshHeartbeat()
   }
 })
 
@@ -393,7 +404,7 @@ async function joinLive() {
 }
 
 async function refreshHeartbeat() {
-  if (!connected.value) return
+  if (liveState.value === "offline") return
 
   try {
     const heartbeat = await repository.getHeartbeat(props.postId, knownCommentIds.value, "story")
@@ -433,6 +444,7 @@ async function refreshHeartbeat() {
 
     if (heartbeat.stillLive === "offline") {
       pause()
+      await exitFullscreenIfNeeded()
       disconnect()
       reportEnded()
     }
@@ -666,6 +678,16 @@ onBeforeUnmount(() => {
   z-index: 1;
 }
 
+.feed-live-player__poster {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.58);
+}
+
 .feed-live-player__stage--portrait .feed-live-player__video-host :deep(video) {
   object-fit: contain;
   background: #020617;
@@ -690,6 +712,10 @@ onBeforeUnmount(() => {
   padding: 20px;
   background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.82) 0%, rgba(2, 6, 23, 0.98) 100%);
   color: #fff;
+}
+
+.feed-live-player__stage--has-poster .feed-live-player__placeholder {
+  background: linear-gradient(180deg, rgba(2, 6, 23, 0.5), rgba(2, 6, 23, 0.82));
 }
 
 .feed-live-player__placeholder-card {
@@ -808,6 +834,11 @@ onBeforeUnmount(() => {
   background: rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(8px);
   box-shadow: none;
+}
+
+.feed-live-player__live-pill--offline .feed-live-player__pulse-dot {
+  animation: none;
+  opacity: 0.72;
 }
 
 .feed-live-player__pulse-dot {

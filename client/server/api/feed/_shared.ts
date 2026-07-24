@@ -930,8 +930,9 @@ const mapCommentRecord = (
   const username = firstString(publisher, ["username"])
   const imageUrl = resolveMediaUrl(firstString(entity, ["c_file", "comment_image", "image"]))
   const audioUrl = resolveMediaUrl(firstString(entity, ["record", "audio"]))
-  const attachment = audioUrl
-    ? { type: "audio" as const, url: audioUrl }
+  const fileAttachmentIsAudio = /\.(?:mp3|wav|m4a|aac|ogg|webm)(?:[?#].*)?$/i.test(imageUrl)
+  const attachment = audioUrl || fileAttachmentIsAudio
+    ? { type: "audio" as const, url: audioUrl || imageUrl }
     : imageUrl
       ? { type: imageUrl.toLowerCase().includes(".gif") ? "gif" as const : "image" as const, url: imageUrl }
       : undefined
@@ -1035,8 +1036,8 @@ export const mapPostRecord = (
   const liveTime = firstNumber(entity, ["live_time", "liveTime"])
   const liveEnded = isTruthy(entity.live_ended)
   const liveHeartbeatAge = liveTime > 0 ? Math.max(0, Math.floor(Date.now() / 1000) - liveTime) : 0
-  // Keep the type long enough for the feed to exclude finished broadcasts
-  // instead of rendering them as ordinary empty posts.
+  // Keep the live type after completion so the feed renders the dedicated
+  // ended-broadcast card rather than degrading it into an empty text post.
   const isLive = firstString(entity, ["postType", "post_type", "type"]) === "live"
     || Boolean(liveStreamName)
     || liveEnded
@@ -2110,11 +2111,15 @@ export async function runCommentAction(
     action: "reply"
     commentId: number
     text?: string
+    imageFile?: BackendMultipartFile | null
+    gifFile?: BackendMultipartFile | null
+    audioFile?: BackendMultipartFile | null
   } | {
     action: "reaction"
     target: "comment" | "reply"
     targetId: number
-    reaction: FeedStoryReactionType
+    reaction?: FeedStoryReactionType
+    remove?: boolean
   },
 ) {
   if (input.action === "reply") {
@@ -2127,18 +2132,45 @@ export async function runCommentAction(
 
     const client = createBackendApiClient(event)
     const resolveMediaUrl = createBackendMediaUrlResolver(event)
+    const mediaFile = input.gifFile ?? input.imageFile ?? null
+    const hasAttachment = Boolean(mediaFile || input.audioFile)
+    const body: FormData | Record<string, unknown> = hasAttachment
+      ? new FormData()
+      : {
+          type: "create_reply",
+          comment_id: input.commentId,
+          text: input.text ?? "",
+        }
+
+    if (body instanceof FormData) {
+      body.append("type", "create_reply")
+      body.append("comment_id", String(input.commentId))
+      body.append("text", input.text ?? "")
+
+      if (mediaFile) {
+        body.append(
+          "image",
+          new Blob([mediaFile.data], { type: mediaFile.type || "application/octet-stream" }),
+          mediaFile.filename || "reply-image",
+        )
+      }
+      if (input.audioFile) {
+        body.append(
+          "audio",
+          new Blob([input.audioFile.data], { type: input.audioFile.type || "audio/wav" }),
+          input.audioFile.filename || "reply-audio.wav",
+        )
+      }
+    }
+
     const response = assertBackendApiSuccess(
       await client.post<{
         api_status?: number | string
         data?: BackendEntity
         errors?: { error_text?: string }
-      }, Record<string, unknown>>(
+      }, FormData | Record<string, unknown>>(
         "comments",
-        {
-          type: "create_reply",
-          comment_id: input.commentId,
-          text: input.text ?? "",
-        },
+        body,
       ),
       "Unable to reply to comment.",
     )
@@ -2152,14 +2184,14 @@ export async function runCommentAction(
   }
 
   if (input.action === "reaction") {
-    if (!input.targetId) {
+    if (!input.targetId || (!input.remove && !input.reaction)) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Reaction target id is required.",
+        statusMessage: "Comment reaction payload is invalid.",
       })
     }
 
-    const response = assertBackendApiSuccess(
+    assertBackendApiSuccess(
       await createBackendApiClient(event).post<{
         api_status?: number | string
         message?: string
@@ -2168,9 +2200,13 @@ export async function runCommentAction(
         "comments",
         {
           type: input.target === "reply" ? "reaction_reply" : "reaction_comment",
-          reaction: isFeedStoryReaction(input.reaction)
-            ? feedStoryReactionBackendIds[input.reaction]
-            : input.reaction,
+          ...(input.remove
+            ? { remove_reaction: 1 }
+            : {
+                reaction: input.reaction && isFeedStoryReaction(input.reaction)
+                  ? feedStoryReactionBackendIds[input.reaction]
+                  : input.reaction,
+              }),
           ...(input.target === "reply"
             ? { reply_id: input.targetId }
             : { comment_id: input.targetId }),
@@ -2181,8 +2217,7 @@ export async function runCommentAction(
 
     return {
       ok: true,
-      reaction: input.reaction,
-      reactionsCount: response.message?.includes("deleted") ? 0 : undefined,
+      reaction: input.remove ? null : input.reaction,
     }
   }
 

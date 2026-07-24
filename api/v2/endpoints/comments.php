@@ -221,7 +221,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
     }
 
     if ($_POST['type'] == 'create_reply') {
-        if (!empty($_POST['comment_id']) && (!empty($_POST['text']) || !empty($_FILES['image']))) {
+        if (!empty($_POST['comment_id']) && (!empty($_POST['text']) || !empty($_FILES['image']) || !empty($_FILES['audio']))) {
             $realtime_post_id = $resolve_comment_post_id($_POST['comment_id']);
             $page_id = '';
             if (!empty($_POST['page_id'])) {
@@ -239,6 +239,21 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                 $media    = Wo_ShareFile($fileInfo);
                 if (!empty($media)) {
                     $comment_image    = $media['filename'];
+                }
+            }
+            if (!empty($_FILES["audio"])) {
+                $fileInfo = array(
+                    'file' => $_FILES["audio"]["tmp_name"],
+                    'name' => $_FILES['audio']['name'],
+                    'size' => $_FILES["audio"]["size"],
+                    'type' => $_FILES["audio"]["type"],
+                    'types' => 'mp3,wav'
+                );
+                $media = Wo_ShareFile($fileInfo);
+                if (!empty($media)) {
+                    // Comment replies expose c_file rather than record. The
+                    // Nuxt mapper recognizes audio extensions.
+                    $comment_image = $media['filename'];
                 }
             }
             if (empty($comment_image) && empty($_POST['text'])) {
@@ -400,7 +415,17 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
             if (!empty($comment)) {
 
                 $reactions_types = array_keys($wo['reactions_types']);
-                if (!empty($_POST['reaction']) && in_array($_POST['reaction'], $reactions_types)) {
+                if (!empty($_POST['remove_reaction'])) {
+                    if (Wo_IsReacted($comment_id, $wo['user']['user_id'],'comment') == true) {
+                        Wo_DeleteCommentReactions($comment_id);
+                    }
+                    $response_data = array(
+                                    'api_status' => 200,
+                                    'message' => "reaction successfully deleted."
+                                );
+                    Wo_PublishRealtimePostChange($comment['post_id'], 'comment');
+                }
+                elseif (!empty($_POST['reaction']) && in_array($_POST['reaction'], $reactions_types)) {
                     $reaction = Wo_Secure($_POST['reaction']);
                     Wo_AddCommentReactions($comment_id, $reaction);
 
@@ -442,7 +467,17 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
 				$realtime_post_id = $resolve_reply_post_id($reply_id);
 
                 $reactions_types = array_keys($wo['reactions_types']);
-                if (!empty($_POST['reaction']) && in_array($_POST['reaction'], $reactions_types)) {
+                if (!empty($_POST['remove_reaction'])) {
+                    if (Wo_IsReacted($reply_id, $wo['user']['user_id'],'replay') == true) {
+                        Wo_DeleteReplayReactions($reply_id);
+                    }
+                    $response_data = array(
+                                    'api_status' => 200,
+                                    'message' => "reaction successfully deleted."
+                                );
+                    Wo_PublishRealtimePostChange($realtime_post_id, 'comment');
+                }
+                elseif (!empty($_POST['reaction']) && in_array($_POST['reaction'], $reactions_types)) {
                     $reaction = Wo_Secure($_POST['reaction']);
                     Wo_AddReplayReactions($wo['user']['id'],$reply_id, $reaction);
 

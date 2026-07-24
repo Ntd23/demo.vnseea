@@ -20,11 +20,19 @@
       :aria-label="canOpen ? t('navigation.chatWidget.openStoryReply') : unavailableLabel"
       @click.stop="viewerOpen = true"
     >
+      <img
+        v-if="hasVideoPoster"
+        :src="story.posterUrl"
+        :alt="story.title || story.author || t('navigation.chatWidget.storyReply')"
+        class="message-story__preview-media message-story__preview-media--video"
+        loading="lazy"
+        @load="handleImageLoad"
+        @error="markPosterFailed"
+      >
       <video
-        v-if="story.mediaType === 'video' && story.mediaUrl"
+        v-else-if="story.mediaType === 'video' && story.mediaUrl"
         :src="story.mediaUrl"
-        :poster="story.posterUrl"
-        class="message-story__preview-media"
+        class="message-story__preview-media message-story__preview-media--video"
         muted
         playsinline
         preload="auto"
@@ -133,7 +141,13 @@ const props = defineProps<{
 const { t } = useI18n()
 const viewerOpen = ref(false)
 const mediaOrientation = ref<StoryMediaOrientation>("portrait")
+const failedPosterUrl = ref("")
 const canOpen = computed(() => props.story.available && Boolean(props.story.mediaUrl))
+const hasVideoPoster = computed(() =>
+  props.story.mediaType === "video"
+  && Boolean(props.story.posterUrl)
+  && failedPosterUrl.value !== props.story.posterUrl,
+)
 const unavailableLabel = computed(() => t("navigation.chatWidget.storyUnavailable"))
 const replyLabel = computed(() => {
   const name = props.isMine
@@ -170,9 +184,13 @@ function prepareVideoPreview(event: Event) {
   const video = event.currentTarget as HTMLVideoElement
 
   video.pause()
-  if (!props.story.posterUrl && Number.isFinite(video.duration) && video.duration > 0.1) {
+  if (!hasVideoPoster.value && Number.isFinite(video.duration) && video.duration > 0.1) {
     video.currentTime = Math.min(0.1, video.duration / 2)
   }
+}
+
+function markPosterFailed() {
+  failedPosterUrl.value = props.story.posterUrl || ""
 }
 
 function closeViewer() {
@@ -188,6 +206,7 @@ function handleKeydown(event: KeyboardEvent) {
 watch(() => props.story.id, () => {
   viewerOpen.value = false
   mediaOrientation.value = "portrait"
+  failedPosterUrl.value = ""
 })
 
 onMounted(() => document.addEventListener("keydown", handleKeydown))
@@ -282,6 +301,10 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown))
 .message-story__preview-media {
   object-fit: cover;
   pointer-events: none;
+}
+
+.message-story__preview-media--video {
+  object-fit: contain;
 }
 
 .message-story__fallback {

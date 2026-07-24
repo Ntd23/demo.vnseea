@@ -44,6 +44,15 @@ export default defineEventHandler(async (event) => {
       continue
     }
 
+    if (part.filename && part.name === "cover") {
+      payload.append(
+        "cover",
+        new Blob([part.data], { type: part.type || "image/jpeg" }),
+        part.filename,
+      )
+      continue
+    }
+
     const value = part.data.toString().trim()
 
     if (!value) {

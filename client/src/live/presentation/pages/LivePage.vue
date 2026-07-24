@@ -7,7 +7,10 @@
       'studio--broadcasting': Boolean(session),
     }"
   >
-    <div class="studio__shell studio__shell--2col">
+    <div
+      class="studio__shell studio__shell--2col"
+      :class="{ 'studio__shell--comments-hidden': session && !commentsVisible }"
+    >
 
       <LiveSetupPanel
         v-if="!session"
@@ -33,7 +36,7 @@
         @toggle-audio="toggleAudio"
         @start-live="handleStartLive"
       />
-      <aside v-else class="studio__side-panel">
+      <aside v-else v-show="commentsVisible" class="studio__side-panel">
         <LiveChat
           :items="chatItems"
           :live-state="liveState"
@@ -203,11 +206,32 @@
                 >
                   <span><UIcon :name="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'" /></span>
                 </button>
+                <button
+                  type="button"
+                  class="studio__mobile-device studio__mobile-comments-toggle"
+                  :class="{ 'studio__mobile-device--active': commentsVisible }"
+                  :aria-pressed="commentsVisible"
+                  :aria-label="commentsToggleLabel"
+                  @click="toggleComments"
+                >
+                  <span>
+                    <UIcon
+                      :name="commentsVisible ? 'i-ph-chat-circle-dots-bold' : 'i-ph-chat-circle-slash-bold'"
+                      class="studio__mobile-comments-icon"
+                    />
+                  </span>
+                </button>
               </div>
 
-              <div class="studio__mobile-live-comments">
+              <div
+                v-show="commentsVisible"
+                ref="mobileCommentsEl"
+                class="studio__mobile-live-comments"
+                tabindex="0"
+                :aria-label="t('pages.livePage.viewer.commentsList')"
+              >
                 <article
-                  v-for="item in chatItems.slice(-5)"
+                  v-for="item in chatItems"
                   :key="`mobile-${item.kind}-${item.id}-${item.username}-${item.timeText}`"
                   class="studio__mobile-live-comment"
                 >
@@ -219,7 +243,11 @@
                 </article>
               </div>
 
-              <form class="studio__mobile-live-composer" @submit.prevent="submitMobileChat">
+              <form
+                v-show="commentsVisible"
+                class="studio__mobile-live-composer"
+                @submit.prevent="submitMobileChat"
+              >
                 <input
                   v-model="mobileChatDraft"
                   :disabled="chatSending || liveState !== 'live'"
@@ -276,6 +304,17 @@
                 @click="toggleAudio"
               />
               <UButton
+                :icon="commentsVisible ? 'i-ph-chat-circle-dots-bold' : 'i-ph-chat-circle-slash-bold'"
+                :aria-label="commentsToggleLabel"
+                :aria-pressed="commentsVisible"
+                :color="commentsVisible ? 'primary' : 'neutral'"
+                variant="solid"
+                size="md"
+                square
+                class="studio__stage-control-btn"
+                @click="toggleComments"
+              />
+              <UButton
                 color="error"
                 variant="solid"
                 size="md"
@@ -320,9 +359,15 @@
                 >
               </div>
 
-              <div class="studio__fs-comments">
+              <div
+                v-show="commentsVisible"
+                ref="fullscreenCommentsEl"
+                class="studio__fs-comments"
+                tabindex="0"
+                :aria-label="t('pages.livePage.viewer.commentsList')"
+              >
                 <article
-                  v-for="item in chatItems.slice(-8)"
+                  v-for="item in chatItems"
                   :key="`fs-${item.kind}-${item.id}-${item.username}-${item.timeText}`"
                   class="studio__fs-comment"
                 >
@@ -334,7 +379,11 @@
                 </article>
               </div>
 
-              <form class="studio__fs-chat-form" @submit.prevent="submitFullscreenChat">
+              <form
+                v-show="commentsVisible"
+                class="studio__fs-chat-form"
+                @submit.prevent="submitFullscreenChat"
+              >
                 <input
                   v-model="fullscreenChatDraft"
                   class="studio__fs-chat-input"
@@ -613,6 +662,9 @@ const chatErrorMessage = ref("")
 const fullscreenChatDraft = ref("")
 const mobileChatDraft = ref("")
 const showMobileElapsed = ref(false)
+const commentsVisible = ref(true)
+const mobileCommentsEl = ref<HTMLElement | null>(null)
+const fullscreenCommentsEl = ref<HTMLElement | null>(null)
 const floatingReactions = ref<Array<{ id: number; src: string; x: number }>>([])
 const animatedReactionIds = new Set<number>()
 let liveClockTimer: ReturnType<typeof window.setInterval> | null = null
@@ -620,6 +672,58 @@ let liveClockTimer: ReturnType<typeof window.setInterval> | null = null
 const chatItems = computed(() =>
   activityItems.value.filter(item => item.kind === "comment").slice(-24),
 )
+const commentsToggleLabel = computed(() =>
+  commentsVisible.value
+    ? t("pages.livePage.viewer.hideComments")
+    : t("pages.livePage.viewer.showComments"),
+)
+
+const isCommentsViewportNearBottom = (element: HTMLElement | null) =>
+  !element
+  || element.scrollHeight - element.scrollTop - element.clientHeight < 56
+
+const scrollCommentsToLatest = (element: HTMLElement | null) => {
+  if (element) {
+    element.scrollTop = element.scrollHeight
+  }
+}
+
+async function toggleComments() {
+  commentsVisible.value = !commentsVisible.value
+
+  if (commentsVisible.value) {
+    await nextTick()
+    scrollCommentsToLatest(mobileCommentsEl.value)
+    scrollCommentsToLatest(fullscreenCommentsEl.value)
+  }
+}
+
+watch(
+  () => chatItems.value.at(-1)?.id,
+  async () => {
+    const followMobileComments = isCommentsViewportNearBottom(mobileCommentsEl.value)
+    const followFullscreenComments = isCommentsViewportNearBottom(fullscreenCommentsEl.value)
+
+    await nextTick()
+
+    if (followMobileComments) {
+      scrollCommentsToLatest(mobileCommentsEl.value)
+    }
+    if (followFullscreenComments) {
+      scrollCommentsToLatest(fullscreenCommentsEl.value)
+    }
+  },
+  { immediate: true },
+)
+
+watch(isFullscreen, async (fullscreen) => {
+  if (!fullscreen || !commentsVisible.value) {
+    return
+  }
+
+  await nextTick()
+  scrollCommentsToLatest(fullscreenCommentsEl.value)
+})
 
 const liveElapsedLabel = computed(() => {
   if (!session.value?.startedAt) {
@@ -818,6 +922,10 @@ onBeforeUnmount(() => {
 
 .studio__shell--2col {
   grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+}
+
+.studio__shell--comments-hidden {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .studio__side-panel {
@@ -1417,8 +1525,15 @@ onBeforeUnmount(() => {
   max-height: min(300px, calc(100vh - 250px));
   flex-direction: column;
   gap: 8px;
-  overflow: hidden;
-  pointer-events: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  pointer-events: auto;
+  scrollbar-color: rgba(255, 255, 255, 0.38) transparent;
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
+  touch-action: pan-y;
 }
 
 .studio__fs-empty {
@@ -1988,12 +2103,19 @@ onBeforeUnmount(() => {
     bottom: 72px;
     left: 14px;
     display: flex;
-    max-height: 32dvh;
+    max-height: min(220px, 26dvh);
     flex-direction: column;
-    justify-content: flex-end;
     gap: 8px;
-    overflow: hidden;
-    pointer-events: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+    pointer-events: auto;
+    scrollbar-color: rgba(255, 255, 255, 0.38) transparent;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
 
   .studio__mobile-live-comment {
@@ -2195,6 +2317,25 @@ onBeforeUnmount(() => {
     place-items: center;
     color: #ffffff;
     font-size: 18px;
+  }
+
+  .studio__mobile-device--active span {
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.82);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+  }
+
+  .studio__mobile-comments-toggle > span {
+    border-radius: 999px;
+    line-height: 0;
+  }
+
+  .studio__mobile-comments-icon {
+    display: block;
+    width: 21px;
+    height: 21px;
+    flex: 0 0 21px;
+    color: #ffffff;
   }
 
   .studio__mobile-device:disabled {

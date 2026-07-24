@@ -43,10 +43,25 @@ export function useFeedCommentItemVM(
   const localSelectedReaction = ref<FeedStoryReactionType | null>(props.selectedReaction ?? null)
   const localReactionsCount = ref(props.reactionsCount ?? 0)
 
+  const mergeReplyItems = (...groups: Array<FeedCommentRecord[] | undefined>) => {
+    const merged = new Map<number, FeedCommentRecord>()
+
+    for (const group of groups) {
+      for (const reply of group ?? []) {
+        merged.set(reply.id, { ...merged.get(reply.id), ...reply })
+      }
+    }
+
+    return [...merged.values()]
+  }
+
   watch(
     () => props.replies,
     (value) => {
-      replyItems.value = value ? [...value] : []
+      // Feed refresh payloads often omit nested replies. Preserve replies that
+      // were loaded or just submitted instead of making them disappear after
+      // the realtime refresh arrives.
+      replyItems.value = mergeReplyItems(replyItems.value, value)
       if (value && value.length > 0) {
         replyThreadOpen.value = true
       }
@@ -147,7 +162,7 @@ export function useFeedCommentItemVM(
       return
     }
 
-    await reactToComment(defaultFeedStoryReaction.value)
+    await reactToComment(localSelectedReaction.value ?? defaultFeedStoryReaction.value)
   }
 
   async function toggleReplyThread() {
@@ -177,21 +192,29 @@ export function useFeedCommentItemVM(
     }
 
     reacting.value = true
-    const hadLocalReaction = Boolean(localSelectedReaction.value)
+    const previousReaction = localSelectedReaction.value
+    const isRemoving = previousReaction === reaction
 
     try {
       await repository.runCommentAction({
         action: "reaction",
         target: props.reactionTarget ?? "comment",
         targetId: props.id,
-        reaction,
+        reaction: isRemoving ? undefined : reaction,
+        remove: isRemoving,
       })
 
-      if (!hadLocalReaction) {
-        localReactionsCount.value += 1
+      if (isRemoving) {
+        localReactionsCount.value = Math.max(0, localReactionsCount.value - 1)
+        localSelectedReaction.value = null
+      }
+      else {
+        if (!previousReaction) {
+          localReactionsCount.value += 1
+        }
+        localSelectedReaction.value = reaction
       }
 
-      localSelectedReaction.value = reaction
       reactionTrayOpen.value = false
     }
     finally {
@@ -211,6 +234,9 @@ export function useFeedCommentItemVM(
         action: "reply",
         commentId: props.id,
         text: payload.backendText ?? payload.text,
+        imageFile: payload.imageFile,
+        gifFile: payload.gifFile,
+        audioFile: payload.audioFile,
       })
 
       const reply = response.reply ?? {
@@ -221,6 +247,7 @@ export function useFeedCommentItemVM(
         role: props.currentUserName || t("feed.postCard.commentRole"),
         text: payload.text,
         time: t("feed.postCard.justNow"),
+        attachment: response.attachment ?? payload.attachmentPreview,
         reactionsCount: 0,
         selectedReaction: null,
       }
@@ -234,12 +261,10 @@ export function useFeedCommentItemVM(
           offset: 0,
         })
 
-        replyItems.value = savedReplies.some(item => item.id === reply.id)
-          ? savedReplies
-          : [...savedReplies, reply]
+        replyItems.value = mergeReplyItems(replyItems.value, savedReplies, [reply])
       }
       else {
-        replyItems.value = [...replyItems.value, reply]
+        replyItems.value = mergeReplyItems(replyItems.value, [reply])
       }
     }
     finally {

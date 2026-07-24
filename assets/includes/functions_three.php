@@ -5524,6 +5524,15 @@ function Wo_GetStroies($args = array())
 				$fetched_data['thumb']  = array_shift($story_images);
 				$fetched_data['images'] = $story_images;
 			}
+			if (empty($fetched_data['thumb'])) {
+				$story_thumb = Wo_GetStoryThumb(
+					(int) $fetched_data['id'],
+					!empty($fetched_data['thumbnail']) ? $fetched_data['thumbnail'] : ''
+				);
+				if (!empty($story_thumb) && isset($story_thumb['type']) && $story_thumb['type'] === 'image') {
+					$fetched_data['thumb'] = $story_thumb;
+				}
+			}
 			$fetched_data['user_data'] = Wo_UserData($fetched_data['user_id']);
 			$fetched_data['videos']    = Wo_GetStoryMedia($fetched_data['id'], 'video');
 			$fetched_data['is_owner']  = ($fetched_data['user_id'] == $wo['user']['id'] || Wo_IsAdmin() || Wo_IsModerator()) ? true : false;

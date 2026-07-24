@@ -55,12 +55,16 @@ export function useFeedStoryCarouselVM(
   const reactionLongPressTriggered = ref(false)
   const storyActionState = ref<"idle" | "loading" | "success" | "error">("idle")
   const storyActionError = ref("")
+  const deleteConfirmOpen = ref(false)
+  const deleteTarget = ref<FeedStoryRecord | null>(null)
   const selectedReactionByStoryId = ref(new Map<number, FeedStoryReactionType>())
   const viewedStoryIds = ref(new Set<number>())
   const sentStoryViewIds = ref(new Set<number>())
   const failedMediaStoryIds = ref(new Set<number>())
+  const deletedStoryIds = ref(new Set<number>())
   const storyClock = ref(Date.now())
   let storyExpirationTimer: ReturnType<typeof setTimeout> | undefined
+  let resumeVideoAfterDeleteModal = false
 
   const storyReactionOptions = computed<Array<{
     value: FeedStoryReactionType
@@ -82,7 +86,10 @@ export function useFeedStoryCarouselVM(
       || `story:${index}`
 
   const visibleStories = computed(() =>
-    stories.value.filter(story => !isFeedStoryExpired(story, storyClock.value)),
+    stories.value.filter(story =>
+      !deletedStoryIds.value.has(story.id)
+      && !isFeedStoryExpired(story, storyClock.value),
+    ),
   )
 
   const storyGroups = computed<StoryGroup[]>(() => {
@@ -251,14 +258,120 @@ export function useFeedStoryCarouselVM(
   }
 
   function closeStory() {
+    resumeVideoAfterDeleteModal = false
+    deleteConfirmOpen.value = false
+    deleteTarget.value = null
     activeStoryGroupIndex.value = null
     activeStoryItemIndex.value = 0
+    resumeVideoAfterDeleteModal = Boolean(activeVideoRef.value && !activeVideoRef.value.paused)
     activeVideoRef.value?.pause()
     activeVideoPaused.value = false
     replyText.value = ""
     reactionTrayOpen.value = false
     storyActionError.value = ""
     storyActionState.value = "idle"
+  }
+
+  function requestDeleteStory() {
+    const story = activeStoryData.value
+
+    if (!story?.isMe || storyActionState.value === "loading") {
+      return
+    }
+
+    activeVideoRef.value?.pause()
+    deleteTarget.value = story
+    deleteConfirmOpen.value = true
+    storyActionError.value = ""
+  }
+
+  function cancelDeleteStory() {
+    if (storyActionState.value === "loading") {
+      return
+    }
+
+    deleteConfirmOpen.value = false
+    deleteTarget.value = null
+    storyActionError.value = ""
+
+    const video = activeVideoRef.value
+    if (resumeVideoAfterDeleteModal && video) {
+      void video.play().catch(() => undefined)
+    }
+    resumeVideoAfterDeleteModal = false
+  }
+
+  function handleDeleteModalOpenChange(open: boolean) {
+    if (open) {
+      deleteConfirmOpen.value = true
+      return
+    }
+
+    cancelDeleteStory()
+  }
+
+  async function deleteStory() {
+    const story = deleteTarget.value
+
+    if (!story?.isMe || storyActionState.value === "loading") {
+      return
+    }
+
+    const previousGroupIndex = activeStoryGroupIndex.value ?? 0
+    const previousItemIndex = activeStoryItemIndex.value
+    const previousGroupKey = activeStoryGroup.value?.key
+
+    storyActionState.value = "loading"
+    storyActionError.value = ""
+
+    try {
+      await repository.runStoryAction({
+        action: "delete",
+        storyId: story.id,
+      })
+
+      deletedStoryIds.value = new Set([...deletedStoryIds.value, story.id])
+      selectedReactionByStoryId.value.delete(story.id)
+      viewedStoryIds.value.delete(story.id)
+      sentStoryViewIds.value.delete(story.id)
+      failedMediaStoryIds.value.delete(story.id)
+      resumeVideoAfterDeleteModal = false
+      deleteConfirmOpen.value = false
+      deleteTarget.value = null
+      storyActionState.value = "success"
+
+      await nextTick()
+
+      if (!storyGroups.value.length) {
+        closeStory()
+      }
+      else {
+        const sameGroupIndex = previousGroupKey
+          ? storyGroups.value.findIndex(group => group.key === previousGroupKey)
+          : -1
+        const nextGroupIndex = sameGroupIndex >= 0
+          ? sameGroupIndex
+          : Math.min(previousGroupIndex, storyGroups.value.length - 1)
+        const nextGroup = storyGroups.value[nextGroupIndex]
+        const nextItemIndex = Math.min(
+          previousItemIndex,
+          Math.max((nextGroup?.stories.length ?? 1) - 1, 0),
+        )
+
+        openStoryGroup(nextGroupIndex, nextItemIndex)
+      }
+
+      toast.add({
+        color: "success",
+        icon: "i-ph-trash-fill",
+        title: t("feed.storyCarousel.deleteSuccess"),
+      })
+    }
+    catch (error) {
+      console.error(error)
+      storyActionState.value = "error"
+      storyActionError.value = t("feed.storyCarousel.deleteFailed")
+    }
   }
 
   async function markStoryViewed(story: FeedStoryRecord) {
@@ -597,6 +710,7 @@ export function useFeedStoryCarouselVM(
     activeVideoPaused,
     storyActionState,
     storyActionError,
+    deleteConfirmOpen,
     storyReactionOptions,
     storyGroups,
     storyQueue,
@@ -617,6 +731,10 @@ export function useFeedStoryCarouselVM(
     rememberStoryPointer,
     openStoryFromPointer,
     closeStory,
+    requestDeleteStory,
+    cancelDeleteStory,
+    handleDeleteModalOpenChange,
+    deleteStory,
     focusReply,
     startReactionPress,
     finishReactionPress,

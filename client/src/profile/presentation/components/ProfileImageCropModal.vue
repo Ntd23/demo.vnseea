@@ -195,10 +195,10 @@ async function confirmCrop() {
   processing.value = true
 
   try {
-    const outputWidth = props.kind === "avatar" ? 800 : 1600
+    const outputWidth = props.kind === "avatar" ? 1080 : 1836
     const outputHeight = props.kind === "avatar"
-      ? 800
-      : 600
+      ? 1080
+      : 664
     const canvas = cropper.getCroppedCanvas({
       width: outputWidth,
       height: outputHeight,

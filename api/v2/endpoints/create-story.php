@@ -123,7 +123,9 @@ if (empty($error_code)) {
                                     "m4v",
                                     "avi",
                                     "mpg",
-                                    'mp4'
+                                    'mp4',
+                                    'mov',
+                                    'webm'
                                 )) && !empty($_FILES["cover"]) && in_array($_FILES["cover"]["type"], $img_types)) {
                     $fileInfo = array(
                         'file' => $_FILES["cover"]["tmp_name"],
