@@ -161,7 +161,7 @@
 import UListbox from "@nuxt/ui/components/Listbox.vue"
 import type { MessageUserTag } from "../../domain/types/messages.types"
 
-const defaultTagColor = "var(--bg-brand)"
+const fallbackTagColor = "#b91c1c"
 const open = defineModel<boolean>("open", { default: false })
 const props = defineProps<{
   labels: MessageUserTag[]
@@ -174,7 +174,7 @@ const props = defineProps<{
 
 const activeTab = ref<"assign" | "manage">("assign")
 const newTagName = ref("")
-const newTagColor = ref(defaultTagColor)
+const newTagColor = ref(fallbackTagColor)
 const assignListboxUi = {
   root: "rounded-xl border border-[var(--border-light)] ring-0 shadow-[var(--shadow-sm)]",
   content: "max-h-[min(20rem,45dvh)]",
@@ -188,9 +188,32 @@ const manageListboxUi = {
   content: "max-h-[min(13rem,28dvh)]",
 }
 
+function normalizeHexColor(value: string, fallback = fallbackTagColor) {
+  const normalized = value.trim()
+  return /^#(?:[\da-f]{3}|[\da-f]{6}|[\da-f]{8})$/i.test(normalized)
+    ? normalized
+    : fallback
+}
+
+function resolveDefaultTagColor() {
+  if (!import.meta.client) {
+    return fallbackTagColor
+  }
+
+  const tokenColor = getComputedStyle(document.documentElement)
+    .getPropertyValue("--color-primary-500")
+
+  return normalizeHexColor(tokenColor)
+}
+
+onMounted(() => {
+  newTagColor.value = resolveDefaultTagColor()
+})
+
 watch(open, (isOpen) => {
   if (isOpen) {
     activeTab.value = "assign"
+    newTagColor.value = normalizeHexColor(newTagColor.value, resolveDefaultTagColor())
   }
 })
 
@@ -217,7 +240,10 @@ async function submitCreateTag() {
     return
   }
 
-  const created = await props.createTag({ name, color: newTagColor.value })
+  const created = await props.createTag({
+    name,
+    color: normalizeHexColor(newTagColor.value, resolveDefaultTagColor()),
+  })
 
   if (created) {
     newTagName.value = ""
