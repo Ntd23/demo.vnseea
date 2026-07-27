@@ -181,9 +181,24 @@ function Wo_ApiMapDiscoveryPageSuggestions() {
     $origin_lat = Wo_ApiMapDiscoveryNumber('origin_lat');
     $origin_lng = Wo_ApiMapDiscoveryNumber('origin_lng');
     $has_origin = ($origin_lat !== null && $origin_lng !== null && !($origin_lat == 0 && $origin_lng == 0));
+    $distance_km = !empty($_POST['distance']) && is_numeric($_POST['distance'])
+        ? (float) $_POST['distance']
+        : 3;
+    $max_distance_meters = $has_origin
+        ? max(250, min($distance_km * 1000, WO_API_MAP_DISCOVERY_MAX_RADIUS_METERS))
+        : 0;
     $candidate_limit = min(max($limit * 6, $limit), 160);
 
     $where = " WHERE `active` = '1' AND `address` <> '' AND `lat` <> '' AND `lng` <> '' AND `lat` <> '0' AND `lng` <> '0'";
+    if ($max_distance_meters > 0) {
+        $lat_delta = $max_distance_meters / 111320;
+        $lng_delta = $max_distance_meters / max(111320 * cos(deg2rad($origin_lat)), 1);
+        $lat_min = number_format($origin_lat - $lat_delta, 7, '.', '');
+        $lat_max = number_format($origin_lat + $lat_delta, 7, '.', '');
+        $lng_min = number_format($origin_lng - $lng_delta, 7, '.', '');
+        $lng_max = number_format($origin_lng + $lng_delta, 7, '.', '');
+        $where .= " AND CAST(`lat` AS DECIMAL(10,7)) BETWEEN {$lat_min} AND {$lat_max} AND CAST(`lng` AS DECIMAL(10,7)) BETWEEN {$lng_min} AND {$lng_max}";
+    }
     if ($keyword !== '') {
         $where .= " AND (`page_name` LIKE '%{$keyword}%' OR `page_title` LIKE '%{$keyword}%' OR `address` LIKE '%{$keyword}%')";
     }
@@ -201,6 +216,9 @@ function Wo_ApiMapDiscoveryPageSuggestions() {
             }
 
             $distance_meters = $has_origin ? Wo_ApiMapDiscoveryDistanceMeters($origin_lat, $origin_lng, $page['lat'], $page['lng']) : null;
+            if ($max_distance_meters > 0 && ($distance_meters === null || $distance_meters > $max_distance_meters)) {
+                continue;
+            }
             $items[] = array(
                 'source' => 'page',
                 'type' => 'page',
@@ -311,6 +329,25 @@ function Wo_ApiMapDiscoveryMergeGooglePlaceResults(&$places_results, $next_resul
         $seen_place_ids[$result['place_id']] = true;
         $places_results[] = $result;
     }
+}
+
+function Wo_ApiMapDiscoveryFilterGooglePlaceResultsByRadius($places_results, $origin_lat, $origin_lng, $radius) {
+    if ($origin_lat === null || $origin_lng === null) {
+        return $places_results;
+    }
+
+    return array_values(array_filter($places_results, function($result) use ($origin_lat, $origin_lng, $radius) {
+        $location = !empty($result['geometry']['location']) && is_array($result['geometry']['location'])
+            ? $result['geometry']['location']
+            : array();
+        $place_distance = Wo_ApiMapDiscoveryDistanceMeters(
+            $origin_lat,
+            $origin_lng,
+            $location['lat'] ?? null,
+            $location['lng'] ?? null
+        );
+        return $place_distance !== null && $place_distance <= $radius;
+    }));
 }
 
 function Wo_ApiMapDiscoveryAddressQuery() {
@@ -541,6 +578,12 @@ function Wo_ApiMapDiscoveryAutocomplete() {
             $places_results,
             !empty($text_search['results']) ? $text_search['results'] : array()
         );
+        $places_results = Wo_ApiMapDiscoveryFilterGooglePlaceResultsByRadius(
+            $places_results,
+            $origin_lat,
+            $origin_lng,
+            $radius
+        );
     }
 
     // Nearby Search is a recovery path when exact text returned nothing.
@@ -580,6 +623,12 @@ function Wo_ApiMapDiscoveryAutocomplete() {
                 Wo_ApiMapDiscoveryMergeGooglePlaceResults($places_results, !empty($nearby_page['results']) ? $nearby_page['results'] : array());
                 $next_page_token = !empty($nearby_page['next_page_token']) ? $nearby_page['next_page_token'] : '';
             }
+            $places_results = Wo_ApiMapDiscoveryFilterGooglePlaceResultsByRadius(
+                $places_results,
+                $origin_lat,
+                $origin_lng,
+                $radius
+            );
         }
     }
 
@@ -667,10 +716,11 @@ function Wo_ApiMapDiscoveryAutocomplete() {
             });
         }
     }
+    $result_limit = ($fast && !$global_search) ? 12 : 20;
 
     return array(
         'api_status' => 200,
-        'predictions' => array_slice($predictions, 0, 35),
+        'predictions' => array_slice($predictions, 0, $result_limit),
         'debug_nearby_status' => $nearby_search['status'] ?? 'NOT_CALLED',
         'debug_nearby_error' => $nearby_search['error_message'] ?? '',
         'debug_detected_type' => $requested_type,
