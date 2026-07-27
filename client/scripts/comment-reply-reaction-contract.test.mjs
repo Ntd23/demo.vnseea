@@ -22,6 +22,19 @@ test("reply composer stays open and focused while a reply is submitted", async (
   assert.match(composer, /preserveFocusWhileSubmitting\?: boolean/)
 })
 
+test("comment mention suggestions only return users followed by the current user", async () => {
+  const [composer, mentionSearch, searchBridge] = await Promise.all([
+    readClient("src/feed/presentation/components/CommentComposer.vue"),
+    readClient("src/feed/application/composables/useFeedMentionSearch.ts"),
+    readClient("server/api/search/_shared.ts"),
+  ])
+
+  assert.match(composer, /followingOnly:\s*true/)
+  assert.match(mentionSearch, /followingOnly:\s*options\.followingOnly \? 1 : undefined/)
+  assert.match(searchBridge, /followingOnly \? users\.filter\(user => user\.isFollowing\) : users/)
+  assert.doesNotMatch(searchBridge, /isFollowing:[^\n]*is_friend/)
+})
+
 test("realtime comment refresh preserves submitted replies instead of clearing them", async () => {
   const viewModel = await readClient("src/feed/application/view-models/useFeedCommentItemVM.ts")
 

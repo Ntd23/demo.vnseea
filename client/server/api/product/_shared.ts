@@ -22,6 +22,7 @@ type BackendProduct = {
   name?: string
   description?: string
   price?: number | string
+  price_vnd?: number | string
   price_format?: string
   currency?: string | number
   currency_code?: string
@@ -253,6 +254,7 @@ export const normalizeProductsResponse = (
       seller: asString(seller?.name) || asString(seller?.username),
       sellerId,
       price: asNumber(product.price),
+      priceVnd: asNumber(product.price_vnd, asNumber(product.price)),
       currency: normalizeCurrency(product.currency_code || product.currency),
       currencySymbol: asString(product.currency_symbol),
       currencyRule: product.currency_rule,
@@ -325,6 +327,7 @@ export const normalizeProductRecord = (event: H3Event, product: BackendProduct):
     currencyRule: product.currency_rule,
     priceFormat: asString(product.price_format),
     price: asNumber(product.price),
+    priceVnd: asNumber(product.price_vnd, asNumber(product.price)),
     stock: asNumber((product as { units?: unknown }).units),
     seller: asString(seller?.name) || asString(seller?.username),
     sellerId: asNumber(seller?.id || seller?.user_id),

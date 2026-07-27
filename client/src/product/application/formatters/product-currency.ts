@@ -1,6 +1,4 @@
-// English description: Product currency presentation formatter shared by product view models.
-
-import { formatCurrencyWithUnit } from "#shared-kernel/application/utils/formatCurrency"
+// English description: Formats product prices with one consistent Vietnamese thousands separator.
 
 type ProductCurrencyRule = {
   decimals?: number | string
@@ -18,21 +16,16 @@ export type ProductPriceLike = {
 
 export const formatProductPrice = (
   product: ProductPriceLike,
-  locale: string,
+  _locale: string,
 ) => {
   const currencyCode = product.currency?.trim().toUpperCase() || "VND"
   const currencySymbol = product.currencySymbol?.trim()
-
-  if (!product.priceFormat) {
-    return formatCurrencyWithUnit(product.price, {
-      currency: currencyCode,
-      currencySymbol,
-      currencyRule: product.currencyRule,
-      locale,
-    })
-  }
-
   const currencyUnit = currencyCode === "VND" ? "VND" : currencySymbol || currencyCode
+  const formattedAmount = new Intl.NumberFormat("vi-VN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    useGrouping: true,
+  }).format(Math.round(Number.isFinite(product.price) ? product.price : 0))
 
-  return `${product.priceFormat}${currencyUnit}`
+  return currencyUnit ? `${formattedAmount} ${currencyUnit}` : formattedAmount
 }

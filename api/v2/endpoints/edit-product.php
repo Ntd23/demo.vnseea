@@ -38,8 +38,6 @@ if (empty($error_code)) {
     $product_description = Wo_Secure($_POST['product_description']);
     $product_location    = Wo_Secure($_POST['product_location']);
     $product_price       = Wo_Secure($_POST['product_price']);
-    $lat       = (!empty($_POST['lat'])) ? Wo_Secure($_POST['lat']) : 0;
-    $lng       = (!empty($_POST['lng'])) ? Wo_Secure($_POST['lng']) : 0;
     $product_type        = (!empty($_POST['product_type'])) ? 1 : 0;
     
     if ($product_price == '0.00') {
@@ -99,11 +97,21 @@ if (empty($error_code)) {
             'location' => $product_location,
             'type' => $product_type,
             'currency' => $currency,
-            'sub_category' => $sub_category,
-            'lat' => $lat,
-            'lng' => $lng
+            'sub_category' => $sub_category
         );
-        if (!empty($_POST['units']) && is_numeric($_POST['units']) && $_POST['units'] > 0) {
+        if (
+            isset($_POST['lat'], $_POST['lng'])
+            && is_numeric($_POST['lat'])
+            && is_numeric($_POST['lng'])
+            && (float) $_POST['lat'] >= -90
+            && (float) $_POST['lat'] <= 90
+            && (float) $_POST['lng'] >= -180
+            && (float) $_POST['lng'] <= 180
+        ) {
+            $product_data_array['lat'] = Wo_Secure($_POST['lat']);
+            $product_data_array['lng'] = Wo_Secure($_POST['lng']);
+        }
+        if (isset($_POST['units']) && $_POST['units'] !== '' && is_numeric($_POST['units']) && $_POST['units'] >= 0) {
             $product_data_array['units'] = Wo_Secure($_POST['units']);
         }
 
@@ -128,6 +136,17 @@ if (empty($error_code)) {
         }
 
         $product_data       = Wo_UpdateProductData($_POST['product_id'], $product_data_array);
+        if (!$product_data) {
+            $response_data = array(
+                'api_status' => 400,
+                'errors' => array(
+                    'error_id' => 8,
+                    'error_text' => 'Unable to update product. Please verify product ownership and try again.'
+                )
+            );
+            echo json_encode($response_data, JSON_PRETTY_PRINT);
+            exit();
+        }
         $product_id         = $_POST['product_id'];
         $id = Wo_GetPostIDFromProdcutID($product_id);
         // if (count($_FILES['postPhotos']) > 0 && !empty($id) && $id > 0) {

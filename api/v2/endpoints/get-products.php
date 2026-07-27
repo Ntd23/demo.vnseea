@@ -22,22 +22,22 @@ if ($options['product_id'] > 0) {
     $options['limit'] = 1;
 }
 $requested_distance = (!empty($_POST['distance']) && is_numeric($_POST['distance'])) ? (float) $_POST['distance'] : 0;
-$has_user_coordinates = (
-    !empty($wo['loggedin'])
-    && isset($wo['user']['lat'], $wo['user']['lng'])
-    && is_numeric($wo['user']['lat'])
-    && is_numeric($wo['user']['lng'])
-    && (float) $wo['user']['lat'] >= -90
-    && (float) $wo['user']['lat'] <= 90
-    && (float) $wo['user']['lng'] >= -180
-    && (float) $wo['user']['lng'] <= 180
-    && ((float) $wo['user']['lat'] != 0 || (float) $wo['user']['lng'] != 0)
+$request_latitude = (isset($_POST['latitude']) && is_numeric($_POST['latitude'])) ? (float) $_POST['latitude'] : null;
+$request_longitude = (isset($_POST['longitude']) && is_numeric($_POST['longitude'])) ? (float) $_POST['longitude'] : null;
+$has_request_coordinates = (
+    $request_latitude !== null
+    && $request_latitude >= -90
+    && $request_latitude <= 90
+    && $request_longitude !== null
+    && $request_longitude >= -180
+    && $request_longitude <= 180
 );
-$can_filter_distance = (
-    $requested_distance > 0
-    && $has_user_coordinates
-);
+$can_filter_distance = $requested_distance > 0 && $has_request_coordinates;
 $options['length'] = $can_filter_distance ? $requested_distance : '';
+if ($has_request_coordinates) {
+    $options['latitude'] = $request_latitude;
+    $options['longitude'] = $request_longitude;
+}
 $options['order_by'] = (!empty($_POST['order_by']) && in_array($_POST['order_by'], array('price_low', 'price_high'))) ? $_POST['order_by'] : '';
 
 function Wo_ProductSearchNormalizeText($value) {
@@ -147,5 +147,5 @@ $response_data = array(
     'products' => $products,
     'products_categories' => $wo['products_categories'],
     'products_sub_categories' => $wo['products_sub_categories'],
-    'distance_filter_available' => $has_user_coordinates ? 1 : 0
+    'distance_filter_available' => $has_request_coordinates ? 1 : 0
 );

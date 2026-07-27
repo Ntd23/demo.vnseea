@@ -98,6 +98,7 @@ export interface ProductRecord {
   }
   priceFormat?: string
   price: number
+  priceVnd?: number
   stock: number
   seller?: string
   sellerId?: number

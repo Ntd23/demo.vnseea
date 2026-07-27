@@ -1,6 +1,6 @@
 // English description: Product editor option metadata and shared price preview formatting.
 
-import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import { formatProductPrice as formatProductCurrency } from "../formatters/product-currency"
 import type {
   CategoryValue,
   ConditionValue,
@@ -83,10 +83,10 @@ export const useProductEditorMeta = () => {
     const parsed = Number(price)
     if (!Number.isFinite(parsed) || parsed <= 0) return t("pages.productEditor.priceUnset")
 
-    return formatCurrency(parsed, {
+    return formatProductCurrency({
+      price: parsed,
       currency,
-      locale: currencyMeta[currency]?.locale,
-    })
+    }, currencyMeta[currency]?.locale || "vi-VN")
   }
 
   const formatProductStockLabel = (stock: string) => {
