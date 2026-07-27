@@ -87,6 +87,15 @@ foreach ($cases as $index => $case) {
                         'location' => array('lat' => 21.0285, 'lng' => 105.8542)
                     ),
                     'types' => array('establishment')
+                ),
+                array(
+                    'place_id' => 'business-far-' . $index,
+                    'name' => 'Far Business ' . $index,
+                    'formatted_address' => 'Outside requested radius',
+                    'geometry' => array(
+                        'location' => array('lat' => 21.5000, 'lng' => 105.8542)
+                    ),
+                    'types' => array('establishment')
                 )
             )
         );
@@ -119,7 +128,11 @@ foreach ($cases as $index => $case) {
         isset($text_search['query']['type']) ? $text_search['query']['type'] : null,
         'Category must remain an optional type hint.'
     );
-    business_search_assert_same(1, count($response['predictions']), 'Text Search result must be returned.');
+    business_search_assert_same(
+        1,
+        count($response['predictions']),
+        'Only the Text Search result inside the requested radius must be returned.'
+    );
 
     foreach ($requests as $request) {
         business_search_assert(
@@ -133,7 +146,20 @@ $requests = array();
 $GLOBALS['wo_api_map_discovery_google_get_mock'] = function ($path, array $query) use (&$requests) {
     $requests[] = array('path' => $path, 'query' => $query);
     if ($path === 'place/textsearch/json') {
-        return array('status' => 'ZERO_RESULTS', 'results' => array());
+        return array(
+            'status' => 'OK',
+            'results' => array(
+                array(
+                    'place_id' => 'repair-too-far',
+                    'name' => 'Sua xe ngoai pham vi',
+                    'formatted_address' => 'Outside requested radius',
+                    'geometry' => array(
+                        'location' => array('lat' => 21.5000, 'lng' => 105.8542)
+                    ),
+                    'types' => array('car_repair')
+                )
+            )
+        );
     }
     if ($path === 'place/nearbysearch/json') {
         return array(
@@ -165,7 +191,7 @@ $_POST = array(
 $fallback = Wo_ApiMapDiscoveryAutocomplete();
 $nearby = business_search_find_request($requests, 'place/nearbysearch/json');
 
-business_search_assert($nearby !== null, 'Nearby Search must recover an empty exact Text Search.');
+business_search_assert($nearby !== null, 'Nearby Search must recover when exact Text Search only returns out-of-radius places.');
 business_search_assert_same('sửa xe', $nearby['query']['keyword'], 'Nearby fallback must keep the raw query.');
 business_search_assert_same(1, count($fallback['predictions']), 'Nearby fallback result must be returned.');
 

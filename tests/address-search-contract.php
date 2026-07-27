@@ -67,6 +67,16 @@ foreach (array($canonical_business, $mirror_business) as $business_source) {
     address_contract_assert(strpos($business_source, "'query' => \$input") !== false, 'Business discovery must send the exact input to Text Search.');
     address_contract_assert(strpos($business_source, 'place/nearbysearch/json') !== false, 'Business discovery must keep Nearby Search.');
     address_contract_assert(strpos($business_source, 'place/textsearch/json') !== false, 'Business discovery must keep Text Search.');
+    address_contract_assert(strpos($business_source, 'Wo_ApiMapDiscoveryFilterGooglePlaceResultsByRadius') !== false, 'Business discovery must hard-filter Google places by the requested radius.');
+    address_contract_assert(strpos($business_source, '$result_limit = ($fast && !$global_search) ? 12 : 20;') !== false, 'Business discovery must bound typeahead and committed result counts.');
+}
+
+$canonical_pages = address_contract_function_slice($canonical, 'Wo_ApiMapDiscoveryPageSuggestions', 'Wo_ApiMapDiscoveryAddPrediction');
+$mirror_pages = address_contract_function_slice($mirror, 'Wo_ApiMapDiscoveryPageSuggestions', 'Wo_ApiMapDiscoveryAddPrediction');
+foreach (array($canonical_pages, $mirror_pages) as $page_source) {
+    address_contract_assert(strpos($page_source, '$max_distance_meters') !== false, 'Page discovery must derive a hard distance boundary.');
+    address_contract_assert(strpos($page_source, 'CAST(`lat` AS DECIMAL(10,7)) BETWEEN') !== false, 'Page discovery must bound database candidates by latitude.');
+    address_contract_assert(strpos($page_source, '$distance_meters > $max_distance_meters') !== false, 'Page discovery must remove candidates outside the requested radius.');
 }
 
 $canonical_geocode = address_contract_function_slice($canonical, 'Wo_ApiMapDiscoveryAddressGeocode', 'Wo_ApiMapDiscoveryAddressDetails');
