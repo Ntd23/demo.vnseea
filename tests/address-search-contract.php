@@ -63,7 +63,8 @@ foreach (array($canonical_autocomplete, $mirror_autocomplete) as $autocomplete_s
 $canonical_business = address_contract_function_slice($canonical, 'Wo_ApiMapDiscoveryAutocomplete', 'Wo_ApiMapDiscoveryAddressAutocomplete');
 $mirror_business = address_contract_function_slice($mirror, 'Wo_ApiMapDiscoveryAutocomplete', 'Wo_ApiMapDiscoveryAddressAutocomplete');
 foreach (array($canonical_business, $mirror_business) as $business_source) {
-    address_contract_assert(strpos($business_source, 'Wo_ApiMapDiscoveryGetGoogleTypeFromInput') !== false, 'Business discovery must keep category classification.');
+    address_contract_assert(strpos($business_source, 'Wo_ApiMapDiscoveryRequestedGoogleType') !== false, 'Business discovery may use only a validated client category as a type hint.');
+    address_contract_assert(strpos($business_source, "'query' => \$input") !== false, 'Business discovery must send the exact input to Text Search.');
     address_contract_assert(strpos($business_source, 'place/nearbysearch/json') !== false, 'Business discovery must keep Nearby Search.');
     address_contract_assert(strpos($business_source, 'place/textsearch/json') !== false, 'Business discovery must keep Text Search.');
 }
