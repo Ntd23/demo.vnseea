@@ -81,6 +81,13 @@ export default defineEventHandler(async (event): Promise<RegisterAccountResult> 
     })
   }
 
+  if (!firstName) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "User name is required.",
+    })
+  }
+
   if (!username) {
     throw createError({
       statusCode: 422,

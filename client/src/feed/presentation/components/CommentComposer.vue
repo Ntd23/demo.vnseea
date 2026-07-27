@@ -496,6 +496,7 @@ const {
 } = useFeedMentionSearch({
   text: message,
   textarea: textareaElement,
+  followingOnly: true,
 });
 const hasHighlightedMentions = computed(() =>
   highlightedMessageSegments.value.some((segment) => segment.isMention),

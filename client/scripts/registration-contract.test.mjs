@@ -20,6 +20,19 @@ test("Nuxt registration always asks for and submits the selected username", asyn
   assert.match(handler, /username,/)
 })
 
+test("Nuxt registration submits the user name as first_name", async () => {
+  const [page, viewModel, handler] = await Promise.all([
+    read("src/auth/presentation/pages/RegisterPage.vue"),
+    read("src/auth/application/view-models/useRegisterPageVM.ts"),
+    read("server/api/auth/register.post.ts"),
+  ])
+
+  assert.match(page, /name="firstName"/)
+  assert.match(page, /v-model="state\.firstName"/)
+  assert.match(viewModel, /name:\s*"firstName"/)
+  assert.match(handler, /first_name:\s*firstName/)
+})
+
 test("Nuxt birthday is optional but serialized as an ISO date when selected", async () => {
   const [viewModel, handler] = await Promise.all([
     read("src/auth/application/view-models/useRegisterPageVM.ts"),

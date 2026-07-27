@@ -87,6 +87,10 @@ export function useRegisterPageVM(
   const validate = (currentState: RegisterAccountInput): RegisterValidationError[] => {
     const errors: RegisterValidationError[] = []
 
+    if (!currentState.firstName.trim()) {
+      errors.push({ name: "firstName", message: t("pages.registerPage.validationFirstNameRequired") })
+    }
+
     const username = currentState.username?.trim() ?? ""
 
     if (!username) {

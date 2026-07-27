@@ -317,7 +317,7 @@ onBeforeUnmount(() => {
   padding: 1.5rem 1rem;
   width: 100%;
   min-height: 100svh;
-  overflow-x: hidden; /* Block horizontal scrollbar completely */
+  overflow-x: clip;
   color: var(--text-media);
   background: linear-gradient(160deg, color-mix(in srgb, var(--bg-brand) 34%, var(--bg-media)) 0%, color-mix(in srgb, var(--bg-brand) 20%, var(--bg-media)) 50%, var(--bg-media) 100%);
 }
@@ -326,7 +326,6 @@ onBeforeUnmount(() => {
   .auth-hero {
     padding: 1.5rem 3rem;
     min-height: 100vh;
-    overflow-y: auto;
   }
 }
 
@@ -504,8 +503,6 @@ onBeforeUnmount(() => {
 .auth-hero__form-card {
   width: 100%;
   max-width: 26rem;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto; /* Sleeker, more compact width */
   background: var(--bg-surface);
   border: 1.5px solid var(--border-light);
   border-radius: var(--radius-xl);

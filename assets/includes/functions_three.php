@@ -899,10 +899,77 @@ function LinkedinSearch($filter_data = array())
 	}
 	return $data;
 }
+function Wo_GetProductVndMultiplier($currency)
+{
+	global $wo;
+
+	$currency_rule = Wo_GetCurrencyRule($currency);
+	$currency_code = !empty($currency_rule['code']) ? strtoupper((string) $currency_rule['code']) : 'VND';
+	if ($currency_code === 'VND') {
+		return 1;
+	}
+
+	$base_currency = !empty($wo['config']['currency']) ? strtoupper((string) $wo['config']['currency']) : 'USD';
+	$exchange_rates = !empty($wo['config']['exchange']) && is_array($wo['config']['exchange'])
+		? $wo['config']['exchange']
+		: array();
+	$currency_rate = $currency_code === $base_currency
+		? 1
+		: (!empty($exchange_rates[$currency_code]) && is_numeric($exchange_rates[$currency_code])
+			? (float) $exchange_rates[$currency_code]
+			: 0);
+	$vnd_rate = $base_currency === 'VND'
+		? 1
+		: (!empty($exchange_rates['VND']) && is_numeric($exchange_rates['VND'])
+			? (float) $exchange_rates['VND']
+			: 0);
+
+	if ($currency_rate > 0 && $vnd_rate > 0) {
+		return $vnd_rate / $currency_rate;
+	}
+
+	if ($currency_code === 'USD') {
+		$fallback_rate = !empty($wo['config']['usd_to_vnd_rate']) && is_numeric($wo['config']['usd_to_vnd_rate'])
+			? (float) $wo['config']['usd_to_vnd_rate']
+			: 25000;
+
+		return $fallback_rate > 0 ? $fallback_rate : 25000;
+	}
+
+	return 1;
+}
+
+function Wo_ConvertProductPriceToVnd($price, $currency)
+{
+	$numeric_price = is_numeric($price) ? (float) $price : 0;
+
+	return round($numeric_price * Wo_GetProductVndMultiplier($currency));
+}
+
+function Wo_GetProductVndPriceSql()
+{
+	global $wo;
+
+	$currency_cases = array();
+	if (!empty($wo['currencies']) && is_array($wo['currencies'])) {
+		foreach ($wo['currencies'] as $currency_id => $currency_data) {
+			$multiplier = Wo_GetProductVndMultiplier($currency_id);
+			$currency_cases[] = "WHEN '" . (int) $currency_id . "' THEN " . number_format($multiplier, 8, '.', '');
+		}
+	}
+
+	$case_sql = !empty($currency_cases)
+		? "CASE `currency` " . implode(' ', $currency_cases) . " ELSE 1 END"
+		: '1';
+
+	return "(CAST(`price` AS DECIMAL(20,4)) * ({$case_sql}))";
+}
+
 function Wo_GetProducts($filter_data = array())
 {
 	global $wo, $sqlConnect;
 	$data      = array();
+	$vnd_price_sql = Wo_GetProductVndPriceSql();
 	$query_one = " SELECT `id`, `user_id` FROM " . T_PRODUCTS . " WHERE status <> '1' AND `active` = '1'";
 	if (!empty($filter_data['product_id'])) {
 		$product_id = Wo_Secure($filter_data['product_id']);
@@ -932,17 +999,45 @@ function Wo_GetProducts($filter_data = array())
 	}
 	if (!empty($filter_data['order_by']) && $filter_data['order_by'] == 'price_low' && !empty($filter_data['price'])) {
 		$price = Wo_Secure($filter_data['price']);
-		$query_one .= " AND `price` >= '{$price}'";
+		$query_one .= " AND {$vnd_price_sql} >= '{$price}'";
 	} else if (!empty($filter_data['order_by']) && $filter_data['order_by'] == 'price_high' && !empty($filter_data['price'])) {
 		$price = Wo_Secure($filter_data['price']);
-		$query_one .= " AND `price` <= '{$price}'";
+		$query_one .= " AND {$vnd_price_sql} <= '{$price}'";
 	}
 	if (!empty($filter_data['length'])) {
-		$user_lat  = $wo['user']['lat'];
-		$user_lng  = $wo['user']['lng'];
+		$has_request_coordinates = isset($filter_data['latitude'], $filter_data['longitude'])
+			&& is_numeric($filter_data['latitude'])
+			&& (float) $filter_data['latitude'] >= -90
+			&& (float) $filter_data['latitude'] <= 90
+			&& is_numeric($filter_data['longitude'])
+			&& (float) $filter_data['longitude'] >= -180
+			&& (float) $filter_data['longitude'] <= 180;
+		$user_lat  = $has_request_coordinates ? (float) $filter_data['latitude'] : (float) $wo['user']['lat'];
+		$user_lng  = $has_request_coordinates ? (float) $filter_data['longitude'] : (float) $wo['user']['lng'];
 		$unit      = 6371;
 		$query_one = " AND status <> '1' AND `active` = '1'";
 		$distance  = Wo_Secure($filter_data['length']);
+		$product_lat_sql = "CAST(NULLIF(TRIM(product_source.`lat`), '') AS DECIMAL(10,7))";
+		$product_lng_sql = "CAST(NULLIF(TRIM(product_source.`lng`), '') AS DECIMAL(10,7))";
+		$page_lat_sql = "CAST(NULLIF(TRIM(page_source.`lat`), '') AS DECIMAL(10,7))";
+		$page_lng_sql = "CAST(NULLIF(TRIM(page_source.`lng`), '') AS DECIMAL(10,7))";
+		$seller_lat_sql = "CAST(NULLIF(TRIM(seller_source.`lat`), '') AS DECIMAL(10,7))";
+		$seller_lng_sql = "CAST(NULLIF(TRIM(seller_source.`lng`), '') AS DECIMAL(10,7))";
+		$product_coordinates_valid = "({$product_lat_sql} BETWEEN -90 AND 90 AND {$product_lng_sql} BETWEEN -180 AND 180 AND ({$product_lat_sql} <> 0 OR {$product_lng_sql} <> 0))";
+		$page_coordinates_valid = "({$page_lat_sql} BETWEEN -90 AND 90 AND {$page_lng_sql} BETWEEN -180 AND 180 AND ({$page_lat_sql} <> 0 OR {$page_lng_sql} <> 0))";
+		$seller_coordinates_valid = "({$seller_lat_sql} BETWEEN -90 AND 90 AND {$seller_lng_sql} BETWEEN -180 AND 180 AND ({$seller_lat_sql} <> 0 OR {$seller_lng_sql} <> 0))";
+		$effective_lat_sql = "CASE
+			WHEN {$product_coordinates_valid} THEN {$product_lat_sql}
+			WHEN {$page_coordinates_valid} THEN {$page_lat_sql}
+			WHEN {$seller_coordinates_valid} THEN {$seller_lat_sql}
+			ELSE NULL
+		END";
+		$effective_lng_sql = "CASE
+			WHEN {$product_coordinates_valid} THEN {$product_lng_sql}
+			WHEN {$page_coordinates_valid} THEN {$page_lng_sql}
+			WHEN {$seller_coordinates_valid} THEN {$seller_lng_sql}
+			ELSE NULL
+		END";
 		if (!empty($filter_data['product_id'])) {
 			$product_id = Wo_Secure($filter_data['product_id']);
 			$query_one .= " AND `id` = '{$product_id}'";
@@ -969,16 +1064,37 @@ function Wo_GetProducts($filter_data = array())
 			$user_id = Wo_Secure($filter_data['user_id']);
 			$query_one .= " AND `user_id` = '{$user_id}'";
 		}
-		$query_one = "SELECT `id`, `user_id`, ( {$unit} * acos(cos(radians('$user_lat'))  *
-        cos(radians(lat)) * cos(radians(lng) - radians('$user_lng')) +
-        sin(radians('$user_lat')) * sin(radians(lat ))) ) AS distance
-        FROM " . T_PRODUCTS . " WHERE `lat` <> 0 AND `lng` <> 0 $query_one
-        HAVING distance < '$distance'";
+		$query_one = "SELECT `id`, `user_id`, (
+			{$unit} * ACOS(
+				LEAST(1, GREATEST(-1,
+					COS(RADIANS('$user_lat'))
+					* COS(RADIANS(`effective_lat`))
+					* COS(RADIANS(`effective_lng`) - RADIANS('$user_lng'))
+					+ SIN(RADIANS('$user_lat'))
+					* SIN(RADIANS(`effective_lat`))
+				))
+			)
+		) AS distance
+		FROM (
+			SELECT
+				product_source.*,
+				{$effective_lat_sql} AS `effective_lat`,
+				{$effective_lng_sql} AS `effective_lng`
+			FROM " . T_PRODUCTS . " AS product_source
+			LEFT JOIN " . T_PAGES . " AS page_source
+				ON page_source.`page_id` = product_source.`page_id`
+			LEFT JOIN " . T_USERS . " AS seller_source
+				ON seller_source.`user_id` = product_source.`user_id`
+		) AS nearby_products
+		WHERE `effective_lat` IS NOT NULL
+			AND `effective_lng` IS NOT NULL
+			$query_one
+		HAVING distance <= '$distance'";
 	}
 	if (!empty($filter_data['order_by']) && $filter_data['order_by'] == 'price_low') {
-		$query_one .= " ORDER BY `price` ASC";
+		$query_one .= " ORDER BY {$vnd_price_sql} ASC";
 	} else if (!empty($filter_data['order_by']) && $filter_data['order_by'] == 'price_high') {
-		$query_one .= " ORDER BY `price` DESC";
+		$query_one .= " ORDER BY {$vnd_price_sql} DESC";
 	} else {
 		$query_one .= " ORDER BY `id` DESC";
 	}
@@ -993,6 +1109,7 @@ function Wo_GetProducts($filter_data = array())
 		while ($fetched_data = mysqli_fetch_assoc($sql)) {
 			$products           = Wo_GetProduct($fetched_data['id']);
 			$products['seller'] = Wo_UserData($fetched_data['user_id']);
+			$products['price_vnd'] = Wo_ConvertProductPriceToVnd($products['price'], $products['currency']);
 			if (isset($fetched_data['distance']) && is_numeric($fetched_data['distance'])) {
 				$products['distance'] = (float) $fetched_data['distance'];
 			}

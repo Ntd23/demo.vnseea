@@ -32,8 +32,25 @@ export function createApiProductRepository(): ProductRepository {
     create(draft: ProductEditorDraft) {
       return client.post<ProductRecord, ProductEditorDraft>(productApiRoutes.create, draft)
     },
-    update(id: string, draft: ProductEditorDraft) {
-      return client.post<ProductRecord, ProductEditorDraft>(productApiRoutes.update(id), draft)
+    update(id: string, draft: ProductEditorDraft, images: File[] = []) {
+      const fields = draft.fields
+      const form = new FormData()
+
+      form.append("product_title", fields.title.trim())
+      form.append("product_category", fields.category)
+      form.append("product_description", fields.description.trim())
+      form.append("product_price", fields.price.trim())
+      form.append("product_location", fields.location.trim())
+      form.append("product_type", fields.condition === "used" ? "1" : "0")
+      form.append("currency", fields.currency)
+      form.append("units", fields.stock.trim())
+      form.append("deleted_images_ids", draft.removedImageIds.join(","))
+
+      for (const image of images) {
+        form.append("images[]", image, image.name)
+      }
+
+      return client.post<ProductRecord, FormData>(productApiRoutes.update(id), form)
     },
     delete(id: string | number) {
       return client.delete<{ success: boolean }>(productApiRoutes.detail(String(id)))

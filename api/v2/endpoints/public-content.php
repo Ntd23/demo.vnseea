@@ -374,6 +374,17 @@ function Wo_PublicContent_ProductByPostId($post_id)
 
 function Wo_PublicContent_Products()
 {
+    $requested_distance = Wo_PublicContent_Read('distance', 0);
+    $request_latitude = Wo_PublicContent_Read('latitude', null);
+    $request_longitude = Wo_PublicContent_Read('longitude', null);
+    $has_request_coordinates = (
+        is_numeric($request_latitude)
+        && (float) $request_latitude >= -90
+        && (float) $request_latitude <= 90
+        && is_numeric($request_longitude)
+        && (float) $request_longitude >= -180
+        && (float) $request_longitude <= 180
+    );
     $filter = array(
         'limit' => Wo_PublicContent_Limit(35, 50),
         'after_id' => Wo_PublicContent_Offset(),
@@ -383,6 +394,12 @@ function Wo_PublicContent_Products()
         'order_by' => Wo_PublicContent_Read('order_by', ''),
         'user_id' => Wo_PublicContent_Read('user_id', 0)
     );
+
+    if (is_numeric($requested_distance) && (float) $requested_distance > 0 && $has_request_coordinates) {
+        $filter['length'] = min(300, (float) $requested_distance);
+        $filter['latitude'] = (float) $request_latitude;
+        $filter['longitude'] = (float) $request_longitude;
+    }
 
     if (empty($filter['after_id'])) {
         unset($filter['after_id']);
@@ -550,11 +567,21 @@ if ($action == 'page') {
 } else if ($action == 'user_posts') {
     $response_data = Wo_PublicContent_Response(array('data' => Wo_PublicContent_UserPosts()));
 } else if ($action == 'products') {
+    $response_latitude = Wo_PublicContent_Read('latitude', null);
+    $response_longitude = Wo_PublicContent_Read('longitude', null);
+    $distance_filter_available = (
+        is_numeric($response_latitude)
+        && (float) $response_latitude >= -90
+        && (float) $response_latitude <= 90
+        && is_numeric($response_longitude)
+        && (float) $response_longitude >= -180
+        && (float) $response_longitude <= 180
+    );
     $response_data = Wo_PublicContent_Response(array(
         'products' => Wo_PublicContent_Products(),
         'products_categories' => isset($wo['products_categories']) ? $wo['products_categories'] : array(),
         'products_sub_categories' => isset($wo['products_sub_categories']) ? $wo['products_sub_categories'] : array(),
-        'distance_filter_available' => 0
+        'distance_filter_available' => $distance_filter_available ? 1 : 0
     ));
 } else if ($action == 'product') {
     $product_id = Wo_PublicContent_Read('product_id', '');

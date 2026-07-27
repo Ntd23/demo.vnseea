@@ -99,9 +99,9 @@ export const sortProductListings = (
   return products.slice().sort((left, right) => {
     switch (sortBy) {
       case "price_low":
-        return left.price - right.price
+        return left.priceVnd - right.priceVnd
       case "price_high":
-        return right.price - left.price
+        return right.priceVnd - left.priceVnd
       case "latest":
       default:
         return left.postedHoursAgo - right.postedHoursAgo || right.id - left.id

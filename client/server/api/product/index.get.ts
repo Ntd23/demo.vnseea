@@ -20,7 +20,16 @@ export default defineEventHandler(async (event) => {
   const requestedDistance = Number.isFinite(parsedDistance) && parsedDistance > 0
     ? Math.min(300, parsedDistance)
     : undefined
-  const mineOnly = String(Array.isArray(query.mine) ? query.mine[0] : query.mine || "0") === "1"
+  const parsedLatitude = Number(Array.isArray(query.latitude) ? query.latitude[0] : query.latitude)
+  const parsedLongitude = Number(Array.isArray(query.longitude) ? query.longitude[0] : query.longitude)
+  const hasCurrentCoordinates = Number.isFinite(parsedLatitude)
+    && parsedLatitude >= -90
+    && parsedLatitude <= 90
+    && Number.isFinite(parsedLongitude)
+    && parsedLongitude >= -180
+    && parsedLongitude <= 180
+  const mineValue = Array.isArray(query.mine) ? query.mine[0] : query.mine
+  const mineOnly = ["1", "true"].includes(String(mineValue ?? "0").toLowerCase())
   const normalizedSellerUserId = /^\d+$/.test(sellerUserId) ? sellerUserId : ""
 
   if (mineOnly && !currentUserId) {
@@ -39,8 +48,10 @@ export default defineEventHandler(async (event) => {
     keyword: query.keyword || query.q,
     category_id: /^\d+$/.test(category) ? category : undefined,
     sub_id: /^\d+$/.test(subCategory) ? subCategory : undefined,
-    // PHP uses the authenticated account coordinates saved from Google Maps.
-    distance: requestedDistance,
+    // Distance filtering uses the browser's current coordinates when supplied.
+    distance: requestedDistance && hasCurrentCoordinates ? requestedDistance : undefined,
+    latitude: requestedDistance && hasCurrentCoordinates ? parsedLatitude : undefined,
+    longitude: requestedDistance && hasCurrentCoordinates ? parsedLongitude : undefined,
     order_by: ["price_low", "price_high"].includes(sort) ? sort : undefined,
   })
 

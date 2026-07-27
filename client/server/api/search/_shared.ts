@@ -146,7 +146,11 @@ export function mapUsers(users: BackendSearchEntity[] = [], resolveMediaUrl: (va
       accent: "#b91c1c",
       popularityScore: Number(followers || 0),
       recentScore: 100 - index,
-      isFollowing: Number(user.is_following ?? 0) === 1 || user.is_following === "yes" || user.is_following === true || Number(user.is_friend ?? 0) === 1 || user.is_friend === "yes",
+      isFollowing: Number(user.is_following ?? user.is_followed ?? 0) === 1
+        || user.is_following === "yes"
+        || user.is_following === true
+        || user.is_followed === "yes"
+        || user.is_followed === true,
     }
   })
 }
@@ -236,6 +240,7 @@ export async function fetchBackendSearch(event: H3Event) {
   const query = getQuery(event)
   const keyword = asString(query.q || query.keyword)
   const filterByAge = asString(query.filterbyage) === "yes" ? "yes" : "no"
+  const followingOnly = asString(query.followingOnly) === "1"
   const limit = Number(query.limit || 35)
 
   const payload: Record<string, unknown> = {
@@ -272,11 +277,12 @@ export async function fetchBackendSearch(event: H3Event) {
     ),
     "Unable to search.",
   )
+  const users = mapUsers(response.users, resolveMediaUrl)
 
   return {
     keyword,
     resolveMediaUrl,
-    users: mapUsers(response.users, resolveMediaUrl),
+    users: followingOnly ? users.filter(user => user.isFollowing) : users,
     pages: mapPages(response.pages, resolveMediaUrl),
     groups: mapGroups(response.groups, resolveMediaUrl),
   }

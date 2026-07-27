@@ -215,7 +215,7 @@
                     {{ product.title }}
                   </NuxtLink>
                   <div class="mt-2 text-base font-black text-orange-600">
-                    {{ product.priceFormat || (product.price + ' ' + (product.currency || 'VND')) }}
+                    {{ formatDirectoryProductPrice(product) }}
                   </div>
                 </div>
                 <div class="mt-3 flex items-center justify-between text-xs text-[var(--text-tertiary)] font-bold border-t border-[var(--border-light)] pt-3">
@@ -345,6 +345,7 @@ import { createApiJobsRepository } from "../../../jobs/infrastructure/repositori
 import { ApiGamesRepository } from "../../../games/infrastructure/repositories/ApiGamesRepository"
 import { ApiForumRepository } from "../../../forum/infrastructure/repositories/ApiForumRepository"
 import { createApiProductRepository } from "../../../product/infrastructure/repositories/ApiProductRepository"
+import { formatProductPrice } from "../../../product/application/formatters/product-currency"
 import { ApiFundingRepository } from "../../../funding/infrastructure/repositories/ApiFundingRepository"
 import { useMockMoviesData } from "../../../movies/application/composables/useMockMoviesData"
 
@@ -357,7 +358,9 @@ import FundingCard from "../../../funding/presentation/components/FundingCard.vu
 import MoviesCard from "../../../movies/presentation/components/Card.vue"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const formatDirectoryProductPrice = (product: { price: number; currency?: string; currencySymbol?: string }) =>
+  formatProductPrice(product, locale.value)
 
 const categories = [
   { 

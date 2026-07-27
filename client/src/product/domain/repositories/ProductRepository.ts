@@ -8,6 +8,6 @@ export interface ProductRepository {
   addToCart(productId: number, quantity?: number): Promise<{ count: number }>
   getById(id: string): Promise<ProductRecord | null>
   create(draft: ProductEditorDraft): Promise<ProductRecord>
-  update(id: string, draft: ProductEditorDraft): Promise<ProductRecord>
+  update(id: string, draft: ProductEditorDraft, images?: File[]): Promise<ProductRecord>
   delete(id: string | number): Promise<{ success: boolean }>
 }
