@@ -1,4 +1,5 @@
 <?php
+// English description: Handles job creation, editing, applications, searches, and applicant retrieval for the v2 API.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -231,11 +232,36 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
     }
 
     if ($_POST['type'] == 'apply') {
-    	if (!empty($_POST['job_id']) && is_numeric($_POST['job_id']) && $_POST['job_id'] > 0) {
-	    	$job = Wo_GetJobById($_POST['job_id']);
-	    	if (!empty($job) && !empty($_POST['user_name']) && !empty($_POST['phone_number']) && !empty($_POST['location']) && !empty($_POST['email']) && $job['apply'] == false) {
-	    		$insert = true;
-	    		$insert_data = array();
+        if (!empty($_POST['job_id']) && is_numeric($_POST['job_id']) && $_POST['job_id'] > 0) {
+            $job = Wo_GetJobById($_POST['job_id']);
+            $notification_recipient_id = 0;
+            $notification_owner_name = '';
+            if (!empty($job['page']) && is_array($job['page'])) {
+                $notification_recipient_id = $job['page']['user_id'];
+                $notification_owner_name = $job['page']['page_name'];
+            }
+            elseif (!empty($job['user']) && is_array($job['user'])) {
+                $notification_recipient_id = $job['user']['user_id'];
+                $notification_owner_name = $job['user']['username'];
+            }
+            $has_application_details = !empty($_POST['user_name']) && !empty($_POST['phone_number']) && !empty($_POST['location']) && !empty($_POST['email']);
+
+            if (!empty($job) && $has_application_details && $job['apply'] == true) {
+                $notification_data_array = array(
+                    'recipient_id' => $notification_recipient_id,
+                    'type' => 'apply_job',
+                    'url' => 'index.php?link1=timeline&u=' . $notification_owner_name . '&type=job_apply&id=' . $job['id']
+                );
+                Wo_RegisterNotification($notification_data_array);
+                $response_data = array(
+                    'api_status' => 200,
+                    'already_applied' => true,
+                    'message_data' => 'You applied this job before'
+                );
+            }
+            elseif (!empty($job) && $has_application_details && $job['apply'] == false) {
+                $insert = true;
+                $insert_data = array();
 
 	    		if (!empty($job['question_one'])) {
 	    			if ($job['question_one_type'] == 'yes_no_question' && !empty($_POST['question_one_answer']) && in_array($_POST['question_one_answer'], array('yes','no'))) {
@@ -323,31 +349,25 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
 	                    }
 	    			}
 
-	    			$db->insert(T_JOB_APPLY,$insert_data);
+                $db->insert(T_JOB_APPLY,$insert_data);
 
-	                $notification_data_array = array(
-	                    'recipient_id' => $job['page']['user_id'],
-	                    'type' => 'apply_job',
-	                    'url' => 'index.php?link1=timeline&u=' . $job['page']['page_name'].'&type=job_apply&id='.$insert_data['job_id']
-	                );
-	                Wo_RegisterNotification($notification_data_array);
+                $notification_data_array = array(
+                    'recipient_id' => $notification_recipient_id,
+                    'type' => 'apply_job',
+                    'url' => 'index.php?link1=timeline&u=' . $notification_owner_name . '&type=job_apply&id=' . $insert_data['job_id']
+                );
+                Wo_RegisterNotification($notification_data_array);
 
 	                $response_data = array(
 			                        'api_status' => 200,
 			                        'message_data' => 'Applied job successfully'
 			                    );
-	    		}
-	    		else{
-	    			if ($job['apply'] == true) {
-	    				$error_code    = 11;
-					    $error_message = 'You applied this job before';
-	    			}
-	    			else{
-	    				$error_code    = 10;
-					    $error_message = 'Please answer the question';
-	    			}
-	    		}
-	    	}
+            }
+            else{
+                $error_code    = 10;
+                $error_message = 'Please answer the question';
+            }
+        }
 	    	else{
 	    		$error_code    = 5;
 	            $error_message = 'Please check your details.';

@@ -31,6 +31,54 @@ function VNSEEA_LiveCreateError($error_code, $extra = array())
     ), is_array($extra) ? $extra : array());
 }
 
+function VNSEEA_DeleteLivePost($post_id, $system_cleanup = false)
+{
+    global $wo, $db;
+
+    $post_id = (int) $post_id;
+    if ($post_id < 1) {
+        return false;
+    }
+
+    $post = $db->where('id', $post_id)->where('postType', 'live')->getOne(T_POSTS);
+    if (empty($post)) {
+        return true;
+    }
+
+    $post = is_object($post) ? (array) $post : $post;
+    $owner_id = !empty($post['user_id']) ? (int) $post['user_id'] : 0;
+    if ($owner_id < 1) {
+        return false;
+    }
+
+    if (!$system_cleanup) {
+        $current_user_id = !empty($wo['user']['user_id']) ? (int) $wo['user']['user_id'] : 0;
+        if (empty($wo['loggedin']) || $current_user_id !== $owner_id) {
+            return false;
+        }
+        return Wo_DeletePost($post_id);
+    }
+
+    // A verified LiveKit room-finished webhook has no browser session. Run the
+    // existing complete post cleanup as the live owner, then restore globals.
+    $previous_loggedin = isset($wo['loggedin']) ? $wo['loggedin'] : false;
+    $previous_user = isset($wo['user']) ? $wo['user'] : array();
+    $owner = Wo_UserData($owner_id);
+    if (empty($owner)) {
+        return false;
+    }
+
+    try {
+        $wo['loggedin'] = true;
+        $wo['user'] = $owner;
+        return Wo_DeletePost($post_id);
+    }
+    finally {
+        $wo['loggedin'] = $previous_loggedin;
+        $wo['user'] = $previous_user;
+    }
+}
+
 function VNSEEA_LivePostsHasAnonymousColumn()
 {
     global $sqlConnect;

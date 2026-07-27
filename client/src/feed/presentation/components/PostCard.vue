@@ -9,6 +9,7 @@
   >
     <div class="post-card__body py-2">
       <FeedPostHeader
+        v-if="!post.jobId"
         :author="post.author"
         :author-id="post.authorId"
         :author-avatar-url="post.authorAvatarUrl"
@@ -28,7 +29,7 @@
       />
 
       <div
-        v-if="hasPostContent"
+        v-if="!post.jobId && hasPostContent"
         class="post-card__content"
         :style="postColorStyles ? { background: postColorStyles.bg, color: postColorStyles.text } : {}"
       >
@@ -49,7 +50,7 @@
         </div>
       </div>
 
-      <div v-if="localPollOptions.length" class="post-card__poll">
+      <div v-if="!post.jobId && localPollOptions.length" class="post-card__poll">
         <button
           v-for="option in localPollOptions"
           :key="option.id"
@@ -74,7 +75,7 @@
       </div>
 
       <NuxtLink
-        v-if="post.attachmentCard"
+        v-if="!post.jobId && post.attachmentCard"
         :to="post.attachmentCard.href"
         class="post-card__attachment"
         :class="`post-card__attachment--${post.attachmentCard.type}`"
@@ -116,7 +117,18 @@
         </div>
       </NuxtLink>
 
-      <ClientOnly v-if="post.isLive">
+      <JobsJobFeedCard
+        v-if="post.jobId"
+        :post-id="post.id"
+        :post-time="post.time"
+        :fallback-title="post.text"
+        :fallback-cover-url="mediaItems[0]?.thumb || mediaItems[0]?.src"
+        :fallback-owner-name="post.author"
+        :fallback-owner-avatar-url="post.authorAvatarUrl"
+        :fallback-owner-path="post.authorPath"
+      />
+
+      <ClientOnly v-else-if="post.isLive">
         <FeedLivePostPlayer
           :post-id="post.id"
           :initial-state="post.liveState"
@@ -129,6 +141,7 @@
           @react="reactToPost"
           @comment="handleCommentIntent"
           @share="post.permissions.canShare && (showShare = true)"
+          @ended="emit('deleted', post.id)"
         />
       </ClientOnly>
 
@@ -469,6 +482,7 @@ import FeedPostHeader from "./PostHeader.vue"
 import FeedPostMediaGrid from "./PostMediaGrid.vue"
 import FeedShareModal from "./ShareModal.vue"
 import FeedSharedPostCard from "./SharedPostCard.vue"
+import JobsJobFeedCard from "../../../jobs/presentation/components/JobFeedCard.vue"
 
 const { t } = useI18n()
 const route = useRoute()

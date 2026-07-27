@@ -78,6 +78,7 @@ type BackendJobWebMutationResponse = {
   status?: number | string
   error?: string
   message?: string
+  post_id?: number | string
 }
 
 const DEFAULT_DISTANCE_OPTIONS: JobsSelectOption[] = [
@@ -142,6 +143,18 @@ const normalizeLabel = (value: string) =>
   value
     .replace(/_/g, " ")
     .replace(/\b\w/g, match => match.toUpperCase())
+
+const extractPostIdFromUrl = (value: string) => {
+  if (!value) return 0
+
+  const queryMatch = value.match(/[?&](?:id|post_id)=(\d+)/i)
+  if (queryMatch?.[1]) {
+    return asNumber(queryMatch[1])
+  }
+
+  const pathMatch = value.match(/\/post\/(\d+)/i)
+  return pathMatch?.[1] ? asNumber(pathMatch[1]) : 0
+}
 
 const normalizeOptions = (items: Array<{ value?: string | number; label?: string }> | undefined) =>
   (items ?? [])
@@ -251,6 +264,8 @@ const mapJobRecord = (
   const currency = asString(entity.currency)
   const minimum = asNullableNumber(entity.minimum)
   const maximum = asNullableNumber(entity.maximum)
+  const postUrl = asString(entity.url)
+  const postId = asNumber(entity.post_id) || extractPostIdFromUrl(postUrl)
   const currencySymbol = options.currencySymbols[currency] || currency
   const salaryDateLabel = options.salaryDateLabels[salaryDate] || normalizeLabel(salaryDate)
   const mappedJob = {
@@ -262,7 +277,7 @@ const mapJobRecord = (
 
   return {
     id: asNumber(entity.id),
-    postId: asNumber(entity.post_id) || null,
+    postId: postId || null,
     title: asString(entity.title),
     description: asString(entity.description),
     imageUrl: normalizeImageUrl(asString(entity.image), options.baseUrl),
@@ -300,7 +315,7 @@ const mapJobRecord = (
     questions: [1, 2, 3]
       .map(slot => mapQuestion(slot as 1 | 2 | 3, entity))
       .filter((question): question is JobQuestionRecord => Boolean(question)),
-    postUrl: asString(entity.url),
+    postUrl,
   }
 }
 
@@ -642,6 +657,7 @@ export async function createJob(
     return {
       success: true,
       message: asString(response.message),
+      postId: asNumber(response.post_id) || undefined,
     }
   }
 
@@ -680,6 +696,7 @@ export async function createJob(
   return {
     success: true,
     message: asString(response.message),
+    postId: asNumber(response.post_id) || undefined,
   }
 }
 

@@ -1,4 +1,5 @@
 <?php
+// English description: Handles job creation, applications, editing, deletion, and job-related modal responses.
 $job_type      = array(
     'full_time',
     'part_time',
@@ -147,6 +148,7 @@ if ($f == 'job' && $wo['config']['job_system'] == 1) {
                         'post_id' => $post_id
                     ));
                     $data['status'] = 200;
+                    $data['post_id'] = $post_id;
                 } else {
                     $data['error'] = $error_icon . $wo['lang']['file_not_supported'];
                 }

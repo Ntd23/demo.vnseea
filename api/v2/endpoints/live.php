@@ -162,8 +162,8 @@ else{
                     }
                 }
                 else{
-                    // Keep ended broadcasts as normal timeline records and
-                    // expose a final state to mobile clients.
+                    // Report a final state while viewers remove a live post
+                    // that has just been deleted by its host.
                     $response_data = array(
                         'api_status' => 200,
                         'comments' => array(),
@@ -175,17 +175,27 @@ else{
                         'is_final' => 1
                     );
                 }
-                
-    		}
-    		else{
-                $error_code    = 6;
-			    $error_message = 'post not found';
-    		}
-    	}
-    	else{
-    		$error_code    = 5;
-		    $error_message = 'post_id can not be empty';
-    	}
+            }
+            else{
+                // The host deletes the live post when ending the session.
+                // A viewer polling during that transition needs a final state
+                // so the card can leave the feed without showing an error.
+                $response_data = array(
+                    'api_status' => 200,
+                    'comments' => array(),
+                    'joined' => array(),
+                    'left' => array(),
+                    'count' => 0,
+                    'word' => $wo['lang']['offline'],
+                    'still_live' => 'offline',
+                    'is_final' => 1
+                );
+            }
+        }
+        else{
+            $error_code    = 5;
+            $error_message = 'post_id can not be empty';
+        }
 	}
 
     if ($_POST['type'] == 'delete') {
@@ -206,14 +216,27 @@ else{
                     } catch (Exception $e) {
                     }
                 }
-                $response_data = array(
-                                    'api_status' => 200,
-                                    'message' => 'Live session ended.'
-                                );
+                $deleted = VNSEEA_DeleteLivePost((int) $post->id);
+                if ($deleted) {
+                    $response_data = array(
+                                        'api_status' => 200,
+                                        'message' => 'Live session ended and post deleted.',
+                                        'post_deleted' => 1
+                                    );
+                }
+                else{
+                    $error_code    = 7;
+                    $error_message = 'Unable to delete live post';
+                }
             }
             else{
-                $error_code    = 6;
-                $error_message = 'post not found';
+                // End is idempotent: an absent post already satisfies the
+                // required final state.
+                $response_data = array(
+                                    'api_status' => 200,
+                                    'message' => 'Live session already ended.',
+                                    'post_deleted' => 1
+                                );
             }
         }
         else{

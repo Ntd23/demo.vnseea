@@ -469,8 +469,24 @@ if ($f == 'live') {
                     );
                 }
             } else {
-                $data['message'] = $error_icon . $wo['lang']['please_check_details'];
-                $data['removed'] = 'yes';
+                $data = array(
+                    'status' => 200,
+                    'html' => '',
+                    'count' => 0,
+                    'viewer_count' => 0,
+                    'word' => $wo['lang']['offline'],
+                    'still_live' => 'offline',
+                    'is_final' => 1,
+                    'heartbeat_age' => 0,
+                    'reactions_count' => 0,
+                    'shares_count' => 0,
+                    'clips_count' => 0,
+                    'comments' => array(),
+                    'reactions' => array(),
+                    'joined' => array(),
+                    'left' => array(),
+                    'removed' => 'yes'
+                );
             }
         } else {
             $data['message'] = $error_icon . $wo['lang']['please_check_details'];
@@ -505,7 +521,7 @@ if ($f == 'live') {
                     catch (Exception $e) {
                     }
                 }
-                $deleted = true;
+                $deleted = VNSEEA_DeleteLivePost((int) $post->id);
             } else {
                 // Ending a live session is idempotent. LiveKit's room-finished
                 // webhook may remove the post before the host request arrives.
@@ -522,9 +538,10 @@ if ($f == 'live') {
         echo json_encode(array(
             'status' => $deleted ? 200 : 400,
             'message' => $deleted
-                ? ($already_ended ? 'Live session was already ended.' : 'Live session ended.')
+                ? ($already_ended ? 'Live session was already ended.' : 'Live session ended and post deleted.')
                 : $error_icon . $wo['lang']['please_check_details'],
-            'already_ended' => $already_ended ? 1 : 0
+            'already_ended' => $already_ended ? 1 : 0,
+            'post_deleted' => $deleted ? 1 : 0
         ));
         exit();
     }

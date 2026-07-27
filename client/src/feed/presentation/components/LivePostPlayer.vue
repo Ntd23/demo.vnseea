@@ -20,22 +20,17 @@
         class="feed-live-player__poster"
       >
 
-      <!-- Placeholder before viewer joins -->
+      <!-- Connection state shown while the viewer joins automatically. -->
       <div v-if="!connected" class="feed-live-player__placeholder">
         <div class="feed-live-player__placeholder-card">
           <UIcon :name="statusIcon" class="feed-live-player__placeholder-icon" />
           <p class="feed-live-player__placeholder-title">{{ statusTitle }}</p>
           <p class="feed-live-player__placeholder-copy">{{ statusCopy }}</p>
-          <UButton
-            v-if="canJoin"
-            color="primary"
-            size="lg"
-            :loading="joining || connecting"
-            :ui="{ base: 'rounded-full px-8 font-bold shadow-xl shadow-[var(--bg-brand)]/30 mt-2' }"
-            @click="joinLive"
-          >
-            {{ t("pages.livePage.viewer.joinLive") }}
-          </UButton>
+          <UIcon
+            v-if="canJoin && (joining || connecting)"
+            name="i-ph-spinner-gap-bold"
+            class="feed-live-player__connecting-icon"
+          />
         </div>
       </div>
 
@@ -326,6 +321,10 @@ const knownCommentIds = ref<number[]>([])
 const floatingReactions = ref<{ id: number; src: string; x: number }[]>([])
 let floatingReactionId = 0
 let hasReportedEnded = false
+let usesCssFullscreenFallback = false
+let previousBodyOverflow = ""
+let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+let isDisposed = false
 
 const {
   connecting,
@@ -340,9 +339,14 @@ const {
 watch(stageHost, element => setStageHost(element), { flush: "post", immediate: true })
 
 watch(connected, (nextConnected, wasConnected) => {
+  if (nextConnected) {
+    clearReconnectTimer()
+    return
+  }
+
   if (!nextConnected && wasConnected && liveState.value === "live") {
     liveState.value = "stale"
-    void refreshHeartbeat()
+    void refreshHeartbeat().finally(() => scheduleAutoJoin())
   }
 })
 
@@ -377,13 +381,23 @@ const selectedReactionAsset = computed(() =>
 const { pause, resume } = useIntervalFn(refreshHeartbeat, 4000, { immediate: false })
 
 async function joinLive() {
-  if (joining.value || !canJoin.value) return
+  if (
+    isDisposed
+    || joining.value
+    || connecting.value
+    || connected.value
+    || !canJoin.value
+  ) return
 
+  clearReconnectTimer()
   joining.value = true
   joinError.value = ""
 
   try {
     const session = await repository.joinViewer(props.postId)
+
+    if (isDisposed) return
+
     liveState.value = session.streamState
 
     if (session.streamState === "offline") {
@@ -392,6 +406,12 @@ async function joinLive() {
     }
 
     await connect(session)
+
+    if (isDisposed) {
+      disconnect()
+      return
+    }
+
     await refreshHeartbeat()
     resume()
   }
@@ -400,7 +420,33 @@ async function joinLive() {
   }
   finally {
     joining.value = false
+
+    if (!connected.value && liveState.value !== "offline") {
+      scheduleAutoJoin()
+    }
   }
+}
+
+function clearReconnectTimer() {
+  if (!reconnectTimer) return
+  clearTimeout(reconnectTimer)
+  reconnectTimer = null
+}
+
+function scheduleAutoJoin(delay = 1500) {
+  if (
+    isDisposed
+    || reconnectTimer
+    || connected.value
+    || joining.value
+    || connecting.value
+    || liveState.value === "offline"
+  ) return
+
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null
+    void joinLive()
+  }, delay)
 }
 
 async function refreshHeartbeat() {
@@ -533,8 +579,29 @@ function toggleReactionTrayForPointer() {
 }
 
 async function exitFullscreenIfNeeded() {
-  if (!import.meta.client || !document.fullscreenElement) return
-  await document.exitFullscreen()
+  if (!import.meta.client) return
+
+  const fullscreenDocument = document as Document & {
+    webkitFullscreenElement?: Element | null
+    webkitExitFullscreen?: () => Promise<void> | void
+  }
+  const video = stageHost.value?.querySelector("video") as (HTMLVideoElement & {
+    webkitDisplayingFullscreen?: boolean
+    webkitExitFullscreen?: () => void
+  }) | null
+
+  if (document.fullscreenElement && typeof document.exitFullscreen === "function") {
+    await document.exitFullscreen()
+  }
+  else if (fullscreenDocument.webkitFullscreenElement && typeof fullscreenDocument.webkitExitFullscreen === "function") {
+    await fullscreenDocument.webkitExitFullscreen()
+  }
+  else if (video?.webkitDisplayingFullscreen && typeof video.webkitExitFullscreen === "function") {
+    video.webkitExitFullscreen()
+  }
+
+  disableCssFullscreenFallback()
+  syncFullscreenState()
   await nextTick()
 }
 
@@ -586,33 +653,87 @@ async function followAuthor() {
   }
 }
 
-function toggleFullscreen() {
+function enableCssFullscreenFallback() {
+  if (!import.meta.client || usesCssFullscreenFallback) return
+  previousBodyOverflow = document.body.style.overflow
+  document.body.style.overflow = "hidden"
+  usesCssFullscreenFallback = true
+  isFullscreen.value = true
+}
+
+function disableCssFullscreenFallback() {
+  if (!import.meta.client || !usesCssFullscreenFallback) return
+  document.body.style.overflow = previousBodyOverflow
+  usesCssFullscreenFallback = false
+}
+
+async function toggleFullscreen() {
   if (!import.meta.client) return
 
-  if (document.fullscreenElement) {
-    void document.exitFullscreen()
+  const fullscreenDocument = document as Document & {
+    webkitFullscreenElement?: Element | null
+  }
+
+  if (
+    document.fullscreenElement
+    || fullscreenDocument.webkitFullscreenElement
+    || usesCssFullscreenFallback
+    || isFullscreen.value
+  ) {
+    await exitFullscreenIfNeeded()
     return
   }
 
-  const element = stageElement.value
-  if (element && typeof element.requestFullscreen === "function") {
-    void element.requestFullscreen()
+  const element = stageElement.value as (HTMLElement & {
+    webkitRequestFullscreen?: () => Promise<void> | void
+  }) | null
+  if (!element) return
+
+  try {
+    if (typeof element.requestFullscreen === "function") {
+      await element.requestFullscreen()
+      return
+    }
+
+    if (typeof element.webkitRequestFullscreen === "function") {
+      await element.webkitRequestFullscreen()
+      return
+    }
   }
+  catch {
+    // Safari may expose the element API while rejecting non-video fullscreen.
+  }
+
+  // Keep the full viewer controls on iOS instead of entering the native video
+  // player, where reactions, comments, and the exit control would disappear.
+  enableCssFullscreenFallback()
 }
 
 function syncFullscreenState() {
-  isFullscreen.value = document.fullscreenElement === stageElement.value
+  const fullscreenDocument = document as Document & {
+    webkitFullscreenElement?: Element | null
+  }
+  const fullscreenElement = document.fullscreenElement ?? fullscreenDocument.webkitFullscreenElement ?? null
+  isFullscreen.value = usesCssFullscreenFallback || fullscreenElement === stageElement.value
   if (!isFullscreen.value) reactionTrayOpen.value = false
 }
 
-onMounted(() => {
+onMounted(async () => {
   canHover.value = window.matchMedia("(hover: hover) and (pointer: fine)").matches
   document.addEventListener("fullscreenchange", syncFullscreenState)
+  document.addEventListener("webkitfullscreenchange", syncFullscreenState)
+
+  await nextTick()
+  await joinLive()
 })
 
 onBeforeUnmount(() => {
+  isDisposed = true
+  clearReconnectTimer()
   pause()
+  disableCssFullscreenFallback()
   document.removeEventListener("fullscreenchange", syncFullscreenState)
+  document.removeEventListener("webkitfullscreenchange", syncFullscreenState)
 })
 </script>
 
@@ -655,12 +776,17 @@ onBeforeUnmount(() => {
 }
 
 .feed-live-player__stage--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   max-width: none;
   border-radius: 0;
   aspect-ratio: auto;
   border: none;
+  background: var(--bg-media);
 }
 
 .feed-live-player__stage--fullscreen .feed-live-player__video-host :deep(video) {
@@ -747,6 +873,20 @@ onBeforeUnmount(() => {
   font-size: 12px;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.68);
+}
+
+.feed-live-player__connecting-icon {
+  width: 24px;
+  height: 24px;
+  margin-top: 4px;
+  color: var(--color-primary-400);
+  animation: flp-connecting-spin 0.8s linear infinite;
+}
+
+@keyframes flp-connecting-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .feed-live-player__state-notice {

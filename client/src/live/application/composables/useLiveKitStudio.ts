@@ -34,6 +34,8 @@ export function useLiveKitStudio() {
   let liveKitModule: LiveKitModule | null = null
   let room: Room | null = null
   let localTracks: LocalTrack[] = []
+  let activeConnection: Promise<void> | null = null
+  let connectionGeneration = 0
 
   const detectMediaSupport = () =>
     typeof navigator !== "undefined"
@@ -284,7 +286,7 @@ export function useLiveKitStudio() {
     attachPreview()
   }
 
-  async function connect(session: LiveStudioSession) {
+  async function establishConnection(session: LiveStudioSession, generation: number) {
     await ensurePreview()
 
     if (!localTracks.length) {
@@ -292,37 +294,96 @@ export function useLiveKitStudio() {
     }
 
     const module = await ensureModule()
+    const previousRoom = room
+    room = null
 
-    if (room) {
-      room.disconnect()
-      room = null
-    }
-
-    room = new module.Room({
-      adaptiveStream: true,
-      dynacast: true,
-    })
-
-    await room.connect(session.wsUrl, session.token)
-
-    for (const track of localTracks) {
-      await room.localParticipant.publishTrack(track)
-    }
-
-    roomConnected.value = true
-  }
-
-  function disconnect() {
-    if (room) {
+    if (previousRoom) {
       try {
-        room.disconnect()
+        await previousRoom.disconnect(false)
       }
       catch {
       }
     }
 
+    if (generation !== connectionGeneration) {
+      throw new Error(t("pages.livePage.studio.vmStartError"))
+    }
+
+    const nextRoom = new module.Room({
+      adaptiveStream: true,
+      dynacast: true,
+    })
+    room = nextRoom
+
+    nextRoom.on(module.RoomEvent.Disconnected, () => {
+      if (room === nextRoom) {
+        room = null
+        roomConnected.value = false
+      }
+    })
+
+    try {
+      await nextRoom.connect(session.wsUrl, session.token)
+
+      if (generation !== connectionGeneration || room !== nextRoom) {
+        throw new Error(t("pages.livePage.studio.vmStartError"))
+      }
+
+      for (const track of localTracks) {
+        await nextRoom.localParticipant.publishTrack(track)
+      }
+
+      roomConnected.value = true
+    }
+    catch (error) {
+      if (room === nextRoom) {
+        room = null
+        roomConnected.value = false
+      }
+
+      try {
+        await nextRoom.disconnect(false)
+      }
+      catch {
+      }
+
+      throw error
+    }
+  }
+
+  async function connect(session: LiveStudioSession) {
+    if (roomConnected.value) {
+      return
+    }
+
+    if (activeConnection) {
+      return await activeConnection
+    }
+
+    const generation = ++connectionGeneration
+    const connection = establishConnection(session, generation)
+    activeConnection = connection
+
+    try {
+      await connection
+    }
+    finally {
+      if (activeConnection === connection) {
+        activeConnection = null
+      }
+    }
+  }
+
+  function disconnect() {
+    connectionGeneration += 1
+    const currentRoom = room
     room = null
     roomConnected.value = false
+
+    if (currentRoom) {
+      void currentRoom.disconnect().catch(() => {
+      })
+    }
   }
 
   function setPreviewHost(element: HTMLElement | null) {

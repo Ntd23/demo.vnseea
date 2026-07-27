@@ -341,7 +341,7 @@
               <UButton
                 type="button"
                 icon="i-ph-tag-fill"
-                size="xs"
+                size="sm"
                 color="primary"
                 class="chat-widget__contact-tag-btn"
                 :aria-label="$t('pages.messagesPage.label')"
@@ -966,10 +966,9 @@ const {
   canSendQuickMessage,
   buildPresenceLabel,
   messageTagLabels,
-  attachTag,
   createTagLabel,
   deleteTagLabel,
-  detachTag,
+  updateContactTags,
   setSelectedSendRecipientIds,
   toggleAllVisibleSendRecipients,
   openMiniChat: openMiniChatVm,
@@ -1201,30 +1200,13 @@ function openContactTags(contact: MessageContact) {
 }
 
 async function updateContactTagSelection(nextIds: number[]) {
-  if (isUpdatingTags.value) {
-    return
-  }
-
   const contact = contactTagModalLiveContact.value
 
-  if (!contact) {
+  if (!contact || isUpdatingTags.value) {
     return
   }
 
-  const currentIds = new Set(contactTagModalSelectedIds.value)
-  const selectedIds = new Set(nextIds)
-  const changedTag = messageTagLabels.value.find(tag => currentIds.has(tag.id) !== selectedIds.has(tag.id))
-
-  if (!changedTag) {
-    return
-  }
-
-  if (currentIds.has(changedTag.id)) {
-    await detachTag(contact, changedTag.id)
-    return
-  }
-
-  await attachTag(contact, changedTag.id)
+  await updateContactTags(contact, nextIds)
 }
 
 function openAvatarMenu(contact: AvatarMenuContact, event: MouseEvent) {
@@ -2718,11 +2700,12 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__contact-tag-btn {
-  width: 27px;
-  height: 27px;
-  min-height: 27px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   justify-content: center;
-  border-radius: var(--radius-sm, 6px);
+  border-radius: var(--radius-md);
   padding: 0;
 }
 

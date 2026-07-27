@@ -355,18 +355,15 @@ if ($f == 'livekit_webhook') {
         function Wo_LiveKitWebhookCleanupLivePost($post)
         {
             global $db;
-            if (empty($post) || empty($post['post_id'])) {
+            if (empty($post) || empty($post['post_id']) || empty($post['id'])) {
                 return false;
             }
             $post_id = intval($post['post_id']);
-            // Room completion ends playback but must not delete the timeline
-            // record. The retained post preserves its publisher, text,
-            // thumbnail, reactions, and comments for the ended-state card.
             $db->where('post_id', $post_id)->update(T_POSTS, array(
                 'live_ended' => 1,
                 'live_time' => 0
             ));
-            return true;
+            return VNSEEA_DeleteLivePost(intval($post['id']), true);
         }
     }
 

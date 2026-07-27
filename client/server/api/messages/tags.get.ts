@@ -81,6 +81,42 @@ const mapTaggedContact = (
   }
 }
 
+const mergeTaggedContacts = (
+  entities: BackendEntity[],
+  resolveMediaUrl: (value: unknown) => string,
+) => {
+  const contactsByUserId = new Map<number, MessageContact>()
+
+  for (const entity of entities) {
+    const contact = mapTaggedContact(entity, resolveMediaUrl)
+    const userId = contact?.userId ?? 0
+
+    if (!contact || userId <= 0) {
+      continue
+    }
+
+    const current = contactsByUserId.get(userId)
+
+    if (!current) {
+      contactsByUserId.set(userId, contact)
+      continue
+    }
+
+    const tagsById = new Map(
+      [...(current.tags ?? []), ...(contact.tags ?? [])]
+        .filter(tag => tag.id > 0)
+        .map(tag => [tag.id, tag] as const),
+    )
+
+    contactsByUserId.set(userId, {
+      ...current,
+      tags: [...tagsById.values()],
+    })
+  }
+
+  return [...contactsByUserId.values()]
+}
+
 export default defineEventHandler(async (event): Promise<MessageTagsPayload> => {
   const currentUser = await getBackendCurrentUser(event)
   const sessionHash = asString(currentUser.session_hash)
@@ -88,25 +124,28 @@ export default defineEventHandler(async (event): Promise<MessageTagsPayload> => 
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const createBody = () => ({ hash_id: sessionHash })
 
-  const [labelsResponse, taggedUsersResponse] = await Promise.all([
-    client.postForm<BackendLabelsResponse>(
-      "tags",
-      createBody(),
-      { s: "list_labels", hash: sessionHash },
-    ),
-    client.postForm<BackendTaggedUsersResponse>(
-      "tags",
-      createBody(),
-      { s: "all_tags", hash: sessionHash },
-    ),
-  ])
-
+  const labelsResponse = await client.postForm<BackendLabelsResponse>(
+    "tags",
+    createBody(),
+    { s: "list_labels", hash: sessionHash },
+  )
   const labels = (labelsResponse.labels ?? [])
     .map(mapTag)
     .filter(label => label.id > 0 && label.name)
-  const contacts = (taggedUsersResponse.data ?? [])
-    .map(entity => mapTaggedContact(entity, resolveMediaUrl))
-    .filter(Boolean) as MessageContact[]
+  const taggedUsersResponses = await Promise.all(
+    labels.map(label => client.postForm<BackendTaggedUsersResponse>(
+      "tags",
+      {
+        ...createBody(),
+        tag_id: label.id,
+      },
+      { s: "selected_tags", hash: sessionHash },
+    )),
+  )
+  const contacts = mergeTaggedContacts(
+    taggedUsersResponses.flatMap(response => response.data ?? []),
+    resolveMediaUrl,
+  )
 
   return {
     labels,

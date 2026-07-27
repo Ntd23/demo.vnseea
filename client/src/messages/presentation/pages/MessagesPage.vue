@@ -204,7 +204,6 @@ const {
   addCreateGroupParticipant,
   addGroupMember,
   addGroupMembers,
-  attachTag,
   allVisibleRecipientsSelected,
   closeCreateGroupModal,
   clearReplyTarget,
@@ -257,7 +256,7 @@ const {
   deleteSelectedConversation,
   deleteThreadMessage,
   deleteTagLabel,
-  detachTag,
+  updateContactTags,
   markAllAsRead,
   isUpdatingTags,
   selectContact,
@@ -462,37 +461,14 @@ function openTagModal(contact: MessageContact) {
   tagModalOpen.value = true
 }
 
-function contactHasTag(tagId: number) {
-  return Boolean(tagModalLiveContact.value?.tags?.some(tag => tag.id === tagId))
-}
-
-async function toggleContactTag(tagId: number) {
+async function updateContactTagSelection(nextValue: number[] | undefined) {
   const contact = tagModalLiveContact.value
 
-  if (!contact) {
+  if (!contact || isUpdatingTags.value) {
     return
   }
 
-  if (contactHasTag(tagId)) {
-    await detachTag(contact, tagId)
-  }
-  else {
-    await attachTag(contact, tagId)
-  }
-}
-
-async function updateContactTagSelection(nextValue: number[] | undefined) {
-  if (isUpdatingTags.value) {
-    return
-  }
-
-  const currentIds = new Set(tagModalSelectedIds.value)
-  const nextIds = new Set(Array.isArray(nextValue) ? nextValue : [])
-  const changedTag = messageTagLabels.value.find(tag => currentIds.has(tag.id) !== nextIds.has(tag.id))
-
-  if (changedTag) {
-    await toggleContactTag(changedTag.id)
-  }
+  await updateContactTags(contact, Array.isArray(nextValue) ? nextValue : [])
 }
 
 </script>
