@@ -7,6 +7,17 @@
     </div>
 
     <UForm :state="state" :validate="validate" class="auth-form__body" @submit="handleSubmit">
+      <UFormField name="firstName" :label="$t('pages.registerPage.firstName')" required>
+        <UInput
+          v-model="state.firstName"
+          type="text"
+          autocomplete="name"
+          size="xl"
+          class="w-full"
+          :placeholder="$t('pages.registerPage.firstNamePlaceholder')"
+        />
+      </UFormField>
+
       <UFormField name="username" :label="$t('pages.registerPage.username')" required>
         <UInput v-model="state.username" type="text" autocomplete="username" size="xl" class="w-full"
           :placeholder="$t('pages.registerPage.usernamePlaceholder')" />

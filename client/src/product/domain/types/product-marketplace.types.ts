@@ -17,6 +17,7 @@ export type ProductListing = {
   seller: string
   sellerId?: number
   price: number
+  priceVnd: number
   currency?: string
   currencySymbol?: string
   currencyRule?: {
@@ -52,6 +53,8 @@ export type ProductMarketplaceQuery = {
   category?: ProductCategory
   subCategory?: string
   distance?: ProductDistanceValue
+  latitude?: number
+  longitude?: number
   sort?: ProductSortValue
   limit?: number
   offset?: number | string

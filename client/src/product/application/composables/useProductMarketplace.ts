@@ -33,6 +33,8 @@ export const useProductMarketplace = (
   const selectedSubCategory = ref(String(route.query.sub_id || ""))
   const selectedDistance = ref<ProductDistanceValue>("0")
   const distanceRange = ref(0)
+  const currentCoordinates = shallowRef<{ latitude: number, longitude: number } | null>(null)
+  const isLocating = ref(false)
   const cartLoadingProductId = ref<number | null>(null)
   const isLoadingMore = ref(false)
   const hasShownDistanceUnavailableToast = ref(false)
@@ -48,6 +50,8 @@ export const useProductMarketplace = (
       category: selectedCategory.value,
       subCategory: selectedSubCategory.value,
       distance: selectedDistance.value,
+      latitude: currentCoordinates.value?.latitude,
+      longitude: currentCoordinates.value?.longitude,
       sort: sortBy.value,
       sellerUserId: sellerUserId.value || undefined,
       limit: 35,
@@ -159,10 +163,79 @@ export const useProductMarketplace = (
     selectedSubCategory.value = ""
     selectedDistance.value = "0"
     distanceRange.value = 0
+    currentCoordinates.value = null
   }
 
-  const applyDistance = () => {
-    selectedDistance.value = String(distanceRange.value)
+  const requestCurrentCoordinates = async () => {
+    if (!import.meta.client || !navigator.geolocation || !window.isSecureContext) {
+      toast.add({
+        title: t("pages.productsPage.locationPermissionTitle"),
+        description: t("pages.productsPage.locationUnsupportedDescription"),
+        color: "error",
+        icon: "i-ph-map-pin-slash",
+      })
+      return null
+    }
+
+    isLocating.value = true
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 60000,
+        })
+      })
+
+      return {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      }
+    }
+    catch {
+      toast.add({
+        title: t("pages.productsPage.locationPermissionTitle"),
+        description: t("pages.productsPage.locationPermissionDescription"),
+        color: "error",
+        icon: "i-ph-map-pin-slash",
+      })
+      return null
+    }
+    finally {
+      isLocating.value = false
+    }
+  }
+
+  const applyDistance = async () => {
+    const nextDistance = Math.max(0, Math.min(300, Number(distanceRange.value) || 0))
+
+    if (nextDistance === 0) {
+      selectedDistance.value = "0"
+      currentCoordinates.value = null
+      return
+    }
+
+    const coordinates = await requestCurrentCoordinates()
+    if (!coordinates) {
+      distanceRange.value = Number(selectedDistance.value) || 0
+      return
+    }
+
+    currentCoordinates.value = coordinates
+    const nextValue = String(nextDistance)
+
+    if (selectedDistance.value === nextValue) {
+      await refresh()
+      return
+    }
+
+    selectedDistance.value = nextValue
+  }
+
+  const applyNearbyStores = async () => {
+    distanceRange.value = 15
+    await applyDistance()
   }
 
   const addToCart = async (productId: number) => {
@@ -207,6 +280,8 @@ export const useProductMarketplace = (
         category: selectedCategory.value,
         subCategory: selectedSubCategory.value,
         distance: selectedDistance.value,
+        latitude: currentCoordinates.value?.latitude,
+        longitude: currentCoordinates.value?.longitude,
         sort: sortBy.value,
         sellerUserId: sellerUserId.value || undefined,
         limit: 35,
@@ -283,6 +358,7 @@ export const useProductMarketplace = (
     selectedSubCategory,
     selectedDistance,
     distanceRange,
+    isLocating,
     sortOptions,
     categoryOptions,
     subCategoryOptions,
@@ -303,6 +379,7 @@ export const useProductMarketplace = (
     formatDistance,
     resetFilters,
     applyDistance,
+    applyNearbyStores,
     addToCart,
     loadMore,
     openSellerChat,

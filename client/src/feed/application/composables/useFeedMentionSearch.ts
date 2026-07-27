@@ -36,6 +36,7 @@ type UseFeedMentionSearchOptions = {
   text: Ref<string>
   textarea: Readonly<Ref<HTMLTextAreaElement | null>>
   active?: Ref<boolean>
+  followingOnly?: boolean
 }
 
 function getMentionUsername(user: BackendMentionSearchResult) {
@@ -203,7 +204,8 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
     try {
       const response = await apiClient.get<BackendMentionSearchResponse>(apiRoutes.search.index, {
         q: keyword,
-        limit: 12,
+        limit: options.followingOnly ? 50 : 12,
+        followingOnly: options.followingOnly ? 1 : undefined,
       })
 
       if (requestId !== mentionRequestId) {

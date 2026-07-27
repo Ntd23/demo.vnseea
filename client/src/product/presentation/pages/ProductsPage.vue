@@ -54,14 +54,15 @@
             </span>
             <span class="shrink-0 text-[var(--text-primary)]">{{ distanceRange }} km</span>
           </div>
-          <input v-model.number="distanceRange" type="range" min="0" max="300"
+          <input v-model.number="distanceRange" type="range" min="0" max="300" :disabled="isLocating"
             class="products-filter__range mt-2 w-full" @change="applyDistance">
         </div>
 
-        <NuxtLink :to="appRoutes.searchNearby" class="products-filter__nearby">
-          <Icon name="i-ph-map-pin-area-fill" class="h-5 w-5 shrink-0" />
+        <button type="button" class="products-filter__nearby" :disabled="isLocating" @click="applyNearbyStores">
+          <Icon :name="isLocating ? 'i-ph-spinner-gap-bold' : 'i-ph-map-pin-area-fill'"
+            class="h-5 w-5 shrink-0" :class="{ 'animate-spin': isLocating }" />
           <span>{{ $t("pages.productsPage.nearbyStoresButton") }}</span>
-        </NuxtLink>
+        </button>
       </div>
     </section>
 
@@ -164,7 +165,6 @@
 </template>
 
 <script setup lang="ts">
-import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useProductMarketplace } from "../../application/composables/useProductMarketplace"
 
 const { t } = useI18n()
@@ -188,6 +188,7 @@ const {
   selectedCategory,
   selectedSubCategory,
   distanceRange,
+  isLocating,
   sortOptions,
   categoryOptions,
   subCategoryOptions,
@@ -204,6 +205,7 @@ const {
   formatDistance,
   resetFilters,
   applyDistance,
+  applyNearbyStores,
   addToCart,
   loadMore,
   openSellerChat,
@@ -358,6 +360,11 @@ const {
   background: var(--product-brand);
   color: var(--text-inverse);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 18%, transparent);
+}
+
+.products-filter__nearby:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .products-filter__reset-icon {

@@ -174,6 +174,8 @@
           color="primary"
           icon="i-ph-floppy-disk-fill"
           class="edit-product-submit"
+          :loading="isSubmitting"
+          :disabled="isSubmitting"
         >
           {{ $t("pages.productEditor.save") }}
         </UButton>
@@ -211,6 +213,7 @@ const newFiles = shallowRef<File[]>([])
 const newFilePreviews = shallowRef<FilePreview[]>([])
 const stockInput = ref("")
 const hasTouchedStockInput = ref(false)
+const isSubmitting = ref(false)
 
 const {
   conditionOptions,
@@ -232,7 +235,7 @@ const { data: marketplaceData } = useAsyncData(
   },
 )
 
-const { data: productData } = useAsyncData(
+const { data: productData, refresh: refreshProduct } = useAsyncData(
   `product:editor:${props.productId}`,
   () => productRepository.getById(props.productId),
 )
@@ -248,6 +251,7 @@ const emptyProduct = computed<ProductRecord>(() => ({
   location: "",
   currency: "VND",
   price: 0,
+  priceVnd: 0,
   stock: 0,
   images: [],
   updatedAt: "",
@@ -416,6 +420,10 @@ watchDebounced(
 )
 
 const submitProduct = async () => {
+  if (isSubmitting.value) {
+    return
+  }
+
   draft.value.fields.stock = stockInput.value
 
   const categoryExists = categoryOptions.value.some(category => category.value === draft.value.fields.category)
@@ -427,8 +435,11 @@ const submitProduct = async () => {
     }
   }
 
+  isSubmitting.value = true
+
   try {
-    await productRepository.update(props.productId, draft.value)
+    await productRepository.update(props.productId, draft.value, newFiles.value)
+    await refreshProduct()
     markSaved()
     toast.add({
       title: t("pages.editProductPage.updateSuccessTitle"),
@@ -441,6 +452,9 @@ const submitProduct = async () => {
       description: error instanceof Error ? error.message : String(error),
       color: "error",
     })
+  }
+  finally {
+    isSubmitting.value = false
   }
 }
 
