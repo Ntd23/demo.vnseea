@@ -11,9 +11,9 @@ import {
   feedStoryImageMimePrefix,
   feedStoryVideoMimePrefix,
 } from "../constants/story-carousel"
-import type { FeedStoryRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import type { ContentAudience } from "../../../shared-kernel/domain/content-audience"
+import { usePendingCreatedStories } from "../composables/usePendingCreatedStories"
 
 type MediaType = "image" | "video" | null
 type MediaOrientation = "portrait" | "landscape" | "square" | null
@@ -111,7 +111,7 @@ export function useStatusCreatePageVM(
   const { t } = useI18n()
   const router = useRouter()
   const currentAuthUserStore = useCurrentAuthUserStore()
-  const pendingCreatedStory = useState<FeedStoryRecord | null>("feed-pending-created-story", () => null)
+  const pendingCreatedStories = usePendingCreatedStories()
 
   const fileInputRef = ref<HTMLInputElement | null>(null)
   const selectedFile = ref<File | null>(null)
@@ -245,7 +245,12 @@ export function useStatusCreatePageVM(
         description: caption.value.trim() || undefined,
       })
 
-      pendingCreatedStory.value = response.story
+      if (response.story) {
+        pendingCreatedStories.value = [
+          response.story,
+          ...pendingCreatedStories.value.filter(story => story.id !== response.story?.id),
+        ]
+      }
       submitStatus.value = "idle"
       statusDescription.value = ""
 
@@ -255,7 +260,6 @@ export function useStatusCreatePageVM(
     }
     catch (error) {
       console.error(error)
-      pendingCreatedStory.value = null
       submitStatus.value = "error"
       statusDescription.value = t("pages.statusCreatePage.errorStatus")
     }

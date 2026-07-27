@@ -87,15 +87,59 @@
             <!-- Author Info & Caption (Bottom Left of player) -->
             <div class="reels-page__info">
               <div class="reels-page__author">
+                <NuxtLink
+                  v-if="activeReel.authorPath"
+                  :to="activeReel.authorPath"
+                  class="reels-page__author-link"
+                  :aria-label="activeReel.author"
+                >
+                  <img
+                    :src="activeReel.authorAvatarUrl"
+                    :alt="activeReel.author"
+                    class="reels-page__avatar"
+                  />
+                </NuxtLink>
                 <img
+                  v-else
                   :src="activeReel.authorAvatarUrl"
                   :alt="activeReel.author"
                   class="reels-page__avatar"
                 />
                 <div class="reels-page__author-meta">
-                  <p class="reels-page__author-name">{{ activeReel.author }}</p>
+                  <NuxtLink
+                    v-if="activeReel.authorPath"
+                    :to="activeReel.authorPath"
+                    class="reels-page__author-name"
+                  >
+                    {{ activeReel.author }}
+                  </NuxtLink>
+                  <p v-else class="reels-page__author-name">{{ activeReel.author }}</p>
+                  <button
+                    v-if="showPageFollowButton"
+                    type="button"
+                    class="reels-page__page-follow"
+                    :class="{ 'reels-page__page-follow--active': activePageFollowing }"
+                    :disabled="pageFollowPending"
+                    @click.stop="handleFollowActivePage"
+                  >
+                    <Icon
+                      :name="pageFollowPending
+                        ? 'i-ph-spinner-gap-bold'
+                        : activePageFollowing
+                          ? 'i-ph-check-bold'
+                          : 'i-ph-plus-bold'"
+                      class="h-3.5 w-3.5"
+                      :class="{ 'animate-spin': pageFollowPending }"
+                    />
+                    {{ activePageFollowing
+                      ? t("pages.pageDetailPage.followingButton")
+                      : t("pages.pageDetailPage.followFallback") }}
+                  </button>
                 </div>
               </div>
+              <p v-if="activeVideoTitle" class="reels-page__caption">
+                {{ activeVideoTitle }}
+              </p>
             </div>
           </div>
 
@@ -435,6 +479,9 @@ const {
   activeMedia,
   videoRef,
   isPlaying,
+  pageFollowPending,
+  showPageFollowButton,
+  activePageFollowing,
   progress,
   onPointerDown,
   onPointerUp,
@@ -472,6 +519,7 @@ const {
   handleShared,
   handleMenuAction,
   toggleComments,
+  handleFollowActivePage,
 } = useReelsPageVM(undefined, {
   postId: props.postId,
   initialPost: props.initialPost,
@@ -484,6 +532,10 @@ const compactFormatter = computed(
       notation: "compact",
       maximumFractionDigits: 1,
     }),
+);
+
+const activeVideoTitle = computed(() =>
+  String(activeReel.value?.videoTitle || activeReel.value?.text || "").trim(),
 );
 
 function formatCompact(value: number) {
@@ -750,6 +802,12 @@ useSeoMeta({
   gap: 12px;
 }
 
+.reels-page__author-link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
 .reels-page__avatar {
   width: 44px;
   height: 44px;
@@ -758,8 +816,51 @@ useSeoMeta({
 }
 
 .reels-page__author-name {
+  display: inline-block;
+  color: var(--text-media);
   font-size: 15px;
   font-weight: 700;
+  text-decoration: none;
+}
+
+.reels-page__author-name:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.reels-page__author-meta {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.reels-page__page-follow {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid color-mix(in srgb, var(--text-media) 45%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-media) 42%, transparent);
+  color: var(--text-media);
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  backdrop-filter: blur(8px);
+}
+
+.reels-page__page-follow--active {
+  border-color: color-mix(in srgb, var(--bg-brand) 55%, transparent);
+  background: color-mix(in srgb, var(--bg-brand) 28%, transparent);
+}
+
+.reels-page__page-follow:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 .reels-page__follow {
@@ -768,10 +869,16 @@ useSeoMeta({
 }
 
 .reels-page__caption {
+  display: -webkit-box;
+  margin: 10px 0 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   font-size: 14px;
   line-height: 1.5;
   color: var(--text-media);
   max-width: 100%;
+  text-shadow: 0 2px 12px color-mix(in srgb, var(--bg-media) 70%, transparent);
 }
 
 /* Bottom Sheet */

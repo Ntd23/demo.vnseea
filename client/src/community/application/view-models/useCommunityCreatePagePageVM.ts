@@ -1,15 +1,9 @@
 // English description: Manages the create-page draft lifecycle and backend submission flow for the community create page route.
 
 import { useStorage } from "@vueuse/core"
-import { hasLocationCoordinates } from "../../../location/domain/types/location.types"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { createCommunityPageDraft } from "../factories/community-drafts"
 import { getCommunityPagePath } from "../../domain/services/community-helpers.service"
-import {
-  isCommunityDescriptionValid,
-  isCommunityNameValid,
-  isCommunitySlugValid,
-} from "../../domain/services/community-validation.service"
 import type { CommunityDraft } from "../../domain/types/community.types"
 import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
@@ -55,15 +49,9 @@ export function useCommunityCreatePagePageVM(
     },
   ])
 
-  const isSubmitDisabled = computed(() =>
-    submitState.value === "loading"
-    || !isCommunityNameValid(draft.value.name)
-    || !isCommunitySlugValid(draft.value.slug)
-    || !isCommunityDescriptionValid(draft.value.description)
-    || !draft.value.category
-    || !(draft.value.location?.address || "").trim()
-    || !hasLocationCoordinates(draft.value.location),
-  )
+  // Keep the action available so UForm can run field validation and show
+  // actionable messages instead of silently blocking submission.
+  const isSubmitDisabled = computed(() => submitState.value === "loading")
 
   onMounted(async () => {
     await nextTick()

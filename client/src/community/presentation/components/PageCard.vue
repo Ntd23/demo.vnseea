@@ -12,7 +12,7 @@
         class="page-card__action"
         :class="localIsLiked ? 'page-card__action--primary' : 'page-card__action--secondary'"
         :disabled="likePending"
-        @click.prevent="handleLike"
+        @click.prevent="handleCardLike"
       >
         <Icon 
           :name="likePending ? 'i-ph-spinner-gap-bold' : (localIsLiked ? 'i-ph-thumbs-up-fill' : 'i-ph-thumbs-up-bold')" 
@@ -65,6 +65,10 @@ const props = withDefaults(defineProps<{
   actionLabel: "",
 })
 
+const emit = defineEmits<{
+  "liked-change": [page: CommunityPageRecord]
+}>()
+
 const { t } = useI18n()
 
 const {
@@ -74,6 +78,14 @@ const {
   followerCountLabel,
   handleLike,
 } = useCommunityPageCardVM(() => props.page)
+
+async function handleCardLike() {
+  const updatedPage = await handleLike()
+
+  if (updatedPage) {
+    emit("liked-change", updatedPage)
+  }
+}
 
 const pageName = computed(() => props.page.name)
 const pageSummary = computed(() => props.page.summary)

@@ -4,6 +4,7 @@ import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 import type { FeedRepository } from "../../../feed/domain/repositories/FeedRepository"
 import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM"
 import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
+import { createApiCommunityRepository } from "../../../community/infrastructure/repositories/ApiCommunityRepository"
 import { useReelsViewerOverlay } from "../composables/useReelsViewerOverlay"
 
 type ReelsPageVMOptions = {
@@ -33,6 +34,12 @@ export function useReelsPageVM(
   const currentTime = ref(0)
   const duration = ref(0)
   const isPlaying = ref(true)
+  const pageFollowPending = ref(false)
+  const followedPages = useState<Record<string, boolean>>(
+    "reels:followed-pages",
+    () => ({}),
+  )
+  const communityRepository = createApiCommunityRepository()
 
   const activeReel = computed(() => reels.value[activeIndex.value] ?? null)
   const activeMedia = computed(() =>
@@ -41,7 +48,54 @@ export function useReelsPageVM(
     ?? null,
   )
   const progress = computed(() => (duration.value ? (currentTime.value / duration.value) * 100 : 0))
+  const activePageSlug = computed(() => {
+    if (activeReel.value?.sourceLabel !== "page") {
+      return ""
+    }
+
+    const path = String(activeReel.value.authorPath || activeReel.value.sourcePath || "")
+    const match = path.match(/^\/p\/([^/?#]+)/)
+    return match?.[1] ? decodeURIComponent(match[1]) : ""
+  })
+  const showPageFollowButton = computed(() => Boolean(activePageSlug.value))
+  const activePageFollowing = computed(() => {
+    const slug = activePageSlug.value
+
+    if (!slug) return false
+    if (Object.prototype.hasOwnProperty.call(followedPages.value, slug)) {
+      return Boolean(followedPages.value[slug])
+    }
+
+    return Boolean(activeReel.value?.sourceFollowing)
+  })
   const feedPostVM = useFeedPostCardVM(activeReel)
+
+  async function handleFollowActivePage() {
+    const slug = activePageSlug.value
+
+    if (!slug || pageFollowPending.value) {
+      return
+    }
+
+    pageFollowPending.value = true
+
+    try {
+      const updatedPage = await communityRepository.likePage(slug)
+      followedPages.value = {
+        ...followedPages.value,
+        [slug]: Boolean(updatedPage.liked),
+      }
+
+      void refreshNuxtData([
+        "community:pages:suggested",
+        "community:pages:favorite",
+        "community:pages:counts",
+      ])
+    }
+    finally {
+      pageFollowPending.value = false
+    }
+  }
 
   async function fetchReels() {
     if (!initialPost) {
@@ -307,6 +361,9 @@ export function useReelsPageVM(
     duration,
     isPlaying,
     progress,
+    pageFollowPending,
+    showPageFollowButton,
+    activePageFollowing,
     ...feedPostVM,
     updateProgress,
     onMetadataLoaded,
@@ -322,5 +379,6 @@ export function useReelsPageVM(
     onTouchEnd,
     handleWheel,
     toggleComments,
+    handleFollowActivePage,
   }
 }

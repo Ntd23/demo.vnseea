@@ -283,7 +283,14 @@
             <span v-else>{{ previewCommentInitials }}</span>
           </div>
           <div class="post-card__comment-bubble">
-            <NuxtLink :to="`/@${previewComment?.author}`" class="post-card__comment-author">{{ previewComment?.author }}</NuxtLink>
+            <NuxtLink
+              v-if="previewComment?.authorPath"
+              :to="previewComment.authorPath"
+              class="post-card__comment-author"
+            >
+              {{ previewComment.author }}
+            </NuxtLink>
+            <span v-else class="post-card__comment-author">{{ previewComment?.author }}</span>
             <p class="post-card__comment-text">{{ previewComment?.text }}</p>
           </div>
         </div>

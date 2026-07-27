@@ -24,3 +24,13 @@ test("comment composition is opt-in and enabled by the post detail page", () => 
   assert.match(card, /:show-composer="enableComments"/)
   assert.match(detailPage, /<FeedPostCard[^>]*enable-comments/)
 })
+
+test("comment preview profile links use the backend username path, not the display name", () => {
+  const card = read("src/feed/presentation/components/PostCard.vue")
+  const mapper = read("server/api/feed/_shared.ts")
+
+  assert.match(card, /v-if="previewComment\?\.authorPath"/)
+  assert.match(card, /:to="previewComment\.authorPath"/)
+  assert.doesNotMatch(card, /`\/@\$\{previewComment\?\.author\}`/)
+  assert.match(mapper, /authorPath:\s*username\s*\?\s*`\/@\$\{username\}`\s*:\s*undefined/)
+})

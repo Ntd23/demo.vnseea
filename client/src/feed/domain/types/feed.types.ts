@@ -128,6 +128,7 @@ export type FeedPostRecord = {
   isAnonymous: boolean
   time: string
   text: string
+  videoTitle?: string
   mentions?: FeedPostMention[]
   feeling: {
     value: string
@@ -154,6 +155,7 @@ export type FeedPostRecord = {
   primaryMediaType: "text" | "image" | "video" | "link" | "music" | "file"
   sourceLabel: string
   sourcePath: string
+  sourceFollowing?: boolean
   profileMediaUpdate?: "avatar" | "cover"
   isSaved: boolean
   isLiked: boolean
@@ -182,6 +184,7 @@ export type FeedCreateStoryResponse = {
 export type FeedStoryActionResult = {
   ok: boolean
   storyId: number
+  views?: number
   reaction?: FeedStoryReactionType
   replySent?: boolean
 }

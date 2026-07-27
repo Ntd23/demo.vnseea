@@ -46,18 +46,17 @@ import type {
 type GroupSettingsPrivacy = Exclude<CommunityPrivacy, "secret">
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
+const { t } = useI18n()
 
-
-
-const privacyItems: Array<{ value: GroupSettingsPrivacy; label: string }> = [
+const privacyItems = computed<Array<{ value: GroupSettingsPrivacy; label: string }>>(() => [
   { value: "public", label: t("community.groupSettings.controls.privacyPublic") },
   { value: "private", label: t("community.groupSettings.controls.privacyPrivate") },
-]
+])
 
-const joinApprovalItems = [
+const joinApprovalItems = computed(() => [
   { value: "no", label: t("community.groupSettings.controls.optionNo") },
   { value: "yes", label: t("community.groupSettings.controls.optionYes") },
-]
+])
 
 const joinApprovalValue = computed({
   get: () => model.value.joinApproval ? "yes" : "no",

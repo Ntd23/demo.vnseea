@@ -106,7 +106,7 @@
           >
             <Icon
               :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-bold' : 'i-ph-chat-circle-dots-bold'"
-              class="h-[18px] w-[18px]"
+              class="h-[25px] w-[25px]"
             />
             <span v-if="isClientReady && navigationSummary.messageCount > 0" class="header-action-badge">
               {{ navigationSummary.messageCount }}
@@ -120,7 +120,7 @@
               :aria-label="$t('navigation.headerBar.notifications')"
               @click="toggleNotifications"
             >
-              <Icon name="i-ph-bell-bold" class="h-[18px] w-[18px]" />
+              <Icon name="i-ph-bell-bold" class="h-[25px] w-[25px]" />
               <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
                 {{ notificationCount }}
               </span>

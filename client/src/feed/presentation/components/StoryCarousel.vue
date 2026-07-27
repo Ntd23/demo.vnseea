@@ -129,17 +129,25 @@
             </div>
             <div class="story-viewer__shade" />
 
-            <div v-if="!activeStoryIsVideo" class="story-viewer__progress">
-              <div
+            <div
+              class="story-viewer__progress"
+              @touchstart.stop
+              @touchend.stop
+            >
+              <button
                 v-for="(item, itemIndex) in storyQueue"
                 :key="`${item.id}-${itemIndex}`"
                 class="story-viewer__progress-track"
+                :class="{ 'story-viewer__progress-track--active': itemIndex === activeStoryItemIndex }"
+                type="button"
+                :aria-label="`${itemIndex + 1}/${storyQueue.length}: ${item.title || item.author}`"
+                @click.stop="openStoryItem(itemIndex)"
               >
                 <div
                   class="story-viewer__progress-fill"
                   :class="{ 'story-viewer__progress-fill--active': itemIndex === activeStoryItemIndex }"
                 />
-              </div>
+              </button>
             </div>
 
             <div
@@ -169,7 +177,7 @@
                 :title="activeStoryViewsLabel"
               >
                 <Icon name="i-ph-eye-fill" class="h-[14px] w-[14px]" />
-                <span>{{ activeStoryData?.views ?? 0 }}</span>
+                <span>{{ activeStoryViewCount }}</span>
               </UBadge>
             </div>
 
@@ -407,6 +415,7 @@ const {
   activeReactionOption,
   activeStoryIsMine,
   canInteractWithActiveStory,
+  activeStoryViewCount,
   activeStoryViewsLabel,
   failedMediaStoryIds,
   fallbackGradient,
@@ -415,6 +424,7 @@ const {
   markStoryMediaFailed,
   scroll,
   openStoryGroup,
+  openStoryItem,
   rememberStoryPointer,
   openStoryFromPointer,
   closeStory,
@@ -557,11 +567,24 @@ async function handleCreateStory() {
 }
 
 .story-viewer__progress-track {
+  display: block;
   height: 2px;
   flex: 1;
   overflow: hidden;
+  border: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.3);
+  padding: 0;
+  cursor: pointer;
+  transition: height 0.15s ease, background 0.15s ease;
+}
+
+.story-viewer__progress-track:hover,
+.story-viewer__progress-track:focus-visible,
+.story-viewer__progress-track--active {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.46);
+  outline: none;
 }
 
 .story-viewer__progress-fill {

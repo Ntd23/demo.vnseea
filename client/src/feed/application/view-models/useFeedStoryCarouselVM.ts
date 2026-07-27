@@ -58,8 +58,10 @@ export function useFeedStoryCarouselVM(
   const deleteConfirmOpen = ref(false)
   const deleteTarget = ref<FeedStoryRecord | null>(null)
   const selectedReactionByStoryId = ref(new Map<number, FeedStoryReactionType>())
+  const storyViewsById = ref(new Map<number, number>())
   const viewedStoryIds = ref(new Set<number>())
   const sentStoryViewIds = ref(new Set<number>())
+  const pendingStoryViewIds = ref(new Set<number>())
   const failedMediaStoryIds = ref(new Set<number>())
   const deletedStoryIds = ref(new Set<number>())
   const storyClock = ref(Date.now())
@@ -146,8 +148,14 @@ export function useFeedStoryCarouselVM(
   )
   const activeStoryIsMine = computed(() => Boolean(activeStoryData.value?.isMe))
   const canInteractWithActiveStory = computed(() => Boolean(activeStoryData.value && !activeStoryIsMine.value))
+  const activeStoryViewCount = computed(() => {
+    const story = activeStoryData.value
+    if (!story) return 0
+
+    return storyViewsById.value.get(story.id) ?? story.views
+  })
   const activeStoryViewsLabel = computed(() =>
-    t("feed.storyCarousel.viewsLabel", { count: activeStoryData.value?.views ?? 0 }),
+    t("feed.storyCarousel.viewsLabel", { count: activeStoryViewCount.value }),
   )
 
   const fallbackGradient = feedStoryViewerFallbackGradient
@@ -218,7 +226,6 @@ export function useFeedStoryCarouselVM(
       return
     }
 
-    markStoryGroupViewed(groupStories)
     activeStoryGroupIndex.value = groupIndex
     activeStoryItemIndex.value = Math.min(Math.max(itemIndex, 0), groupStories.length - 1)
   }
@@ -377,28 +384,34 @@ export function useFeedStoryCarouselVM(
   async function markStoryViewed(story: FeedStoryRecord) {
     viewedStoryIds.value = new Set([...viewedStoryIds.value, story.id])
 
-    if (sentStoryViewIds.value.has(story.id)) {
+    if (sentStoryViewIds.value.has(story.id) || pendingStoryViewIds.value.has(story.id)) {
       return
     }
 
-    sentStoryViewIds.value = new Set([...sentStoryViewIds.value, story.id])
+    pendingStoryViewIds.value = new Set([...pendingStoryViewIds.value, story.id])
 
     try {
-      await repository.runStoryAction({
+      const result = await repository.runStoryAction({
         action: "view",
         storyId: story.id,
       })
+
+      sentStoryViewIds.value = new Set([...sentStoryViewIds.value, story.id])
+
+      if (typeof result.views === "number") {
+        const nextViews = new Map(storyViewsById.value)
+        nextViews.set(story.id, Math.max(0, result.views))
+        storyViewsById.value = nextViews
+      }
     }
     catch (error) {
       console.error(error)
     }
-  }
-
-  function markStoryGroupViewed(groupStories: FeedStoryRecord[]) {
-    viewedStoryIds.value = new Set([
-      ...viewedStoryIds.value,
-      ...groupStories.map(story => story.id),
-    ])
+    finally {
+      pendingStoryViewIds.value = new Set(
+        [...pendingStoryViewIds.value].filter(storyId => storyId !== story.id),
+      )
+    }
   }
 
   function focusReply() {
@@ -513,6 +526,19 @@ export function useFeedStoryCarouselVM(
     }
 
     openStoryGroup((activeStoryGroupIndex.value + 1) % storyGroups.value.length)
+  }
+
+  function openStoryItem(itemIndex: number) {
+    if (
+      activeStoryGroupIndex.value === null
+      || !Number.isInteger(itemIndex)
+      || itemIndex < 0
+      || itemIndex >= storyQueue.value.length
+    ) {
+      return
+    }
+
+    activeStoryItemIndex.value = itemIndex
   }
 
   function prevStory() {
@@ -720,6 +746,7 @@ export function useFeedStoryCarouselVM(
     activeReactionOption,
     activeStoryIsMine,
     canInteractWithActiveStory,
+    activeStoryViewCount,
     activeStoryViewsLabel,
     failedMediaStoryIds,
     fallbackGradient,
@@ -728,6 +755,7 @@ export function useFeedStoryCarouselVM(
     markStoryMediaFailed,
     scroll,
     openStoryGroup,
+    openStoryItem,
     rememberStoryPointer,
     openStoryFromPointer,
     closeStory,

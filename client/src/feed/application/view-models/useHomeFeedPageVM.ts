@@ -1,9 +1,10 @@
 // English description: Loads the home feed, merges pending story state, and exposes page-ready actions for the main feed route.
 
 import type { FeedAnnouncement, FeedGreeting, FeedPostRecord, FeedStoryRecord } from "../../domain/types/feed.types"
+import { isFeedStoryExpired } from "../../domain/services/story-lifecycle.service"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
-
-type FeedOrderKey = "all" | "following"
+import { useHomeFeedOrder } from "../composables/useHomeFeedOrder"
+import { usePendingCreatedStories } from "../composables/usePendingCreatedStories"
 
 const HOME_FEED_PAGE_SIZE = 20
 
@@ -34,7 +35,7 @@ export function useHomeFeedPageVM(
     { key: "following" as const, ...copy.value.orders.following },
   ])
 
-  const activeOrder = ref<FeedOrderKey>("all")
+  const activeOrder = useHomeFeedOrder()
   const newPostsCount = ref(0)
   const loadingMore = ref(false)
   const posts = ref<FeedPostRecord[]>([])
@@ -44,7 +45,7 @@ export function useHomeFeedPageVM(
   const hasMore = ref(false)
   const nextOffset = ref<number | null>(null)
   const initialized = ref(false)
-  const pendingCreatedStory = useState<FeedStoryRecord | null>("feed-pending-created-story", () => null)
+  const pendingCreatedStories = usePendingCreatedStories()
 
   const visiblePosts = computed(() => posts.value)
   const allLoaded = computed(() => !hasMore.value)
@@ -57,19 +58,26 @@ export function useHomeFeedPageVM(
     return Boolean(post)
   }
 
-  const mergePendingStory = (records: FeedStoryRecord[]) => {
-    const pendingStory = pendingCreatedStory.value
+  const mergePendingStories = (records: FeedStoryRecord[]) => {
+    const backendStoryIds = new Set(records.map(story => story.id))
+    const retainedPendingStories = pendingCreatedStories.value
+      .filter(story =>
+        story.id > 0
+        && !backendStoryIds.has(story.id)
+        && !isFeedStoryExpired(story),
+      )
+      .filter((story, index, source) =>
+        source.findIndex(candidate => candidate.id === story.id) === index,
+      )
 
-    if (!pendingStory) {
-      return records
-    }
+    pendingCreatedStories.value = retainedPendingStories
 
-    if (records.some(story => story.id === pendingStory.id)) {
-      pendingCreatedStory.value = null
-      return records
-    }
-
-    return [pendingStory, ...records]
+    return [
+      ...retainedPendingStories,
+      ...records,
+    ].filter((story, index, source) =>
+      source.findIndex(candidate => candidate.id === story.id) === index,
+    )
   }
 
   async function fetchHome(reset = true) {
@@ -79,7 +87,7 @@ export function useHomeFeedPageVM(
       followingOnly: activeOrder.value === "following",
     })
 
-    stories.value = mergePendingStory(response.stories)
+    stories.value = mergePendingStories(response.stories)
     announcement.value = response.announcement
     greeting.value = response.greeting
     hasMore.value = response.hasMore

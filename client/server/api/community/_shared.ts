@@ -254,6 +254,11 @@ export const mapCommunityGroupRecord = (
   const ownerId = firstNumber(entity, ["user_id"])
   const cover = firstString(entity, ["cover", "cover_full"])
   const avatar = firstString(entity, ["avatar", "avatar_full"])
+  const rawCategory = firstString(entity, ["category"])
+  const categoryId = firstString(entity, ["category_id"])
+    || (/^\d+$/.test(rawCategory) ? rawCategory : "")
+  const categoryLabel = firstString(entity, ["category_name"])
+    || (!/^\d+$/.test(rawCategory) ? rawCategory : "")
 
   return {
     id,
@@ -262,15 +267,16 @@ export const mapCommunityGroupRecord = (
     summary: firstString(entity, ["about", "description"]),
     members,
     privacy: normalizeGroupPrivacy(entity.privacy),
-    category: normalizeGroupCategory(entity.category),
+    category: categoryId || normalizeGroupCategory(rawCategory),
+    categoryLabel,
     banner: createBannerBackground(normalizeImagePath(cover, options.baseUrl || ""), id),
     accent: createAccent(id),
     segment: options.segment ?? "suggested",
     activityLabel: postCount > 0 ? `${postCount}` : "",
     ownerLabel: firstString(entity, ["category_name", "username", "owner_name"]),
     tags: toUniqueList([
-      firstString(entity, ["category_name"]),
-      normalizeGroupCategory(entity.category) !== "auto" ? normalizeGroupCategory(entity.category) : "",
+      categoryLabel,
+      categoryId || (normalizeGroupCategory(rawCategory) !== "auto" ? normalizeGroupCategory(rawCategory) : ""),
     ]),
     website: normalizeUrl(firstString(entity, ["website"])),
     locationLabel: firstString(entity, ["address", "location"]),
@@ -297,6 +303,7 @@ export const mapCommunityPageRecord = (
   options: {
     currentUserId?: number
     baseUrl?: string
+    liked?: boolean
   } = {},
 ): CommunityPageRecord => {
   const id = firstNumber(entity, ["page_id", "id"])
@@ -336,7 +343,7 @@ export const mapCommunityPageRecord = (
       normalizePageCategory(entity.page_category || entity.category),
     ]),
     following: isTruthy(entity.is_following) || isTruthy(entity.is_followed),
-    liked: isTruthy(entity.is_liked),
+    liked: options.liked ?? isTruthy(entity.is_liked),
   }
 
   return record
@@ -417,6 +424,7 @@ export async function fetchCommunityPages(
     mapCommunityPageRecord(entity, {
       currentUserId: asNumber(currentUser.user_id),
       baseUrl,
+      liked: fetch === "liked_pages" ? true : undefined,
     }),
   )
 }

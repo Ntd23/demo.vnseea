@@ -171,7 +171,7 @@
                 :to="createJobTo"
               >
                 <Icon name="i-ph-briefcase-duotone" class="mr-1.5 h-4 w-4" />
-                Create job
+                {{ t('pages.pageDetailPage.createJobButton') }}
               </UButton>
               <UButton
                 :to="pageSettingsTo"
@@ -190,7 +190,8 @@
                 color="primary"
                 :variant="isFollowing ? 'soft' : 'solid'"
                 class="rounded-full"
-                :loading="followPending"
+                :loading="engagementPending"
+                :disabled="engagementPending"
                 @click="handleFollowPage"
               >
                 <Icon
@@ -204,7 +205,8 @@
                 color="primary"
                 :variant="isLiked ? 'soft' : 'outline'"
                 class="rounded-full"
-                :loading="likePending"
+                :loading="engagementPending"
+                :disabled="engagementPending"
                 @click="handleLikePage"
               >
                 <Icon
@@ -213,15 +215,6 @@
                   :class="isLiked ? 'text-primary-500' : ''"
                 />
                 {{ isLiked ? t('pages.pageDetailPage.likedButton') : t('pages.pageDetailPage.likeButton') }}
-              </UButton>
-              <UButton
-                color="neutral"
-                variant="soft"
-                class="rounded-full"
-                :to="createJobTo"
-              >
-                <Icon name="i-ph-briefcase-duotone" class="mr-1.5 h-4 w-4" />
-                Create job
               </UButton>
             </template>
           </div>
@@ -245,14 +238,10 @@
           />
           <template v-else>
             <FeedPublisherBox
+              v-if="page.canManage"
               :page-id="page.id"
               @created="handlePostCreated"
             />
-            <ClientOnly>
-              <div class="page-detail__icon-nav">
-                <NavigationHeaderIconNav />
-              </div>
-            </ClientOnly>
           </template>
           <div v-if="!inviteVM.isOpen.value">
             <div v-if="pagePosts.length">
@@ -414,6 +403,7 @@ const { t } = useI18n()
 const {
   followPending,
   likePending,
+  engagementPending,
   page,
   status,
   pageName,

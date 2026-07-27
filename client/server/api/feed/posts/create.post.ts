@@ -36,6 +36,29 @@ type BackendGetPostResponse = {
   }
 }
 
+type BackendPageOwnerResponse = {
+  api_status?: number | string
+  page_data?: {
+    user_id?: number | string
+  }
+  errors?: {
+    error_text?: string
+  }
+}
+
+type BackendGroupMembershipResponse = {
+  api_status?: number | string
+  group_data?: {
+    user_id?: number | string
+    is_owner?: boolean | number | string
+    is_joined?: boolean | number | string
+    membership_status?: string
+  }
+  errors?: {
+    error_text?: string
+  }
+}
+
 type CreatePostPayload = {
   text: string
   audience?: string
@@ -242,6 +265,61 @@ export default defineEventHandler(async (event) => {
       statusCode: 401,
       statusMessage: "Authentication is required.",
     })
+  }
+
+  if (payload.pageId) {
+    if (!Number.isInteger(payload.pageId) || payload.pageId <= 0) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Page is invalid.",
+      })
+    }
+
+    const pageResponse = assertBackendApiSuccess(
+      await createBackendApiClient(event).post<BackendPageOwnerResponse, Record<string, unknown>>(
+        "get-page-data",
+        { page_id: payload.pageId },
+      ),
+      "Unable to verify page ownership.",
+    )
+    const pageOwnerId = asString(pageResponse.page_data?.user_id)
+
+    if (!pageOwnerId || pageOwnerId !== currentUserId) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: "Only the page creator can publish posts on this page.",
+      })
+    }
+  }
+
+  if (payload.groupId) {
+    if (!Number.isInteger(payload.groupId) || payload.groupId <= 0) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Group is invalid.",
+      })
+    }
+
+    const groupResponse = assertBackendApiSuccess(
+      await createBackendApiClient(event).post<BackendGroupMembershipResponse, Record<string, unknown>>(
+        "get-group-data",
+        { group_id: payload.groupId },
+      ),
+      "Unable to verify group membership.",
+    )
+    const group = groupResponse.group_data
+    const isOwner = parseBooleanFlag(group?.is_owner)
+      || asString(group?.user_id) === currentUserId
+      || asString(group?.membership_status) === "owner"
+    const isMember = parseBooleanFlag(group?.is_joined)
+      || asString(group?.membership_status) === "joined"
+
+    if (!group || (!isOwner && !isMember)) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: "You must join this group before publishing posts.",
+      })
+    }
   }
 
   if (payload.sharedPostId) {

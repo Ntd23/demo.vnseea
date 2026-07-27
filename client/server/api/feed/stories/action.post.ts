@@ -21,7 +21,9 @@ type BackendStoryReactionResponse = {
 
 type BackendStoryViewResponse = {
   api_status?: number | string
-  story?: unknown
+  story?: {
+    view_count?: number | string
+  }
   errors?: {
     error_text?: string
   }
@@ -157,6 +159,7 @@ export default defineEventHandler(async (event) => {
     return {
       ok: true,
       storyId,
+      views: Math.max(0, Math.floor(asNumber(response.story?.view_count))),
     }
   }
 

@@ -15,9 +15,11 @@ export function usePhotoPostsPageVM(
   const posts = ref<FeedPostRecord[]>([])
   const hasMore = ref(false)
   const nextOffset = ref<number | null>(null)
+  const allLoaded = computed(() => !hasMore.value)
 
   async function fetchPosts(reset = true) {
     errorMessage.value = ""
+    const previousOffset = nextOffset.value
 
     try {
       const response = await repository.getPhotos({
@@ -25,11 +27,18 @@ export function usePhotoPostsPageVM(
         afterPostId: reset ? undefined : nextOffset.value ?? undefined,
       })
 
-      hasMore.value = response.hasMore
+      const newPosts = reset
+        ? response.posts
+        : response.posts.filter(post => !posts.value.some(existing => existing.id === post.id))
+      const cursorDidNotAdvance = !reset
+        && response.nextOffset !== null
+        && response.nextOffset === previousOffset
+
+      hasMore.value = response.hasMore && newPosts.length > 0 && !cursorDidNotAdvance
       nextOffset.value = response.nextOffset
       posts.value = reset
-        ? response.posts
-        : [...posts.value, ...response.posts.filter(post => !posts.value.some(existing => existing.id === post.id))]
+        ? newPosts
+        : [...posts.value, ...newPosts]
     }
     catch (error) {
       errorMessage.value = error instanceof Error ? error.message : t("pages.photosPage.emptyDescription")
@@ -59,6 +68,7 @@ export function usePhotoPostsPageVM(
     errorMessage,
     posts,
     hasMore,
+    allLoaded,
     fetchPosts,
     loadMore,
     removePost,

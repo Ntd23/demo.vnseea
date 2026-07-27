@@ -8,6 +8,7 @@ import {
 } from "../../domain/constants/community-options"
 import { appendCommunityQuery } from "../../domain/services/community-helpers.service"
 import type { CommunityPageTab } from "../../domain/types/community.types"
+import type { CommunityPageRecord } from "../../domain/types/community.types"
 import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 function readQueryValue(value: unknown) {
@@ -25,7 +26,12 @@ export function useCommunityPagesDirectoryVM(
   const route = useRoute()
   const router = useRouter()
   const { t } = useI18n()
+  const toast = useToast()
   const mode = computed(() => toValue(modeSource))
+  const likedState = useState<Record<string, boolean>>(
+    "community:pages:liked-state",
+    () => ({}),
+  )
 
   const search = ref(readQueryValue(route.query.q))
   const storedSearch = useStorage<string>(
@@ -69,7 +75,16 @@ export function useCommunityPagesDirectoryVM(
   )
 
   const pending = computed(() => status.value === "pending")
-  const pages = computed(() => pagesData.value ?? [])
+  const pages = computed(() =>
+    (pagesData.value ?? [])
+      .map(page => ({
+        ...page,
+        liked: Object.prototype.hasOwnProperty.call(likedState.value, page.slug)
+          ? likedState.value[page.slug]
+          : Boolean(page.liked),
+      }))
+      .filter(page => mode.value !== "favorite" || page.liked),
+  )
 
   const visiblePages = computed(() => {
     const keyword = search.value.trim().toLowerCase()
@@ -118,6 +133,50 @@ export function useCommunityPagesDirectoryVM(
       ? t("community.pagesDirectory.resultsActive", { count: visiblePages.value.length })
       : t("community.pagesDirectory.resultsIdle"),
   )
+
+  function handlePageLikedChange(updatedPage: CommunityPageRecord) {
+    likedState.value = {
+      ...likedState.value,
+      [updatedPage.slug]: Boolean(updatedPage.liked),
+    }
+
+    const currentPages = pagesData.value ?? []
+    const pageIndex = currentPages.findIndex(page => page.id === updatedPage.id)
+
+    if (pageIndex >= 0) {
+      currentPages[pageIndex] = {
+        ...currentPages[pageIndex],
+        ...updatedPage,
+        liked: Boolean(updatedPage.liked),
+      }
+      pagesData.value = [...currentPages]
+    }
+
+    const liked = Boolean(updatedPage.liked)
+    const shouldNotifyLiked = mode.value === "suggested" && liked
+    const shouldNotifyUnliked = mode.value === "favorite" && !liked
+
+    if (shouldNotifyLiked || shouldNotifyUnliked) {
+      toast.add({
+        color: liked ? "success" : "neutral",
+        icon: liked ? "i-ph-thumbs-up-fill" : "i-ph-thumbs-down-duotone",
+        title: t(liked
+          ? "community.pagesDirectory.likedSuccessTitle"
+          : "community.pagesDirectory.unlikedSuccessTitle"),
+        description: t(liked
+          ? "community.pagesDirectory.likedSuccessDescription"
+          : "community.pagesDirectory.unlikedSuccessDescription", {
+          page: updatedPage.name,
+        }),
+      })
+    }
+
+    void refreshNuxtData([
+      "community:pages:suggested",
+      "community:pages:favorite",
+      "community:pages:counts",
+    ])
+  }
 
   watch(
     () => route.query.q,
@@ -176,5 +235,6 @@ export function useCommunityPagesDirectoryVM(
     tabItems,
     actionLabel,
     filterStatusLabel,
+    handlePageLikedChange,
   }
 }

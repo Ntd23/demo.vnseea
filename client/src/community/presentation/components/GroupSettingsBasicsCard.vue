@@ -25,6 +25,10 @@
           <USelect
             v-model="model.category"
             :items="categoryItems"
+            value-key="value"
+            label-key="label"
+            :loading="categoryLoading"
+            :disabled="categoryLoading || categoryItems.length === 0"
             size="xl"
             class="w-full"
           />
@@ -34,12 +38,12 @@
       <UFormField name="slug" :label="$t('community.groupSettings.basics.slugLabel')" required>
         <div class="group-settings-basic__slug">
           <span class="group-settings-basic__slug-prefix">{{ urlPrefix }}</span>
-          <UInput
+          <input
             v-model="model.slug"
+            type="text"
             placeholder="duong-dan-nhom"
-            size="xl"
-            class="w-full"
-          />
+            class="group-settings-basic__slug-input"
+          >
         </div>
 
         <div class="group-settings-basic__hint">
@@ -69,25 +73,25 @@
 
 <script setup lang="ts">
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
-import { communityCategoryOptions } from "../../domain/constants/community-options"
 import { createCommunitySlug } from "../../domain/services/community-helpers.service"
-import type { CommunityGroupSettingsDraft } from "../../domain/types/community.types"
+import { useBackendWebBase } from "#shared-kernel/application/utils/backend-web-url"
+import type { CommunityGroupSettingsDraft, CommunityOption } from "../../domain/types/community.types"
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
-const { t } = useI18n()
+const props = withDefaults(defineProps<{
+  categoryOptions?: CommunityOption[]
+  categoryLoading?: boolean
+}>(), {
+  categoryOptions: () => [],
+  categoryLoading: false,
+})
 
-
-
-
-
-
-
-const urlPrefix = "https://vnseea.vn/"
-
+const backendWebBase = useBackendWebBase()
+const urlPrefix = computed(() => `${backendWebBase.replace(/\/+$/, "")}/g/`)
 const categoryItems = computed(() =>
-  communityCategoryOptions.map(option => ({
+  props.categoryOptions.map(option => ({
     value: option.value,
-    label: t(option.label),
+    label: option.label,
   })),
 )
 
@@ -108,25 +112,54 @@ const suggestedSlug = computed(() =>
 }
 
 .group-settings-basic__slug {
-  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.group-settings-basic__slug:focus-within {
+  border-color: var(--bg-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 8%, transparent);
 }
 
 .group-settings-basic__slug-prefix {
-  position: absolute;
-  bottom: 1px;
-  left: 1px;
-  top: 1px;
-  z-index: 1;
   display: inline-flex;
-  min-width: 132px;
+  min-height: 48px;
+  max-width: 55%;
+  flex: 0 1 auto;
+  overflow: hidden;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   border-right: 1px solid var(--border-light);
-  border-radius: 10px 0 0 10px;
   background: var(--bg-muted);
   color: var(--text-secondary);
+  padding: 0 14px;
   font-size: 14px;
   font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.group-settings-basic__slug-input {
+  min-width: 0;
+  min-height: 48px;
+  flex: 1 1 auto;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  padding: 0 14px;
+  font-size: 15px;
+  outline: none;
+}
+
+.group-settings-basic__slug-input::placeholder {
+  color: var(--text-tertiary);
 }
 
 .group-settings-basic__hint {

@@ -34,18 +34,35 @@
         />
       </div>
 
-      <div class="photo-posts-page__load-more">
-        <UButton
-          v-if="hasMore"
-          color="primary"
-          variant="soft"
-          class="rounded-full"
-          :loading="loadingMore"
-          @click="loadMore"
-        >
-          {{ t("pages.homeFeedPage.loadMore") }}
-        </UButton>
-        <p v-else class="text-caption-secondary">
+      <div
+        v-if="!allLoaded"
+        ref="loadMoreSentinel"
+        class="photo-posts-page__load-more"
+        aria-live="polite"
+      >
+        <div class="photo-posts-page__load-more-skeleton">
+          <article
+            v-for="index in 2"
+            :key="index"
+            class="photo-posts-page__post-skeleton surface-card"
+          >
+            <div class="photo-posts-page__post-skeleton-header">
+              <USkeleton class="photo-posts-page__post-skeleton-avatar" />
+              <div class="photo-posts-page__post-skeleton-copy">
+                <USkeleton class="photo-posts-page__post-skeleton-line photo-posts-page__post-skeleton-line--title" />
+                <USkeleton class="photo-posts-page__post-skeleton-line photo-posts-page__post-skeleton-line--meta" />
+              </div>
+            </div>
+            <USkeleton class="photo-posts-page__post-skeleton-line photo-posts-page__post-skeleton-line--body" />
+            <USkeleton class="photo-posts-page__post-skeleton-media" />
+          </article>
+        </div>
+        <span class="sr-only">
+          {{ loadingMore ? t("pages.homeFeedPage.loadingMore") : t("pages.homeFeedPage.loadMore") }}
+        </span>
+      </div>
+      <div v-else class="photo-posts-page__load-more">
+        <p class="text-caption-secondary">
           {{ t("pages.homeFeedPage.allCaughtUp") }}
         </p>
       </div>
@@ -64,11 +81,27 @@ const {
   loadingMore,
   errorMessage,
   posts,
-  hasMore,
+  allLoaded,
   fetchPosts,
   loadMore,
   removePost,
 } = usePhotoPostsPageVM()
+
+const loadMoreSentinel = ref<HTMLElement | null>(null)
+
+useIntersectionObserver(
+  loadMoreSentinel,
+  ([entry]) => {
+    if (!entry?.isIntersecting || allLoaded.value || loadingMore.value) {
+      return
+    }
+
+    void loadMore()
+  },
+  {
+    rootMargin: "600px 0px",
+  },
+)
 
 await fetchPosts()
 </script>
@@ -98,7 +131,63 @@ await fetchPosts()
 
 .photo-posts-page__load-more {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   padding: 4px 0 16px;
+  color: var(--text-secondary);
+}
+
+.photo-posts-page__load-more-skeleton {
+  display: grid;
+  gap: 16px;
+}
+
+.photo-posts-page__post-skeleton {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.photo-posts-page__post-skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.photo-posts-page__post-skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 999px;
+}
+
+.photo-posts-page__post-skeleton-copy {
+  display: grid;
+  flex: 1;
+  gap: 8px;
+}
+
+.photo-posts-page__post-skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+.photo-posts-page__post-skeleton-line--title {
+  width: min(180px, 55%);
+}
+
+.photo-posts-page__post-skeleton-line--meta {
+  width: min(120px, 38%);
+}
+
+.photo-posts-page__post-skeleton-line--body {
+  width: min(440px, 78%);
+}
+
+.photo-posts-page__post-skeleton-media {
+  width: 100%;
+  height: min(52vw, 420px);
+  min-height: 240px;
+  border-radius: 14px;
 }
 </style>
