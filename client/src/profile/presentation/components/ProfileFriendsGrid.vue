@@ -1,3 +1,5 @@
+<!-- English description: Displays profile friends in a theme-aware avatar grid. -->
+<template>
   <div class="surface-card p-5 space-y-4">
     <div class="flex items-center justify-between">
       <div class="space-y-0.5">
@@ -19,22 +21,23 @@
         :key="friend.name"
         class="group cursor-pointer text-center space-y-2"
       >
-        <div class="relative aspect-square overflow-hidden rounded-2xl border-4 border-secondary-50 transition-all group-hover:border-primary-100 group-hover:scale-[1.05] shadow-sm">
+        <div class="relative aspect-square overflow-hidden rounded-2xl border-4 border-[var(--border-light)] transition-all group-hover:border-[var(--border-strong)] group-hover:scale-[1.05] shadow-[var(--shadow-sm)]">
           <UAvatar
             :text="friend.avatar"
             size="3xl"
             class="h-full w-full"
             :ui="{ 
               rounded: 'rounded-none',
-              background: 'bg-secondary-50',
+              background: 'bg-[var(--bg-muted)]',
               text: 'text-[var(--text-primary)] font-bold text-lg'
             }"
           />
         </div>
-        <p class="truncate text-[11px] font-black text-[var(--text-primary)] group-hover:text-secondary-900 transition-colors leading-none pb-1">{{ friend.name }}</p>
+        <p class="truncate text-[11px] font-black text-[var(--text-primary)] transition-colors leading-none pb-1">{{ friend.name }}</p>
       </div>
     </div>
   </div>
+</template>
 
 <script setup lang="ts">
 const { t } = useI18n()

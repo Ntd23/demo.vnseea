@@ -1,3 +1,4 @@
+<!-- English description: Renders profile sidebar cards with shared theme-aware surfaces and media placeholders. -->
 <template>
   <aside class="min-w-0 space-y-6">
     <ProfileInfoCard :title="t('pages.profilePage.sidebarInfoTitle')" icon="i-ph-info-duotone" :rows="infoRows" />
@@ -15,15 +16,15 @@
         </UButton>
       </div>
       <div class="grid grid-cols-2 gap-3">
-        <div v-for="item in mutualFriends" :key="item.name" class="rounded-2xl bg-secondary-50 p-3 text-center transition-colors hover:bg-secondary-100/50">
+        <div v-for="item in mutualFriends" :key="item.name" class="rounded-2xl bg-[var(--bg-muted)] p-3 text-center transition-colors hover:bg-[var(--bg-surface-hover)]">
           <UAvatar
             :text="item.initials"
             size="md"
             class="mx-auto"
             :ui="{ 
               rounded: 'rounded-xl',
-              background: 'bg-primary-600',
-              text: 'text-white font-extrabold'
+              background: 'bg-[var(--bg-brand)]',
+              text: 'text-[var(--text-inverse)] font-extrabold'
             }"
           />
           <p class="mt-2 truncate text-xs font-extrabold text-[var(--text-primary)]">{{ item.name }}</p>
@@ -36,19 +37,19 @@
       :title="t('pages.profilePage.sidebarHighlightPhotos')"
       :action-label="t('pages.profilePage.sidebarSeeAll')"
       :items="highlightPhotos"
-      tile-class="bg-gradient-to-br from-[#e8eeff] to-[#cfd9ff]"
+      tile-class="bg-[var(--bg-surface-active)]"
     />
     <ProfileMediaGrid
       :title="t('pages.profilePage.sidebarVideos')"
       :action-label="t('pages.profilePage.sidebarSeeAll')"
       :items="videoTiles"
-      tile-class="bg-gradient-to-br from-slate-900 to-slate-700"
+      tile-class="bg-[var(--bg-media)]"
     />
     <ProfileMediaGrid
       :title="t('pages.profilePage.sidebarProducts')"
       :action-label="t('pages.profilePage.sidebarSeeAll')"
       :items="productTiles"
-      tile-class="bg-gradient-to-br from-[#f5f3ff] to-[var(--color-primary-100)]"
+      tile-class="bg-[var(--bg-muted)]"
     />
   </aside>
 </template>

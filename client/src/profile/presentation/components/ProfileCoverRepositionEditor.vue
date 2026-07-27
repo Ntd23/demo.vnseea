@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
   z-index: 20;
   inset: 0;
   overflow: hidden;
-  background: #020617;
+  background: var(--bg-media);
   cursor: move;
   touch-action: none;
 }
@@ -220,11 +220,11 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-media);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.58);
+  background: color-mix(in srgb, var(--bg-media) 58%, transparent);
   padding: 9px 18px;
-  color: #ffffff;
+  color: var(--text-media);
   font-size: 13px;
   font-weight: 750;
   pointer-events: none;
@@ -247,17 +247,17 @@ onBeforeUnmount(() => {
   width: 42px;
   height: 42px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.34);
+  border: 1px solid var(--border-media);
   border-radius: 7px;
-  background: rgba(15, 23, 42, 0.68);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--bg-media) 68%, transparent);
+  color: var(--text-media);
   cursor: pointer;
   font-size: 21px;
   backdrop-filter: blur(8px);
 }
 
 .cover-reposition__action--save {
-  background: rgba(22, 101, 52, 0.82);
+  background: color-mix(in srgb, var(--color-success) 82%, var(--bg-media));
 }
 
 .cover-reposition__action:disabled {

@@ -1,11 +1,13 @@
+<!-- English description: Displays grouped profile details using shared light and dark theme tokens. -->
+<template>
   <div class="surface-card p-6 space-y-6">
     <h3 class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.aboutCard.title") }}</h3>
 
     <!-- Overview Categories -->
-    <div class="divide-y divide-secondary-100 border border-secondary-100 rounded-2xl overflow-hidden bg-secondary-50/20">
-      <div v-for="section in sections" :key="section.title" class="p-5 space-y-4 transition-colors hover:bg-white/40 group">
+    <div class="divide-y divide-[var(--border-light)] border border-[var(--border-light)] rounded-2xl overflow-hidden bg-[var(--bg-surface)]">
+      <div v-for="section in sections" :key="section.title" class="p-5 space-y-4 transition-colors hover:bg-[var(--bg-surface-hover)] group">
         <h4 class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-primary)] flex items-center gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary-100 text-[var(--text-primary)] group-hover:bg-primary-50 group-hover:text-secondary-900 transition-colors">
+          <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--bg-muted)] text-[var(--icon-secondary)] group-hover:bg-[var(--bg-surface-active)] group-hover:text-[var(--icon-brand)] transition-colors">
             <Icon :name="section.icon" class="h-4 w-4" />
           </div>
           {{ section.title }}
@@ -13,16 +15,17 @@
         
         <div class="space-y-4 pl-11">
           <div v-for="item in section.items" :key="item.value" class="flex items-start gap-4">
-            <Icon :name="item.icon" class="mt-1 h-5 w-5 shrink-0 text-secondary-300 group-hover:text-primary-400 transition-colors" />
+            <Icon :name="item.icon" class="mt-1 h-5 w-5 shrink-0 text-[var(--icon-secondary)] group-hover:text-[var(--icon-brand)] transition-colors" />
             <div class="space-y-0.5">
-              <p class="text-sm font-black text-[var(--text-primary)] leading-tight group-hover:text-secondary-900 transition-colors">{{ item.value }}</p>
-              <p v-if="item.sub" class="text-[11px] font-medium text-[var(--text-primary)]">{{ item.sub }}</p>
+              <p class="text-sm font-black text-[var(--text-primary)] leading-tight transition-colors">{{ item.value }}</p>
+              <p v-if="item.sub" class="text-[11px] font-medium text-[var(--text-secondary)]">{{ item.sub }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</template>
 
 <script setup lang="ts">
 const { t } = useI18n()

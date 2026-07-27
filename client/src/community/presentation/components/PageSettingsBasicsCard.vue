@@ -120,15 +120,22 @@
             :helper-text="$t('community.pageSettings.basics.fields.locationHint')"
             require-coordinates
           />
+          <PreciseLocationPicker v-model="locationModel" />
         </UFormField>
       </div>
 
       <div class="page-settings-basics__map-pin">
-        <UCheckbox
-          v-model="mapPinRequestedModel"
-          :label="$t('community.pageSettings.basics.mapPin.label')"
-          :description="$t('community.pageSettings.basics.mapPin.desc')"
-        />
+        <div class="min-w-0">
+          <UCheckbox
+            v-model="mapPinRequestedModel"
+            :disabled="!canRequestMapPin"
+            :label="$t('community.pageSettings.basics.mapPin.label')"
+            :description="$t('community.pageSettings.basics.mapPin.desc')"
+          />
+          <p v-if="!canRequestMapPin" class="mt-2 text-xs font-semibold text-[var(--text-secondary)]">
+            {{ $t("pages.locationMapPicker.mapPinRequirement") }}
+          </p>
+        </div>
         <span class="page-settings-basics__map-pin-status">
           {{ mapPinStatusLabel }}
         </span>
@@ -226,7 +233,11 @@
 <script setup lang="ts">
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
 import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
-import { normalizeLocationSelection } from "../../../location/domain/types/location.types"
+import PreciseLocationPicker from "../../../location/presentation/components/PreciseLocationPicker.vue"
+import {
+  hasLocationCoordinates,
+  normalizeLocationSelection,
+} from "../../../location/domain/types/location.types"
 import {
   createCommunitySlug,
 } from "../../domain/services/community-helpers.service"
@@ -291,11 +302,23 @@ const locationModel = computed({
   },
 })
 
+const canRequestMapPin = computed(() => {
+  const location = locationModel.value
+
+  return Boolean(location.address.trim()) && hasLocationCoordinates(location)
+})
+
 const mapPinRequestedModel = computed({
   get: () => Boolean(model.value.mapPinRequested),
   set: (value: boolean) => {
-    model.value.mapPinRequested = value
+    model.value.mapPinRequested = canRequestMapPin.value ? value : false
   },
+})
+
+watch(canRequestMapPin, (canRequest) => {
+  if (!canRequest && model.value.mapPinRequested) {
+    model.value.mapPinRequested = false
+  }
 })
 
 const mapPinStatusLabel = computed(() => {
@@ -403,6 +426,12 @@ const tagCount = computed(() =>
   background: var(--bg-surface) !important;
   color: var(--text-primary) !important;
   box-shadow: none;
+}
+
+.page-settings-basics :deep(.google-place-field__input) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .page-settings-basics :deep(input::placeholder),

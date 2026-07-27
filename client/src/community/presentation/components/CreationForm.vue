@@ -148,15 +148,26 @@
             :helper-text="locationHintText"
             require-coordinates
           />
+          <PreciseLocationPicker
+            v-if="isPage"
+            v-model="locationModel"
+          />
         </UFormField>
 
-        <UCheckbox
+        <div
           v-if="showMapPinRequest"
-          v-model="mapPinRequestedModel"
-          :label="$t('community.creationForm.mapPinLabel')"
-          :description="$t('community.creationForm.mapPinDesc')"
-      class="rounded-2xl border border-[var(--border-light)] bg-[var(--bg-muted)] p-4"
-        />
+          class="rounded-2xl border border-[var(--border-light)] bg-[var(--bg-muted)] p-4"
+        >
+          <UCheckbox
+            v-model="mapPinRequestedModel"
+            :disabled="!canRequestMapPin"
+            :label="$t('community.creationForm.mapPinLabel')"
+            :description="$t('community.creationForm.mapPinDesc')"
+          />
+          <p v-if="!canRequestMapPin" class="mt-2 text-xs font-semibold text-[var(--text-secondary)]">
+            {{ $t("pages.locationMapPicker.mapPinRequirement") }}
+          </p>
+        </div>
 
         <!-- Buttons -->
         <div class="flex items-center justify-between pt-8">
@@ -188,6 +199,7 @@
 
 <script setup lang="ts">
 import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
+import PreciseLocationPicker from "../../../location/presentation/components/PreciseLocationPicker.vue"
 import {
   emptyLocationSelection,
   hasLocationCoordinates,
@@ -313,11 +325,23 @@ const locationModel = computed({
   },
 })
 
+const canRequestMapPin = computed(() => {
+  const location = locationModel.value
+
+  return Boolean(location.address.trim()) && hasLocationCoordinates(location)
+})
+
 const mapPinRequestedModel = computed({
   get: () => Boolean(model.value.mapPinRequested),
   set: (value: boolean) => {
-    model.value.mapPinRequested = value
+    model.value.mapPinRequested = canRequestMapPin.value ? value : false
   },
+})
+
+watch(canRequestMapPin, (canRequest) => {
+  if (!canRequest && model.value.mapPinRequested) {
+    model.value.mapPinRequested = false
+  }
 })
 
 watch(

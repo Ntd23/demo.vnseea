@@ -127,8 +127,8 @@
               :text="profile.avatarText"
               class="profile-page__avatar"
               :ui="{
-                root: 'rounded-full bg-primary-600',
-                fallback: 'text-white font-black text-3xl',
+                root: 'rounded-full bg-[var(--bg-brand)]',
+                fallback: 'text-[var(--text-media)] font-black text-3xl',
               }"
             />
           </div>
@@ -246,12 +246,11 @@
                 @click="handleMoreAction('poke')"
               >
                 <span
-                  class="profile-more-icon"
-                  style="background: rgba(249, 115, 22, 0.1)"
+                  class="profile-more-icon profile-more-icon--poke"
                 >
                   <Icon
                     name="i-ph-hand-pointing-fill"
-                    class="h-4 w-4 text-orange-500"
+                    class="h-4 w-4"
                   />
                 </span>
                 <div class="min-w-0">
@@ -295,12 +294,11 @@
                 @click="handleMoreAction('report')"
               >
                 <span
-                  class="profile-more-icon"
-                  style="background: rgba(245, 158, 11, 0.1)"
+                  class="profile-more-icon profile-more-icon--report"
                 >
                   <Icon
                     name="i-ph-warning-circle-bold"
-                    class="h-4 w-4 text-amber-500"
+                    class="h-4 w-4"
                   />
                 </span>
                 <div class="min-w-0">
@@ -321,16 +319,15 @@
                 @click="handleMoreAction('blockList')"
               >
                 <span
-                  class="profile-more-icon"
-                  style="background: rgba(220, 38, 38, 0.08)"
+                  class="profile-more-icon profile-more-icon--danger"
                 >
                   <Icon
                     name="i-ph-prohibit-bold"
-                    class="h-4 w-4 text-red-500"
+                    class="h-4 w-4"
                   />
                 </span>
                 <div class="min-w-0">
-                  <p class="profile-more-label" style="color: #dc2626">
+                  <p class="profile-more-label profile-more-label--danger">
                     {{ $t("pages.profilePage.tabs.blockList") }}
                   </p>
                   <p class="profile-more-desc">
@@ -347,16 +344,15 @@
                 @click="handleMoreAction('block')"
               >
                 <span
-                  class="profile-more-icon"
-                  style="background: rgba(220, 38, 38, 0.08)"
+                  class="profile-more-icon profile-more-icon--danger"
                 >
                   <Icon
                     name="i-ph-prohibit-bold"
-                    class="h-4 w-4 text-red-500"
+                    class="h-4 w-4"
                   />
                 </span>
                 <div class="min-w-0">
-                  <p class="profile-more-label" style="color: #dc2626">
+                  <p class="profile-more-label profile-more-label--danger">
                     {{ $t("pages.profilePage.tabs.block") }}
                   </p>
                   <p class="profile-more-desc">
@@ -1703,14 +1699,15 @@ function handleMoreAction(action: string) {
 /* ── Page shell ───────────────────────────────────────── */
 .profile-page {
   min-height: 100vh;
-  background: #f0f2f5;
+  background: var(--bg-base);
   margin-top: 8px;
 }
 
 /* ── Hero ─────────────────────────────────────────────── */
 .profile-page__hero {
   background: var(--bg-surface);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 12px;
   border-radius: 16px;
 }
@@ -1729,7 +1726,7 @@ function handleMoreAction(action: string) {
   height: auto;
   aspect-ratio: 918 / 332;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
+  background: linear-gradient(135deg, var(--bg-media) 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 .profile-page__cover--viewable {
@@ -1750,13 +1747,13 @@ function handleMoreAction(action: string) {
 .profile-page__cover-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
+  background: linear-gradient(135deg, var(--bg-media) 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
 }
 
 .profile-page__cover-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.15) 0%, transparent 40%);
+  background: linear-gradient(to top, color-mix(in srgb, var(--bg-media) 28%, transparent) 0%, transparent 40%);
   pointer-events: none;
 }
 
@@ -1775,15 +1772,15 @@ function handleMoreAction(action: string) {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border-media);
   border-radius: var(--radius-full);
-  background: rgba(15, 23, 42, 0.72);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--bg-media) 72%, transparent);
+  color: var(--text-media);
   cursor: pointer;
   font-size: 13px;
   font-weight: var(--weight-bold);
   padding: 8px 14px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--shadow-lg);
   transition:
     background var(--duration-fast) var(--ease-default),
     border-color var(--duration-fast) var(--ease-default),
@@ -1791,8 +1788,8 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__cover-btn:hover {
-  border-color: #ffffff;
-  background: rgba(15, 23, 42, 0.86);
+  border-color: var(--text-media);
+  background: color-mix(in srgb, var(--bg-media) 88%, transparent);
   transform: translateY(-1px);
 }
 
@@ -1858,8 +1855,8 @@ function handleMoreAction(action: string) {
 .profile-page__avatar {
   width: 100%;
   height: 100%;
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  border: 4px solid var(--bg-surface);
+  box-shadow: var(--shadow-md);
   display: block;
 }
 
@@ -1881,10 +1878,10 @@ function handleMoreAction(action: string) {
   display: inline-flex;
   max-width: 100%;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.58);
+  border: 1px solid var(--border-light);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
+  background: color-mix(in srgb, var(--bg-surface) 78%, transparent);
+  box-shadow: var(--shadow-lg);
   backdrop-filter: blur(18px);
   padding: 6px 16px;
   font-size: clamp(1.5rem, 3vw, 2rem);
@@ -1971,8 +1968,8 @@ function handleMoreAction(action: string) {
   border: 1px solid var(--color-accent-700);
   border-radius: var(--radius-full);
   background: var(--bg-surface);
-  color: var(--color-secondary-900);
-  box-shadow: 0 6px 18px rgba(180, 83, 9, 0.12);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   font-size: 13px;
   font-weight: var(--weight-extrabold);
@@ -1987,9 +1984,9 @@ function handleMoreAction(action: string) {
 
 .profile-page__cart-cta:hover {
   border-color: var(--color-accent-600);
-  background: var(--color-accent-50);
-  color: var(--color-secondary-900);
-  box-shadow: 0 8px 22px rgba(180, 83, 9, 0.18);
+  background: color-mix(in srgb, var(--color-accent-500) 12%, var(--bg-surface));
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
 }
 
 .profile-page__cart-cta:active {
@@ -1999,7 +1996,7 @@ function handleMoreAction(action: string) {
 /* Divider */
 .profile-page__divider {
   height: 1px;
-  background: #e2e8f0;
+  background: var(--border-light);
   margin: 12px 0 0;
 }
 
@@ -2032,7 +2029,7 @@ function handleMoreAction(action: string) {
   padding: 14px 16px;
   font-size: 15px;
   font-weight: 700;
-  color: #65676b;
+  color: var(--text-secondary);
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
@@ -2045,7 +2042,7 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__tab:hover {
-  background: #f0f2f5;
+  background: var(--bg-surface-hover);
   border-radius: 8px 8px 0 0;
   color: var(--text-primary);
 }
@@ -2056,13 +2053,13 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__tab--more {
-  color: #65676b;
+  color: var(--text-secondary);
   background: transparent;
   box-shadow: none;
 }
 
 .profile-page__tab--more:hover {
-  background: #f0f2f5;
+  background: var(--bg-surface-hover);
   color: var(--text-primary);
 }
 
@@ -2077,9 +2074,9 @@ function handleMoreAction(action: string) {
   color: var(--bg-brand);
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0),
-    #ffffff 48%,
-    #ffffff 100%
+    transparent,
+    var(--bg-surface) 48%,
+    var(--bg-surface) 100%
   );
   pointer-events: none;
 }
@@ -2157,7 +2154,7 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__post-search :deep(input) {
-  border-color: #e2e8f0;
+  border-color: var(--border-light);
   background: var(--bg-surface);
   color: var(--text-primary);
   box-shadow: none;
@@ -2260,8 +2257,9 @@ function handleMoreAction(action: string) {
 /* ── Profile card (reusable) ─────────────────────────── */
 .profile-card {
   background: var(--bg-surface);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   padding: 16px;
 }
 
@@ -2291,7 +2289,7 @@ function handleMoreAction(action: string) {
 
 .profile-card__sub {
   font-size: 13px;
-  color: #65676b;
+  color: var(--text-secondary);
   margin: 2px 0 0;
 }
 
@@ -2301,7 +2299,7 @@ function handleMoreAction(action: string) {
   align-items: flex-start;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .profile-card__intro-row:last-child {
@@ -2356,7 +2354,7 @@ function handleMoreAction(action: string) {
   justify-content: center;
   overflow: hidden;
   border-radius: 12px;
-  background: var(--color-primary-100);
+  background: var(--bg-muted);
 }
 
 .profile-card__friend-img {
@@ -2369,7 +2367,7 @@ function handleMoreAction(action: string) {
 .profile-card__friend-initials {
   font-size: 18px;
   font-weight: 900;
-  color: var(--bg-brand-hover);
+  color: var(--text-brand);
 }
 
 .profile-card__friend-name {
@@ -2413,13 +2411,13 @@ function handleMoreAction(action: string) {
   margin: 0;
   overflow: hidden;
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.72);
+  background: color-mix(in srgb, var(--bg-media) 72%, transparent);
   padding: 4px 6px;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 11px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-media);
 }
 
 .profile-card__link-list {
@@ -2527,11 +2525,11 @@ function handleMoreAction(action: string) {
   gap: 12px;
   min-width: 0;
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   padding: 12px;
   color: var(--text-primary);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-sm);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease,
@@ -2539,8 +2537,8 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__friend-card:hover {
-  border-color: #c7d2fe;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
@@ -2552,7 +2550,7 @@ function handleMoreAction(action: string) {
   justify-content: center;
   overflow: hidden;
   border-radius: 18px;
-  background: var(--color-primary-100);
+  background: var(--bg-muted);
 }
 
 .profile-page__friend-img {
@@ -2565,7 +2563,7 @@ function handleMoreAction(action: string) {
 .profile-page__friend-initials {
   font-size: 18px;
   font-weight: 800;
-  color: var(--bg-brand-hover);
+  color: var(--text-brand);
 }
 
 .profile-page__friend-info {
@@ -2654,9 +2652,10 @@ function handleMoreAction(action: string) {
 /* ── Skeletons / Empty ───────────────────────────────── */
 .profile-page__hero-skeleton {
   overflow: hidden;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   margin-bottom: 12px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .profile-page__cover-skeleton {
@@ -2678,8 +2677,8 @@ function handleMoreAction(action: string) {
   width: 120px;
   height: 120px;
   border-radius: 999px;
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.12);
+  border: 4px solid var(--bg-surface);
+  box-shadow: var(--shadow-md);
 }
 
 .profile-page__identity-lines,
@@ -2693,7 +2692,7 @@ function handleMoreAction(action: string) {
 
 .profile-page__tab-skeletons {
   overflow: hidden;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border-light);
   padding: 12px 16px;
 }
 
@@ -2730,10 +2729,11 @@ function handleMoreAction(action: string) {
 .profile-page__empty {
   max-width: 540px;
   margin: 40px auto;
+  border: 1px solid var(--border-light);
   background: var(--bg-surface);
   border-radius: 16px;
   padding: 40px 24px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   text-align: center;
 }
 
@@ -2744,11 +2744,11 @@ function handleMoreAction(action: string) {
 .profile-avatar-menu {
   z-index: 10020;
   overflow: visible;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
   padding: 8px;
-  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.22);
+  box-shadow: var(--shadow-xl);
 }
 
 .profile-avatar-menu__arrow {
@@ -2757,8 +2757,8 @@ function handleMoreAction(action: string) {
   left: var(--profile-avatar-arrow-left, 50%);
   width: 16px;
   height: 16px;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
-  border-left: 1px solid rgba(15, 23, 42, 0.08);
+  border-top: 1px solid var(--border-light);
+  border-left: 1px solid var(--border-light);
   background: var(--bg-surface);
   transform: translateX(-50%) rotate(45deg);
 }
@@ -2798,7 +2798,7 @@ function handleMoreAction(action: string) {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 23, 42, 0.86);
+  background: color-mix(in srgb, var(--bg-media) 86%, transparent);
   padding: 24px;
   cursor: zoom-out;
 }
@@ -2808,7 +2808,7 @@ function handleMoreAction(action: string) {
   max-height: min(86vh, 820px);
   border-radius: var(--radius-xl);
   object-fit: contain;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+  box-shadow: var(--shadow-xl);
   cursor: default;
 }
 
@@ -2821,10 +2821,10 @@ function handleMoreAction(action: string) {
   height: 42px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid var(--border-media);
   border-radius: var(--radius-full);
-  background: rgba(15, 23, 42, 0.72);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--bg-media) 72%, transparent);
+  color: var(--text-media);
   cursor: pointer;
   transition:
     background var(--duration-fast) var(--ease-default),
@@ -2832,7 +2832,7 @@ function handleMoreAction(action: string) {
 }
 
 .profile-media-viewer__close:hover {
-  background: rgba(15, 23, 42, 0.9);
+  background: color-mix(in srgb, var(--bg-media) 92%, transparent);
   transform: scale(1.04);
 }
 
@@ -2882,11 +2882,30 @@ function handleMoreAction(action: string) {
   margin-top: 2px;
 }
 
+.profile-more-icon--poke {
+  background: color-mix(in srgb, var(--color-accent-600) 14%, transparent);
+  color: var(--color-accent-600);
+}
+
+.profile-more-icon--report {
+  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+  color: var(--color-warning);
+}
+
+.profile-more-icon--danger {
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  color: var(--text-danger);
+}
+
 .profile-more-label {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.3;
+}
+
+.profile-more-label--danger {
+  color: var(--text-danger);
 }
 
 .profile-more-desc {

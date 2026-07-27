@@ -2447,6 +2447,23 @@
       "detailsError": "Không thể đọc thông tin của địa chỉ đã chọn.",
       "selectSuggestion": "Hãy chọn một địa chỉ gợi ý để hệ thống lưu tọa độ tìm kiếm lân cận."
     },
+    "locationMapPicker": {
+      "open": "Chọn vị trí chính xác trên bản đồ",
+      "hint": "Di chuyển ghim hoặc nhấn trên bản đồ để chọn đúng vị trí.",
+      "emptyAddressHint": "Chọn từ vị trí realtime của bạn hoặc nhấn trực tiếp lên bản đồ.",
+      "mapPinRequirement": "Chọn địa chỉ gợi ý hoặc vị trí chính xác trên bản đồ trước khi yêu cầu ghim.",
+      "title": "Chọn vị trí chính xác",
+      "description": "Di chuyển ghim tới đúng lối vào hoặc vị trí kinh doanh, sau đó xác nhận lựa chọn.",
+      "loading": "Đang tải bản đồ...",
+      "unavailable": "Google Maps chưa khả dụng với tên miền này.",
+      "loadError": "Không thể tải bản đồ chọn vị trí.",
+      "markerTitle": "Kéo để chọn vị trí chính xác",
+      "userLocationTitle": "Vị trí realtime của bạn",
+      "selectedAddress": "Vị trí đã chọn",
+      "noAddress": "Chưa xác định được địa chỉ tại điểm này.",
+      "cancel": "Hủy",
+      "apply": "Dùng vị trí này"
+    },
     "newProductPage": {
       "seoTitle": "Tạo sản phẩm mới | VNSEEA",
       "seoDescription": "Tạo tin đăng sản phẩm mới trên VNSEEA với form rõ ràng, preview ổn định và bản nháp cục bộ an toàn.",

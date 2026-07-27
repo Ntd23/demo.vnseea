@@ -2,23 +2,23 @@
   <div class="surface-card overflow-hidden">
     <!-- Cover Identity -->
     <div class="relative min-h-[220px] overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 sm:min-h-[280px]">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_24%_24%,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_76%_24%,rgba(255,255,255,0.1),transparent_30%)] opacity-60" />
+      <div class="profile-hero__cover-decor absolute inset-0 opacity-60" />
       
       <!-- Top Badges (Status/Role) -->
-      <div class="absolute left-6 top-6 flex items-center gap-4 rounded-2xl border border-white/20 bg-white/10 px-4 py-2.5 backdrop-blur-xl shadow-[0_12px_32px_rgba(15,23,42,0.12)] transition-all hover:bg-white/15">
+      <div class="absolute left-6 top-6 flex items-center gap-4 rounded-2xl border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--text-media)_10%,transparent)] px-4 py-2.5 backdrop-blur-xl shadow-[var(--shadow-lg)] transition-all hover:bg-[color-mix(in_srgb,var(--text-media)_15%,transparent)]">
         <UAvatar
           text="QT"
           size="md"
           :ui="{ 
             rounded: 'rounded-xl',
-            background: 'bg-white/20',
-            text: 'text-white font-extrabold'
+            background: 'bg-[color-mix(in_srgb,var(--text-media)_20%,transparent)]',
+            text: 'text-[var(--text-media)] font-extrabold'
           }"
-          class="ring-2 ring-white/30"
+          class="ring-2 ring-[var(--border-media)]"
         />
         <div class="space-y-0.5">
-          <p class="text-sm font-extrabold tracking-tight text-white leading-none">{{ t("pages.profilePage.heroRole") }}</p>
-          <p class="text-[11px] font-semibold text-white/70">{{ t("pages.profilePage.heroStatus") }}</p>
+          <p class="text-sm font-extrabold tracking-tight text-[var(--text-media)] leading-none">{{ t("pages.profilePage.heroRole") }}</p>
+          <p class="text-[11px] font-semibold text-[var(--text-media-muted)]">{{ t("pages.profilePage.heroStatus") }}</p>
         </div>
       </div>
 
@@ -28,7 +28,7 @@
         color="white"
         variant="solid"
         size="md"
-        class="absolute right-6 top-6 rounded-2xl bg-white/90 hover:bg-white shadow-lg text-[var(--text-primary)] active:scale-95 transition-transform"
+        class="absolute right-6 top-6 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] shadow-[var(--shadow-lg)] text-[var(--text-primary)] active:scale-95 transition-transform"
       />
 
       <!-- Content Overlay -->
@@ -41,11 +41,11 @@
                 <UAvatar
                   text="VN"
                   size="3xl"
-                  class="h-[100px] w-[100px] sm:h-[128px] sm:w-[128px] ring-[6px] ring-white shadow-2xl transition-transform group-hover:scale-[1.02]"
+                  class="h-[100px] w-[100px] sm:h-[128px] sm:w-[128px] ring-[6px] ring-[var(--bg-surface)] shadow-[var(--shadow-xl)] transition-transform group-hover:scale-[1.02]"
                   :ui="{ 
                     rounded: 'rounded-[2.5rem]',
                     background: 'bg-primary-600',
-                    text: 'text-white font-black text-3xl'
+                    text: 'text-[var(--text-inverse)] font-black text-3xl'
                   }"
                 />
                 <UButton
@@ -53,20 +53,20 @@
                   color="gray"
                   variant="solid"
                   size="xs"
-                  class="absolute bottom-2 right-2 rounded-xl ring-4 ring-white shadow-md"
+                  class="absolute bottom-2 right-2 rounded-xl ring-4 ring-[var(--bg-surface)] shadow-[var(--shadow-md)]"
                 />
               </div>
             </div>
 
             <!-- Identity Info -->
-            <div class="rounded-3xl border border-white/20 bg-white/10 p-5 px-6 backdrop-blur-2xl shadow-[0_16px_36px_rgba(15,23,42,0.14)] space-y-1 sm:max-w-md">
-              <h1 class="text-lg font-extrabold tracking-tight text-white sm:text-xl">{{ t("pages.profilePage.heroHeadline") }}</h1>
-              <p class="text-xs font-medium leading-relaxed text-white/80 sm:text-sm">{{ t("pages.profilePage.heroDescription") }}</p>
+            <div class="rounded-3xl border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--text-media)_10%,transparent)] p-5 px-6 backdrop-blur-2xl shadow-[var(--shadow-lg)] space-y-1 sm:max-w-md">
+              <h1 class="text-lg font-extrabold tracking-tight text-[var(--text-media)] sm:text-xl">{{ t("pages.profilePage.heroHeadline") }}</h1>
+              <p class="text-xs font-medium leading-relaxed text-[var(--text-media-muted)] sm:text-sm">{{ t("pages.profilePage.heroDescription") }}</p>
             </div>
           </div>
 
           <!-- Action Buttons Group -->
-          <div class="flex flex-wrap items-center gap-2.5 rounded-[2rem] border border-white/10 bg-white/10 p-2.5 backdrop-blur-2xl shadow-[0_12px_32px_rgba(15,23,42,0.12)]">
+          <div class="flex flex-wrap items-center gap-2.5 rounded-[2rem] border border-[var(--border-media)] bg-[color-mix(in_srgb,var(--text-media)_10%,transparent)] p-2.5 backdrop-blur-2xl shadow-[var(--shadow-lg)]">
             <UButton
               color="primary"
               size="md"
@@ -74,7 +74,7 @@
             >
               {{ t("pages.profilePage.heroActionEdit") }}
             </UButton>
-            <div class="h-6 w-[1.5px] bg-white/10 mx-1 hidden sm:block" />
+            <div class="h-6 w-[1.5px] bg-[var(--border-media)] mx-1 hidden sm:block" />
             <div class="flex gap-2">
               <UButton
                 v-for="action in [
@@ -86,7 +86,7 @@
                 variant="soft"
                 color="white"
                 size="md"
-                class="rounded-full px-4 font-semibold hover:bg-white/20"
+                class="rounded-full px-4 font-semibold hover:bg-[color-mix(in_srgb,var(--text-media)_20%,transparent)]"
                 :icon="action.icon"
               >
                 <span class="hidden lg:inline">{{ action.label }}</span>
@@ -98,7 +98,7 @@
     </div>
 
     <!-- Navigation Tabs -->
-    <div class="flex items-center gap-2 overflow-x-auto border-t border-secondary-100 bg-white/80 px-4 py-3 sm:px-6 backdrop-blur-md">
+    <div class="flex items-center gap-2 overflow-x-auto border-t border-[var(--border-light)] bg-[var(--bg-surface)] px-4 py-3 sm:px-6 backdrop-blur-md">
       <UButton
         v-for="tab in tabs"
         :key="tab"
@@ -132,3 +132,19 @@ const tabs = computed(() => [
   t("pages.profilePage.heroTabFamily"),
 ])
 </script>
+
+<style scoped>
+.profile-hero__cover-decor {
+  background:
+    radial-gradient(
+      circle at 24% 24%,
+      color-mix(in srgb, var(--text-media) 15%, transparent),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 76% 24%,
+      color-mix(in srgb, var(--text-media) 10%, transparent),
+      transparent 30%
+    );
+}
+</style>
