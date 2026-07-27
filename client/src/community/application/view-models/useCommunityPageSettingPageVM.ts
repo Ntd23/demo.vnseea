@@ -129,13 +129,7 @@ export function useCommunityPageSettingPageVM(
   ])
 
   const isBusy = computed(() => saveState.value === "loading")
-  const isSaveDisabled = computed(() =>
-    isBusy.value
-    || !(draft.value.name || "").trim()
-    || !(draft.value.slug || "").trim()
-    || (draft.value.summary || "").trim().length < 24
-    || !draft.value.category,
-  )
+  const isSaveDisabled = computed(() => isBusy.value)
 
   const statusAlert = computed(() => {
     if (saveState.value === "loading") {
@@ -230,7 +224,17 @@ export function useCommunityPageSettingPageVM(
     try {
       if (!page.value) throw new Error("page_missing")
       const oldSlug = page.value.slug
-      const savedPage = await repository.updatePage(page.value.slug, draft.value)
+      const normalizedDraft = normalizeDraft(draft.value)
+      const saveDraft: CommunityPageSettingsDraft = {
+        ...normalizedDraft,
+        // Settings are patch-friendly: untouched required fields retain the
+        // backend value instead of being blocked by create-page validation.
+        name: normalizedDraft.name || page.value.name,
+        slug: normalizedDraft.slug || page.value.slug,
+        summary: normalizedDraft.summary || page.value.summary,
+        category: normalizedDraft.category || page.value.category,
+      }
+      const savedPage = await repository.updatePage(page.value.slug, saveDraft)
       // After successful save, we want the next syncDraftFromPage to force-update from DB
       isInitialized.value = false
       

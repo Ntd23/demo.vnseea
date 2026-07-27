@@ -9,7 +9,7 @@
           :key="tab.key"
           class="relative shrink-0 rounded-full px-4 py-2.5 text-[13px] font-semibold transition"
           :class="modelValue === tab.key
-            ? 'bg-[var(--bg-brand)] text-white shadow-[0_8px_24px_color-mix(in srgb, var(--bg-brand) 18%, transparent)]'
+            ? 'bg-[var(--bg-brand)] text-[var(--text-inverse)] shadow-[0_8px_24px_color-mix(in srgb, var(--bg-brand) 18%, transparent)]'
             : 'text-[var(--text-secondary)] hover:bg-[var(--bg-brand)]/5 hover:text-[var(--text-brand)]'"
           type="button"
           @click="$emit('update:modelValue', tab.key)"
@@ -49,8 +49,8 @@
           <!-- Group 1: Social -->
           <div class="py-1">
             <button class="profile-more-item" type="button" @click="handleAction('poke')">
-              <span class="profile-more-icon" style="background:rgba(249,115,22,0.1)">
-                <Icon name="i-ph-hand-pointing-fill" class="h-4 w-4 text-orange-500" />
+              <span class="profile-more-icon profile-more-icon--poke">
+                <Icon name="i-ph-hand-pointing-fill" class="h-4 w-4" />
               </span>
               <div class="min-w-0">
                 <p class="profile-more-label">{{ t('pages.profilePage.tabs.poke') }}</p>
@@ -74,8 +74,8 @@
             </button>
 
             <button class="profile-more-item" type="button" @click="handleAction('report')">
-              <span class="profile-more-icon" style="background:rgba(245,158,11,0.1)">
-                <Icon name="i-ph-warning-circle-bold" class="h-4 w-4 text-amber-500" />
+              <span class="profile-more-icon profile-more-icon--report">
+                <Icon name="i-ph-warning-circle-bold" class="h-4 w-4" />
               </span>
               <div class="min-w-0">
                 <p class="profile-more-label">{{ t('pages.profilePage.tabs.report') }}</p>
@@ -89,11 +89,11 @@
           <!-- Group 3: Destructive -->
           <div class="py-1">
             <button class="profile-more-item" type="button" @click="handleAction('block')">
-              <span class="profile-more-icon" style="background:rgba(220,38,38,0.08)">
-                <Icon name="i-ph-prohibit-bold" class="h-4 w-4 text-red-500" />
+              <span class="profile-more-icon profile-more-icon--danger">
+                <Icon name="i-ph-prohibit-bold" class="h-4 w-4" />
               </span>
               <div class="min-w-0">
-                <p class="profile-more-label" style="color:#dc2626">{{ t('pages.profilePage.tabs.block') }}</p>
+                <p class="profile-more-label profile-more-label--danger">{{ t('pages.profilePage.tabs.block') }}</p>
                 <p class="profile-more-desc">{{ t('pages.profilePage.tabs.blockDesc') }}</p>
               </div>
             </button>
@@ -230,11 +230,30 @@ function handleAction(action: string) {
   margin-top: 2px;
 }
 
+.profile-more-icon--poke {
+  background: color-mix(in srgb, var(--color-accent-600) 14%, transparent);
+  color: var(--color-accent-600);
+}
+
+.profile-more-icon--report {
+  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+  color: var(--color-warning);
+}
+
+.profile-more-icon--danger {
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  color: var(--text-danger);
+}
+
 .profile-more-label {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.3;
+}
+
+.profile-more-label--danger {
+  color: var(--text-danger);
 }
 
 .profile-more-desc {

@@ -3,7 +3,7 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="space-y-1">
         <h3 class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.completionTitle") }}</h3>
-        <p class="text-xs font-medium text-[var(--text-primary)] leading-relaxed">{{ t("pages.profilePage.completionDescription") }}</p>
+        <p class="text-xs font-medium text-[var(--text-secondary)] leading-relaxed">{{ t("pages.profilePage.completionDescription") }}</p>
       </div>
       <UButton
         color="gray"

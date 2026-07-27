@@ -2447,6 +2447,23 @@
       "detailsError": "Unable to read the selected address.",
       "selectSuggestion": "Select an address suggestion so nearby search can store coordinates."
     },
+    "locationMapPicker": {
+      "open": "Choose exact location on map",
+      "hint": "Move the pin or tap the map to refine the exact location.",
+      "emptyAddressHint": "Choose a location from your realtime position or tap directly on the map.",
+      "mapPinRequirement": "Choose an address suggestion or an exact map position before requesting a map pin.",
+      "title": "Choose exact location",
+      "description": "Move the marker to the precise entrance or business location, then apply your selection.",
+      "loading": "Loading map...",
+      "unavailable": "Google Maps is unavailable for this domain.",
+      "loadError": "Unable to load the location map.",
+      "markerTitle": "Drag to choose the exact location",
+      "userLocationTitle": "Your realtime location",
+      "selectedAddress": "Selected location",
+      "noAddress": "No address resolved for this point.",
+      "cancel": "Cancel",
+      "apply": "Use this location"
+    },
     "newProductPage": {
       "seoTitle": "Create new product | VNSEEA",
       "seoDescription": "Create a new product listing on VNSEEA with a clearer form, stable preview, and safe local draft persistence.",
@@ -8099,6 +8116,14 @@
           "ctaFallback": "Not selected",
           "websiteYes": "Available",
           "websiteNo": "Not available"
+        },
+        "mapPin": {
+          "label": "Request a map pin",
+          "desc": "An admin will review the request before this page appears directly on the nearby-search map.",
+          "statusApproved": "Map pin approved",
+          "statusPending": "Awaiting admin review",
+          "statusRejected": "Request rejected",
+          "statusNone": "No map pin requested"
         }
       },
       "controls": {
@@ -8199,6 +8224,12 @@
       "seoTitle": "{name} Settings | VNSEEA",
       "seoTitleFallback": "Page Settings | VNSEEA",
       "seoDescFallback": "Manage fanpage configurations on VNSEEA."
+    },
+    "creationForm": {
+      "pageLink": "Page link",
+      "groupLink": "Group link",
+      "mapPinLabel": "Request a map pin",
+      "mapPinDesc": "An admin will review the request before this page appears directly on the nearby-search map."
     },
     "mock": {
       "groups": {
