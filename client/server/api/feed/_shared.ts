@@ -1016,6 +1016,7 @@ export const mapPostRecord = (
   const feeling = extractPostFeeling(entity)
   const eventContext = extractPostEventContext(entity)
   const groupContext = extractPostGroupContext(entity)
+  const job = asRecord(entity.job)
   const mediaItems = extractMediaItems(entity, author, resolveMediaUrl)
   const attachmentCard = buildPostAttachmentCard(entity, resolveMediaUrl)
   const categoryHint = [
@@ -1058,7 +1059,9 @@ export const mapPostRecord = (
       canDelete: isTruthy(entity.can_delete),
       canShare,
     },
-    jobId: firstNumber(entity, ["job_id"]) || undefined,
+    jobId: firstNumber(entity, ["job_id"])
+      || firstNumber(job, ["id", "job_id"])
+      || undefined,
     sharedPostId: sharedPostId || undefined,
     sharedPost,
     authorId: authorId || undefined,

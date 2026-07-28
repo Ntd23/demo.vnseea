@@ -56,10 +56,10 @@
               <Icon name="i-ph-wallet-bold" class="mm__stat-icon" />
               <span>{{ $t("navigation.mobileMenu.walletLabel") || "Wallet" }}: {{ formattedWalletPoints }}</span>
             </NuxtLink>
-            <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="mm__stat" @click="close">
+            <!-- <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="mm__stat" @click="close">
               <Icon name="i-ph-circle-half-bold" class="mm__stat-icon" />
               <span>{{ $t("navigation.mobileMenu.pointsLabel") || "VNSEEA" }}: {{ formattedPoints }}</span>
-            </NuxtLink>
+            </NuxtLink> -->
           </div>
 
           <button class="mm__close" type="button" :aria-label="$t('common.close')" @click="close">
@@ -223,13 +223,15 @@ watch(() => route.path, () => { isOpen.value = false })
 const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.search', icon: 'i-ph-map-pin-fill', to: appRoutes.searchNearby },
   { label: 'navigation.mobileMenu.mainNav.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
+  { label: 'navigation.mobileMenu.mainNav.wallet', icon: 'i-ph-wallet-fill', to: appRoutes.wallet },
   { label: 'navigation.mobileMenu.mainNav.pages', icon: 'i-ph-flag-fill', to: '/pages' },
+  { label: 'navigation.mobileMenu.mainNav.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
+  { label: 'navigation.mobileMenu.mainNav.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   { label: 'navigation.mobileMenu.mainNav.blog', icon: 'i-ph-newspaper-fill', to: '/blogs' },
   { label: 'navigation.mobileMenu.mainNav.myArticles', icon: 'i-ph-article-fill', to: '/blogs?mine=1' },
   { label: 'navigation.mobileMenu.mainNav.movies', icon: 'i-ph-film-strip-fill', to: '/movies' },
   { label: 'navigation.mobileMenu.mainNav.events', icon: 'i-ph-calendar-blank-fill', to: '/events' },
   { label: 'navigation.mobileMenu.mainNav.offers', icon: 'i-ph-tag-chevron-fill', to: appRoutes.offers },
-  { label: 'navigation.mobileMenu.mainNav.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
   { label: 'navigation.mobileMenu.mainNav.forum', icon: 'i-ph-chats-circle-fill', to: '/forum' },
   { label: 'navigation.mobileMenu.mainNav.advertising', icon: 'i-ph-megaphone-fill', to: appRoutes.ads },
   { label: 'navigation.mobileMenu.mainNav.photos', icon: 'i-ph-images-fill', to: '/photos' },
@@ -239,9 +241,7 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.poke', icon: 'i-ph-hand-waving-fill', to: '/poke' },
   { label: 'navigation.mobileMenu.mainNav.explore', icon: 'i-ph-compass-fill', to: '/explore' },
   { label: 'navigation.mobileMenu.mainNav.popularPosts', icon: 'i-ph-fire-fill', to: '/popular' },
-  { label: 'navigation.mobileMenu.mainNav.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   // { label: 'navigation.mobileMenu.mainNav.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
-  { label: 'navigation.mobileMenu.mainNav.wallet', icon: 'i-ph-wallet-fill', to: appRoutes.wallet },
   { label: 'navigation.mobileMenu.mainNav.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' },
   { label: 'navigation.mobileMenu.mainNav.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
 ]
@@ -278,7 +278,7 @@ const logoutAction = {
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: rgba(15, 23, 42, 0.25);
+  background: color-mix(in srgb, var(--bg-media) 25%, transparent);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -294,7 +294,8 @@ const logoutAction = {
   width: 85vw;
   max-width: 340px;
   background: var(--bg-surface);
-  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.12);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-xl);
   overflow: hidden;
 }
 
@@ -328,7 +329,7 @@ const logoutAction = {
   gap: 12px;
   padding: 20px 20px 12px;
   background: linear-gradient(135deg, var(--bg-brand) 0%, var(--bg-brand-hover) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .mm__identity {
@@ -347,10 +348,10 @@ const logoutAction = {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--text-inverse) 18%, transparent);
   font-size: 14px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .mm__admin-link {
@@ -378,7 +379,7 @@ const logoutAction = {
   margin-top: 2px;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.82);
+  color: var(--text-on-brand-secondary);
 }
 
 .mm__admin-icon {
@@ -395,15 +396,15 @@ const logoutAction = {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  border: 1px solid var(--border-on-brand);
+  background: color-mix(in srgb, var(--text-inverse) 20%, transparent);
+  color: var(--text-inverse);
   cursor: pointer;
-  transition: background 0.12s ease;
+  transition: background var(--duration-fast) var(--ease-default);
 }
 
 .mm__close:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, var(--text-inverse) 30%, transparent);
 }
 
 .mm__stats {
@@ -411,8 +412,8 @@ const logoutAction = {
   flex-direction: column;
   gap: 6px;
   padding: 10px 16px 12px;
-  background: #f8faff;
-  border-bottom: 1px solid #f1f5f9;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .mm__stat {
@@ -425,18 +426,20 @@ const logoutAction = {
   font-weight: 600;
   color: var(--text-secondary);
   text-decoration: none;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
 }
 
 .mm__stat:hover {
-  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
-  color: var(--bg-brand);
+  background: var(--bg-surface-hover);
+  color: var(--text-brand);
 }
 
 .mm__stat-icon {
   width: 14px;
   height: 14px;
-  color: var(--bg-brand);
+  color: var(--icon-brand);
 }
 
 .mm__content {
@@ -455,7 +458,7 @@ const logoutAction = {
 .mm__divider {
   height: 1px;
   margin: 4px 16px;
-  background: var(--bg-muted);
+  background: var(--border-light);
 }
 
 .mm__item {
@@ -466,20 +469,32 @@ const logoutAction = {
   border-radius: 12px;
   text-decoration: none;
   color: var(--text-primary);
-  transition: background 0.12s ease, color 0.12s ease;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
 }
 
-.mm__item:hover { background: color-mix(in srgb, var(--bg-brand) 4%, transparent); color: var(--bg-brand); }
-.mm__item--active { background: color-mix(in srgb, var(--bg-brand) 6%, transparent); color: var(--bg-brand); }
-.mm__item--danger:hover { background: rgba(220, 38, 38, 0.05); }
+.mm__item:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-brand);
+}
 
-.mm__item-icon { width: 18px; height: 18px; flex-shrink: 0; color: var(--text-primary); }
-.mm__item-icon--active { color: var(--bg-brand); }
-.mm__item-icon--danger { color: #dc2626; }
+.mm__item--active {
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+}
+
+.mm__item--danger:hover {
+  background: color-mix(in srgb, var(--color-error) 8%, var(--bg-surface));
+}
+
+.mm__item-icon { width: 18px; height: 18px; flex-shrink: 0; color: var(--icon-primary); }
+.mm__item-icon--active { color: var(--icon-brand); }
+.mm__item-icon--danger { color: var(--icon-danger); }
 
 .mm__item-label { font-size: 14px; font-weight: 500; }
 .mm__item-label--active { font-weight: 700; }
-.mm__item-label--danger { color: #dc2626; }
+.mm__item-label--danger { color: var(--text-danger); }
 
 .mm__switch {
   display: flex;
@@ -493,7 +508,7 @@ const logoutAction = {
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background 0.12s ease;
+  transition: background var(--duration-fast) var(--ease-default);
 }
 
 .mm__switch:hover { background: var(--bg-muted); }

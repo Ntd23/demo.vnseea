@@ -1350,38 +1350,50 @@ export function useChatWidgetVM(
     }
   }
 
-  async function attachTag(contact: MessageContact, tagId: number) {
+  async function updateContactTags(contact: MessageContact, nextTagIds: number[]) {
     const userId = contact.userId ?? 0
 
-    if (userId <= 0 || tagId <= 0 || isUpdatingTags.value) {
+    if (userId <= 0 || isUpdatingTags.value) {
       return false
+    }
+
+    const availableTagIds = new Set(messageTagLabels.value.map(tag => tag.id))
+    const currentTagIds = new Set(
+      (contact.tags ?? [])
+        .map(tag => tag.id)
+        .filter(tagId => availableTagIds.has(tagId)),
+    )
+    const selectedTagIds = new Set(
+      nextTagIds
+        .map(tagId => Number(tagId))
+        .filter(tagId => Number.isFinite(tagId) && availableTagIds.has(tagId)),
+    )
+    const tagsToAttach = [...selectedTagIds].filter(tagId => !currentTagIds.has(tagId))
+    const tagsToDetach = [...currentTagIds].filter(tagId => !selectedTagIds.has(tagId))
+
+    if (tagsToAttach.length === 0 && tagsToDetach.length === 0) {
+      return true
     }
 
     isUpdatingTags.value = true
 
     try {
-      const result = await repository.attachTag({ userId, tagId })
+      const results = await Promise.all([
+        ...tagsToAttach.map(tagId => repository.attachTag({ userId, tagId })),
+        ...tagsToDetach.map(tagId => repository.detachTag({ userId, tagId })),
+      ])
+
       await refreshTagsData()
-      return result.ok
+      return results.every(result => result.ok)
     }
-    finally {
-      isUpdatingTags.value = false
-    }
-  }
-
-  async function detachTag(contact: MessageContact, tagId: number) {
-    const userId = contact.userId ?? 0
-
-    if (userId <= 0 || tagId <= 0 || isUpdatingTags.value) {
+    catch {
+      await refreshTagsData()
+      toast.add({
+        title: t("pages.messagesPage.multiNetworkErrorTitle"),
+        description: t("pages.messagesPage.multiNetworkErrorDescription"),
+        color: "error",
+      })
       return false
-    }
-
-    isUpdatingTags.value = true
-
-    try {
-      const result = await repository.detachTag({ userId, tagId })
-      await refreshTagsData()
-      return result.ok
     }
     finally {
       isUpdatingTags.value = false
@@ -1665,11 +1677,10 @@ export function useChatWidgetVM(
     buildPresenceLabel,
     buildPreviewLabel,
     messageTagLabels,
-    attachTag,
     clearSendRecipients,
     createTagLabel,
     deleteTagLabel,
-    detachTag,
+    updateContactTags,
     setSelectedSendRecipientIds,
     toggleAllVisibleSendRecipients,
     toggleSendRecipient,

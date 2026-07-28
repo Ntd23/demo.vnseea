@@ -124,6 +124,9 @@ const sidebarNav = [
   { label: 'navigation.leftSidebar.items.searchNearby', icon: 'i-ph-map-pin-fill', to: appRoutes.searchNearby },
   { label: 'navigation.leftSidebar.items.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
   { label: 'navigation.leftSidebar.items.wallet', icon: 'i-ph-wallet-fill', to: '/wallet' },
+  { label: 'navigation.leftSidebar.items.myPages', icon: 'i-ph-file-text-fill', to: '/pages' },
+  { label: 'navigation.leftSidebar.items.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
+  { label: 'navigation.leftSidebar.items.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   { label: 'navigation.leftSidebar.items.photos', icon: 'i-ph-images-fill', to: '/photos' },
   { label: 'navigation.leftSidebar.items.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
   { label: 'navigation.leftSidebar.items.reels', icon: 'i-ph-film-strip-fill', to: '/reels' },
@@ -131,8 +134,6 @@ const sidebarNav = [
   { label: 'navigation.leftSidebar.items.popularPosts', icon: 'i-ph-fire-fill', to: '/popular' },
   { label: 'navigation.leftSidebar.items.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
   { label: 'navigation.leftSidebar.items.poke', icon: 'i-ph-hand-waving-fill', to: '/poke' },
-  { label: 'navigation.leftSidebar.items.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
-  { label: 'navigation.leftSidebar.items.myPages', icon: 'i-ph-file-text-fill', to: '/pages' }
 ]
 
 const sidebarNavMore = [
@@ -143,7 +144,6 @@ const sidebarNavMore = [
   { label: 'navigation.leftSidebar.items.live', icon: 'i-ph-broadcast-fill', to: '/live' },
   { label: 'navigation.leftSidebar.items.forum', icon: 'i-ph-chats-circle-fill', to: '/forum' },
   { label: 'navigation.leftSidebar.items.movies', icon: 'i-ph-popcorn-fill', to: '/movies' },
-  { label: 'navigation.leftSidebar.items.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   // { label: 'navigation.leftSidebar.items.games', icon: 'i-ph-game-controller-fill', to: '/games' },
   // { label: 'navigation.leftSidebar.items.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
   { label: 'navigation.leftSidebar.items.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' }

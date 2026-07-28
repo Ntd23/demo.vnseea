@@ -291,12 +291,12 @@
 
 
 /* ──────────────────────────────────────────────────────────── 
-   9. DARK MODE TOKENS (#0b1620 Slate Tech)
+   9. DARK MODE TOKENS (#0A1A2E Slate Tech)
    ──────────────────────────────────────────────────────────── */
 html.dark,
 .dark {
   /* Surface & Page Backgrounds */
-  --bg-base: #0b1620;
+  --bg-base: #0A1A2E;
   --bg-surface: #142230;
   --bg-surface-hover: #1e3246;
   --bg-surface-active: #243b52;

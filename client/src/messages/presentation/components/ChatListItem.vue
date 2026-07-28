@@ -83,10 +83,11 @@
           v-if="showTagAction"
           type="button"
           class="cli-tag-btn"
+          :aria-label="$t('pages.messagesPage.tagActionLabel')"
           :title="$t('pages.messagesPage.tagActionLabel') || 'Gắn thẻ'"
           @click.stop="$emit('manage-tags')"
         >
-          <Icon name="i-ph-tag-bold" class="h-3 w-3" />
+          <Icon name="i-ph-tag-bold" class="h-5 w-5" />
         </button>
       </div>
     </div>
@@ -348,6 +349,7 @@ const previewClass = computed(() => ({
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
   margin-top: 4px;
 }
 
@@ -372,10 +374,13 @@ const previewClass = computed(() => ({
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 18px;
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  min-width: 40px;
+  min-height: 40px;
   border: 1px solid var(--border-light);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--bg-muted);
   color: var(--text-secondary);
   cursor: pointer;

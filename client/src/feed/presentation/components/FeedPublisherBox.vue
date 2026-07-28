@@ -245,7 +245,6 @@
                 (action.value === 'image' && selectedMediaType === 'image')
                 || (action.value === 'video' && selectedMediaType === 'video')
                 || (action.value === 'feeling' && Boolean(activeFeeling))
-                || (action.value === 'poll' && showPollForm)
                 || (action.value === 'colors' && showColorsPicker)
                 || (action.value === 'product' && showProductForm),
             }"
@@ -322,45 +321,28 @@
         />
       </div>
 
-      <div v-if="showPollForm" class="publisher__poll-form">
-        <p class="publisher__poll-title">
-          <Icon name="i-ph-list-checks-bold" class="h-4 w-4" />
-          {{ t('feed.publisherBox.actionPoll') }}
-        </p>
-        <div class="publisher__poll-answers">
-          <div
-            v-for="(_, idx) in pollAnswers"
-            :key="idx"
-            class="publisher__poll-answer-row"
-          >
-            <input
-              v-model="pollAnswers[idx]"
-              class="publisher__poll-input"
-              type="text"
-              :placeholder="t('feed.publisherBox.pollAnswerPlaceholder', { n: idx + 1 })"
-            >
-            <button
-              v-if="pollAnswers.length > 2"
-              type="button"
-              class="publisher__poll-remove"
-              :title="t('feed.publisherBox.pollRemoveAnswer')"
-              @click="removePollAnswer(idx)"
-            >
-              <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-        <button
-          v-if="pollAnswers.length < 10"
-          type="button"
-          class="publisher__poll-add"
-          @click="addPollAnswer"
-        >
-          <Icon name="i-ph-plus-bold" class="h-3.5 w-3.5" />
-          {{ t('feed.publisherBox.pollAddAnswer') }}
-        </button>
-      </div>
     </div>
+
+    <JobPostModal
+      :open="jobComposer.open.value"
+      :categories="jobComposer.catalog.value.categories"
+      :types="jobComposer.catalog.value.types"
+      :currencies="jobComposer.catalog.value.currencies"
+      :salary-dates="jobComposer.catalog.value.salaryDates"
+      :question-types="jobComposer.catalog.value.questionTypes"
+      :image-types="jobComposer.catalog.value.imageTypes"
+      :owned-pages="jobComposer.catalog.value.ownedPages"
+      :preferred-page-id="jobComposer.preferredPageId.value"
+      :defaults="jobComposer.catalog.value.currentUser"
+      :can-create="jobComposer.catalog.value.canCreate && !jobComposer.loading.value"
+      :create-disabled-reason="jobComposer.loading.value
+        ? t('feed.publisherBox.jobLoading')
+        : jobComposer.catalog.value.createDisabledReason"
+      :submitting="jobComposer.submitting.value"
+      :error-message="jobComposer.errorMessage.value"
+      @close="jobComposer.closeCreate"
+      @submit="jobComposer.submitCreate"
+    />
   </section>
 </template>
 
@@ -368,6 +350,9 @@
 import { useFeedMentionSearch } from "../../application/composables/useFeedMentionSearch"
 import { useFeedPublisherBoxVM } from "../../application/view-models/useFeedPublisherBoxVM"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
+import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
+import { useJobComposerVM } from "../../../jobs/application/view-models/useJobComposerVM"
+import JobPostModal from "../../../jobs/presentation/components/JobPostModal.vue"
 import NewProductPage from "../../../product/presentation/pages/NewProductPage.vue"
 
 const { t } = useI18n()
@@ -405,7 +390,6 @@ const {
   selectedMediaType,
   showFeelingPicker,
   showPollForm,
-  pollAnswers,
   canPublish,
   handleCompactAction,
   handleAction,
@@ -413,8 +397,6 @@ const {
   selectVideoFile,
   clearSelectedMedia,
   selectFeeling,
-  addPollAnswer,
-  removePollAnswer,
   publish: publishPost,
   selectedColorId,
   showColorsPicker,
@@ -424,6 +406,21 @@ const {
   videoFile,
 } = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId, props.eventId, props.groupId)
 
+const feedRepository = createApiFeedRepository()
+const jobComposer = useJobComposerVM(async (postId) => {
+  if (!postId) {
+    emit("created", null)
+    return
+  }
+
+  try {
+    const post = await feedRepository.getPostById(postId)
+    emit("created", post)
+  }
+  catch {
+    emit("created", null)
+  }
+})
 const mediaPreviews = ref<{ url: string; type: "image" | "video"; name: string }[]>([])
 
 watch([imageFiles, videoFile], () => {
@@ -599,6 +596,12 @@ function handleActionOverride(value: any) {
       return
     }
 
+    if (value === "job") {
+      expanded.value = false
+      void jobComposer.openCreate(props.pageId)
+      return
+    }
+
     console.log("[FeedPublisherBox] Calling standard handleAction for:", value)
     handleAction(value)
   } catch (error) {
@@ -628,6 +631,11 @@ function handleCompactActionOverride(value: any) {
       console.log("[FeedPublisherBox] Clicking compact videoInputRef:", videoInputRef.value)
       videoInputRef.value?.click()
       expanded.value = true
+      return
+    }
+
+    if (value === "job") {
+      void jobComposer.openCreate(props.pageId)
       return
     }
 
@@ -1273,103 +1281,6 @@ function goToLive() {
 }
 
 /* Submit button and live button styling removed, handled via UButton */
-
-/* Poll form */
-.publisher__poll-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px 0 2px;
-  border-top: 1px solid var(--border-light);
-  animation: publisher-in 0.18s ease;
-}
-
-.publisher__poll-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 0 4px;
-  color: #31a38c;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.publisher__poll-answers {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.publisher__poll-answer-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.publisher__poll-input {
-  flex: 1;
-  height: 40px;
-  padding: 8px 12px;
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
-  background: var(--bg-muted);
-  font-size: 13.5px;
-  color: var(--text-primary);
-  outline: none;
-  font-family: inherit;
-  transition: border-color 0.15s ease;
-}
-
-.publisher__poll-input:focus {
-  border-color: color-mix(in srgb, var(--bg-brand) 20%, transparent);
-}
-
-.publisher__poll-input::placeholder {
-  color: var(--text-tertiary);
-}
-
-.publisher__poll-remove {
-  display: inline-flex;
-  width: 30px;
-  height: 30px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-default);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-tertiary);
-  cursor: pointer;
-  transition: all 0.12s ease;
-  flex-shrink: 0;
-}
-
-.publisher__poll-remove:hover {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: #dc2626;
-}
-
-.publisher__poll-add {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  width: fit-content;
-  padding: 7px 14px;
-  border: 1.5px dashed rgba(49, 163, 140, 0.4);
-  border-radius: 10px;
-  background: rgba(49, 163, 140, 0.04);
-  color: #31a38c;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-family: inherit;
-}
-
-.publisher__poll-add:hover {
-  background: rgba(49, 163, 140, 0.1);
-  border-color: rgba(49, 163, 140, 0.6);
-}
 
 /* Post Colors Picker */
 .publisher__colors-picker {

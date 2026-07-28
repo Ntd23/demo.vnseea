@@ -16,7 +16,7 @@ definePageMeta({
 const route = useRoute()
 const postId = computed(() => Number.parseInt(String(route.params.id ?? ""), 10) || 0)
 const seoRepository = createApiPublicSeoRepository()
-const { data: seoMeta, error: seoError } = await useAsyncData(
+const { data: seoMeta } = await useAsyncData(
   () => `seo:post:${postId.value}`,
   () => postId.value > 0
     ? seoRepository.getPublicSeo({ routeType: "post", identifier: String(postId.value) })
@@ -26,13 +26,6 @@ const { data: seoMeta, error: seoError } = await useAsyncData(
     default: () => null,
   },
 )
-
-if (seoError.value) {
-  throw createError({
-    statusCode: seoError.value.statusCode || 404,
-    statusMessage: seoError.value.statusMessage || "Post not found.",
-  })
-}
 
 usePublicSeoMeta(seoMeta)
 </script>

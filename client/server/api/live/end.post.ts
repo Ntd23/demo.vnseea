@@ -1,4 +1,4 @@
-// English description: Ends the current host livestream session while retaining its timeline post.
+// English description: Ends the current host livestream session and deletes its timeline post.
 
 import { createError, readBody } from "h3"
 import { endLiveSession } from "./_shared"

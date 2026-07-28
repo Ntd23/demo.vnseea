@@ -457,9 +457,8 @@ export async function endLiveSession(
     }
   }
   catch (endError) {
-    // Ending is idempotent. If the webhook wins the race or the response is
-    // interrupted afterward, confirm the retained post's final state instead
-    // of reporting a false failure to the host.
+    // Ending is idempotent for legacy backends that may finalize the post
+    // before this bridge receives their response.
     const post = await fetchFeedPostById(event, postId).catch(() => undefined)
 
     if (post?.isLive && post.liveState === "offline") {

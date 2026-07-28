@@ -1,6 +1,6 @@
 <!-- Description: Responsive story creator aligned with the native-app selection and editing flow. -->
 <template>
-  <div class="story-create">
+  <div class="story-create mt-1.5">
     <header class="story-create__appbar">
       <NuxtLink
         :to="appRoutes.feed"
@@ -248,8 +248,6 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 .story-create {
   width: min(100%, 1120px);
   min-height: calc(100dvh - 72px);
-  margin: 0 auto;
-  padding: 12px;
   color: var(--text-primary);
 }
 
@@ -262,10 +260,10 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   align-items: center;
   gap: 10px;
   padding: 8px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .story-create__close,
@@ -287,7 +285,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 }
 
 .story-create__close:hover {
-  background: #e2e8f0;
+  background: var(--bg-surface-hover);
   color: var(--text-primary);
 }
 
@@ -313,9 +311,9 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   padding: 9px 16px;
   border: 0;
   border-radius: 12px;
-  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  color: #fff;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
+  background: var(--bg-brand);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-brand);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -323,8 +321,8 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 }
 
 .story-create__publish:disabled {
-  background: var(--color-primary-100);
-  color: var(--color-primary-300);
+  background: var(--bg-muted);
+  color: var(--text-tertiary);
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -366,31 +364,31 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   justify-content: center;
   border: 2px solid;
   border-radius: 18px;
-  box-shadow: 0 14px 30px color-mix(in srgb, var(--bg-brand) 10%, transparent);
+  box-shadow: var(--shadow-lg);
 }
 
 .story-create__illustration-card--back {
   top: 5px;
   right: 18px;
   transform: rotate(13deg);
-  border-color: #d8b4fe;
-  background: #faf5ff;
-  color: #9333ea;
+  border-color: var(--border-default);
+  background: var(--bg-muted);
+  color: var(--icon-secondary);
 }
 
 .story-create__illustration-card--front {
   bottom: 0;
   left: 20px;
   transform: rotate(-8deg);
-  border-color: var(--color-primary-200);
-  background: var(--color-primary-50);
-  color: var(--bg-brand);
+  border-color: var(--border-default);
+  background: var(--bg-surface-active);
+  color: var(--icon-brand);
 }
 
 .story-create__spark {
   position: absolute;
   z-index: 2;
-  color: var(--color-primary-300);
+  color: var(--icon-brand);
   font-size: 24px;
 }
 
@@ -439,10 +437,10 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   justify-items: center;
   gap: 12px;
   padding: 20px 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--shadow-sm);
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -450,8 +448,8 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 
 .story-create__picker-card:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--bg-brand) 14%, transparent);
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-md);
 }
 
 .story-create__picker-icon,
@@ -470,14 +468,14 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 
 .story-create__picker-icon--image,
 .story-create__picker-arrow--image {
-  background: var(--color-primary-50);
-  color: var(--bg-brand);
+  background: var(--bg-surface-active);
+  color: var(--icon-brand);
 }
 
 .story-create__picker-icon--video,
 .story-create__picker-arrow--video {
-  background: #faf5ff;
-  color: #9333ea;
+  background: var(--bg-muted);
+  color: var(--icon-secondary);
 }
 
 .story-create__picker-copy {
@@ -512,16 +510,16 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 10%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  background: var(--color-primary-50);
+  background: var(--bg-surface-active);
 }
 
 .story-create__notice-icon {
   width: 44px;
   height: 44px;
-  background: var(--color-primary-50);
-  color: var(--bg-brand);
+  background: var(--bg-surface);
+  color: var(--icon-brand);
 }
 
 .story-create__notice p {
@@ -545,10 +543,10 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 .story-create__preview-column,
 .story-create__settings {
   min-width: 0;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .story-create__preview-column {
@@ -565,8 +563,8 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   aspect-ratio: 9 / 16;
   overflow: hidden;
   border-radius: 18px;
-  background: radial-gradient(circle at 50% 38%, #2b0b0e 0%, #1a0507 48%, #0f0304 100%);
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16);
+  background: var(--bg-media);
+  box-shadow: var(--shadow-lg);
 }
 
 .story-create__media {
@@ -574,7 +572,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #020617;
+  background: var(--bg-media);
 }
 
 .story-create__preview--image.story-create__preview--portrait .story-create__media {
@@ -588,13 +586,13 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   right: 14px;
   width: 42px;
   height: 42px;
-  background: rgba(2, 6, 23, 0.78);
-  color: #fff;
+  background: color-mix(in srgb, var(--bg-media) 78%, transparent);
+  color: var(--text-media);
   backdrop-filter: blur(10px);
 }
 
 .story-create__remove:hover {
-  background: #dc2626;
+  background: var(--color-error);
 }
 
 .story-create__change-media {
@@ -604,9 +602,9 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   justify-content: center;
   gap: 7px;
   padding: 9px 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-surface);
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
@@ -615,9 +613,9 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 }
 
 .story-create__change-media:hover {
-  border-color: color-mix(in srgb, var(--bg-brand) 15%, transparent);
-  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
-  color: var(--bg-brand);
+  border-color: var(--border-default);
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
 }
 
 .story-create__settings {
@@ -654,7 +652,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   align-items: center;
   gap: 6px;
   padding: 8px 11px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-secondary);
@@ -665,15 +663,15 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 }
 
 .story-create__audience-option:hover {
-  background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
-  color: var(--bg-brand);
+  background: var(--bg-surface-hover);
+  color: var(--text-brand);
 }
 
 .story-create__audience-option--active {
-  border-color: color-mix(in srgb, var(--bg-brand) 50%, transparent);
-  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
-  color: var(--bg-brand);
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  border-color: var(--border-default);
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+  box-shadow: var(--shadow-sm);
 }
 
 .story-create__field {
@@ -686,10 +684,10 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 .story-create__field input,
 .story-create__field textarea {
   width: 100%;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   outline: none;
-  background: #fafbfe;
+  background: var(--bg-surface);
   color: var(--text-primary);
   font-family: inherit;
   font-size: 13px;
@@ -710,7 +708,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 
 .story-create__field input:focus,
 .story-create__field textarea:focus {
-  border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent);
+  border-color: var(--border-default);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
@@ -732,15 +730,15 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: var(--color-primary-50);
-  color: var(--bg-brand);
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
   font-size: 12px;
   font-weight: 600;
 }
 
 .story-create__status--error {
-  background: #fef2f2;
-  color: #dc2626;
+  background: color-mix(in srgb, var(--color-error) 10%, var(--bg-surface));
+  color: var(--text-danger);
 }
 
 .story-create__spin {
@@ -754,27 +752,17 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 }
 
 @media (min-width: 640px) {
-  .story-create {
-    padding: 22px 24px 52px;
-  }
+
 
   .story-create__appbar {
     min-height: 68px;
-    padding: 10px 12px;
   }
 
-  .story-create__empty {
-    padding-top: 34px;
-  }
 
   .story-create__picker-card {
     min-height: 190px;
   }
 
-  .story-create__preview-column,
-  .story-create__settings {
-    padding: 20px;
-  }
 }
 
 @media (min-width: 900px) {
@@ -794,9 +782,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 }
 
 @media (max-width: 479px) {
-  .story-create {
-    padding: 0 8px 32px;
-  }
+
 
   .story-create__appbar {
     margin-inline: -8px;

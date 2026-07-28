@@ -57,10 +57,10 @@
                 <Icon name="i-ph-wallet-fill" class="user-menu__stat-icon" />
                 <span>{{ $t("navigation.mobileMenu.walletLabel") || "Wallet" }}: {{ formattedWalletPoints }}</span>
               </NuxtLink>
-              <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="user-menu__stat" @click="open = false">
+              <!-- <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="user-menu__stat" @click="open = false">
                 <Icon name="i-ph-circle-half-fill" class="user-menu__stat-icon" />
                 <span>{{ $t("navigation.mobileMenu.pointsLabel") || "VNSEEA" }}: {{ formattedPoints }}</span>
-              </NuxtLink>
+              </NuxtLink> -->
             </div>
           </div>
         </div>
@@ -402,7 +402,7 @@ const logoutAction = {
   border-radius: 10px;
   font-size: 12.5px;
   font-weight: 500;
-  color: #5b6472;
+   color: var(--text-primary);
   text-decoration: none;
   transition: color 0.15s ease, background 0.15s ease;
 }

@@ -182,4 +182,5 @@ export interface JobCreateDraft {
 export interface JobMutationResult {
   success: boolean
   message: string
+  postId?: number
 }

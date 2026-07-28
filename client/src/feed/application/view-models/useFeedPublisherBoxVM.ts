@@ -7,7 +7,7 @@ import type { FeedPostRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import { normalizeContentAudienceSelection, type ContentAudience } from "../../../shared-kernel/domain/content-audience"
 
-type PublisherAction = "image" | "video" | "poll" | "feeling" | "story" | "colors" | "product"
+type PublisherAction = "image" | "video" | "poll" | "job" | "feeling" | "story" | "colors" | "product"
 type PublisherAudience = ContentAudience
 type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | "funny" | "cool" | "tired" | "confused" | ""
 
@@ -77,14 +77,14 @@ export function useFeedPublisherBoxVM(
     { value: "image" as const, icon: "i-ph-image-bold", label: t("feed.publisherBox.actionImage") },
     { value: "video" as const, icon: "i-ph-video-camera-bold", label: t("feed.publisherBox.actionVideo") },
     { value: "product" as const, icon: "i-ph-shopping-cart-bold", label: locale.value === "vi" ? "Bán sản phẩm" : "Sell Product", },
-    { value: "poll" as const, icon: "i-ph-list-checks-bold", label: t("feed.publisherBox.actionPoll") },
+    { value: "job" as const, icon: "i-ph-briefcase-bold", label: t("feed.publisherBox.actionJob") },
   ])
 
   const actions = computed(() => [
     { value: "image" as const, label: t("feed.publisherBox.actionImage"), icon: "i-ph-image-bold" },
     { value: "video" as const, label: t("feed.publisherBox.actionVideo"), icon: "i-ph-video-camera-bold" },
     { value: "product" as const, label: locale.value === "vi" ? "Bán sản phẩm" : "Sell Product", icon: "i-ph-shopping-cart-bold" },
-    { value: "poll" as const, label: t("feed.publisherBox.actionPoll"), icon: "i-ph-list-checks-bold" },
+    { value: "job" as const, label: t("feed.publisherBox.actionJob"), icon: "i-ph-briefcase-bold" },
   ])
 
   const audiences = computed(() => {
@@ -261,6 +261,10 @@ export function useFeedPublisherBoxVM(
       return
     }
 
+    if (value === "job") {
+      return
+    }
+
     if (value === "product") {
       showProductForm.value = true
       showFeelingPicker.value = false
@@ -294,6 +298,10 @@ export function useFeedPublisherBoxVM(
       showColorsPicker.value = false
       showProductForm.value = false
       showPollForm.value = !showPollForm.value
+      return
+    }
+
+    if (value === "job") {
       return
     }
 
