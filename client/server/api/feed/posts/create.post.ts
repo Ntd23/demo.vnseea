@@ -1,4 +1,4 @@
-// English description: Creates a new timeline post through the backend API v2 new_post endpoint, including text, feeling, image gallery, and video uploads.
+// English description: Creates timeline posts through the backend API, including text, location, feeling, polls, images, and video.
 
 import { createError, getCookie, getHeader, readBody, readMultipartFormData } from "h3"
 import { mapPostRecord } from "../_shared"
@@ -65,6 +65,7 @@ type CreatePostPayload = {
   audienceProvided: boolean
   isAnonymous: boolean
   feeling: string
+  location: string
   imageFiles: {
     filename?: string
     type?: string
@@ -124,6 +125,7 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     audienceProvided: hasOwn(body, "audience"),
     isAnonymous: parseBooleanFlag(body.isAnonymous),
     feeling: typeof body.feeling === "string" ? body.feeling.trim() : "",
+    location: asString(body.location),
     imageFiles: [],
     videoFile: null,
     pageId: body.pageId ? Number(body.pageId) : undefined,
@@ -145,6 +147,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     audienceProvided: false,
     isAnonymous: false,
     feeling: "",
+    location: "",
     imageFiles: [],
     videoFile: null,
     pageId: undefined,
@@ -185,6 +188,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     }
     if (part.name === "is_anonymous") payload.isAnonymous = parseBooleanFlag(value)
     if (part.name === "feeling") payload.feeling = value
+    if (part.name === "location") payload.location = value
     if (part.name === "pageId") payload.pageId = Number(value)
     if (part.name === "eventId") payload.eventId = Number(value)
     if (part.name === "groupId") payload.groupId = Number(value)
@@ -239,7 +243,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (!payload.text && !payload.imageFiles.length && !payload.videoFile && !payload.feeling && !payload.sharedPostId && !payload.pollAnswers.length) {
+  if (!payload.text && !payload.imageFiles.length && !payload.videoFile && !payload.feeling && !payload.location && !payload.sharedPostId && !payload.pollAnswers.length) {
     throw createError({
       statusCode: 400,
       statusMessage: "Post content is required.",
@@ -412,6 +416,10 @@ export default defineEventHandler(async (event) => {
   if (payload.feeling) {
     requestBody.append("feeling_type", "feelings")
     requestBody.append("feeling", payload.feeling)
+  }
+
+  if (payload.location) {
+    requestBody.append("postMap", payload.location)
   }
 
   if (payload.colorId) {

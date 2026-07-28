@@ -9,6 +9,7 @@ import type { MessageContact, MessageItem, MessageProductCard, MessageRecordDraf
 import type { MessagesRepository } from "../../../messages/domain/repositories/MessagesRepository"
 import { getMessageLocationMeta } from "../../../messages/application/utils/message-location"
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
+import { sortUserInboxContacts } from "../../../messages/application/utils/message-contact-order"
 import { useChatWidgetLauncher, type ProductChatLaunchRequest } from "../composables/useChatWidgetLauncher"
 
 type ChatWidgetTab = "send" | "contacts" | "groups"
@@ -39,7 +40,7 @@ type MiniChatSessionView = MiniChatSession & {
   canSend: boolean
 }
 
-const INBOX_REFRESH_INTERVAL_MS = 6000
+const INBOX_REFRESH_INTERVAL_MS = 2000
 const MAX_MINI_CHAT_SESSIONS = 2
 
 function normalizeKeyword(value: string) {
@@ -400,9 +401,9 @@ export function useChatWidgetVM(
         .filter(([id]) => id > 0),
     )
 
-    return allContacts.value
+    return sortUserInboxContacts(allContacts.value
       .filter(contact => contact.type === "user")
-      .map(contact => mergeContactTags(contact, taggedByUserId.get(contact.userId ?? 0)))
+      .map(contact => mergeContactTags(contact, taggedByUserId.get(contact.userId ?? 0))))
   })
 
   const groupContacts = computed(() =>

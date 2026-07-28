@@ -1,4 +1,5 @@
 <?php
+// English description: Returns message contacts with follow relationship metadata and latest chat activity.
 $video_call = false;
 $video_call_user = array();
 
@@ -62,8 +63,90 @@ if (empty($wo['user']['timezone'])) {
 $timezone = new DateTimeZone($wo['user']['timezone']);
 
 $array = array();
+$follow_relationships = array();
+if (!empty($messages)) {
+    $message_user_ids = array();
+    foreach ($messages as $message_user) {
+        $message_user_id = !empty($message_user['user_id']) ? (int) $message_user['user_id'] : 0;
+        if ($message_user_id > 0 && $message_user_id !== (int) $wo['user']['id']) {
+            $message_user_ids[$message_user_id] = $message_user_id;
+        }
+    }
+
+    if (!empty($message_user_ids)) {
+        $current_user_id = (int) $wo['user']['id'];
+        $message_user_ids_sql = implode(',', $message_user_ids);
+        $follow_query = mysqli_query(
+            $sqlConnect,
+            "SELECT
+                f.`follower_id`,
+                f.`following_id`,
+                GREATEST(
+                    COALESCE(MAX(a.`time`), 0),
+                    COALESCE(MAX(n.`time`), 0)
+                ) AS `relationship_activity_at`
+             FROM " . T_FOLLOWERS . " f
+             LEFT JOIN " . T_ACTIVITIES . " a
+                ON a.`activity_type` IN ('following', 'friend')
+                AND (
+                    (a.`user_id` = f.`follower_id` AND a.`follow_id` = f.`following_id`)
+                    OR
+                    (a.`user_id` = f.`following_id` AND a.`follow_id` = f.`follower_id`)
+                )
+             LEFT JOIN " . T_NOTIFICATION . " n
+                ON n.`type` IN ('following', 'accepted_request')
+                AND (
+                    (n.`notifier_id` = f.`follower_id` AND n.`recipient_id` = f.`following_id`)
+                    OR
+                    (n.`notifier_id` = f.`following_id` AND n.`recipient_id` = f.`follower_id`)
+                )
+             WHERE f.`active` = '1'
+             AND (
+                (f.`follower_id` = {$current_user_id} AND f.`following_id` IN ({$message_user_ids_sql}))
+                OR
+                (f.`following_id` = {$current_user_id} AND f.`follower_id` IN ({$message_user_ids_sql}))
+             )"
+             . " GROUP BY f.`follower_id`, f.`following_id`"
+        );
+
+        if ($follow_query) {
+            while ($follow_row = mysqli_fetch_assoc($follow_query)) {
+                $follower_id = (int) $follow_row['follower_id'];
+                $following_id = (int) $follow_row['following_id'];
+                $related_user_id = $follower_id === $current_user_id ? $following_id : $follower_id;
+
+                if (empty($follow_relationships[$related_user_id])) {
+                    $follow_relationships[$related_user_id] = array(
+                        'is_following' => 0,
+                        'is_following_me' => 0,
+                        'relationship_activity_at' => 0
+                    );
+                }
+                if ($follower_id === $current_user_id) {
+                    $follow_relationships[$related_user_id]['is_following'] = 1;
+                }
+                if ($following_id === $current_user_id) {
+                    $follow_relationships[$related_user_id]['is_following_me'] = 1;
+                }
+                $follow_relationships[$related_user_id]['relationship_activity_at'] = max(
+                    $follow_relationships[$related_user_id]['relationship_activity_at'],
+                    (int) $follow_row['relationship_activity_at']
+                );
+            }
+        }
+    }
+}
 if (!empty($messages)) {
     foreach ($messages as $value) {
+        $relationship = !empty($follow_relationships[(int) $value['user_id']])
+            ? $follow_relationships[(int) $value['user_id']]
+            : array('is_following' => 0, 'is_following_me' => 0, 'relationship_activity_at' => 0);
+        $value['is_following'] = $relationship['is_following'];
+        $value['is_following_me'] = $relationship['is_following_me'];
+        $value['relationship_activity_at'] = $relationship['relationship_activity_at'];
+        $value['has_follow_relationship'] = (
+            !empty($relationship['is_following']) || !empty($relationship['is_following_me'])
+        ) ? 1 : 0;
         $value['chat_type'] = 'user';
         $value['mute'] = array('notify' => 'yes',
                                'call_chat' => 'yes',
@@ -333,7 +416,7 @@ if (!empty($pages)) {
         }
     }
 }
-array_multisort( array_column($array, "chat_time"), SORT_DESC, $array );
+array_multisort(array_column($array, "chat_time"), SORT_DESC, $array);
 
 
 $check_calles     = Wo_CheckFroInCalls();

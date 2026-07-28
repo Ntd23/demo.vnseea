@@ -201,6 +201,10 @@ export function createApiFeedRepository(): FeedRepository {
         formData.append("colorId", String(input.colorId))
       }
 
+      if (input.location) {
+        formData.append("location", input.location)
+      }
+
       for (const answer of input.pollAnswers ?? []) {
         formData.append("answer[]", answer)
       }

@@ -754,6 +754,26 @@ const buildPostAttachmentCard = (
   if (productTitle || productId > 0) {
     const images = asUnknownArray(product.images)
     const firstImage = asRecord(images[0])
+    const seller = asRecord(product.user_data || product.seller)
+    const currencyRule = asRecord(product.currency_rule)
+    const productImages = images.map((image, index) => {
+      const imageRecord = asRecord(image)
+      const source = resolveMediaUrl(
+        asString(image)
+        || firstString(imageRecord, ["image", "image_org", "src", "url"]),
+      )
+      const thumb = resolveMediaUrl(
+        firstString(imageRecord, ["image_org", "image", "src", "url"])
+        || asString(image),
+      )
+
+      return {
+        id: firstString(imageRecord, ["id"]) || `${productId}-${index}`,
+        src: source,
+        thumb,
+        alt: productTitle || "Product",
+      }
+    }).filter(image => Boolean(image.src))
     const imageUrl = resolveMediaUrl(
       asString(images[0])
       || firstString(firstImage, ["image_org", "image", "src", "url"])
@@ -763,14 +783,6 @@ const buildPostAttachmentCard = (
       || firstString(product, ["price_text"])
       || firstString(product, ["price"])
     const point = Math.max(0, firstNumber(product, ["point"]))
-    const pointPrice = point > 0
-      ? `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(point)} VNSEEA`
-      : ""
-    const description = [
-      price,
-      pointPrice,
-      stripHtml(firstString(product, ["description"])),
-    ].filter(Boolean).join(" - ")
     const rawUrl = firstString(product, ["url"])
     const fallbackPostId = firstNumber(entity, ["post_id", "id"])
     const href = productSeoId
@@ -786,9 +798,32 @@ const buildPostAttachmentCard = (
     return {
       type: "product",
       title: productTitle || "Product",
-      description,
+      description: stripHtml(firstString(product, ["description"])),
       imageUrl,
       href,
+      product: {
+        id: productId,
+        images: productImages,
+        sellerId: firstNumber(product, ["user_id"])
+          || firstNumber(seller, ["id", "user_id"]),
+        sellerName: firstString(seller, ["name", "username"]),
+        price: Math.max(0, firstNumber(product, ["price"])),
+        point,
+        currency: firstString(product, ["currency_code", "currency_text"]),
+        currencySymbol: firstString(product, ["currency_symbol"]),
+        currencyRule: {
+          decimals: firstString(currencyRule, ["decimals"]),
+          decimal_sep: firstString(currencyRule, ["decimal_sep"]),
+          thousand_sep: firstString(currencyRule, ["thousand_sep"]),
+        },
+        priceFormat: price,
+        location: firstString(product, ["location"]),
+        stock: Math.max(0, firstNumber(product, ["units"])),
+        condition: firstNumber(product, ["type"]) === 1 ? "used" : "new",
+        rating: Math.max(0, Math.min(5, firstNumber(product, ["rating"]))),
+        reviewsCount: Math.max(0, firstNumber(product, ["reviews_count"])),
+        addedToCart: firstNumber(product, ["added_to_cart"]) > 0,
+      },
     }
   }
 

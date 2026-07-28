@@ -1,4 +1,4 @@
-// English description: Owns the feed publisher draft, media pickers, feeling picker, current-user state, and backend post creation flow for the publisher box.
+// English description: Owns feed publisher draft content, media, location, current-user state, and backend post creation.
 
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
@@ -6,8 +6,13 @@ import { useFeedPostColors } from "../composables/useFeedPostColors"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import { normalizeContentAudienceSelection, type ContentAudience } from "../../../shared-kernel/domain/content-audience"
+import {
+  emptyLocationSelection,
+  normalizeLocationSelection,
+  type LocationSelection,
+} from "../../../location/domain/types/location.types"
 
-type PublisherAction = "image" | "video" | "poll" | "job" | "feeling" | "story" | "colors" | "product"
+type PublisherAction = "image" | "video" | "poll" | "job" | "feeling" | "story" | "colors" | "product" | "location"
 type PublisherAudience = ContentAudience
 type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | "funny" | "cool" | "tired" | "confused" | ""
 
@@ -38,6 +43,7 @@ export function useFeedPublisherBoxVM(
   const selectedColorId = ref<number | null>(null)
   const showColorsPicker = ref(false)
   const showProductForm = ref(false)
+  const showLocationForm = ref(false)
 
   const { postColorOptions } = useFeedPostColors()
 
@@ -47,11 +53,13 @@ export function useFeedPublisherBoxVM(
     audience: PublisherAudience
     isAnonymous: boolean
     feeling: PublisherFeeling
+    location: LocationSelection
   }>({
     text: "",
     audience: "public",
     isAnonymous: false,
     feeling: "",
+    location: emptyLocationSelection(),
   })
 
   const submitting = ref(false)
@@ -143,7 +151,8 @@ export function useFeedPublisherBoxVM(
       draft.value?.text?.trim()
       || imageFiles.value.length > 0
       || videoFile.value
-      || draft.value?.feeling,
+      || draft.value?.feeling
+      || draft.value?.location.address.trim(),
     )
   })
 
@@ -157,6 +166,7 @@ export function useFeedPublisherBoxVM(
           if (parsed && typeof parsed === "object") {
             draft.value.text = parsed.text || ""
             draft.value.feeling = parsed.feeling || ""
+            draft.value.location = normalizeLocationSelection(parsed.location)
             
             const selection = normalizeContentAudienceSelection(parsed.audience)
             draft.value.audience = selection.audience
@@ -199,6 +209,7 @@ export function useFeedPublisherBoxVM(
       showPollForm.value = false
       showColorsPicker.value = false
       showProductForm.value = false
+      showLocationForm.value = false
       return
     }
 
@@ -224,6 +235,7 @@ export function useFeedPublisherBoxVM(
     showPollForm.value = false
     showColorsPicker.value = false
     showProductForm.value = false
+    showLocationForm.value = false
     
     imageInputRef.value?.click()
     expanded.value = true
@@ -234,6 +246,7 @@ export function useFeedPublisherBoxVM(
     showPollForm.value = false
     showColorsPicker.value = false
     showProductForm.value = false
+    showLocationForm.value = false
     
     videoInputRef.value?.click()
     expanded.value = true
@@ -262,6 +275,12 @@ export function useFeedPublisherBoxVM(
     }
 
     if (value === "job") {
+      return
+    }
+
+    if (value === "location") {
+      showLocationForm.value = true
+      expanded.value = true
       return
     }
 
@@ -297,6 +316,7 @@ export function useFeedPublisherBoxVM(
       showFeelingPicker.value = false
       showColorsPicker.value = false
       showProductForm.value = false
+      showLocationForm.value = false
       showPollForm.value = !showPollForm.value
       return
     }
@@ -305,11 +325,22 @@ export function useFeedPublisherBoxVM(
       return
     }
 
+    if (value === "location") {
+      showLocationForm.value = !showLocationForm.value
+      showFeelingPicker.value = false
+      showColorsPicker.value = false
+      showProductForm.value = false
+      showPollForm.value = false
+      expanded.value = true
+      return
+    }
+
     if (value === "feeling") {
       showFeelingPicker.value = !showFeelingPicker.value
       showColorsPicker.value = false
       showProductForm.value = false
       showPollForm.value = false
+      showLocationForm.value = false
       return
     }
 
@@ -318,6 +349,7 @@ export function useFeedPublisherBoxVM(
       showFeelingPicker.value = false
       showProductForm.value = false
       showPollForm.value = false
+      showLocationForm.value = false
       expanded.value = true
       return
     }
@@ -327,6 +359,7 @@ export function useFeedPublisherBoxVM(
       showFeelingPicker.value = false
       showColorsPicker.value = false
       showPollForm.value = false
+      showLocationForm.value = false
       expanded.value = true
       return
     }
@@ -358,6 +391,11 @@ export function useFeedPublisherBoxVM(
 
   function clearSelectedMedia() {
     resetSelectedMedia()
+  }
+
+  function clearLocation() {
+    draft.value.location = emptyLocationSelection()
+    showLocationForm.value = false
   }
 
   function addPollAnswer() {
@@ -407,6 +445,7 @@ export function useFeedPublisherBoxVM(
         eventId,
         groupId,
         colorId: selectedColorId.value || undefined,
+        location: draft.value.location.address.trim() || undefined,
         pollAnswers: showPollForm.value
           ? pollAnswers.value.map(answer => answer.trim()).filter(Boolean)
           : undefined,
@@ -418,12 +457,14 @@ export function useFeedPublisherBoxVM(
         draft.value.text = ""
         draft.value.feeling = ""
         draft.value.isAnonymous = false
+        draft.value.location = emptyLocationSelection()
       }
       selectedColorId.value = null
       showColorsPicker.value = false
       resetSelectedMedia()
       showFeelingPicker.value = false
       showPollForm.value = false
+      showLocationForm.value = false
       pollAnswers.value = ["", ""]
       expanded.value = false
       emit("created", response.post)
@@ -476,6 +517,7 @@ export function useFeedPublisherBoxVM(
     selectImageFile,
     selectVideoFile,
     clearSelectedMedia,
+    clearLocation,
     selectFeeling,
     addPollAnswer,
     removePollAnswer,
@@ -484,6 +526,7 @@ export function useFeedPublisherBoxVM(
     showColorsPicker,
     postColorOptions,
     showProductForm,
+    showLocationForm,
     imageFiles,
     videoFile,
   }

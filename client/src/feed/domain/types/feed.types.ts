@@ -1,6 +1,7 @@
 // English description: Defines normalized feed, story, explore, memory, and poke types shared across Dev 2 social pages.
 
 import type { CommunityPageRecord } from "../../../community/domain/types/community.types"
+import type { ProductFeedAttachment } from "../../../product/domain/types/product-marketplace.types"
 import type { FeedStoryReactionType } from "../constants/story-reactions"
 
 export type FeedMediaItem = {
@@ -20,6 +21,7 @@ export type FeedPostAttachmentCard = {
   progress?: number
   raised?: number
   amount?: number
+  product?: ProductFeedAttachment
 }
 
 export type FeedCommentRecord = {

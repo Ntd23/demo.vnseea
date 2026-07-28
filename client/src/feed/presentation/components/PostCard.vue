@@ -75,7 +75,11 @@
       </div>
 
       <NuxtLink
-        v-if="!post.jobId && post.attachmentCard"
+        v-if="
+          !post.jobId
+            && post.attachmentCard
+            && !(post.attachmentCard.type === 'product' && post.attachmentCard.product)
+        "
         :to="post.attachmentCard.href"
         class="post-card__attachment"
         :class="`post-card__attachment--${post.attachmentCard.type}`"
@@ -116,6 +120,19 @@
           </span>
         </div>
       </NuxtLink>
+
+      <ProductPostCard
+        v-if="
+          !post.jobId
+            && post.attachmentCard?.type === 'product'
+            && post.attachmentCard.product
+        "
+        :product="post.attachmentCard.product"
+        :title="post.attachmentCard.title"
+        :description="post.attachmentCard.description"
+        :image-url="post.attachmentCard.imageUrl"
+        :href="post.attachmentCard.href"
+      />
 
       <JobsJobFeedCard
         v-if="post.jobId"
@@ -490,6 +507,7 @@ import FeedPostMediaGrid from "./PostMediaGrid.vue"
 import FeedShareModal from "./ShareModal.vue"
 import FeedSharedPostCard from "./SharedPostCard.vue"
 import JobsJobFeedCard from "../../../jobs/presentation/components/JobFeedCard.vue"
+import ProductPostCard from "../../../product/presentation/components/ProductPostCard.vue"
 
 const { t } = useI18n()
 const route = useRoute()

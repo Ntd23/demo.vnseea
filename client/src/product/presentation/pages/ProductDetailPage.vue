@@ -1,7 +1,7 @@
 <!-- English description: Wowonder-aligned Nuxt product detail page backed by the PHP product API bridge. -->
 
 <template>
-  <div class="product-detail-page mx-auto w-full max-w-[1180px] px-3 pb-12 pt-4 sm:px-4">
+  <div class="product-detail-page mt-1.5">
     <button type="button" class="product-detail-back" @click="goBack">
       <Icon name="i-ph-arrow-left" class="h-5 w-5" />
       {{ $t("pages.productDetailPage.back") }}
@@ -184,6 +184,17 @@
           </NuxtLink>
         </div>
       </section>
+
+      <ClientOnly>
+        <ProductImageViewer
+          :open="imageViewerOpen"
+          :images="viewerImages"
+          :current-index="imageViewerIndex"
+          :title="product.title"
+          @close="imageViewerOpen = false"
+          @change="changeViewerImage"
+        />
+      </ClientOnly>
     </template>
   </div>
 </template>
@@ -194,6 +205,7 @@ import { useChatWidgetLauncher } from "../../../navigation/application/composabl
 import { formatProductPoints, formatProductPrice, formatProductPriceSummary } from "../../application/formatters/product-currency"
 import type { ProductListing } from "../../domain/types/product-marketplace.types"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
+import ProductImageViewer from "../components/ProductImageViewer.vue"
 
 const props = defineProps<{
   productId: string
@@ -207,6 +219,8 @@ const repository = createApiProductRepository()
 const mainImageId = ref("")
 const mainImageFailed = ref(false)
 const cartLoading = ref(false)
+const imageViewerOpen = ref(false)
+const imageViewerIndex = ref(0)
 
 const { data: product, status, error } = await useAsyncData(
   () => `product:detail:${props.productId}`,
@@ -233,6 +247,7 @@ const mainImage = computed(() => {
 
   return images.find(image => image.id === mainImageId.value) || images[0]
 })
+const viewerImages = computed(() => product.value?.images ?? [])
 
 const ratingValue = computed(() => Math.max(0, Math.min(5, Math.round(product.value?.rating ?? 0))))
 
@@ -297,9 +312,19 @@ const goBack = () => {
 }
 
 const openImage = () => {
-  if (!mainImage.value?.src || !import.meta.client) return
+  if (!mainImage.value?.src) return
 
-  window.open(mainImage.value.src, "_blank", "noopener,noreferrer")
+  const selectedIndex = viewerImages.value.findIndex(image => image.id === mainImage.value?.id)
+  imageViewerIndex.value = selectedIndex >= 0 ? selectedIndex : 0
+  imageViewerOpen.value = true
+}
+
+const changeViewerImage = (index: number) => {
+  const image = viewerImages.value[index]
+  if (!image) return
+
+  imageViewerIndex.value = index
+  selectImage(image.id)
 }
 
 const openSellerChat = () => {
