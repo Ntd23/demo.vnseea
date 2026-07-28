@@ -10,6 +10,7 @@ type BackendMarketCheckoutResponse = {
   api_status?: number | string
   data?: BackendProduct[]
   total?: number | string
+  total_points?: number | string
   currency_code?: string
   currency_symbol?: string
   currency_rule?: CheckoutSnapshot["currencyRule"]
@@ -24,6 +25,7 @@ type BackendCurrentUserResponse = {
   api_status?: number | string
   user_data?: {
     wallet?: number | string
+    points?: number | string
   }
 }
 
@@ -41,6 +43,7 @@ type BackendProduct = {
   id?: number | string
   name?: string
   price?: number | string
+  point?: number | string
   units?: number | string
   stock_units?: number | string
   currency?: string | number
@@ -48,6 +51,7 @@ type BackendProduct = {
   currency_symbol?: string
   currency_rule?: CheckoutLineItem["currencyRule"]
   checkout_price?: number | string
+  checkout_point?: number | string
   images?: Array<string | { image?: string; image_org?: string }>
 }
 
@@ -109,7 +113,7 @@ export const normalizeCheckoutSnapshot = (
   event: H3Event,
   checkout: BackendMarketCheckoutResponse,
   addresses: BackendAddressResponse,
-  walletBalance: number,
+  balances: { walletBalance: number; pointsBalance: number },
 ): CheckoutSnapshot => {
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const products = Array.isArray(checkout.data) ? checkout.data : []
@@ -118,6 +122,7 @@ export const normalizeCheckoutSnapshot = (
     id: asString(product.id),
     name: asString(product.name),
     price: asNumber(product.price),
+    point: Math.max(0, asNumber(product.point)),
     quantity: Math.max(1, asNumber(product.units, 1)),
     maxQuantity: Math.max(0, asNumber(product.stock_units)),
     imageUrl: getProductImage(product, resolveMediaUrl),
@@ -125,6 +130,7 @@ export const normalizeCheckoutSnapshot = (
     currencySymbol: asString(product.currency_symbol),
     currencyRule: product.currency_rule,
     checkoutPrice: asNumber(product.checkout_price, asNumber(product.price)),
+    checkoutPoint: Math.max(0, asNumber(product.checkout_point, asNumber(product.point))),
   })).filter(item => item.id && item.name)
 
   const productCurrencies = Array.from(new Set(
@@ -146,7 +152,8 @@ export const normalizeCheckoutSnapshot = (
   return {
     items,
     shippingAddress: normalizeAddress(Array.isArray(addresses.data) ? addresses.data[0] : null),
-    walletBalance,
+    walletBalance: balances.walletBalance,
+    pointsBalance: balances.pointsBalance,
     shippingFee: 0,
     currency: singleProductCurrency || normalizeCurrency(checkout.currency_code),
     currencySymbol: singleProductCurrency
@@ -158,11 +165,11 @@ export const normalizeCheckoutSnapshot = (
   }
 }
 
-export const getBackendWalletBalance = async (event: H3Event) => {
+export const getBackendCheckoutBalances = async (event: H3Event) => {
   const backendUserSession = getCookie(event, "user_id")
 
   if (!backendUserSession) {
-    return 0
+    return { walletBalance: 0, pointsBalance: 0 }
   }
 
   const runtimeConfig = useRuntimeConfig(event)
@@ -175,14 +182,17 @@ export const getBackendWalletBalance = async (event: H3Event) => {
       const response = await $fetch<BackendCurrentUserResponse>(backendRoutes.session.currentUser(backendUserSession), {
         baseURL,
       })
-      return asNumber(response.user_data?.wallet)
+      return {
+        walletBalance: asNumber(response.user_data?.wallet),
+        pointsBalance: Math.max(0, asNumber(response.user_data?.points)),
+      }
     }
     catch {
       // Try the next configured backend base.
     }
   }
 
-  return 0
+  return { walletBalance: 0, pointsBalance: 0 }
 }
 
 export const assertBackendOk = (response: { api_status?: number | string; message?: string; errors?: { error_text?: string } }) => {

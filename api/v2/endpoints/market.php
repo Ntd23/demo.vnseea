@@ -25,8 +25,15 @@ if (!function_exists('VNSEEA_FormatMarketOrderMessageMoney')) {
     }
 }
 
+if (!function_exists('VNSEEA_FormatMarketOrderMessagePoints')) {
+    function VNSEEA_FormatMarketOrderMessagePoints($points)
+    {
+        return number_format(max(0, (int)$points), 0, ',', '.') . ' VNSEEA';
+    }
+}
+
 if (!function_exists('VNSEEA_SendMarketOrderMessage')) {
-    function VNSEEA_SendMarketOrderMessage($seller_id, $hash_id, $items, $total, $address)
+    function VNSEEA_SendMarketOrderMessage($seller_id, $hash_id, $items, $total, $total_points, $address)
     {
         global $wo;
 
@@ -62,11 +69,20 @@ if (!function_exists('VNSEEA_SendMarketOrderMessage')) {
                 ? VNSEEA_MarketOrderMessageText($product['name'])
                 : 'Sản phẩm #' . (int) $item['product_id'];
             $line_total = (float) $item['price'] * (int) $item['units'];
-            $lines[] = '- ' . $product_name . ' x' . (int) $item['units'] . ' = ' . VNSEEA_FormatMarketOrderMessageMoney($line_total);
+            $line_points = (int) $item['point'] * (int) $item['units'];
+            $line_price = VNSEEA_FormatMarketOrderMessageMoney($line_total);
+            if ($line_points > 0) {
+                $line_price .= ' + ' . VNSEEA_FormatMarketOrderMessagePoints($line_points);
+            }
+            $lines[] = '- ' . $product_name . ' x' . (int) $item['units'] . ' = ' . $line_price;
         }
 
         $lines[] = '';
         $lines[] = '💰 Tổng: ' . VNSEEA_FormatMarketOrderMessageMoney($total);
+
+        if ($total_points > 0) {
+            $lines[] = 'VNSEEA: ' . VNSEEA_FormatMarketOrderMessagePoints($total_points);
+        }
 
         return Wo_RegisterMessage(array(
             'from_id' => $buyer_id,
@@ -177,6 +193,7 @@ if (!function_exists('VNSEEA_MarketRequestOrder')) {
                     'product_id' => $product_id,
                     'name' => (string)$product->name,
                     'price' => VNSEEA_MarketCheckoutPrice($product),
+                    'point' => isset($product->point) ? max(0, (int)$product->point) : 0,
                     'units' => $quantity,
                 );
             }
@@ -187,10 +204,13 @@ if (!function_exists('VNSEEA_MarketRequestOrder')) {
             foreach ($items_by_seller as $seller_id => $items) {
                 $hash_id = VNSEEA_NewMarketOrderHash();
                 $total = 0;
+                $total_points = 0;
                 $first_name = '';
                 foreach ($items as $item) {
                     $line_total = (float)$item['price'] * (int)$item['units'];
+                    $line_points = (int)$item['point'] * (int)$item['units'];
                     $total += $line_total;
+                    $total_points += $line_points;
                     if ($first_name === '') {
                         $first_name = $item['name'];
                     }
@@ -199,6 +219,7 @@ if (!function_exists('VNSEEA_MarketRequestOrder')) {
                         'product_owner_id' => (int)$seller_id,
                         'product_id' => (int)$item['product_id'],
                         'price' => $line_total,
+                        'point' => $line_points,
                         'commission' => 0,
                         'final_price' => $line_total,
                         'hash_id' => $hash_id,
@@ -219,6 +240,7 @@ if (!function_exists('VNSEEA_MarketRequestOrder')) {
                     'user_id' => $buyer_id,
                     'order_hash_id' => $hash_id,
                     'price' => $total,
+                    'point' => $total_points,
                     'data' => json_encode(array('name' => $first_name), JSON_UNESCAPED_UNICODE),
                     'commission' => 0,
                     'final_price' => $total,
@@ -553,6 +575,7 @@ elseif ($_POST['type'] == 'buy') {
 		foreach ($wo['insert'] as $key => $value) {
             $hash_id = uniqid(rand(11111,999999));
             $total = 0;
+            $total_points = 0;
             $total_commission = 0;
             $total_final_price = 0;
             foreach ($value as $key2 => $value2) {
@@ -562,6 +585,8 @@ elseif ($_POST['type'] == 'buy') {
                     $store_commission = round((($wo['config']['store_commission'] * ($value2['price'] * $value2['units'])) / 100), 2);
                 }
                 $total += ($value2['price'] * $value2['units']);
+                $line_points = (int)$value2['point'] * (int)$value2['units'];
+                $total_points += $line_points;
                 $total_commission += $store_commission;
                 $total_final_price += ($value2['price'] * $value2['units']) - $store_commission;
                     
@@ -569,6 +594,7 @@ elseif ($_POST['type'] == 'buy') {
                                            'product_owner_id' => $key,
                                            'product_id' => $value2['product_id'],
                                            'price' => ($value2['price'] * $value2['units']),
+                                           'point' => $line_points,
                                            'commission' => $store_commission,
                                            'final_price' => ($value2['price'] * $value2['units']) - $store_commission,
                                            'hash_id' => $hash_id,
@@ -577,7 +603,11 @@ elseif ($_POST['type'] == 'buy') {
                                            'address_id' => $wo['address']->id,
                                            'time' => time()));
             }
-            $db->where('user_id',$wo['user']['user_id'])->update(T_USERS,array('wallet' => $db->dec($total)));
+            $buyer_balance_update = array('wallet' => $db->dec($total));
+            if ($total_points > 0) {
+                $buyer_balance_update['points'] = $db->dec($total_points);
+            }
+            $db->where('user_id',$wo['user']['user_id'])->update(T_USERS, $buyer_balance_update);
 
             cache($wo['user']['user_id'], 'users', 'delete');
             //$db->where('user_id',$key)->update(T_USERS,array('balance' => $db->inc($total_final_price)));
@@ -588,6 +618,7 @@ elseif ($_POST['type'] == 'buy') {
             $db->insert(T_PURCHAES,array('user_id' => $wo['user']['user_id'],
                                              'order_hash_id' => $hash_id,
                                              'price' => $total,
+                                             'point' => $total_points,
                                              'data' => json_encode(array('name' => !empty($wo['main_product']) && !empty($wo['main_product']['name']) ? $wo['main_product']['name'] : '')),
                                              'commission' => $total_commission,
                                              'final_price' => $total_final_price,
@@ -603,7 +634,7 @@ elseif ($_POST['type'] == 'buy') {
             if (!empty($notification_id)) {
                 Wo_PublishRealtimeNotification($key, $notification_id, 'notification');
             }
-            VNSEEA_SendMarketOrderMessage($key, $hash_id, $value, $total, $wo['address']);
+            VNSEEA_SendMarketOrderMessage($key, $hash_id, $value, $total, $total_points, $wo['address']);
         }
 
         $db->where('user_id',$wo['user']['user_id'])->delete(T_USERCARD);
@@ -621,6 +652,7 @@ elseif ($_POST['type'] == 'buy') {
 elseif ($_POST['type'] == 'checkout') {
 	$wo['items'] = $db->where('user_id', $wo['user']['id'])->get(T_USERCARD);
 	$wo['total'] = 0;
+	$wo['total_points'] = 0;
 	$data = [];
 	$checkout_currency_rule = Wo_GetCurrencyRule($wo['config']['currency']);
 	if (!empty($wo['items'])) {
@@ -640,7 +672,10 @@ elseif ($_POST['type'] == 'checkout') {
 	            $checkout_unit_price = ($wo['product']['price'] / $wo['config']['exchange'][$wo['currencies'][$wo['product']['currency']]['text']]);
 	        }
 	        $wo['total'] += ($checkout_unit_price * $wo['item']->units);
+	        $checkout_unit_points = isset($wo['product']['point']) ? max(0, (int)$wo['product']['point']) : 0;
+	        $wo['total_points'] += ($checkout_unit_points * $wo['item']->units);
 	        $wo['product']['checkout_price'] = $checkout_unit_price;
+	        $wo['product']['checkout_point'] = $checkout_unit_points;
 	        $wo['product']['stock_units'] = $stock_units;
 	        $wo['product']['units'] = $wo['item']->units;
 	        $data[] = $wo['product'];
@@ -650,6 +685,7 @@ elseif ($_POST['type'] == 'checkout') {
         'api_status' => 200,
         'data' => $data,
 	    'total' => $wo['total'],
+	    'total_points' => $wo['total_points'],
 	    'currency_code' => $checkout_currency_rule['code'],
 	    'currency_symbol' => $checkout_currency_rule['symbol'],
 	    'currency_rule' => array(
@@ -716,6 +752,7 @@ elseif ($_POST['type'] == 'orders') {
             $sub_orders = $db->where('hash_id', $hash_id)->get(T_USER_ORDERS);
             
             $price_total = 0;
+            $point_total = 0;
             $final_price_total = 0;
             $normalized_sub_orders = [];
             
@@ -732,6 +769,7 @@ elseif ($_POST['type'] == 'orders') {
                 
                 $normalized_sub_orders[] = $sub_order;
                 $price_total += $sub_order->price;
+                $point_total += isset($sub_order->point) ? max(0, (int)$sub_order->point) : 0;
                 $final_price_total += $sub_order->final_price;
             }
 
@@ -741,6 +779,7 @@ elseif ($_POST['type'] == 'orders') {
                 'id' => $order_row->id,
                 'order_hash_id' => $hash_id,
                 'price' => $price_total,
+                'point' => $point_total,
                 'final_price' => $final_price_total,
                 'time' => $order_row->time,
                 'date' => date('c', $order_row->time),
@@ -856,7 +895,12 @@ elseif ($_POST['type'] == 'change_status') {
 
 	        if ($status == 'delivered' && $order_flow !== 'request') {
                 $total = $db->where('hash_id',$hash_id)->getValue(T_USER_ORDERS,'SUM(final_price)');
-                $db->where('user_id',$wo['order']->product_owner_id)->update(T_USERS,array('balance' => $db->inc($total)));
+                $total_points = (int)$db->where('hash_id',$hash_id)->getValue(T_USER_ORDERS,'COALESCE(SUM(point), 0)');
+                $seller_balance_update = array('balance' => $db->inc($total));
+                if ($total_points > 0) {
+                    $seller_balance_update['points'] = $db->inc($total_points);
+                }
+                $db->where('user_id',$wo['order']->product_owner_id)->update(T_USERS, $seller_balance_update);
 
                 cache($wo['order']->product_owner_id, 'users', 'delete');
 

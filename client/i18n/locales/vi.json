@@ -2397,6 +2397,7 @@
     "productEditor": {
       "titleLabel": "Tên sản phẩm",
       "priceLabel": "Giá bán",
+      "pointLabel": "Giá điểm",
       "descriptionLabel": "Mô tả sản phẩm",
       "descriptionPlaceholder": "Mô tả ngắn gọn về sản phẩm, tình trạng, thông số và điểm nổi bật.",
       "editSectionEyebrow": "Khu vực chỉnh sửa",
@@ -2432,6 +2433,8 @@
       "validationLocationDescription": "Vui lòng chọn một địa chỉ trong danh sách gợi ý của Google Maps.",
       "validationPriceTitle": "Giá bán chưa hợp lệ",
       "validationPriceDescription": "Giá bán phải là một số lớn hơn 0.",
+      "validationPointTitle": "Giá điểm chưa hợp lệ",
+      "validationPointDescription": "Giá điểm phải là số nguyên không âm.",
       "validationCurrencyTitle": "Đơn vị tiền tệ chưa hợp lệ",
       "validationCurrencyDescription": "Vui lòng chọn một đơn vị tiền tệ trong danh sách.",
       "validationImageTitle": "Cần có ảnh sản phẩm",
@@ -4264,6 +4267,8 @@
       "checkoutMonthly": "Chu kỳ hiện tại: thanh toán theo tháng",
       "checkoutYearly": "Chu kỳ hiện tại: thanh toán theo năm",
       "totalPayment": "Tổng thanh toán",
+      "totalPoints": "Tổng điểm",
+      "pointPrice": "{count} VNSEEA",
       "mockPaymentNote": "Khoản phí này chỉ được ghi nhận trong phiên hiện tại để bạn tiếp tục rà conversion flow.",
       "paymentMethodLabel": "Phương thức thanh toán",
       "paymentMethodError": "Hãy chọn một phương thức thanh toán hợp lệ.",
@@ -7250,7 +7255,8 @@
       "discount": "Giảm giá",
       "total": "Tổng cộng",
       "totalOrder": "Tổng đơn hàng",
-      "totalPayment": "Thanh toán"
+      "totalPayment": "Thanh toán",
+      "totalPoints": "Tổng VNSEEA"
     },
     "detail": {
       "recipient": "Người nhận",

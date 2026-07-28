@@ -62,6 +62,7 @@ export type ProductCurrencyMeta = {
 export interface ProductEditorFields {
   title: string
   price: string
+  point: string
   description: string
   category: ProductCategory
   condition: ProductCondition
@@ -98,6 +99,7 @@ export interface ProductRecord {
   }
   priceFormat?: string
   price: number
+  point: number
   priceVnd?: number
   stock: number
   seller?: string

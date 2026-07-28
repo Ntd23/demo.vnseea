@@ -11,6 +11,7 @@ export interface OrderItem {
   name: string
   quantity: number
   price: number
+  point?: number
   imageStyle?: string
 }
 export interface OrderTimelineEntry {
@@ -26,6 +27,7 @@ export interface OrderPresentationShape {
   paymentStatus: BuyerOrderPaymentStatus
   shippingFee: number
   total: number
+  totalPoints?: number
   items: OrderItem[]
 }
 

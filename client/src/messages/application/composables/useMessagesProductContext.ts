@@ -2,7 +2,7 @@
 
 import type { Ref } from "vue"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
-import { formatProductPrice } from "../../../product/application/formatters/product-currency"
+import { formatProductPriceSummary } from "../../../product/application/formatters/product-currency"
 import { createApiProductRepository } from "../../../product/infrastructure/repositories/ApiProductRepository"
 import type {
   MessageComposerDraft,
@@ -101,7 +101,7 @@ export function useMessagesProductContext(
       id: String(product.id),
       title: product.title,
       imageUrl: product.images?.[0]?.src,
-      price: formatProductPrice(product, locale.value),
+      price: formatProductPriceSummary(product, locale.value),
       href: appRoutes.productDetail(product.id),
     }
   })

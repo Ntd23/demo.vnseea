@@ -1,4 +1,5 @@
 <?php
+// English description: Defines marketplace, product, story, event, and other application functions.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -559,6 +560,7 @@ function Wo_GetProduct($id = 0)
 	$fetched_data['reviews_count'] = $db->where('product_id', $fetched_data['id'])->getValue(T_PRODUCT_REVIEW, "count(id)");
 	$fetched_data['price_format'] = Wo_FormatPriceByCurrency($fetched_data['price'], $fetched_data['currency']);
 	$fetched_data['price_input_format'] = $fetched_data['price_format'];
+	$fetched_data['point'] = isset($fetched_data['point']) ? max(0, (int) $fetched_data['point']) : 0;
 	return $fetched_data;
 }
 function Wo_DeleteProductImage($id)

@@ -72,6 +72,10 @@
         <section class="product-detail-summary">
           <h1 class="product-detail-title">{{ product.title }}</h1>
           <div class="product-detail-price">{{ formattedPrice }}</div>
+          <div v-if="product.point > 0" class="product-detail-points">
+            <Icon name="i-ph-coins-fill" class="h-5 w-5" />
+            {{ formattedPoints }}
+          </div>
 
           <div class="product-detail-rating">
             <span class="product-detail-stars" :aria-label="$t('pages.productDetailPage.ratingLabel', { count: ratingValue })">
@@ -176,6 +180,7 @@
             </div>
             <strong>{{ relatedProduct.title }}</strong>
             <span>{{ formatRelatedPrice(relatedProduct) }}</span>
+            <span v-if="relatedProduct.point > 0" class="product-detail-related-points">{{ formatRelatedPoints(relatedProduct) }}</span>
           </NuxtLink>
         </div>
       </section>
@@ -186,7 +191,7 @@
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useChatWidgetLauncher } from "../../../navigation/application/composables/useChatWidgetLauncher"
-import { formatProductPrice } from "../../application/formatters/product-currency"
+import { formatProductPoints, formatProductPrice, formatProductPriceSummary } from "../../application/formatters/product-currency"
 import type { ProductListing } from "../../domain/types/product-marketplace.types"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 
@@ -236,6 +241,9 @@ const formattedPrice = computed(() => {
 
   return formatProductPrice(product.value, locale.value)
 })
+const formattedPoints = computed(() => product.value
+  ? formatProductPoints(product.value, locale.value)
+  : "")
 
 const conditionLabel = computed(() => {
   switch (product.value?.condition) {
@@ -309,7 +317,7 @@ const openSellerChat = () => {
       id: product.value.id,
       title: product.value.title,
       imageUrl: mainImage.value?.src,
-      price: formattedPrice.value,
+      price: formatProductPriceSummary(product.value, locale.value),
       href: `/product/${encodeURIComponent(product.value.id)}`,
     },
   })
@@ -365,6 +373,9 @@ const addProductToCart = async () => {
 
 const formatRelatedPrice = (relatedProduct: ProductListing) => {
   return formatProductPrice(relatedProduct, locale.value)
+}
+const formatRelatedPoints = (relatedProduct: ProductListing) => {
+  return formatProductPoints(relatedProduct, locale.value)
 }
 
 watch(product, (nextProduct) => {
@@ -489,6 +500,21 @@ useSeoMeta({
   color: var(--color-brand, var(--bg-brand));
   font-size: 24px;
   font-weight: 800;
+}
+
+.product-detail-points {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.product-detail-related-points {
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .product-detail-rating {

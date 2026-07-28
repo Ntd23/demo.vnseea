@@ -10,17 +10,17 @@
       :class="{ 'new-product-form--embedded': embedded }"
       @submit.prevent="submitProduct"
     >
-      <div class="new-product-row new-product-row--name-price">
-        <UFormField class="new-product-field" :label="$t('pages.productEditor.titleLabel')">
-          <UInput
-            v-model="draft.fields.title"
-            class="w-full"
-            size="lg"
-            autocomplete="off"
-            :ui="{ base: 'h-11 rounded-xl' }"
-          />
-        </UFormField>
+      <UFormField class="new-product-field" :label="$t('pages.productEditor.titleLabel')">
+        <UInput
+          v-model="draft.fields.title"
+          class="w-full"
+          size="lg"
+          autocomplete="off"
+          :ui="{ base: 'h-11 rounded-xl' }"
+        />
+      </UFormField>
 
+      <div class="new-product-row new-product-row--price-point">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.priceLabel')">
           <UInputNumber
             v-model="priceInput"
@@ -31,6 +31,20 @@
             :step="0.01"
             disable-wheel-change
             placeholder="0.00"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
+
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.pointLabel')">
+          <UInputNumber
+            v-model="pointInput"
+            class="w-full"
+            size="lg"
+            orientation="vertical"
+            :min="0"
+            :step="1"
+            disable-wheel-change
+            placeholder="0"
             :ui="{ base: 'h-11 rounded-xl' }"
           />
         </UFormField>
@@ -102,6 +116,9 @@
           />
         </UFormField>
 
+      </div>
+
+      <div class="new-product-row new-product-row--currency-stock">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.currencyLabel')">
           <USelect
             v-model="draft.fields.currency"
@@ -116,9 +133,7 @@
             :ui="{ base: 'h-11 rounded-xl' }"
           />
         </UFormField>
-      </div>
 
-      <div class="new-product-row new-product-row--stock">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.stockLabel')">
           <UInput
             v-model="stockInput"
@@ -266,6 +281,7 @@ const createInitialDraft = (): ProductEditorDraft => ({
   fields: {
     title: "",
     price: "",
+    point: "",
     description: "",
     category: "",
     condition: "new",
@@ -292,6 +308,22 @@ const priceInput = computed<number | undefined>({
   },
   set: (value) => {
     draft.value.fields.price = value === undefined || value === null ? "" : String(value)
+  },
+})
+
+const pointInput = computed<number | undefined>({
+  get: () => {
+    if (!draft.value.fields.point.trim()) {
+      return undefined
+    }
+
+    const value = Number(draft.value.fields.point)
+    return Number.isInteger(value) && value >= 0 ? value : undefined
+  },
+  set: (value) => {
+    draft.value.fields.point = value === undefined || value === null
+      ? ""
+      : String(Math.max(0, Math.trunc(value)))
   },
 })
 
@@ -494,6 +526,7 @@ const validateForm = () => {
 
   const fields = draft.value.fields
   const price = Number(fields.price)
+  const point = fields.point.trim() === "" ? 0 : Number(fields.point)
 
   if (!fields.title.trim() || !fields.description.trim() || !fields.location.trim() || !fields.category) {
     toast.add({
@@ -526,6 +559,15 @@ const validateForm = () => {
     toast.add({
       title: t("pages.productEditor.validationPriceTitle"),
       description: t("pages.productEditor.validationPriceDescription"),
+      color: "error",
+    })
+    return false
+  }
+
+  if (!Number.isInteger(point) || point < 0) {
+    toast.add({
+      title: t("pages.productEditor.validationPointTitle"),
+      description: t("pages.productEditor.validationPointDescription"),
       color: "error",
     })
     return false
@@ -565,6 +607,7 @@ const submitProduct = async () => {
   form.append("product_category", fields.category)
   form.append("product_description", fields.description.trim())
   form.append("product_price", fields.price.trim())
+  form.append("product_point", fields.point.trim() || "0")
   form.append("product_location", fields.location.trim())
   form.append("product_type", fields.condition === "used" ? "1" : "0")
   form.append("currency", fields.currency)
@@ -685,9 +728,13 @@ onBeforeUnmount(() => {
   margin-bottom: 14px;
 }
 
-.new-product-row--name-price,
-.new-product-row--location {
+.new-product-row--price-point,
+.new-product-row--currency-stock {
   grid-template-columns: minmax(0, 1fr) 220px;
+}
+
+.new-product-row--location {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .new-product-row--category {
@@ -856,7 +903,8 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 760px) {
-  .new-product-row--name-price,
+  .new-product-row--price-point,
+  .new-product-row--currency-stock,
   .new-product-row--location,
   .new-product-row--category {
     grid-template-columns: 1fr;

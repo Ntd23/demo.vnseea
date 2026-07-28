@@ -1,4 +1,5 @@
 <?php
+// English description: Updates marketplace product details, media, money price, and point price.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -38,6 +39,7 @@ if (empty($error_code)) {
     $product_description = Wo_Secure($_POST['product_description']);
     $product_location    = Wo_Secure($_POST['product_location']);
     $product_price       = Wo_Secure($_POST['product_price']);
+    $product_point       = isset($_POST['product_point']) ? trim((string) $_POST['product_point']) : null;
     $product_type        = (!empty($_POST['product_type'])) ? 1 : 0;
     
     if ($product_price == '0.00') {
@@ -46,6 +48,15 @@ if (empty($error_code)) {
     } else if (!is_numeric($product_price)) {
         $error_code    = 5;
         $error_message = 'Please choose a correct value for your price';
+    }
+
+    if (
+        empty($error_code)
+        && $product_point !== null
+        && (!preg_match('/^\d+$/', $product_point) || (float) $product_point > PHP_INT_MAX)
+    ) {
+        $error_code    = 8;
+        $error_message = 'Please choose a correct non-negative integer value for your point price';
     }
     
     if (isset($_FILES['images']['name'])) {
@@ -99,6 +110,9 @@ if (empty($error_code)) {
             'currency' => $currency,
             'sub_category' => $sub_category
         );
+        if ($product_point !== null) {
+            $product_data_array['point'] = Wo_Secure($product_point);
+        }
         if (
             isset($_POST['lat'], $_POST['lng'])
             && is_numeric($_POST['lat'])

@@ -1,7 +1,7 @@
 // English description: My-products overview view model backed by the product API bridge.
 
 import type { ProductCategory, ProductListing, ProductOverviewCard, ProductSelectOption, ProductSortValue } from "../../domain/types/product-marketplace.types"
-import { formatProductPrice } from "../formatters/product-currency"
+import { formatProductPoints, formatProductPrice } from "../formatters/product-currency"
 import {
   filterProductListings,
   sortProductListings,
@@ -71,6 +71,7 @@ export const useMyProductsOverview = (
   ])
 
   const formatProductCurrency = (product: ProductListing) => formatProductPrice(product, locale.value)
+  const formatProductPointPrice = (product: ProductListing) => formatProductPoints(product, locale.value)
 
   const deleteProduct = async (product: Pick<ProductListing, "id" | "postId">): Promise<boolean> => {
     const productId = product.id
@@ -137,6 +138,7 @@ export const useMyProductsOverview = (
     sortOptions,
     deletingProductId,
     formatProductCurrency,
+    formatProductPointPrice,
     deleteProduct,
   }
 }

@@ -1,3 +1,5 @@
+// English description: Provides editable marketplace product fixtures for isolated editor development.
+
 import type {
   ProductCurrentImage,
   ProductEditorDraft,
@@ -15,6 +17,7 @@ const mockProducts: Record<string, EditableProductMock> = {
     fields: {
       title: "Honda Vision 2024",
       price: "1250",
+      point: "250",
       description: "Xe đi ít, giấy tờ đầy đủ, máy êm và ngoại hình còn mới. Phù hợp đi lại hàng ngày hoặc mua cho sinh viên.",
       category: "vehicles",
       condition: "like-new",
@@ -33,6 +36,7 @@ const mockProducts: Record<string, EditableProductMock> = {
     fields: {
       title: "Bộ nồi chiên không dầu 6L",
       price: "185",
+      point: "50",
       description: "Bộ nồi chiên còn đẹp, hoạt động ổn định, đầy đủ khay và phụ kiện. Phù hợp gia đình nhỏ và căn hộ.",
       category: "home",
       condition: "used",
@@ -52,6 +56,7 @@ const fallbackProduct: EditableProductMock = {
   fields: {
     title: "Sản phẩm demo đang chỉnh sửa",
     price: "89",
+    point: "20",
     description: "Đây là dữ liệu mẫu để kiểm tra flow sửa sản phẩm trong marketplace.",
     category: "tech",
     condition: "new",

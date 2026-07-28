@@ -2397,6 +2397,7 @@
     "productEditor": {
       "titleLabel": "Product title",
       "priceLabel": "Price",
+      "pointLabel": "Point price",
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Describe the product, key specs, condition, and highlights.",
       "editSectionEyebrow": "Editing area",
@@ -2432,6 +2433,8 @@
       "validationLocationDescription": "Please choose an address from Google Maps suggestions.",
       "validationPriceTitle": "Price is not valid",
       "validationPriceDescription": "Price must be a number greater than 0.",
+      "validationPointTitle": "Point price is not valid",
+      "validationPointDescription": "Point price must be a non-negative integer.",
       "validationCurrencyTitle": "Currency is not valid",
       "validationCurrencyDescription": "Please choose a currency from the list.",
       "validationImageTitle": "Product image is required",
@@ -7010,6 +7013,8 @@
       "shippingFee": "Shipping Fee",
       "free": "Free",
       "totalPayment": "Total Payment",
+      "totalPoints": "Total points",
+      "pointPrice": "{count} VNSEEA",
       "walletBalance": "Wallet has {balance}. You need to top up {amount} more to continue the purchase.",
       "walletHint": "Current wallet balance is {balance}.",
       "addFunds": "Top up wallet",
@@ -7239,7 +7244,8 @@
       "discount": "Discount",
       "total": "Total",
       "totalOrder": "Total Order",
-      "totalPayment": "Payment"
+      "totalPayment": "Payment",
+      "totalPoints": "VNSEEA total"
     },
     "detail": {
       "recipient": "Recipient",

@@ -1,4 +1,5 @@
 <?php
+// English description: Defines core application functions including marketplace message contexts.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -4484,6 +4485,11 @@ function VNSEEA_FormatMarketplaceContextMoney($amount)
     return $rule['code'] . Wo_FormatPriceByCurrency($amount, $currency);
 }
 
+function VNSEEA_FormatMarketplaceContextPoints($points)
+{
+    return number_format(max(0, (int)$points), 0, ',', '.') . ' VNSEEA';
+}
+
 function VNSEEA_AttachMarketplaceMessageContext($message)
 {
     global $wo, $db;
@@ -4497,6 +4503,13 @@ function VNSEEA_AttachMarketplaceMessageContext($message)
             : Wo_GetProduct((int)$message['product_id']);
         if (!empty($product)) {
             $message['product'] = $product;
+            $product_price = !empty($product['price_format'])
+                ? $product['price_format']
+                : (!empty($product['price']) ? (string)$product['price'] : '');
+            $product_points = isset($product['point']) ? max(0, (int)$product['point']) : 0;
+            if ($product_points > 0) {
+                $product_price .= ' · ' . VNSEEA_FormatMarketplaceContextPoints($product_points);
+            }
             $image = '';
             if (!empty($product['images'][0]['image'])) {
                 $image = $product['images'][0]['image'];
@@ -4505,9 +4518,7 @@ function VNSEEA_AttachMarketplaceMessageContext($message)
                 'type' => 'product_inquiry',
                 'product_id' => (string)$message['product_id'],
                 'name' => !empty($product['name']) ? $product['name'] : 'Sản phẩm',
-                'price' => !empty($product['price_format'])
-                    ? $product['price_format']
-                    : (!empty($product['price']) ? (string)$product['price'] : ''),
+                'price' => $product_price,
                 'image' => $image,
                 'location' => !empty($product['location']) ? $product['location'] : '',
                 'note' => !empty($message['or_text']) ? $message['or_text'] : (!empty($message['text']) ? $message['text'] : ''),
@@ -4557,23 +4568,34 @@ function VNSEEA_AttachMarketplaceMessageContext($message)
 
     $items = array();
     $total = 0;
+    $total_points = 0;
     foreach ($orders as $order) {
         $product = Wo_GetProduct((int)$order->product_id);
         $line_total = (float)$order->price;
+        $line_points = isset($order->point) ? max(0, (int)$order->point) : 0;
         $total += $line_total;
+        $total_points += $line_points;
         $image = '';
         if (!empty($product['images'][0]['image'])) {
             $image = $product['images'][0]['image'];
+        }
+        $line_price = VNSEEA_FormatMarketplaceContextMoney($line_total);
+        if ($line_points > 0) {
+            $line_price .= ' · ' . VNSEEA_FormatMarketplaceContextPoints($line_points);
         }
         $items[] = array(
             'product_id' => (string)$order->product_id,
             'name' => !empty($product['name']) ? $product['name'] : 'Sản phẩm #' . (int)$order->product_id,
             'image' => $image,
             'quantity' => max(1, (int)$order->units),
-            'total' => VNSEEA_FormatMarketplaceContextMoney($line_total),
+            'total' => $line_price,
         );
     }
 
+    $order_total = VNSEEA_FormatMarketplaceContextMoney($total);
+    if ($total_points > 0) {
+        $order_total .= ' · ' . VNSEEA_FormatMarketplaceContextPoints($total_points);
+    }
     $context = array(
         'type' => 'order_request',
         'order_hash' => $hash_id,
@@ -4581,7 +4603,7 @@ function VNSEEA_AttachMarketplaceMessageContext($message)
         'buyer_phone' => !empty($address) && !empty($address->phone) ? (string)$address->phone : '',
         'buyer_address' => implode(', ', $address_parts),
         'items' => $items,
-        'total' => VNSEEA_FormatMarketplaceContextMoney($total),
+        'total' => $order_total,
     );
     $order_cache[$cache_key] = $context;
     $message['market_order'] = $context;

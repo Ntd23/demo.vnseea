@@ -151,6 +151,7 @@ const mapProductRecord = (
   const firstImage = images[0]
   const imageUrl = resolveMediaUrl(firstString(firstImage ?? {}, ["image_org", "image", "filename", "src"]))
   const price = firstString(entity, ["price_format", "price"])
+  const point = Math.max(0, asNumber(entity.point))
   const currency = firstString(entity, ["currency", "currency_symbol"])
   const seoId = firstString(entity, ["seo_id"])
 
@@ -159,6 +160,9 @@ const mapProductRecord = (
     name: firstString(entity, ["name", "title"]) || `Product ${id}`,
     imageUrl,
     priceLabel: [currency, price].filter(Boolean).join(""),
+    pointLabel: point > 0
+      ? `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(point)} VNSEEA`
+      : "",
     href: firstString(entity, ["url"]) || (seoId ? `/post/${seoId}` : "/products"),
   }
 }

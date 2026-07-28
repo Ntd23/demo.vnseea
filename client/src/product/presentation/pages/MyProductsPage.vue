@@ -100,6 +100,10 @@
             <strong class="my-product-card__price">
               {{ formatProductCurrency(product) }}
             </strong>
+            <span v-if="product.point > 0" class="my-product-card__points">
+              <Icon name="i-ph-coins-fill" class="h-4 w-4" />
+              {{ formatProductPointPrice(product) }}
+            </span>
           </div>
         </NuxtLink>
 
@@ -185,6 +189,7 @@ const {
   sortOptions,
   deletingProductId,
   formatProductCurrency,
+  formatProductPointPrice,
   deleteProduct,
 } = useMyProductsOverview()
 
@@ -414,6 +419,16 @@ const submitDeleteProduct = async () => {
   line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.my-product-card__points {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .my-product-card__actions {

@@ -40,6 +40,7 @@ export function createApiProductRepository(): ProductRepository {
       form.append("product_category", fields.category)
       form.append("product_description", fields.description.trim())
       form.append("product_price", fields.price.trim())
+      form.append("product_point", fields.point.trim() || "0")
       form.append("product_location", fields.location.trim())
       form.append("product_type", fields.condition === "used" ? "1" : "0")
       form.append("currency", fields.currency)

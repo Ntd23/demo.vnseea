@@ -1,3 +1,5 @@
+// English description: Creates normalized product editor drafts for new and existing marketplace products.
+
 import type { ProductEditorDraft, ProductRecord } from "../../domain/types/product-editor.types"
 
 export const createEmptyProductDraft = (): ProductEditorDraft => ({
@@ -5,6 +7,7 @@ export const createEmptyProductDraft = (): ProductEditorDraft => ({
   fields: {
     title: "",
     price: "",
+    point: "",
     description: "",
     category: "vehicles",
     condition: "new",
@@ -22,6 +25,7 @@ export const createDraftFromProductRecord = (product: ProductRecord): ProductEdi
   fields: {
     title: product.title,
     price: String(product.price),
+    point: String(product.point),
     description: product.description,
     category: product.category,
     condition: product.condition,

@@ -17,6 +17,7 @@ export type ProductListing = {
   seller: string
   sellerId?: number
   price: number
+  point: number
   priceVnd: number
   currency?: string
   currencySymbol?: string

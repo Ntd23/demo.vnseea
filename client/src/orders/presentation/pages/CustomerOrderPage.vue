@@ -101,6 +101,7 @@
 
             <span class="customer-order-total">
               {{ $t("orders.card.total", { total: formatOrderCurrency(order.total) }) }}
+              <small v-if="orderPoints > 0">{{ formatOrderPoints(orderPoints) }}</small>
             </span>
           </div>
 
@@ -258,6 +259,18 @@ const formatOrderCurrency = (value: number) =>
     currency: "VND",
     locale: locale.value,
   })
+
+const orderPoints = computed(() =>
+  order.value
+    ? order.value.totalPoints
+      ?? order.value.items.reduce((total, item) => total + (item.point ?? 0) * item.quantity, 0)
+    : 0,
+)
+
+const formatOrderPoints = (value: number) =>
+  `${new Intl.NumberFormat(locale.value, {
+    maximumFractionDigits: 0,
+  }).format(Math.max(0, value))} VNSEEA`
 
 useSeoMeta({
   title: t("orders.page.title"),
@@ -563,6 +576,11 @@ const pageTitle = computed(() =>
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   overflow-wrap: anywhere;
   white-space: normal;
+}
+
+.customer-order-total small {
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .customer-order-info-grid {

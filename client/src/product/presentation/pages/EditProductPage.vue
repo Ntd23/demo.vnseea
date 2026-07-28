@@ -3,23 +3,40 @@
 <template>
   <div class="edit-product-page w-full mt-1.5">
     <form class="edit-product-form" @submit.prevent="submitProduct">
-      <div class="edit-product-row edit-product-row--name-price">
-        <UFormField class="edit-product-field" :label="$t('pages.productEditor.titleLabel')">
-          <UInput
-            v-model="draft.fields.title"
+      <UFormField class="edit-product-field" :label="$t('pages.productEditor.titleLabel')">
+        <UInput
+          v-model="draft.fields.title"
+          class="w-full"
+          size="lg"
+          :ui="{ base: 'h-11 rounded-xl' }"
+        />
+      </UFormField>
+
+      <div class="edit-product-row edit-product-row--price-point">
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.priceLabel')">
+          <UInputNumber
+            v-model="priceInput"
             class="w-full"
             size="lg"
+            orientation="vertical"
+            :min="0"
+            :step="0.01"
+            disable-wheel-change
+            placeholder="0.00"
             :ui="{ base: 'h-11 rounded-xl' }"
           />
         </UFormField>
 
-        <UFormField class="edit-product-field" :label="$t('pages.productEditor.priceLabel')">
-          <UInput
-            v-model="draft.fields.price"
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.pointLabel')">
+          <UInputNumber
+            v-model="pointInput"
             class="w-full"
             size="lg"
-            placeholder="0.00"
-            inputmode="decimal"
+            orientation="vertical"
+            :min="0"
+            :step="1"
+            disable-wheel-change
+            placeholder="0"
             :ui="{ base: 'h-11 rounded-xl' }"
           />
         </UFormField>
@@ -73,6 +90,9 @@
           />
         </UFormField>
 
+      </div>
+
+      <div class="edit-product-row edit-product-row--currency-stock">
         <UFormField class="edit-product-field" :label="$t('pages.productEditor.currencyLabel')">
           <USelect
             v-model="draft.fields.currency"
@@ -84,9 +104,7 @@
             :ui="{ base: 'h-11 rounded-xl' }"
           />
         </UFormField>
-      </div>
 
-      <div class="edit-product-row edit-product-row--stock">
         <UFormField class="edit-product-field" :label="$t('pages.productEditor.stockLabel')">
           <UInput
             v-model="stockInput"
@@ -251,6 +269,7 @@ const emptyProduct = computed<ProductRecord>(() => ({
   location: "",
   currency: "VND",
   price: 0,
+  point: 0,
   priceVnd: 0,
   stock: 0,
   images: [],
@@ -263,6 +282,7 @@ const createDraftFromProduct = (product: ProductRecord): ProductEditorDraft => (
   fields: {
     title: product.title,
     price: product.price > 0 ? String(product.price) : "",
+    point: product.point > 0 ? String(product.point) : "",
     description: product.description,
     category: product.category,
     condition: product.condition,
@@ -276,6 +296,26 @@ const createDraftFromProduct = (product: ProductRecord): ProductEditorDraft => (
 
 const { draft, replaceSource, markSaved } = useProductEditorDraft(storageKey, createDraftFromProduct(activeProduct.value ?? emptyProduct.value))
 stockInput.value = draft.value.fields.stock
+const priceInput = computed<number | undefined>({
+  get: () => {
+    const value = Number(draft.value.fields.price)
+    return draft.value.fields.price.trim() && Number.isFinite(value) ? value : undefined
+  },
+  set: value => {
+    draft.value.fields.price = value === undefined || value === null ? "" : String(value)
+  },
+})
+const pointInput = computed<number | undefined>({
+  get: () => {
+    const value = Number(draft.value.fields.point)
+    return draft.value.fields.point.trim() && Number.isInteger(value) && value >= 0 ? value : undefined
+  },
+  set: value => {
+    draft.value.fields.point = value === undefined || value === null
+      ? ""
+      : String(Math.max(0, Math.trunc(value)))
+  },
+})
 const currentImages = computed(() =>
   (activeProduct.value?.images ?? []).filter(image => !draft.value.removedImageIds.includes(image.id)),
 )
@@ -512,9 +552,13 @@ onBeforeUnmount(() => {
   margin-bottom: 14px;
 }
 
-.edit-product-row--name-price,
-.edit-product-row--location {
+.edit-product-row--price-point,
+.edit-product-row--currency-stock {
   grid-template-columns: minmax(0, 1fr) 220px;
+}
+
+.edit-product-row--location {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .edit-product-row--category {
@@ -666,7 +710,8 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 760px) {
-  .edit-product-row--name-price,
+  .edit-product-row--price-point,
+  .edit-product-row--currency-stock,
   .edit-product-row--location,
   .edit-product-row--category {
     grid-template-columns: 1fr;

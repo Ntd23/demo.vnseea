@@ -1136,6 +1136,7 @@ function marketBuyValidation()
                 $wo['insert'][$product['user_id']] = array();
                 $wo['insert'][$product['user_id']][] = array('product_id' => $product['id'],
                                                        'price' => $f_price,
+                                                       'point' => isset($product['point']) ? max(0, (int)$product['point']) : 0,
                                                        'units' => $item->units);
             }
             else{
@@ -1145,6 +1146,7 @@ function marketBuyValidation()
                 }
                 $wo['insert'][$product['user_id']][] = array('product_id' => $product['id'],
                                                        'price' => $f_price,
+                                                       'point' => isset($product['point']) ? max(0, (int)$product['point']) : 0,
                                                        'units' => $item->units);
             }
         }

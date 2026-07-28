@@ -127,6 +127,9 @@
 
           <div class="market-order-card__side">
             <strong>{{ formatOrderCurrency(order.total) }}</strong>
+            <span v-if="getOrderPoints(order) > 0" class="market-order-card__points">
+              {{ formatOrderPoints(getOrderPoints(order)) }}
+            </span>
             <NuxtLink :to="props.activeSection === 'purchased' ? appRoutes.orderDetail(order.id) : appRoutes.customerOrder(order.id)">
               {{ $t("orders.card.viewDetail") }}
             </NuxtLink>
@@ -235,6 +238,15 @@ const formatOrderCurrency = (value: number) =>
     currency: "VND",
     locale: locale.value,
   })
+
+const getOrderPoints = (order: BuyerOrder) =>
+  order.totalPoints
+  ?? order.items.reduce((total, item) => total + (item.point ?? 0) * item.quantity, 0)
+
+const formatOrderPoints = (value: number) =>
+  `${new Intl.NumberFormat(locale.value, {
+    maximumFractionDigits: 0,
+  }).format(Math.max(0, value))} VNSEEA`
 </script>
 
 <style scoped>
@@ -516,6 +528,12 @@ const formatOrderCurrency = (value: number) =>
 .market-order-card__side strong {
   color: var(--text-success);
   font-size: 16px;
+  font-weight: 800;
+}
+
+.market-order-card__points {
+  color: var(--text-brand);
+  font-size: 13px;
   font-weight: 800;
 }
 

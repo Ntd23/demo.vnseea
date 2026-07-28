@@ -16,6 +16,7 @@ type MultipartPart = {
 type PersonalProductPayload = {
   name: string
   price: string
+  point: string
   category: string
   description: string
   location: string
@@ -61,6 +62,7 @@ const parsePersonalProductPayload = (parts: MultipartPart[]): PersonalProductPay
   const payload: PersonalProductPayload = {
     name: "",
     price: "",
+    point: "0",
     category: "",
     description: "",
     location: "",
@@ -90,6 +92,7 @@ const parsePersonalProductPayload = (parts: MultipartPart[]): PersonalProductPay
 
     if (part.name === "name") payload.name = value
     if (part.name === "price") payload.price = value
+    if (part.name === "point") payload.point = value || "0"
     if (part.name === "category") payload.category = value
     if (part.name === "description") payload.description = value
     if (part.name === "location") payload.location = value
@@ -128,6 +131,13 @@ const createPersonalFeedProduct = async (event: H3Event, parts: MultipartPart[])
     })
   }
 
+  if (!/^\d+$/.test(payload.point)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Point price must be a non-negative integer.",
+    })
+  }
+
   if (!payload.imageFile) {
     throw createError({
       statusCode: 400,
@@ -139,6 +149,7 @@ const createPersonalFeedProduct = async (event: H3Event, parts: MultipartPart[])
   requestBody.append("hash_id", currentUserHash)
   requestBody.append("name", payload.name)
   requestBody.append("price", payload.price)
+  requestBody.append("point", payload.point)
   requestBody.append("currency", payload.currency || "0")
   requestBody.append("category", payload.category)
   requestBody.append("description", payload.description)
