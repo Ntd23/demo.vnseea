@@ -7,7 +7,7 @@ import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
-import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import { fetchFeedPostById } from "../feed/_shared"
 import { parseMessageSharedPostReference } from "../../../src/messages/domain/message-shared-post"
 import { getMessageUserPresenceState } from "./_presence"
@@ -596,6 +596,10 @@ const buildSharedPostCard = (
 
   const image = post.mediaItems.find(item => item.type === "image")
   const video = post.mediaItems.find(item => item.type === "video")
+  const productAttachment = post.attachmentCard?.type === "product"
+    ? post.attachmentCard
+    : null
+  const product = productAttachment?.product
 
   return {
     postId,
@@ -603,9 +607,53 @@ const buildSharedPostCard = (
     author: post.author,
     authorAvatarUrl: post.authorAvatarUrl || undefined,
     text: post.text,
-    imageUrl: image?.src || video?.thumb || post.attachmentCard?.imageUrl || undefined,
+    imageUrl: productAttachment?.imageUrl
+      || product?.images[0]?.src
+      || image?.src
+      || video?.thumb
+      || post.attachmentCard?.imageUrl
+      || undefined,
     href: appRoutes.postDetail(post.id),
+    product: productAttachment
+      ? {
+          id: product?.id ?? 0,
+          title: productAttachment.title,
+          description: productAttachment.description,
+          href: productAttachment.href,
+          price: product?.price ?? 0,
+          point: product?.point ?? 0,
+          currency: product?.currency || undefined,
+          currencySymbol: product?.currencySymbol || undefined,
+        }
+      : undefined,
   }
+}
+
+const fetchCanonicalProductPoint = async (
+  event: H3Event,
+  productId: number,
+  postId: number,
+) => {
+  if (productId <= 0 && postId <= 0) {
+    return null
+  }
+
+  const client = createBackendApiClient(event)
+  const response = await client.post<{
+    api_status?: number | string
+    product?: {
+      point?: number | string
+    }
+  }, Record<string, unknown>>(
+    backendRoutes.api.publicContent,
+    {
+      action: "product",
+      ...(productId > 0 ? { product_id: productId } : { post_id: postId }),
+    },
+  )
+  const point = Number(response.product?.point)
+
+  return Number.isFinite(point) ? Math.max(0, Math.trunc(point)) : null
 }
 
 const enrichSharedPostMessages = async (
@@ -624,7 +672,18 @@ const enrichSharedPostMessages = async (
   const cards = new Map<number, MessageSharedPostCard>()
   await Promise.all(postIds.map(async (postId) => {
     const post = await fetchFeedPostById(event, postId).catch(() => null)
-    cards.set(postId, buildSharedPostCard(postId, post))
+    const card = buildSharedPostCard(postId, post)
+
+    if (card.product) {
+      const canonicalPoint = await fetchCanonicalProductPoint(event, card.product.id, postId)
+        .catch(() => null)
+
+      if (canonicalPoint !== null) {
+        card.product.point = canonicalPoint
+      }
+    }
+
+    cards.set(postId, card)
   }))
 
   return messages.map((message) => {

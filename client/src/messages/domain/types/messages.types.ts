@@ -112,6 +112,16 @@ export type MessageSharedPostCard = {
   text: string
   imageUrl?: string
   href: string
+  product?: {
+    id: number
+    title: string
+    description: string
+    href: string
+    price: number
+    point: number
+    currency?: string
+    currencySymbol?: string
+  }
 }
 
 export type MessageSystemEvent = {

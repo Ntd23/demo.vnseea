@@ -1,6 +1,11 @@
 <!-- Description: Renders a normalized shared-post attachment received from either web or native message links. -->
 <template>
-  <NuxtLink :to="post.href" class="message-shared-post" @click.stop>
+  <NuxtLink
+    :to="cardHref"
+    class="message-shared-post"
+    :class="{ 'message-shared-post--product': post.product }"
+    @click.stop
+  >
     <span class="message-shared-post__media">
       <NuxtImg
         v-if="post.imageUrl && !imageFailed"
@@ -14,6 +19,25 @@
     </span>
 
     <span class="message-shared-post__body">
+      <span v-if="post.available && post.product" class="message-shared-post__product">
+        <span class="message-shared-post__kind">
+          <Icon name="i-ph-storefront-bold" />
+          {{ productLabel }}
+        </span>
+        <strong class="message-shared-post__product-title">
+          {{ post.product.title }}
+        </strong>
+        <strong class="message-shared-post__price">
+          {{ productPrice }}
+        </strong>
+        <strong class="message-shared-post__points">
+          {{ productPoints }}
+        </strong>
+        <span v-if="post.product.description" class="message-shared-post__description">
+          {{ post.product.description }}
+        </span>
+      </span>
+
       <span class="message-shared-post__author-row">
         <img
           v-if="post.authorAvatarUrl && post.available"
@@ -26,7 +50,7 @@
         </span>
         <strong>{{ post.available ? post.author : unavailableLabel }}</strong>
       </span>
-      <span v-if="post.available && post.text" class="message-shared-post__text">
+      <span v-if="post.available && !post.product && post.text" class="message-shared-post__text">
         {{ post.text }}
       </span>
     </span>
@@ -34,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatProductPoints, formatProductPrice } from "../../../product/application/formatters/product-currency"
 import type { MessageSharedPostCard } from "../../domain/types/messages.types"
 
 const props = defineProps<{
@@ -42,6 +67,16 @@ const props = defineProps<{
 
 const { locale } = useI18n()
 const imageFailed = ref(false)
+const cardHref = computed(() => props.post.product?.href || props.post.href)
+const productLabel = computed(() => locale.value === "vi" ? "Sản phẩm" : "Product")
+const productPrice = computed(() => props.post.product
+  ? formatProductPrice(props.post.product, locale.value)
+  : "",
+)
+const productPoints = computed(() => props.post.product
+  ? formatProductPoints(props.post.product, locale.value)
+  : "",
+)
 const unavailableLabel = computed(() =>
   locale.value === "vi" ? "Bài viết không khả dụng" : "Post unavailable",
 )
@@ -110,6 +145,19 @@ watch(() => props.post.imageUrl, () => {
   gap: 7px;
 }
 
+.message-shared-post--product .message-shared-post__author-row {
+  margin-top: 2px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border-light);
+}
+
+.message-shared-post__product {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+}
+
 .message-shared-post__author-row strong {
   min-width: 0;
   overflow: hidden;
@@ -119,6 +167,60 @@ watch(() => props.post.imageUrl, () => {
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.message-shared-post__kind {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 5px;
+  color: var(--bg-brand);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.message-shared-post__kind :deep(svg) {
+  width: 14px;
+  height: 14px;
+}
+
+.message-shared-post__product-title {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.message-shared-post__price {
+  color: var(--bg-brand);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.message-shared-post__points {
+  color: #2684ff;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.message-shared-post__description {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .message-shared-post__avatar {
