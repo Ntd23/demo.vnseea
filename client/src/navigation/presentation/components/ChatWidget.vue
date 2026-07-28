@@ -298,7 +298,8 @@
                 v-if="contact.type === 'user'"
                 type="button"
                 class="chat-widget__contact-avatar-btn"
-                @click.stop="openAvatarMenu(contact, $event)"
+                :aria-label="contact.name"
+                @click.stop="openMiniChat(contact)"
               >
                 <UAvatar
                   :src="contact.avatarUrl"
@@ -353,88 +354,6 @@
           </div>
         </div>
 
-        <!-- Avatar context menu (Teleport to body to avoid overflow clipping) -->
-        <Teleport to="body">
-          <Transition
-            enter-active-class="transition duration-150 ease-out"
-            enter-from-class="opacity-0 scale-95 translate-y-1"
-            enter-to-class="opacity-100 scale-100 translate-y-0"
-            leave-active-class="transition duration-100 ease-in"
-            leave-from-class="opacity-100 scale-100 translate-y-0"
-            leave-to-class="opacity-0 scale-95 translate-y-1"
-          >
-            <div
-              v-if="avatarMenuContact"
-              class="chat-widget__avatar-menu"
-              :style="avatarMenuStyle"
-            >
-              <div class="chat-widget__avatar-menu-section">
-                <div class="chat-widget__avatar-menu-item chat-widget__avatar-menu-item--muted">
-                  <Icon name="i-ph-lock-key-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.endToEndEncrypted") }}</span>
-                </div>
-                <button
-                  type="button"
-                  class="chat-widget__avatar-menu-item"
-                  @click="openFullMessagesFromAvatarMenu"
-                >
-                  <Icon name="i-ph-chat-circle-dots-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.openInMessenger") }}</span>
-                </button>
-                <button
-                  v-if="avatarMenuContact.profileUrl"
-                  type="button"
-                  class="chat-widget__avatar-menu-item"
-                  @click="goToAvatarProfile"
-                >
-                  <Icon name="i-ph-user-circle-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
-                </button>
-              </div>
-
-              <div class="chat-widget__avatar-menu-section">
-                <button v-if="avatarMenuContact.type === 'user'" type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('audio')">
-                  <Icon name="i-ph-phone-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
-                </button>
-                <button type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('video')">
-                  <Icon name="i-ph-video-camera-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.videoCall") }}</span>
-                </button>
-              </div>
-
-              <div class="chat-widget__avatar-menu-section">
-                <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
-                  <Icon name="i-ph-palette-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.changeTheme") }}</span>
-                </button>
-                <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
-                  <Icon name="i-ph-thumbs-up-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.changeReaction") }}</span>
-                </button>
-                <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
-                  <Icon name="i-ph-pencil-simple-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.nickname") }}</span>
-                </button>
-              </div>
-
-              <div class="chat-widget__avatar-menu-section">
-                <button type="button" class="chat-widget__avatar-menu-item" @click="openMessagesTabFromAvatarMenu('multi')">
-                  <Icon name="i-ph-users-three-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.createGroup") }}</span>
-                </button>
-                <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
-                  <Icon name="i-ph-bell-slash-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.muteNotifications") }}</span>
-                </button>
-                <button type="button" class="chat-widget__avatar-menu-item chat-widget__avatar-menu-item--danger" @click="closeAvatarMenu">
-                  <Icon name="i-ph-user-minus-bold" class="h-5 w-5" />
-                  <span>{{ $t("navigation.chatWidget.blockUser") }}</span>
-                </button>
-              </div>
-            </div>
-          </Transition>
-        </Teleport>
       </div>
       </div>
 
@@ -917,8 +836,6 @@ const defaultMiniReaction = defaultFeedReactionAsset
 
 // Avatar context menu
 type AvatarMenuContact = (typeof filteredContacts)['value'][number]
-const avatarMenuContact = ref<AvatarMenuContact | null>(null)
-const avatarMenuStyle = ref<Record<string, string>>({})
 const contactTagModalOpen = ref(false)
 const contactTagModalContact = ref<MessageContact | null>(null)
 const messageAvatarMenuContact = ref<AvatarMenuContact | null>(null)
@@ -1210,76 +1127,6 @@ async function updateContactTagSelection(nextIds: number[]) {
   await updateContactTags(contact, nextIds)
 }
 
-function openAvatarMenu(contact: AvatarMenuContact, event: MouseEvent) {
-  const target = event.currentTarget as HTMLElement
-  const rect = target.getBoundingClientRect()
-  const menuWidth = 300
-  const menuHeight = 430
-  const vw = window.innerWidth
-  const vh = window.innerHeight
-
-  let left = rect.right + 10
-  let top = rect.top
-
-  if (left + menuWidth > vw - 8) {
-    left = rect.left - menuWidth - 10
-  }
-  if (top + menuHeight > vh - 8) {
-    top = Math.max(8, vh - menuHeight - 8)
-  }
-
-  avatarMenuStyle.value = {
-    position: 'fixed',
-    left: `${Math.max(8, left)}px`,
-    top: `${Math.max(8, top)}px`,
-    zIndex: '9999',
-  }
-  avatarMenuContact.value = contact
-}
-
-function closeAvatarMenu() {
-  avatarMenuContact.value = null
-}
-
-async function openFullMessagesFromAvatarMenu() {
-  const contact = avatarMenuContact.value
-  closeAvatarMenu()
-  await openFullMessages(contact)
-}
-
-async function openMessagesTabFromAvatarMenu(tab: "user" | "group" | "multi") {
-  closeAvatarMenu()
-  await openMessagesTab(tab)
-}
-
-async function goToAvatarProfile() {
-  const profileUrl = avatarMenuContact.value?.profileUrl
-  closeAvatarMenu()
-  if (profileUrl) {
-    await navigateTo(profileUrl)
-  }
-}
-
-async function chatWithAvatarContact() {
-  const contact = avatarMenuContact.value
-  closeAvatarMenu()
-  if (contact) {
-    await openMiniChat(contact)
-  }
-}
-
-async function callAvatarContact(type: 'audio' | 'video') {
-  const contact = avatarMenuContact.value
-  closeAvatarMenu()
-  if (!contact) return
-  if (contact.type === 'group') {
-    await startGroupCall(contact)
-  }
-  else if (contact.type === 'user') {
-    await startCall(contact, type)
-  }
-}
-
 function openMiniMessageAvatarMenu(session: MiniChatSessionView, message: MessageItem, event: MouseEvent) {
   const contact = session.contact
 
@@ -1315,10 +1162,20 @@ function openMiniMessageAvatarMenu(session: MiniChatSessionView, message: Messag
     top: `${Math.max(8, top)}px`,
     zIndex: "10000",
   }
+  const senderId = Number(message.senderId ?? 0)
+  const isGroupMember = contact.type === "group" && senderId > 0
   messageAvatarMenuContact.value = {
     ...contact,
+    id: isGroupMember ? `user:${senderId}` : contact.id,
     name: message.authorName || contact.name,
     avatarUrl: message.avatar || contact.avatarUrl,
+    type: isGroupMember ? "user" : contact.type,
+    tab: isGroupMember ? "user" : contact.tab,
+    userId: isGroupMember ? senderId : contact.userId,
+    groupId: isGroupMember ? undefined : contact.groupId,
+    pageId: isGroupMember ? undefined : contact.pageId,
+    recipientId: isGroupMember ? undefined : contact.recipientId,
+    profileUrl: message.authorProfileUrl || (isGroupMember ? undefined : contact.profileUrl),
   } as AvatarMenuContact
   messageAvatarMenuMessageId.value = message.id
   activeMiniHeaderContactId.value = null
@@ -3597,94 +3454,6 @@ watch(miniChatAutoOpenVersion, (version) => {
   box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--bg-brand) 22%, transparent);
 }
 
-/* ── Avatar context menu ── */
-.chat-widget__avatar-menu {
-  width: min(320px, calc(100vw - 16px));
-  max-height: min(470px, calc(100dvh - 16px));
-  overflow-x: hidden;
-  overflow-y: auto;
-  border-radius: 12px;
-  border: 1px solid var(--border-light);
-  background: var(--bg-surface);
-  padding: 8px;
-  box-shadow: var(--shadow-xl);
-  transform-origin: top left;
-}
-
-.chat-widget__avatar-menu-section {
-  display: grid;
-  gap: 2px;
-  padding: 4px 0;
-}
-
-.chat-widget__avatar-menu-section + .chat-widget__avatar-menu-section {
-  border-top: 1px solid var(--border-light);
-  margin-top: 4px;
-  padding-top: 7px;
-}
-
-.chat-widget__avatar-menu-item {
-  display: flex;
-  width: 100%;
-  min-height: 42px;
-  align-items: center;
-  gap: 13px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  padding: 8px 10px;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 750;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
-}
-
-.chat-widget__avatar-menu-item > .iconify {
-  width: 22px;
-  height: 22px;
-  flex: 0 0 22px;
-  color: var(--icon-primary);
-}
-
-.chat-widget__avatar-menu-item:hover {
-  background: var(--bg-muted);
-  color: var(--bg-brand);
-}
-
-.chat-widget__avatar-menu-item--muted {
-  cursor: default;
-  background: var(--bg-muted);
-  color: var(--text-primary);
-}
-
-.chat-widget__avatar-menu-item--muted:hover {
-  background: var(--bg-muted);
-  color: var(--text-primary);
-}
-
-.chat-widget__avatar-menu-item--danger {
-  color: var(--text-danger);
-}
-
-.chat-widget__avatar-menu-item--danger:hover {
-  background: color-mix(in srgb, var(--color-error) 12%, var(--bg-surface));
-  color: var(--text-brand);
-}
-
-.chat-widget__avatar-menu-icon {
-  display: inline-flex;
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: var(--bg-muted);
-  color: inherit;
-  transition: background 0.12s ease;
-}
 :deep(.chat-widget__mini-input-control:focus) {
   border-color: var(--border-light) !important;
   background: var(--bg-surface) !important;
@@ -3782,98 +3551,6 @@ watch(miniChatAutoOpenVersion, (version) => {
 .chat-widget__contact-avatar-btn:hover {
   transform: scale(1.07);
   box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--bg-brand) 22%, transparent);
-}
-
-/* ── Avatar context menu ── */
-.chat-widget__avatar-menu {
-  min-width: 224px;
-  border-radius: 16px;
-  border: 1px solid var(--border-light);
-  background: var(--bg-surface);
-  padding: 6px 0;
-  box-shadow: var(--shadow-xl);
-  transform-origin: top left;
-}
-
-.chat-widget__avatar-menu-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px 12px;
-}
-
-.chat-widget__avatar-menu-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 3px;
-}
-
-.chat-widget__avatar-menu-name {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chat-widget__avatar-menu-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-.chat-widget__avatar-menu-status--online {
-  color: var(--color-success);
-}
-
-.chat-widget__avatar-menu-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: currentColor;
-  flex-shrink: 0;
-}
-
-.chat-widget__avatar-menu-divider {
-  height: 1px;
-  background: var(--bg-muted);
-  margin: 4px 0;
-}
-
-.chat-widget__avatar-menu-item {
-  display: flex;
-  width: 100%;
-  min-height: 42px;
-  align-items: center;
-  gap: 11px;
-  border: none;
-  background: transparent;
-  padding: 8px 14px;
-  color: var(--text-primary);
-  font-size: 13.5px;
-  font-weight: 700;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
-}
-
-.chat-widget__avatar-menu-item:hover {
-  background: var(--bg-muted);
-  color: var(--bg-brand);
-}
-
-.chat-widget__avatar-menu-item--danger {
-  color: var(--text-danger);
-}
-
-.chat-widget__avatar-menu-item--danger:hover {
-  background: color-mix(in srgb, var(--color-error) 12%, var(--bg-surface));
-  color: var(--text-brand);
 }
 
 .chat-widget__message-avatar-menu {

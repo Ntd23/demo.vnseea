@@ -14,6 +14,7 @@ import type {
   FeedPostReactionsResponse,
   FeedPostsResponse,
   FeedStoryActionResult,
+  FeedStoryOverlays,
   FeedStoryReactionType,
 } from "../types/feed.types"
 
@@ -92,6 +93,7 @@ export interface FeedRepository {
     privacy?: string
     title?: string
     description?: string
+    overlays?: FeedStoryOverlays
   }): Promise<FeedCreateStoryResponse>
   runStoryAction(input:
     | {

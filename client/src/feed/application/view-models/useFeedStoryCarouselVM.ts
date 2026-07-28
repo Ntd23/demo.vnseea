@@ -226,6 +226,7 @@ export function useFeedStoryCarouselVM(
       return
     }
 
+    activeVideoRef.value?.pause()
     activeStoryGroupIndex.value = groupIndex
     activeStoryItemIndex.value = Math.min(Math.max(itemIndex, 0), groupStories.length - 1)
   }
@@ -521,6 +522,7 @@ export function useFeedStoryCarouselVM(
     }
 
     if (activeStoryItemIndex.value < storyQueue.value.length - 1) {
+      activeVideoRef.value?.pause()
       activeStoryItemIndex.value += 1
       return
     }
@@ -538,6 +540,7 @@ export function useFeedStoryCarouselVM(
       return
     }
 
+    activeVideoRef.value?.pause()
     activeStoryItemIndex.value = itemIndex
   }
 
@@ -547,6 +550,7 @@ export function useFeedStoryCarouselVM(
     }
 
     if (activeStoryItemIndex.value > 0) {
+      activeVideoRef.value?.pause()
       activeStoryItemIndex.value -= 1
       return
     }
@@ -713,6 +717,7 @@ export function useFeedStoryCarouselVM(
       return
     }
 
+    activeVideoRef.value?.pause()
     replyText.value = ""
     reactionTrayOpen.value = false
     activeVideoPaused.value = false
@@ -720,6 +725,15 @@ export function useFeedStoryCarouselVM(
     storyActionState.value = "idle"
     await markStoryViewed(story)
     await nextTick()
+
+    if (isVideoStory(story) && activeVideoRef.value) {
+      const video = activeVideoRef.value
+      video.currentTime = 0
+      video.load()
+      await video.play().catch(() => undefined)
+      activeVideoPaused.value = video.paused
+    }
+
     dialogRef.value?.focus()
   })
 
