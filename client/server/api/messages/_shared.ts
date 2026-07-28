@@ -7,6 +7,9 @@ import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
+import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { fetchFeedPostById } from "../feed/_shared"
+import { parseMessageSharedPostReference } from "../../../src/messages/domain/message-shared-post"
 import { getMessageUserPresenceState } from "./_presence"
 import {
   feedStoryReactionByBackendId,
@@ -23,6 +26,7 @@ import type {
   MessageItem,
   MessageGroupMember,
   MessageStoryContext,
+  MessageSharedPostCard,
   MessageTypingState,
   MessageThread,
   MessageThreadType,
@@ -551,6 +555,85 @@ const normalizeInlineMessageText = (value = "") =>
     .replace(/\n{3,}/g, "\n\n")
     .trim()
 
+const removeDuplicatedSharedPostText = (body: string, postText: string) => {
+  const normalizedBody = normalizeInlineMessageText(body)
+  const normalizedPostText = normalizeInlineMessageText(postText)
+
+  if (!normalizedPostText || normalizedBody === normalizedPostText) {
+    return normalizedBody === normalizedPostText ? "" : normalizedBody
+  }
+
+  const duplicatedSuffix = `\n\n${normalizedPostText}`
+  return normalizedBody.endsWith(duplicatedSuffix)
+    ? normalizeInlineMessageText(normalizedBody.slice(0, -duplicatedSuffix.length))
+    : normalizedBody
+}
+
+const buildSharedPostCard = (
+  postId: number,
+  post: Awaited<ReturnType<typeof fetchFeedPostById>>,
+): MessageSharedPostCard => {
+  if (!post) {
+    return {
+      postId,
+      available: false,
+      author: "",
+      text: "",
+      href: appRoutes.postDetail(postId),
+    }
+  }
+
+  const image = post.mediaItems.find(item => item.type === "image")
+  const video = post.mediaItems.find(item => item.type === "video")
+
+  return {
+    postId,
+    available: true,
+    author: post.author,
+    authorAvatarUrl: post.authorAvatarUrl || undefined,
+    text: post.text,
+    imageUrl: image?.src || video?.thumb || post.attachmentCard?.imageUrl || undefined,
+    href: appRoutes.postDetail(post.id),
+  }
+}
+
+const enrichSharedPostMessages = async (
+  event: H3Event,
+  messages: MessageItem[],
+) => {
+  const references = messages
+    .map(message => parseMessageSharedPostReference(message.text))
+    .filter(Boolean) as Array<{ postId: number; body: string }>
+  const postIds = [...new Set(references.map(reference => reference.postId))]
+
+  if (postIds.length === 0) {
+    return messages
+  }
+
+  const cards = new Map<number, MessageSharedPostCard>()
+  await Promise.all(postIds.map(async (postId) => {
+    const post = await fetchFeedPostById(event, postId).catch(() => null)
+    cards.set(postId, buildSharedPostCard(postId, post))
+  }))
+
+  return messages.map((message) => {
+    const reference = parseMessageSharedPostReference(message.text)
+
+    if (!reference) {
+      return message
+    }
+
+    const card = cards.get(reference.postId)
+      ?? buildSharedPostCard(reference.postId, null)
+
+    return {
+      ...message,
+      text: removeDuplicatedSharedPostText(reference.body, card.text),
+      sharedPost: card,
+    }
+  })
+}
+
 const parseReplyMessagePreview = (value: string) => {
   const normalized = normalizeInlineMessageText(value)
   const [replyLine, ...bodyLines] = normalized.split("\n")
@@ -698,6 +781,7 @@ const buildContactPreview = (
   const mediaPreview = buildMediaPreviewLabel(senderName, inferMediaType(message))
   const replyMeta = parseReplyMessagePreview(normalizedText)
   const productMeta = parseProductMessagePreview(normalizedText)
+  const sharedPostReference = parseMessageSharedPostReference(normalizedText)
 
   if (isLocationMessage(normalizedText)) {
     return `${senderName} đã chia sẻ một vị trí`
@@ -705,6 +789,10 @@ const buildContactPreview = (
 
   if (productMeta) {
     return productMeta.body || productMeta.title
+  }
+
+  if (sharedPostReference) {
+    return `${senderName} đã chia sẻ một bài viết`
   }
 
   if (replyMeta) {
@@ -1220,12 +1308,14 @@ export async function fetchMessageThread(
       "Unable to load user messages.",
     )
 
+    const messages = (response.messages ?? []).map(message =>
+      mapThreadMessage(message, currentUserId, resolveMediaUrl, "user"),
+    )
+
     return {
       messages: decorateThreadMessagesWithReactions(
         input,
-        (response.messages ?? []).map(message =>
-          mapThreadMessage(message, currentUserId, resolveMediaUrl, "user"),
-        ),
+        await enrichSharedPostMessages(event, messages),
       ),
       typing: isTruthy(response.typing),
     }
@@ -1255,12 +1345,14 @@ export async function fetchMessageThread(
     const responseData = asRecord(response.data)
     const activeGroupCall = asRecord(responseData.active_call)
 
+    const messages = extractCollectionMessages(response).map(message =>
+      mapThreadMessage(message, currentUserId, resolveMediaUrl, "group", activeGroupCall),
+    )
+
     return {
       messages: decorateThreadMessagesWithReactions(
         input,
-        extractCollectionMessages(response).map(message =>
-          mapThreadMessage(message, currentUserId, resolveMediaUrl, "group", activeGroupCall),
-        ),
+        await enrichSharedPostMessages(event, messages),
       ),
       typing: false,
     }
@@ -1287,12 +1379,14 @@ export async function fetchMessageThread(
     "Unable to load page messages.",
   )
 
+  const messages = extractCollectionMessages(response).map(message =>
+    mapThreadMessage(message, currentUserId, resolveMediaUrl, "page"),
+  )
+
   return {
     messages: decorateThreadMessagesWithReactions(
       input,
-      extractCollectionMessages(response).map(message =>
-        mapThreadMessage(message, currentUserId, resolveMediaUrl, "page"),
-      ),
+      await enrichSharedPostMessages(event, messages),
     ),
     typing: false,
   }
@@ -1308,9 +1402,12 @@ export async function sendMessageToThread(
   const currentUserId = asNumber(currentUser.user_id)
   const sessionHash = asString(currentUser.session_hash)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
-  const normalizeCreatedMessages = (entities: BackendEntity[]) =>
+  const normalizeCreatedMessages = async (entities: BackendEntity[]) =>
     decorateThreadMessages(
-      entities.map(message => mapThreadMessage(message, currentUserId, resolveMediaUrl, input.type)),
+      await enrichSharedPostMessages(
+        event,
+        entities.map(message => mapThreadMessage(message, currentUserId, resolveMediaUrl, input.type)),
+      ),
     )
 
   const createLegacyBody = (
@@ -1401,7 +1498,7 @@ export async function sendMessageToThread(
       "Unable to load the created user message.",
     )
 
-    return normalizeCreatedMessages(response.messages ?? [])
+    return (await normalizeCreatedMessages(response.messages ?? []))
       .filter(message => message.isMine)
       .sort((left, right) => right.id - left.id)
       .slice(0, 1)
@@ -1463,7 +1560,7 @@ export async function sendMessageToThread(
       "Unable to load the created group message.",
     )
 
-    return normalizeCreatedMessages(extractCollectionMessages(response))
+    return (await normalizeCreatedMessages(extractCollectionMessages(response)))
       .filter(message => message.isMine)
       .sort((left, right) => right.id - left.id)
       .slice(0, 1)
@@ -1490,7 +1587,7 @@ export async function sendMessageToThread(
     "Unable to send page message.",
   )
 
-  return normalizeCreatedMessages(extractCollectionMessages(response))
+  return await normalizeCreatedMessages(extractCollectionMessages(response))
 }
 
 export async function registerMessageReaction(

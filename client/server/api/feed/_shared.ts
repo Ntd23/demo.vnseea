@@ -1047,11 +1047,16 @@ export const mapPostRecord = (
   const isLive = firstString(entity, ["postType", "post_type", "type"]) === "live"
     || Boolean(liveStreamName)
     || liveEnded
-  const canShare = !audienceSelection.isAnonymous && (
-    hasOwn(entity, "can_share")
-      ? isTruthy(entity.can_share)
-      : isCanonicalPublicContentAudience(rawAudience)
-  )
+  const canShare = !audienceSelection.isAnonymous
+    && audienceSelection.audience !== "only_me"
+    && (
+      audienceSelection.audience === "friends"
+      || (
+        hasOwn(entity, "can_share")
+          ? isTruthy(entity.can_share)
+          : isCanonicalPublicContentAudience(rawAudience)
+      )
+    )
   const liveState = !isLive
     ? null
     : liveEnded || !liveTime || liveHeartbeatAge > 45

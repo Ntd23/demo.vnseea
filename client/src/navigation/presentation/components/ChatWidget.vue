@@ -630,6 +630,7 @@
                 :media-name="message.isDeleted ? undefined : message.mediaName"
                 :media-type="message.isDeleted ? undefined : message.mediaType"
                 :product-card="message.isDeleted ? undefined : getMiniProductMeta(message)?.card"
+                :shared-post="message.isDeleted ? undefined : message.sharedPost"
                 :story-context="message.isDeleted ? undefined : message.story"
                 :location="message.isDeleted ? undefined : getMessageLocationMeta(message)"
                 :call-log="message.isDeleted ? undefined : message.callLog"
@@ -3057,6 +3058,19 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding: 10px 12px;
   font-size: 12px;
   line-height: 1.5;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--shared-post) {
+  width: min(235px, calc(100% - 26px)) !important;
+  max-width: min(235px, calc(100% - 26px)) !important;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble--shared-post) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 }
 
 .chat-widget__mini-message--highlighted :deep(.chat-bubble__wrapper) {

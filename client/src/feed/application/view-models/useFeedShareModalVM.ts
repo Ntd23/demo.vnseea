@@ -68,6 +68,7 @@ export function useFeedShareModalVM(
   const feedRepository = createApiFeedRepository()
   const feedShareRepository = createApiFeedShareRepository()
   const authStore = useCurrentAuthUserStore()
+  const requestURL = useRequestURL()
 
   const selectedDestination = ref<FeedShareDestination>("timeline")
   const selectedTargetId = ref("")
@@ -213,9 +214,12 @@ export function useFeedShareModalVM(
     shareUrl?: string
   }) {
     const target = selectedTarget.value
+    const canonicalPostUrl = input.postId
+      ? new URL(appRoutes.postDetail(input.postId), requestURL.origin).toString()
+      : ""
     const text = input.postId
       ? selectedDestination.value === "message"
-        ? [input.caption?.trim(), input.postText?.trim(), input.shareUrl?.trim()].filter(Boolean).join("\n\n")
+        ? [input.caption?.trim(), canonicalPostUrl].filter(Boolean).join("\n\n")
         : (input.caption?.trim() ?? "")
       : createShareText(input)
 

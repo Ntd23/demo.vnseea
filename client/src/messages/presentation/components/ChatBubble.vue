@@ -39,6 +39,7 @@
         class="group relative w-fit max-w-[80%] lg:max-w-[42rem] chat-bubble__wrapper"
         :class="{
           'chat-bubble__wrapper--product': productCard,
+          'chat-bubble__wrapper--shared-post': sharedPost,
           'chat-bubble__wrapper--location': location && !isDeleted,
           'chat-bubble__wrapper--story': storyContext && !isDeleted,
         }"
@@ -120,14 +121,19 @@
           :class="[
             isDeleted ? 'chat-bubble--deleted' : '',
             storyContext && !isDeleted ? 'chat-bubble--story' : '',
+            sharedPost && !isDeleted ? 'chat-bubble--shared-post' : '',
             isMine
               ? 'chat-bubble--mine text-[var(--text-inverse)]'
               : 'chat-bubble--theirs border border-[var(--border-light)] text-[var(--text-primary)]'
           ]"
         >
           <p v-if="showAuthor && authorName && !storyContext" class="chat-bubble__author">{{ authorName }}</p>
+          <MessageSharedPostCard
+            v-if="sharedPost"
+            :post="sharedPost"
+          />
           <NuxtLink
-            v-if="productCard"
+            v-else-if="productCard"
             :to="productCard.href"
             class="chat-bubble__product-card"
             @click.stop
@@ -155,7 +161,13 @@
             :message-author="authorName"
             :reply-text="text"
           />
-          <p v-if="text && !storyContext" class="chat-bubble__text whitespace-pre-wrap" :class="{ 'mt-2.5': productCard }">{{ text }}</p>
+          <p
+            v-if="text && !storyContext"
+            class="chat-bubble__text whitespace-pre-wrap"
+            :class="{ 'mt-2.5': productCard || sharedPost }"
+          >
+            {{ text }}
+          </p>
 
           <div v-if="mediaUrl" :class="text || callLog ? 'mt-2.5' : ''">
             <NuxtImg
@@ -259,10 +271,15 @@
 <script setup lang="ts">
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import type { MessageCallLogAction } from "../../domain/types/calls.types"
-import type { MessageProductCard, MessageStoryContext } from "../../domain/types/messages.types"
+import type {
+  MessageProductCard,
+  MessageSharedPostCard as MessageSharedPostCardData,
+  MessageStoryContext,
+} from "../../domain/types/messages.types"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessageLocationMeta } from "../../application/utils/message-location"
 import MessageLocationCard from "./MessageLocationCard.vue"
+import MessageSharedPostCard from "./MessageSharedPostCard.vue"
 import StoryMessageCard from "./StoryMessageCard.vue"
 
 type ChatBubbleReactionOption = {
@@ -301,6 +318,7 @@ const props = defineProps<{
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
   productCard?: MessageProductCard
+  sharedPost?: MessageSharedPostCardData
   storyContext?: MessageStoryContext
   location?: MessageLocationMeta | null
   callLog?: {
@@ -551,6 +569,29 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__wrapper--product {
   width: min(310px, 100%);
+}
+
+.chat-bubble__wrapper--shared-post {
+  width: min(250px, 82%);
+  max-width: min(250px, 82%) !important;
+}
+
+.chat-bubble--shared-post {
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.chat-bubble--shared-post .chat-bubble__text {
+  width: fit-content;
+  max-width: 100%;
+  border-radius: 14px;
+  background: var(--bg-muted);
+  padding: 8px 11px;
+  color: var(--text-primary);
 }
 
 .chat-bubble__wrapper--location {

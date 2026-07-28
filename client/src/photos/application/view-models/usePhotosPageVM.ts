@@ -21,6 +21,7 @@ export function usePhotosPageVM(
   const hasMore = ref(false)
   const nextOffset = ref<number | null>(null)
   const lightboxOpen = ref(false)
+  const shareOpen = ref(false)
   const currentPhotoId = ref("")
   const photoReactions = ref<Record<string, { selectedReaction: FeedStoryReactionType | null; likes: number }>>({})
 
@@ -87,6 +88,16 @@ export function usePhotosPageVM(
     return photo ? photoReactions.value[photo.id]?.likes ?? photo.likes : 0
   })
 
+  const currentPhotoShareUrl = computed(() => {
+    const photo = currentPhoto.value
+
+    if (!photo) {
+      return ""
+    }
+
+    return appRoutes.postDetail(photo.postId)
+  })
+
   const lightboxItems = computed(() =>
     photos.value.map(photo => ({
       type: "image" as const,
@@ -107,6 +118,27 @@ export function usePhotosPageVM(
 
   function handleLightboxChange(index: number) {
     currentPhotoId.value = photos.value[index]?.id ?? photos.value[0]?.id ?? ""
+  }
+
+  function openCurrentPhotoShare() {
+    if (currentPhoto.value?.canShare) {
+      shareOpen.value = true
+    }
+  }
+
+  function handleCurrentPhotoShared() {
+    const postId = currentPhoto.value?.postId
+
+    if (!postId) {
+      return
+    }
+
+    photos.value = photos.value.map(photo =>
+      photo.postId === postId
+        ? { ...photo, shares: photo.shares + 1 }
+        : photo,
+    )
+    shareOpen.value = false
   }
 
   async function loadMore() {
@@ -206,14 +238,18 @@ export function usePhotosPageVM(
     hasMore,
     nextOffset,
     lightboxOpen,
+    shareOpen,
     currentPhotoId,
     currentPhoto,
     currentPhotoReaction,
     currentPhotoLikeCount,
+    currentPhotoShareUrl,
     lightboxItems,
     currentLightboxIndex,
     openPhoto,
     handleLightboxChange,
+    openCurrentPhotoShare,
+    handleCurrentPhotoShared,
     loadMore,
     submitComment,
     reactToCurrentPhoto,
