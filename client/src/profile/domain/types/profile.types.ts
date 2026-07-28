@@ -32,6 +32,7 @@ export interface ProfileProductRecord {
   name: string
   imageUrl: string
   priceLabel: string
+  pointLabel: string
   href: string
 }
 

@@ -133,6 +133,10 @@
           <div class="market-product-price mt-2 text-[18px] font-bold">
             {{ formatProductCurrency(product) }}
           </div>
+          <div v-if="product.point > 0" class="market-product-points">
+            <Icon name="i-ph-coins-fill" class="h-4 w-4" />
+            {{ formatProductPointPrice(product) }}
+          </div>
           <div class="mt-2 flex items-center justify-between gap-2 text-[12px] font-medium text-[var(--text-secondary)]">
             <span class="truncate">{{ product.seller }}</span>
             <span>{{ product.condition }}</span>
@@ -202,6 +206,7 @@ const {
   cartLoadingProductId,
   isLoadingMore,
   formatProductCurrency,
+  formatProductPointPrice,
   formatDistance,
   resetFilters,
   applyDistance,
@@ -507,6 +512,16 @@ const {
 
 .market-product-price {
   color: var(--product-brand);
+}
+
+.market-product-points {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .market-product-more:hover {

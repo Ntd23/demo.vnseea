@@ -1,4 +1,5 @@
 <?php
+// English description: Creates marketplace products with money and point prices through the v2 API.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -39,6 +40,7 @@ if (empty($error_code)) {
     $product_description = Wo_Secure($_POST['product_description']);
     $product_location    = Wo_Secure($_POST['product_location']);
     $product_price       = Wo_Secure($_POST['product_price']);
+    $product_point       = isset($_POST['product_point']) ? trim((string) $_POST['product_point']) : '0';
     $lat       = (isset($_POST['lat']) && is_numeric($_POST['lat'])) ? Wo_Secure($_POST['lat']) : 0;
     $lng       = (isset($_POST['lng']) && is_numeric($_POST['lng'])) ? Wo_Secure($_POST['lng']) : 0;
     $product_type        = (!empty($_POST['product_type'])) ? 1 : 0;
@@ -49,6 +51,11 @@ if (empty($error_code)) {
     } else if (!is_numeric($product_price)) {
         $error_code    = 5;
         $error_message = 'Please choose a correct value for your price';
+    }
+
+    if (empty($error_code) && (!preg_match('/^\d+$/', $product_point) || (float) $product_point > PHP_INT_MAX)) {
+        $error_code    = 8;
+        $error_message = 'Please choose a correct non-negative integer value for your point price';
     }
     
     if (isset($_FILES['images']['name'])) {
@@ -114,6 +121,7 @@ if (empty($error_code)) {
             'description' => $product_description,
             'time' => time(),
             'price' => $product_price,
+            'point' => Wo_Secure($product_point),
             'type' => $product_type,
             'location' => $product_location,
             'active' => 1,

@@ -46,6 +46,10 @@
             <p class="order-item__price">
               {{ formatLineItemCurrency(item) }}
             </p>
+            <p v-if="(item.checkoutPoint ?? item.point) > 0" class="order-item__points">
+              <Icon name="i-ph-coins-fill" class="h-4 w-4" />
+              {{ formatPoints((item.checkoutPoint ?? item.point) * item.quantity) }}
+            </p>
 
             <div class="order-item__quantity">
               <span>{{ $t("checkout.summary.qty") }}</span>
@@ -86,6 +90,10 @@
         <div class="order-card__grand-total">
           <span>{{ $t("checkout.summary.totalPayment") }}</span>
           <strong>{{ formatCheckoutCurrency(total) }}</strong>
+        </div>
+        <div v-if="totalPoints > 0" class="order-card__points-total">
+          <span>{{ $t("checkout.summary.totalPoints") }}</span>
+          <strong>{{ formatPoints(totalPoints) }}</strong>
         </div>
       </div>
 
@@ -166,6 +174,10 @@ const subtotal = computed(() => props.items.reduce(
   0,
 ))
 const total = computed(() => subtotal.value + props.shippingFee)
+const totalPoints = computed(() => props.items.reduce(
+  (sum, item) => sum + (item.checkoutPoint ?? item.point) * item.quantity,
+  0,
+))
 const isBusy = computed(() => props.checkoutState === "loading")
 
 const statusAlert = computed(() => {
@@ -217,6 +229,12 @@ function formatLineItemCurrency(item: CheckoutLineItem) {
     currencySymbol: item.currencySymbol || props.currencySymbol,
     currencyRule: item.currencyRule || props.currencyRule,
     locale: locale.value,
+  })
+}
+
+function formatPoints(value: number) {
+  return t("checkout.summary.pointPrice", {
+    count: new Intl.NumberFormat(locale.value, { maximumFractionDigits: 0 }).format(Math.max(0, Math.trunc(value))),
   })
 }
 
@@ -329,7 +347,8 @@ function stockLimitLabel(item: CheckoutLineItem) {
 }
 
 .order-item__body h3,
-.order-item__price {
+.order-item__price,
+.order-item__points {
   margin: 0;
 }
 
@@ -343,6 +362,16 @@ function stockLimitLabel(item: CheckoutLineItem) {
 .order-item__price {
   margin-top: 5px;
   color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.order-item__points {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -374,6 +403,21 @@ function stockLimitLabel(item: CheckoutLineItem) {
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
+}
+
+.order-card__points-total {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.order-card__points-total strong {
+  color: var(--text-primary);
 }
 
 .order-card__total-row {

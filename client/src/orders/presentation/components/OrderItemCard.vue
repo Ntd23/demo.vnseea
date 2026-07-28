@@ -28,9 +28,14 @@
           </div>
         </div>
 
-        <p class="order-item-price text-xl font-black tracking-tight text-[var(--text-primary)]">
-          {{ formatOrderCurrency(item.price * item.quantity) }}
-        </p>
+        <div class="order-item-price text-right">
+          <p class="text-xl font-black tracking-tight text-[var(--text-primary)]">
+            {{ formatOrderCurrency(item.price * item.quantity) }}
+          </p>
+          <p v-if="item.point" class="mt-1 text-sm font-black text-[var(--text-brand)]">
+            {{ formatOrderPoints(item.point * item.quantity) }}
+          </p>
+        </div>
       </div>
 
       <div class="flex flex-wrap gap-2 pt-1">
@@ -69,9 +74,14 @@
           </p>
         </div>
 
-        <p class="text-sm font-black tracking-tight text-[var(--text-primary)]">
-          {{ formatOrderCurrency(item.price * item.quantity) }}
-        </p>
+        <div class="text-right">
+          <p class="text-sm font-black tracking-tight text-[var(--text-primary)]">
+            {{ formatOrderCurrency(item.price * item.quantity) }}
+          </p>
+          <p v-if="item.point" class="text-xs font-black text-[var(--text-brand)]">
+            {{ formatOrderPoints(item.point * item.quantity) }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -104,6 +114,11 @@ const formatOrderCurrency = (value: number) =>
     currency: "VND",
     locale: locale.value,
   })
+
+const formatOrderPoints = (value: number) =>
+  `${new Intl.NumberFormat(locale.value, {
+    maximumFractionDigits: 0,
+  }).format(Math.max(0, value))} VNSEEA`
 
 const detailMetaText = computed(() =>
   props.metaText

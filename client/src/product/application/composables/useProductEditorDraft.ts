@@ -1,3 +1,5 @@
+// English description: Persists and normalizes product editor drafts across create and edit sessions.
+
 import { computed, ref, watch, type ComputedRef, type Ref } from "vue"
 import { useStorage } from "@vueuse/core"
 import type {
@@ -43,6 +45,7 @@ const normalizeDraft = (value: unknown, fallback: ProductEditorDraft): ProductEd
     fields: {
       title: typeof fieldsSource.title === "string" ? fieldsSource.title : fallbackFields.title,
       price: typeof fieldsSource.price === "string" ? fieldsSource.price : fallbackFields.price,
+      point: typeof fieldsSource.point === "string" ? fieldsSource.point : fallbackFields.point,
       description: typeof fieldsSource.description === "string" ? fieldsSource.description : fallbackFields.description,
       category: extractStringValue(fieldsSource.category) ?? fallbackFields.category,
       condition: normalizeEnumField(fieldsSource.condition, conditionValues, fallbackFields.condition),

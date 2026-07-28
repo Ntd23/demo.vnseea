@@ -8,6 +8,7 @@ type BackendOrderProduct = {
   id?: number | string
   name?: string
   price?: number | string
+  point?: number | string
   images?: Array<string | { image?: string; image_org?: string }>
   user_data?: { name?: string; username?: string }
   seller?: { name?: string; username?: string }
@@ -17,6 +18,7 @@ type BackendOrderRow = {
   id?: number | string
   product_id?: number | string
   price?: number | string
+  point?: number | string
   units?: number | string
   status?: string
   time?: number | string
@@ -37,6 +39,7 @@ export type BackendPurchase = {
   id?: number | string
   order_hash_id?: string
   price?: number | string
+  point?: number | string
   final_price?: number | string
   time?: number | string
   date?: string
@@ -147,13 +150,24 @@ export const normalizeBuyerOrder = (event: H3Event, purchase: BackendPurchase): 
   const primaryOrder = getPrimaryOrder(purchase)
   const status = toStatus(primaryOrder?.status)
   const placedAt = asString(purchase.date) || asString(purchase.time)
-  const items = (purchase.orders ?? []).map(order => ({
-    id: asString(order.product_id || order.id),
-    name: asString(order.product?.name, "Product"),
-    quantity: Math.max(1, asNumber(order.units, 1)),
-    price: asNumber(order.price || order.product?.price),
-    imageStyle: normalizeImageStyle(event, order.product),
-  }))
+  const items = (purchase.orders ?? []).map((order) => {
+    const quantity = Math.max(1, asNumber(order.units, 1))
+    const price = order.price !== undefined
+      ? asNumber(order.price) / quantity
+      : asNumber(order.product?.price)
+    const point = order.point !== undefined
+      ? asNumber(order.point) / quantity
+      : asNumber(order.product?.point)
+
+    return {
+      id: asString(order.product_id || order.id),
+      name: asString(order.product?.name, "Product"),
+      quantity,
+      price,
+      point: Math.max(0, point),
+      imageStyle: normalizeImageStyle(event, order.product),
+    }
+  })
 
   return {
     id: asString(purchase.order_hash_id || purchase.id),
@@ -172,6 +186,7 @@ export const normalizeBuyerOrder = (event: H3Event, purchase: BackendPurchase): 
     paymentStatus: status === "cancelled" ? "refunded" : "paid",
     shippingFee: 0,
     total: asNumber(purchase.price),
+    totalPoints: Math.max(0, asNumber(purchase.point)),
     items,
     timeline: buildTimeline(placedAt, status),
   }

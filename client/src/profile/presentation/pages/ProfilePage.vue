@@ -810,6 +810,9 @@
                   <strong class="profile-card__product-price">{{
                     product.priceLabel
                   }}</strong>
+                  <strong v-if="product.pointLabel" class="profile-card__product-points">
+                    {{ product.pointLabel }}
+                  </strong>
                 </NuxtLink>
               </div>
             </section>
@@ -2880,6 +2883,14 @@ function handleMoreAction(action: string) {
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
   color: color-mix(in srgb, var(--bg-brand) 60%, transparent);
   margin-top: 2px;
+}
+
+.profile-card__product-points {
+  display: block;
+  padding: 0 8px 8px;
+  color: var(--text-brand);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .profile-more-icon--poke {

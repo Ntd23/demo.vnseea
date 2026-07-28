@@ -762,8 +762,13 @@ const buildPostAttachmentCard = (
     const price = firstString(product, ["price_format"])
       || firstString(product, ["price_text"])
       || firstString(product, ["price"])
+    const point = Math.max(0, firstNumber(product, ["point"]))
+    const pointPrice = point > 0
+      ? `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(point)} VNSEEA`
+      : ""
     const description = [
       price,
+      pointPrice,
       stripHtml(firstString(product, ["description"])),
     ].filter(Boolean).join(" - ")
     const rawUrl = firstString(product, ["url"])

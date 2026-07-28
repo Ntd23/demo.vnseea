@@ -60,6 +60,7 @@ export default defineEventHandler(async (event) => {
       product_category: fields.category,
       product_description: fields.description,
       product_price: fields.price,
+      product_point: fields.point || "0",
       product_location: fields.location,
       product_type: fields.condition === "used" ? "1" : "0",
       currency: fields.currency,

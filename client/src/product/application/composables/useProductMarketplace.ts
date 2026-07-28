@@ -3,7 +3,7 @@
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { watchDebounced } from "@vueuse/core"
 import { useChatWidgetLauncher } from "../../../navigation/application/composables/useChatWidgetLauncher"
-import { formatProductPrice } from "../formatters/product-currency"
+import { formatProductPoints, formatProductPrice, formatProductPriceSummary } from "../formatters/product-currency"
 import type {
   ProductCategory,
   ProductDistanceValue,
@@ -134,6 +134,7 @@ export const useProductMarketplace = (
   )
 
   const formatProductCurrency = (product: ProductListing) => formatProductPrice(product, locale.value)
+  const formatProductPointPrice = (product: ProductListing) => formatProductPoints(product, locale.value)
 
   const formatDistance = (value: number) =>
     value > 0
@@ -316,7 +317,7 @@ export const useProductMarketplace = (
         id: String(product.id),
         title: product.title,
         imageUrl: product.imageUrl,
-        price: formatProductCurrency(product),
+        price: formatProductPriceSummary(product, locale.value),
         href: product.href,
       },
     })
@@ -376,6 +377,7 @@ export const useProductMarketplace = (
     cartLoadingProductId,
     isLoadingMore,
     formatProductCurrency,
+    formatProductPointPrice,
     formatDistance,
     resetFilters,
     applyDistance,

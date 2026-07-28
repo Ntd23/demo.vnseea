@@ -16,6 +16,10 @@
           {{ order.shippingFee > 0 ? formatOrderCurrency(order.shippingFee) : $t("orders.summary.free") }}
         </span>
       </div>
+      <div v-if="totalPoints > 0" class="flex items-center justify-between gap-4">
+        <span class="text-xs font-black uppercase tracking-widest text-[var(--text-secondary)]">{{ $t("orders.summary.totalPoints") }}</span>
+        <span class="text-sm font-black text-[var(--text-brand)]">{{ formatOrderPoints(totalPoints) }}</span>
+      </div>
     </div>
 
     <div class="mt-6 border-t border-[var(--border-light)]" />
@@ -27,6 +31,9 @@
         </p>
         <p class="text-3xl font-black leading-none tracking-tight text-[var(--text-primary)]">
           {{ formatOrderCurrency(order.total) }}
+        </p>
+        <p v-if="totalPoints > 0" class="text-sm font-black text-[var(--text-brand)]">
+          {{ formatOrderPoints(totalPoints) }}
         </p>
       </div>
 
@@ -57,10 +64,19 @@ const props = withDefaults(defineProps<{
 
 const { subtotal, statusMeta } = useOrderPresentation(computed(() => props.order))
 const { locale } = useI18n()
+const totalPoints = computed(() =>
+  props.order.totalPoints
+  ?? props.order.items.reduce((sum, item) => sum + (item.point ?? 0) * item.quantity, 0),
+)
 
 const formatOrderCurrency = (value: number) =>
   formatCurrency(value, {
     currency: "VND",
     locale: locale.value,
   })
+
+const formatOrderPoints = (value: number) =>
+  `${new Intl.NumberFormat(locale.value, {
+    maximumFractionDigits: 0,
+  }).format(Math.max(0, value))} VNSEEA`
 </script>

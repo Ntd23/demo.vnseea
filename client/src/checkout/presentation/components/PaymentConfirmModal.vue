@@ -12,7 +12,10 @@
 
         <div class="order-confirm__summary" aria-live="polite">
           <span>{{ $t("checkout.summary.items", { count: totalItemsCount }) }}</span>
-          <strong>{{ formatCheckoutCurrency(totalPayment) }}</strong>
+          <span class="order-confirm__summary-values">
+            <strong>{{ formatCheckoutCurrency(totalPayment) }}</strong>
+            <strong v-if="totalPoints > 0">{{ formatPoints(totalPoints) }}</strong>
+          </span>
         </div>
 
         <div class="order-confirm__actions">
@@ -76,6 +79,10 @@ const totalItemsCount = computed(() => props.items.reduce((sum, item) => sum + i
 const totalPayment = computed(() =>
   props.items.reduce((sum, item) => sum + (item.checkoutPrice ?? item.price) * item.quantity, 0) + props.shippingFee,
 )
+const totalPoints = computed(() => props.items.reduce(
+  (sum, item) => sum + (item.checkoutPoint ?? item.point) * item.quantity,
+  0,
+))
 
 function formatCheckoutCurrency(value: number) {
   return formatCurrencyWithUnit(value, {
@@ -84,6 +91,12 @@ function formatCheckoutCurrency(value: number) {
     currencyRule: props.currencyRule,
     locale: locale.value,
   })
+}
+
+function formatPoints(value: number) {
+  return `${new Intl.NumberFormat(locale.value, { maximumFractionDigits: 0 }).format(
+    Math.max(0, Math.trunc(value)),
+  )} VNSEEA`
 }
 </script>
 
@@ -134,6 +147,12 @@ function formatCheckoutCurrency(value: number) {
 .order-confirm__summary strong {
   color: var(--text-primary);
   font-size: 17px;
+}
+
+.order-confirm__summary-values {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
 }
 
 .order-confirm__actions {

@@ -4,6 +4,7 @@ export interface CheckoutLineItem {
   id: string
   name: string
   price: number
+  point: number
   quantity: number
   maxQuantity?: number
   imageStyle?: string
@@ -12,6 +13,7 @@ export interface CheckoutLineItem {
   currencySymbol?: string
   currencyRule?: CheckoutCurrencyRule
   checkoutPrice?: number
+  checkoutPoint?: number
 }
 
 export interface CheckoutCurrencyRule {
@@ -37,6 +39,7 @@ export interface CheckoutSnapshot {
   items: CheckoutLineItem[]
   shippingAddress: ShippingAddress | null
   walletBalance: number
+  pointsBalance: number
   shippingFee: number
   currency: string
   currencySymbol?: string

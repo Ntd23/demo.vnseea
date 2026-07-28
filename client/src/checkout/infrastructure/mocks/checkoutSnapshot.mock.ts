@@ -8,6 +8,7 @@ export const checkoutSnapshotMock: CheckoutSnapshot = {
       id: "john-larry",
       name: "John Larry",
       price: 50000,
+      point: 250,
       quantity: 2,
       currency: "VND",
       checkoutPrice: 50000,
@@ -20,6 +21,7 @@ export const checkoutSnapshotMock: CheckoutSnapshot = {
   ],
   shippingAddress: null,
   walletBalance: 40000,
+  pointsBalance: 1000,
   shippingFee: 0,
   currency: "VND",
 }

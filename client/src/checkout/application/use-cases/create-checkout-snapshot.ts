@@ -6,6 +6,7 @@ export const createCheckoutSnapshot = (): CheckoutSnapshot => ({
   items: [],
   shippingAddress: null,
   walletBalance: 0,
+  pointsBalance: 0,
   shippingFee: 0,
   currency: "",
   currencySymbol: "",

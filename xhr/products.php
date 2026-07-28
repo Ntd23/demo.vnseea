@@ -1,4 +1,6 @@
-<?php 
+<?php
+// English description: Handles legacy marketplace product creation and updates with optional point prices.
+
 if (!function_exists('Wo_ProductColumnExists')) {
     function Wo_ProductColumnExists($column_name = '') {
         global $sqlConnect;
@@ -37,6 +39,7 @@ if ($f == 'products') {
         if (isset($_POST['price'])) {
             $parsed_price = Wo_ParsePriceByCurrency($_POST['price'], $currency);
         }
+        $product_point = isset($_POST['point']) ? trim((string) $_POST['point']) : '0';
         if ($wo['config']['who_upload'] == 'pro' && $wo['user']['is_pro'] == 0 && !Wo_IsAdmin() && !empty($_FILES['postPhotos'])) {
             $errors[] = $error_icon . $wo['lang']['free_plan_upload_pro'];
         }
@@ -48,6 +51,8 @@ if ($f == 'products') {
             $errors[] = $error_icon . $wo['lang']['please_choose_c_price'];
         } else if ((float) $parsed_price <= 0) {
             $errors[] = $error_icon . $wo['lang']['please_choose_price'];
+        } else if (!preg_match('/^\d+$/', $product_point) || (float) $product_point > PHP_INT_MAX) {
+            $errors[] = $error_icon . $wo['lang']['please_check_details'];
         } else if (empty($_FILES['postPhotos']['name'])) {
             $errors[] = $error_icon . $wo['lang']['please_upload_image'];
         } else if($wo['config']['store_system'] == 'on' && (empty($_POST['units']) || !is_numeric($_POST['units']) || $_POST['units'] < 1)){
@@ -131,6 +136,9 @@ if ($f == 'products') {
             if (Wo_ProductColumnExists('place_id')) {
                 $product_data_array['place_id'] = $place_id;
             }
+            if (Wo_ProductColumnExists('point')) {
+                $product_data_array['point'] = Wo_Secure($product_point);
+            }
             $fields = Wo_GetCustomFields('product'); 
             if (!empty($fields)) {
                 foreach ($fields as $key => $field) {
@@ -211,6 +219,7 @@ if ($f == 'products') {
         if (isset($_POST['price'])) {
             $parsed_price = Wo_ParsePriceByCurrency($_POST['price'], $currency);
         }
+        $product_point = isset($_POST['point']) ? trim((string) $_POST['point']) : null;
         if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['description'])) {
             $errors[] = $error_icon . $wo['lang']['please_check_details'];
         } else if (empty($_POST['price'])) {
@@ -219,6 +228,8 @@ if ($f == 'products') {
             $errors[] = $error_icon . $wo['lang']['please_choose_c_price'];
         } else if ((float) $parsed_price <= 0) {
             $errors[] = $error_icon . $wo['lang']['please_choose_price'];
+        } else if ($product_point !== null && (!preg_match('/^\d+$/', $product_point) || (float) $product_point > PHP_INT_MAX)) {
+            $errors[] = $error_icon . $wo['lang']['please_check_details'];
         } else if($wo['config']['store_system'] == 'on' && (empty($_POST['units']) || !is_numeric($_POST['units']) || $_POST['units'] < 1)){
             $errors[] = $error_icon . $wo['lang']['total_item_not_empty'];
         }
@@ -295,6 +306,9 @@ if ($f == 'products') {
             );
             if (Wo_ProductColumnExists('place_id')) {
                 $product_data_array['place_id'] = $place_id;
+            }
+            if ($product_point !== null && Wo_ProductColumnExists('point')) {
+                $product_data_array['point'] = Wo_Secure($product_point);
             }
 
             $fields = Wo_GetCustomFields('product'); 
