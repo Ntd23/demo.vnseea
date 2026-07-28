@@ -282,6 +282,7 @@ export function useChatWidgetVM(
   const connectingRealtime = ref(false)
   const socketOwnerId = ref(0)
   const refreshTimer = shallowRef<number | null>(null)
+  const isInboxRefreshPaused = ref(false)
   const unreadSnapshot = shallowRef<Map<string, { unreadCount: number, preview: string }>>(new Map())
   const hasUnreadSnapshot = ref(false)
   const pendingMiniThreadRequests = new Map<string, Promise<MessageThread>>()
@@ -731,7 +732,16 @@ export function useChatWidgetVM(
   }
 
   async function refreshFromIncomingMessage() {
+    if (isInboxRefreshPaused.value) {
+      return
+    }
+
     await new Promise(resolve => setTimeout(resolve, 800))
+
+    if (isInboxRefreshPaused.value) {
+      return
+    }
+
     await refreshInboxSafely({ silent: true })
 
     const incomingContact = findNewIncomingContact()
@@ -1514,11 +1524,17 @@ export function useChatWidgetVM(
     }
 
     refreshTimer.value = window.setInterval(() => {
-      void refreshFromIncomingMessage()
+      if (!isInboxRefreshPaused.value) {
+        void refreshFromIncomingMessage()
+      }
       if (!socket.value) {
         void connectRealtime()
       }
     }, INBOX_REFRESH_INTERVAL_MS)
+  }
+
+  function setInboxRefreshPaused(paused: boolean) {
+    isInboxRefreshPaused.value = paused
   }
 
   function stopRefreshTimer() {
@@ -1733,6 +1749,7 @@ export function useChatWidgetVM(
     activeTab,
     search,
     activeSendTagFilter,
+    setInboxRefreshPaused,
     sendTo,
     sendMessage,
     attachFile,

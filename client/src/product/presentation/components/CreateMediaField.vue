@@ -2,7 +2,9 @@
 <template>
   <div class="space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <p class="text-[1.02rem] font-black text-[var(--text-primary)]">Hình ảnh</p>
+      <p class="text-[1.02rem] font-black text-[var(--text-primary)]">
+        {{ $t("product.createMediaField.title") }}
+      </p>
       <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5">
         {{ imageButtonLabel }}
       </UBadge>
@@ -14,8 +16,8 @@
       accept="image/*"
       layout="grid"
       highlight
-      :label="uploadLabel"
-      description="Mock UI: chọn ảnh local để kiểm tra flow hiển thị và preview."
+      :label="uploadLabel || $t('product.createMediaField.uploadLabel')"
+      :description="$t('product.createMediaField.uploadDescription')"
       class="w-full"
     />
 
@@ -29,7 +31,7 @@
       color="neutral"
       variant="subtle"
       icon="i-ph-images-fill"
-      :description="`Đang chọn ${filesModel.length}/${fileLimit} ảnh. Ảnh local chỉ phục vụ preview UI.`"
+      :description="$t('product.createMediaField.selectedStatus', { current: filesModel.length, limit: fileLimit })"
       class="rounded-[20px]"
     />
   </div>
@@ -42,7 +44,7 @@ withDefaults(defineProps<{
   uploadLabel?: string
 }>(), {
   fileLimit: 10,
-  uploadLabel: "Tải ảnh sản phẩm",
+  uploadLabel: undefined,
 })
 
 const filesModel = defineModel<File[]>("files", {

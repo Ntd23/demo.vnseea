@@ -583,6 +583,20 @@ function submitMessage() {
   padding: 12px 16px;
 }
 
+@media (max-width: 767.98px) {
+  .chat-input-root {
+    position: sticky;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    max-height: min(68dvh, 560px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* Mobile: compact action buttons */
 @media (max-width: 520px) {
   .chat-input-main-row {
