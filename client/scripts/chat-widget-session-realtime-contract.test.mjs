@@ -53,3 +53,18 @@ test("mini-chat reaction picker closes when clicking outside its trigger or popu
   assert.match(widgetSource, /\.closest\("\.chat-bubble__message-tool-wrap, \.chat-bubble__reaction-picker"\)/)
   assert.match(widgetSource, /activeMiniReactionPickerId\.value = null/)
 })
+
+test("contact avatars open the conversation directly without a context popup", () => {
+  assert.match(widgetSource, /class="chat-widget__contact-avatar-btn"[\s\S]*?@click\.stop="openMiniChat\(contact\)"/)
+  assert.doesNotMatch(widgetSource, /openAvatarMenu/)
+  assert.doesNotMatch(widgetSource, /avatarMenuContact/)
+  assert.doesNotMatch(widgetSource, /chat-widget__avatar-menu/)
+})
+
+test("group message avatars open the same user actions as one-to-one messages", () => {
+  assert.match(widgetSource, /const isGroupMember = contact\.type === "group" && senderId > 0/)
+  assert.match(widgetSource, /type: isGroupMember \? "user" : contact\.type/)
+  assert.match(widgetSource, /userId: isGroupMember \? senderId : contact\.userId/)
+  assert.match(widgetSource, /profileUrl: message\.authorProfileUrl/)
+  assert.match(widgetSource, /messageAvatarMenuContact\.type === 'user'/)
+})

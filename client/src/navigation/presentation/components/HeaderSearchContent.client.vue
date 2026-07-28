@@ -32,11 +32,28 @@
       empty: 'py-10 text-sm font-medium',
       footer: 'border-t bg-[var(--bg-muted)] px-4 py-2.5 text-xs'
     }"
-  />
+  >
+    <template #history-item-trailing="{ item }">
+      <button
+        type="button"
+        class="search-content-history-remove"
+        :aria-label="$t('navigation.headerSearchInput.removeHistoryItem', { name: item.label })"
+        @pointerdown.prevent.stop
+        @click.prevent.stop="removeSelectedHistoryItem(item)"
+      >
+        <Icon
+          name="i-ph-x-bold"
+          aria-hidden="true"
+        />
+      </button>
+    </template>
+  </LazyUContentSearch>
 </template>
 
 <script setup lang="ts">
+import { useHeaderSearchHistory } from '../../application/composables/useHeaderSearchHistory'
 import { useHeaderSearchSuggestions } from '../../application/composables/useHeaderSearchSuggestions'
+import type { HeaderSearchSuggestion } from '../../domain/types/navigation-search.types'
 
 type HeaderSearchContentItem = {
   id: string
@@ -53,6 +70,7 @@ type HeaderSearchContentItem = {
     color: 'primary'
     variant: 'soft'
   }
+  slot?: string
   onSelect: () => void
 }
 
@@ -72,6 +90,12 @@ const {
   loading: suggestionsLoading,
   refresh: refreshSuggestions
 } = useHeaderSearchSuggestions(search)
+const {
+  items: historyItems,
+  add: addHistoryItem,
+  remove: removeHistoryItem,
+  clear: clearHistory
+} = useHeaderSearchHistory()
 
 function kindLabel(kind: (typeof suggestionItems.value)[number]['kind']) {
   if (kind === 'user') return t('community.search.tabs.users.label')
@@ -87,20 +111,32 @@ function kindIcon(kind: (typeof suggestionItems.value)[number]['kind']) {
   return 'i-ph-hash'
 }
 
-function toContentSearchItem(item: (typeof suggestionItems.value)[number]): HeaderSearchContentItem {
+function historyContentItemId(item: Pick<HeaderSearchSuggestion, 'id' | 'kind'>) {
+  return `history:${item.kind}:${item.id}`
+}
+
+function toContentSearchItem(
+  item: HeaderSearchSuggestion,
+  fromHistory = false
+): HeaderSearchContentItem {
   return {
-    id: item.id,
+    id: fromHistory ? historyContentItemId(item) : item.id,
     label: item.title,
     description: item.subtitle,
     suffix: kindLabel(item.kind),
     icon: item.avatarUrl ? undefined : kindIcon(item.kind),
     avatar: item.avatarUrl ? { src: item.avatarUrl, alt: item.title } : undefined,
     chip: item.badge ? { label: item.badge, color: 'primary', variant: 'soft' } : undefined,
-    onSelect: () => selectSuggestion(item.href)
+    slot: fromHistory ? 'history-item' : undefined,
+    onSelect: () => selectSuggestion(item)
   }
 }
 
 const contentSearchGroups = computed(() => {
+  if (!search.value.trim()) {
+    return buildHistoryGroups()
+  }
+
   return [
     buildGroup('users', t('community.search.tabs.users.label'), 'user'),
     buildGroup('pages', t('community.search.tabs.pages.label'), 'page'),
@@ -108,6 +144,36 @@ const contentSearchGroups = computed(() => {
     buildGroup('hashtags', t('navigation.headerSearchInput.hashtagsLabel'), 'hashtag')
   ].filter(Boolean)
 })
+
+function buildHistoryGroups() {
+  if (historyItems.value.length === 0) return []
+
+  return [
+    {
+      id: 'history',
+      label: t('navigation.headerSearchInput.historyLabel'),
+      ignoreFilter: true,
+      items: [
+        ...historyItems.value.map(item => toContentSearchItem(item, true)),
+        {
+          id: 'history-clear',
+          label: t('navigation.headerSearchInput.clearHistory'),
+          description: t('navigation.headerSearchInput.clearHistoryDescription'),
+          icon: 'i-ph-trash-duotone',
+          onSelect: clearHistory
+        }
+      ]
+    }
+  ]
+}
+
+function removeSelectedHistoryItem(item: { id?: string | number }) {
+  const selected = historyItems.value.find(historyItem =>
+    historyContentItemId(historyItem) === String(item.id || '')
+  )
+
+  if (selected) removeHistoryItem(selected)
+}
 
 function buildGroup(
   id: string,
@@ -155,9 +221,10 @@ function closeSearch() {
   contentSearchOpen.value = false
 }
 
-function selectSuggestion(href: string) {
+function selectSuggestion(item: HeaderSearchSuggestion) {
+  addHistoryItem(item)
   closeSearch()
-  void router.push(href)
+  void router.push(item.href)
 }
 
 </script>
@@ -204,6 +271,33 @@ function selectSuggestion(href: string) {
   background: var(--bg-surface-hover) !important;
   color: var(--text-brand) !important;
   box-shadow: var(--shadow-sm);
+}
+
+.search-content-history-remove {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.search-content-history-remove:hover,
+.search-content-history-remove:focus-visible {
+  background: var(--bg-muted);
+  color: var(--text-brand);
+  outline: none;
+}
+
+.search-content-history-remove svg {
+  width: 15px;
+  height: 15px;
 }
 
 .search-content-viewport {

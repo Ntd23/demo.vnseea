@@ -594,6 +594,7 @@ export function useFeedPostCardVM(
     }
 
     sharesCount.value += 1
+    currentPost.stats.shares = sharesCount.value
     actionState.value = "success"
     actionMessage.value = t("feed.shareModal.shared")
     showShare.value = false

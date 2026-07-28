@@ -105,7 +105,7 @@
               autoplay
               muted
               playsinline
-              preload="metadata"
+              preload="auto"
               @ended="nextStory"
               @error="markStoryMediaFailed(activeStoryData?.id)"
               @pause="syncActiveVideoPlaybackState"
@@ -154,7 +154,22 @@
               class="story-viewer__author"
               :class="{ 'story-viewer__author--mine': activeStoryIsMine }"
             >
-              <div class="story-viewer__author-avatar">
+              <NuxtLink
+                v-if="activeStoryProfilePath"
+                :to="activeStoryProfilePath"
+                class="story-viewer__author-avatar"
+                @click.stop="closeStory"
+              >
+                <NuxtImg
+                  v-if="activeStoryData?.avatarUrl"
+                  :src="activeStoryData.avatarUrl"
+                  :alt="activeStoryData.author"
+                  class="story-viewer__author-avatar-image"
+                  sizes="38px"
+                />
+                <span v-else>{{ activeStoryData?.avatar }}</span>
+              </NuxtLink>
+              <div v-else class="story-viewer__author-avatar">
                 <NuxtImg
                   v-if="activeStoryData?.avatarUrl"
                   :src="activeStoryData.avatarUrl"
@@ -164,8 +179,22 @@
                 />
                 <span v-else>{{ activeStoryData?.avatar }}</span>
               </div>
-              <div>
-                <p class="story-viewer__author-name">{{ activeStoryData?.author }}</p>
+              <div class="story-viewer__author-copy">
+                <NuxtLink
+                  v-if="activeStoryProfilePath"
+                  :to="activeStoryProfilePath"
+                  class="story-viewer__author-name"
+                  @click.stop="closeStory"
+                >
+                  {{ activeStoryData?.author }}
+                </NuxtLink>
+                <p v-else class="story-viewer__author-name">{{ activeStoryData?.author }}</p>
+                <p
+                  v-if="activeStoryIsMine"
+                  class="story-viewer__author-status"
+                >
+                  {{ activeStoryAudienceLabel }}
+                </p>
                 <p v-if="activeStoryData?.meta" class="story-viewer__author-meta">{{ activeStoryData.meta }}</p>
               </div>
               <UBadge
@@ -179,6 +208,36 @@
                 <Icon name="i-ph-eye-fill" class="h-[14px] w-[14px]" />
                 <span>{{ activeStoryViewCount }}</span>
               </UBadge>
+            </div>
+
+            <div
+              v-if="activeStoryData?.overlays?.text"
+              class="story-viewer__story-overlay story-viewer__story-overlay--text"
+              :style="storyOverlayStyle(activeStoryData.overlays.text)"
+            >
+              {{ activeStoryData.overlays.text.content }}
+            </div>
+            <NuxtLink
+              v-if="activeStoryData?.overlays?.mention && activeStoryMentionProfilePath"
+              :to="activeStoryMentionProfilePath"
+              class="story-viewer__story-overlay story-viewer__story-overlay--mention"
+              :style="storyOverlayStyle(activeStoryData.overlays.mention)"
+              @click.stop="closeStory"
+            >
+              {{ activeStoryData.overlays.mention.content }}
+            </NuxtLink>
+            <div
+              v-else-if="activeStoryData?.overlays?.mention"
+              class="story-viewer__story-overlay story-viewer__story-overlay--mention"
+              :style="storyOverlayStyle(activeStoryData.overlays.mention)"
+            >
+              {{ activeStoryData.overlays.mention.content }}
+            </div>
+            <div
+              v-if="activeStoryData?.caption && !activeStoryHasOverlays"
+              class="story-viewer__story-text"
+            >
+              <p>{{ activeStoryData.caption }}</p>
             </div>
 
             <div
@@ -233,11 +292,6 @@
             </button>
 
             <div class="story-viewer__footer">
-              <!-- Caption block -->
-              <div v-if="activeStoryData?.caption" class="story-viewer__caption">
-                <p class="story-viewer__text">{{ activeStoryData.caption }}</p>
-              </div>
-
               <div v-if="canInteractWithActiveStory" class="story-viewer__bar">
                 <div class="story-viewer__bar-reply" @click="focusReply">
                   <UInput
@@ -380,8 +434,9 @@
 import {
   feedStoryCreatePath,
 } from "../../application/constants/story-carousel"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useFeedStoryCarouselVM } from "../../application/view-models/useFeedStoryCarouselVM"
-import type { FeedStoryRecord } from "../../domain/types/feed.types"
+import type { FeedStoryOverlayItem, FeedStoryRecord } from "../../domain/types/feed.types"
 import StoryAppInterstitial from "./StoryAppInterstitial.vue"
 
 const { t } = useI18n()
@@ -445,6 +500,29 @@ const {
   onStoryTouchStart,
   onStoryTouchEnd,
 } = useFeedStoryCarouselVM(toRef(props, "stories"))
+
+const activeStoryProfilePath = computed(() => {
+  const username = activeStoryData.value?.ownerUsername?.trim()
+  return username ? appRoutes.profile(username) : ""
+})
+const activeStoryMentionProfilePath = computed(() => {
+  const username = activeStoryData.value?.overlays?.mention?.username?.trim()
+  return username ? appRoutes.profile(username) : ""
+})
+
+const activeStoryHasOverlays = computed(() =>
+  Boolean(activeStoryData.value?.overlays?.text || activeStoryData.value?.overlays?.mention),
+)
+const activeStoryAudienceLabel = computed(() =>
+  t(`feed.storyCarousel.audiences.${activeStoryData.value?.audience || "public"}`),
+)
+
+function storyOverlayStyle(item: FeedStoryOverlayItem) {
+  return {
+    left: `${item.x * 100}%`,
+    top: `${item.y * 100}%`,
+  }
+}
 
 async function handleCreateStory() {
   if (isMobileViewport.value) {
@@ -637,19 +715,95 @@ async function handleCreateStory() {
   object-fit: cover;
 }
 
+.story-viewer__author-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
 .story-viewer__author-name {
+  display: block;
+  margin: 0;
   max-width: min(280px, calc(100vw - 112px));
   overflow: hidden;
+  color: inherit;
   text-overflow: ellipsis;
+  text-decoration: none;
   white-space: nowrap;
   font-size: 14px;
   font-weight: 800;
+}
+
+.story-viewer__author-name:hover {
+  text-decoration: underline;
+}
+
+.story-viewer__author-status {
+  max-width: min(280px, calc(100vw - 112px));
+  overflow: hidden;
+  margin: 2px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .story-viewer__author-meta {
   margin-top: 2px;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.72);
+}
+
+.story-viewer__story-text {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: 50%;
+  width: min(84%, 350px);
+  transform: translate(-50%, -50%);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.36);
+  padding: 12px 14px;
+  color: #ffffff;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.story-viewer__story-text p {
+  margin: 0;
+  font-size: clamp(16px, 2.4vw, 20px);
+  font-weight: 750;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.story-viewer__story-overlay {
+  position: absolute;
+  z-index: 4;
+  width: min(72%, 320px);
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-size: clamp(16px, 2.4vw, 20px);
+  font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-shadow: 0 2px 7px rgba(0, 0, 0, 0.72);
+  white-space: pre-wrap;
+}
+
+.story-viewer__story-overlay--mention {
+  width: min(66%, 290px);
+  color: #fde68a;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.story-viewer__story-overlay--mention:hover {
+  text-decoration: underline;
 }
 
 .story-viewer__actions {

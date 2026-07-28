@@ -1094,6 +1094,7 @@ const mapThreadMessage = (
     selectedReaction: parseMessageReaction(entity.reaction),
     senderId,
     authorName: buildDisplayName(userData) || buildDisplayName(messageUser),
+    authorProfileUrl: buildProfileUrl(senderProfile, "user") || undefined,
     threadType,
     mediaUrl: recalledPayload ? "" : mediaUrl,
     mediaName: recalledPayload ? "" : firstString(entity, ["mediaFileName", "media_file_name", "filename"]),

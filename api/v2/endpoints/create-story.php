@@ -32,6 +32,10 @@ if (isset($_POST['story_description']) && strlen($_POST['story_description']) > 
     $error_code    = 5;
     $error_message = 'Description is so long';
 }
+if (isset($_POST['story_overlay']) && strlen($_POST['story_overlay']) > 2000) {
+    $error_code    = 10;
+    $error_message = 'Story overlay data is too long';
+}
 if (!$is_shared_post && empty($_POST['file_type'])) {
     $error_code    = 6;
     $error_message = 'file_type (POST) is missing';
@@ -68,6 +72,7 @@ if (empty($error_code)) {
     $cloud_upload                 = $wo['config']['cloud_upload'];
     $story_title       = (!empty($_POST['story_title'])) ? Wo_Secure($_POST['story_title']) : '';
     $story_description = (!empty($_POST['story_description'])) ? Wo_Secure($_POST['story_description']) : '';
+    $story_overlay     = (!empty($_POST['story_overlay'])) ? json_decode($_POST['story_overlay'], true) : array();
     $file_type         = $is_shared_post ? '' : Wo_Secure($_POST['file_type']);
     $story_privacy     = VNSEEA_NormalizeStoryPrivacyRequest($_POST);
     $story_data        = array(
@@ -79,6 +84,21 @@ if (empty($error_code)) {
         'description' => $story_description,
         'story_type' => $story_type
     );
+    $overlay_column_query = mysqli_query(
+        $sqlConnect,
+        "SHOW COLUMNS FROM " . T_USER_STORY . " LIKE 'overlay_data'"
+    );
+    if (
+        $overlay_column_query
+        && mysqli_num_rows($overlay_column_query) > 0
+        && is_array($story_overlay)
+        && !empty($story_overlay)
+    ) {
+        $story_data['overlay_data'] = mysqli_real_escape_string(
+            $sqlConnect,
+            json_encode($story_overlay, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        );
+    }
     if ($is_shared_post) {
         $story_data['source_post_id'] = $source_post_id;
     }

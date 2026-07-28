@@ -4,6 +4,7 @@ import type {
   ProfileApiResponse,
   ProfileTabKey,
 } from "../../domain/types/profile.types";
+import type { FeedPostRecord } from "../../../feed/domain/types/feed.types";
 import { createApiProfileRepository } from "../../infrastructure/repositories/ApiProfileRepository";
 import { appRoutes } from "#shared-kernel/application/constants/route-registry";
 
@@ -384,6 +385,68 @@ export function useProfileVM(
   const timelineHasMore = computed(() => timelineHasMoreState.value);
   const timelineNextOffset = computed(() => timelineNextOffsetState.value);
 
+  const updateProfilePost = (updatedPost: FeedPostRecord) => {
+    const replacePost = (posts: FeedPostRecord[]) =>
+      posts.map(post => post.id === updatedPost.id ? updatedPost : post);
+
+    timelinePostList.value = replacePost(timelinePostList.value);
+
+    if (data.value) {
+      data.value = {
+        ...data.value,
+        timelinePosts: replacePost(timelinePostList.value),
+        photos: replacePost(data.value.photos),
+        videos: replacePost(data.value.videos),
+      };
+    }
+  };
+
+  const handlePostCreated = async (post: FeedPostRecord | null) => {
+    if (!post) {
+      await refresh();
+      return;
+    }
+
+    const alreadyExists = timelinePostList.value.some(item => item.id === post.id);
+    const nextTimelinePosts = [
+      post,
+      ...timelinePostList.value.filter(item => item.id !== post.id),
+    ];
+    timelinePostList.value = nextTimelinePosts;
+
+    if (data.value) {
+      const hasImage = post.mediaItems.some(item => item.type === "image");
+      const hasVideo = post.mediaItems.some(item => item.type === "video");
+      data.value = {
+        ...data.value,
+        postCount: data.value.postCount + (alreadyExists ? 0 : 1),
+        timelinePosts: nextTimelinePosts,
+        photos: hasImage
+          ? [post, ...data.value.photos.filter(item => item.id !== post.id)]
+          : data.value.photos,
+        videos: hasVideo
+          ? [post, ...data.value.videos.filter(item => item.id !== post.id)]
+          : data.value.videos,
+      };
+    }
+  };
+
+  const removeProfilePost = (postId: number) => {
+    const existed = timelinePostList.value.some(post => post.id === postId);
+    const nextTimelinePosts = timelinePostList.value.filter(post => post.id !== postId);
+    timelinePostList.value = nextTimelinePosts;
+
+    if (data.value) {
+      data.value = {
+        ...data.value,
+        postCount: Math.max(0, data.value.postCount - (existed ? 1 : 0)),
+        timelinePosts: nextTimelinePosts,
+        photos: data.value.photos.filter(post => post.id !== postId),
+        videos: data.value.videos.filter(post => post.id !== postId),
+      };
+    }
+  };
+
   const friends = computed(() => data.value?.followers ?? []);
 
   const photos = computed(() => data.value?.photos ?? []);
@@ -579,6 +642,7 @@ export function useProfileVM(
     friends,
     heroActions,
     hasHiddenProducts,
+    handlePostCreated,
     joinedGroups,
     likedPages,
     loadMoreTimelinePosts,
@@ -589,6 +653,7 @@ export function useProfileVM(
     products,
     productsExpanded,
     refresh,
+    removeProfilePost,
     resolveProfileMediaPostId,
     selectProfileTab,
     status,
@@ -597,6 +662,7 @@ export function useProfileVM(
     timelineLoadingMore,
     timelineNextOffset,
     timelinePosts,
+    updateProfilePost,
     runHeroAction,
     visibleProducts,
     videos,

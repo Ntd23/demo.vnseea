@@ -14,6 +14,53 @@ type BackendCreateStoryResponse = {
   }
 }
 
+type StoryOverlayItem = {
+  content: string
+  x: number
+  y: number
+  username?: string
+}
+
+const normalizeOverlayItem = (value: unknown, maxLength: number): StoryOverlayItem | undefined => {
+  if (!value || typeof value !== "object") return undefined
+
+  const item = value as Partial<StoryOverlayItem>
+  const content = typeof item.content === "string"
+    ? item.content.trim().slice(0, maxLength)
+    : ""
+
+  if (!content) return undefined
+
+  const x = Number(item.x)
+  const y = Number(item.y)
+  const username = typeof item.username === "string"
+    ? item.username.trim().replace(/^@/, "").replace(/[^\p{L}\p{N}_.-]/gu, "").slice(0, 64)
+    : ""
+
+  return {
+    content,
+    x: Number.isFinite(x) ? Math.min(0.94, Math.max(0.06, x)) : 0.5,
+    y: Number.isFinite(y) ? Math.min(0.9, Math.max(0.1, y)) : 0.5,
+    ...(username ? { username } : {}),
+  }
+}
+
+const normalizeStoryOverlays = (value: string) => {
+  try {
+    const parsed = JSON.parse(value) as Record<string, unknown>
+    const text = normalizeOverlayItem(parsed.text, 100)
+    const mention = normalizeOverlayItem(parsed.mention, 300)
+
+    return {
+      ...(text ? { text } : {}),
+      ...(mention ? { mention } : {}),
+    }
+  }
+  catch {
+    return {}
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const contentType = getHeader(event, "content-type") || ""
 
@@ -71,6 +118,14 @@ export default defineEventHandler(async (event) => {
 
     if (part.name === "description") {
       payload.append("story_description", value)
+    }
+
+    if (part.name === "overlays") {
+      const overlays = normalizeStoryOverlays(value)
+
+      if (Object.keys(overlays).length) {
+        payload.append("story_overlay", JSON.stringify(overlays))
+      }
     }
 
     if (part.name === "privacy") privacy = normalizeContentAudience(value)

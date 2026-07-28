@@ -3,6 +3,7 @@
 import type { CommunityPageRecord } from "../../../community/domain/types/community.types"
 import type { ProductFeedAttachment } from "../../../product/domain/types/product-marketplace.types"
 import type { FeedStoryReactionType } from "../constants/story-reactions"
+import type { ContentAudience } from "../../../shared-kernel/domain/content-audience"
 
 export type FeedMediaItem = {
   type: "image" | "video"
@@ -191,6 +192,18 @@ export type FeedStoryActionResult = {
   replySent?: boolean
 }
 
+export type FeedStoryOverlayItem = {
+  content: string
+  x: number
+  y: number
+  username?: string
+}
+
+export type FeedStoryOverlays = {
+  text?: FeedStoryOverlayItem
+  mention?: FeedStoryOverlayItem
+}
+
 export type FeedStoryRecord = {
   id: number
   createdAt: number
@@ -206,6 +219,8 @@ export type FeedStoryRecord = {
   poster: string
   title: string
   caption: string
+  overlays: FeedStoryOverlays
+  audience: ContentAudience
   meta: string
   likes: number
   comments: number
