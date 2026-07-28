@@ -99,6 +99,16 @@ export type MessageStoryContext = {
   createdAt?: number
 }
 
+export type MessageSharedPostCard = {
+  postId: number
+  available: boolean
+  author: string
+  authorAvatarUrl?: string
+  text: string
+  imageUrl?: string
+  href: string
+}
+
 export type MessageSystemEvent = {
   type: "message_pinned"
   actorId: number
@@ -140,6 +150,7 @@ export type MessageItem = {
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
   story?: MessageStoryContext
+  sharedPost?: MessageSharedPostCard
   selectedReaction?: FeedStoryReactionType | null
   isDeleted?: boolean
   deletedAt?: number

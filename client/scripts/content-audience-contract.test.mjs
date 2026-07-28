@@ -187,11 +187,13 @@ test("anonymous composer forces public audience and locks the audience picker", 
   assert.match(publisher, /function selectAudienceOption\(val: any\) \{\s*if \(draft\.value\?\.isAnonymous\) return/)
 })
 
-test("old-backend post mapping defaults sharing only for public non-anonymous posts", () => {
+test("old-backend post mapping allows public and friends sharing but blocks anonymous posts", () => {
   const mapper = readClient("server/api/feed/_shared.ts")
 
   assert.match(mapper, /hasOwn\(entity, "can_share"\)/)
   assert.match(mapper, /isCanonicalPublicContentAudience\(rawAudience\)/)
+  assert.match(mapper, /audienceSelection\.audience === "friends"/)
+  assert.match(mapper, /audienceSelection\.audience !== "only_me"/)
   assert.match(mapper, /!audienceSelection\.isAnonymous/)
   assert.match(mapper, /isAnonymous:\s*audienceSelection\.isAnonymous/)
 })

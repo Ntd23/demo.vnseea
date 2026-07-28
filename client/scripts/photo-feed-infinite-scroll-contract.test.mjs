@@ -25,3 +25,26 @@ test("photos feed stops pagination when the backend cursor does not advance", ()
   assert.match(viewModel, /const cursorDidNotAdvance/)
   assert.match(viewModel, /response\.hasMore && newPosts\.length > 0 && !cursorDidNotAdvance/)
 })
+
+test("photos lightbox renders the original post content instead of the source label", () => {
+  const page = read("src/photos/presentation/pages/PhotosPage.vue")
+  const mapper = read("src/photos/application/composables/usePhotosData.ts")
+
+  assert.match(mapper, /postText:\s*post\.text/)
+  assert.match(page, /:caption="currentPhoto\?\.postText \|\| ''"/)
+  assert.doesNotMatch(page, /:caption="currentPhoto\?\.albumTitle/)
+})
+
+test("photos lightbox exposes the original post share flow", () => {
+  const page = read("src/photos/presentation/pages/PhotosPage.vue")
+  const viewModel = read("src/photos/application/view-models/usePhotosPageVM.ts")
+  const mapper = read("src/photos/application/composables/usePhotosData.ts")
+
+  assert.match(mapper, /canShare:\s*post\.permissions\.canShare/)
+  assert.match(mapper, /shares:\s*post\.stats\.shares/)
+  assert.match(page, /:can-share="currentPhoto\?\.canShare \|\| false"/)
+  assert.match(page, /@share="openCurrentPhotoShare"/)
+  assert.match(page, /<FeedShareModal/)
+  assert.match(page, /:share-url="currentPhotoShareUrl"/)
+  assert.match(viewModel, /function handleCurrentPhotoShared\(\)/)
+})

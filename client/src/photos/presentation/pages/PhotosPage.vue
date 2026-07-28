@@ -90,9 +90,11 @@
       :author="currentPhoto?.photographer || ''"
       :author-avatar-url="currentPhoto?.authorAvatarUrl || ''"
       :author-path="currentPhoto?.authorPath || ''"
-      :caption="currentPhoto?.albumTitle || ''"
+      :caption="currentPhoto?.postText || ''"
       :time-label="currentPhoto?.timeLabel || ''"
       :like-count="currentPhotoLikeCount"
+      :share-count="currentPhoto?.shares || 0"
+      :can-share="currentPhoto?.canShare || false"
       :selected-reaction="currentPhotoReaction"
       :comments="currentPhoto?.commentItems || []"
       :current-user-name="currentAuthUserStore.user?.name"
@@ -100,18 +102,37 @@
       :submitting-comment="commenting"
       @close="lightboxOpen = false"
       @change="handleLightboxChange"
-      @share="currentPhoto?.companionTo ? navigateTo(currentPhoto.companionTo) : null"
+      @share="openCurrentPhotoShare"
       @download="noop"
       @like="noop"
       @react="reactToCurrentPhoto"
       @comment="currentPhoto?.companionTo ? navigateTo(currentPhoto.companionTo) : null"
       @submit-comment="submitComment"
     />
+
+    <ClientOnly>
+      <FeedShareModal
+        v-if="currentPhoto?.canShare"
+        :open="shareOpen"
+        :can-share="currentPhoto.canShare"
+        :share-url="currentPhotoShareUrl"
+        :post="{
+          id: currentPhoto.postId,
+          author: currentPhoto.photographer,
+          text: currentPhoto.postText,
+          authorAvatar: currentPhoto.authorAvatarUrl,
+          authorVerified: currentPhoto.authorVerified,
+        }"
+        @close="shareOpen = false"
+        @shared="handleCurrentPhotoShared"
+      />
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
+import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
 import LightboxModal from "../../../lightbox/presentation/components/LightboxModal.vue"
 import { usePhotosPageVM } from "../../application/view-models/usePhotosPageVM"
 
@@ -125,13 +146,17 @@ const {
   photos,
   hasMore,
   lightboxOpen,
+  shareOpen,
   currentPhoto,
   currentPhotoReaction,
   currentPhotoLikeCount,
+  currentPhotoShareUrl,
   lightboxItems,
   currentLightboxIndex,
   openPhoto,
   handleLightboxChange,
+  openCurrentPhotoShare,
+  handleCurrentPhotoShared,
   loadMore,
   submitComment,
   reactToCurrentPhoto,

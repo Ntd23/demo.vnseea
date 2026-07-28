@@ -22,16 +22,20 @@ export type PhotoRecord = {
   id: string
   postId: number
   title: string
+  postText: string
   category: Exclude<PhotoCategoryKey, "all">
   albumTitle: string
   photographer: string
   authorAvatarUrl: string
+  authorVerified: boolean
   authorPath: string
   photographerRole: string
   location: string
   timeLabel: string
   likes: number
   comments: number
+  shares: number
+  canShare: boolean
   commentItems: FeedCommentRecord[]
   image: string
   accent: string
@@ -130,16 +134,20 @@ export function mapFeedPostsToPhotos(posts: FeedPostRecord[]): PhotoRecord[] {
           id: `photo-${post.id}-${mediaIndex}`,
           postId: post.id,
           title: post.text || post.author,
+          postText: post.text,
           category: normalizePhotoCategory(post.category),
           albumTitle: post.sourceLabel === "page" ? "Page" : post.sourceLabel === "group" ? "Group" : "Feed",
           photographer: post.author,
           authorAvatarUrl: post.authorAvatarUrl,
+          authorVerified: Boolean(post.authorVerified),
           authorPath: post.authorPath,
           photographerRole: post.role,
           location: post.role,
           timeLabel: post.time,
           likes: post.stats.likes,
           comments: post.stats.comments,
+          shares: post.stats.shares,
+          canShare: post.permissions.canShare,
           commentItems: post.comments,
           image: item.src,
           accent: accentPalette[(index + mediaIndex) % accentPalette.length],
