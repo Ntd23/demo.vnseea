@@ -236,6 +236,7 @@
       <MessagesChatInput
         v-model="inputModel"
         :disabled="!contact"
+        :submitting="messageSending"
         @typing-start="$emit('typing-start')"
         @typing-stop="$emit('typing-stop')"
         @send="onSendMessage"
@@ -301,6 +302,7 @@ const props = defineProps<{
   emptyDescription: string
   emptyTitle: string
   isPending?: boolean
+  messageSending?: boolean
   inboxPending?: boolean
   messages: MessageItem[]
   activeReactionPickerId?: number | null

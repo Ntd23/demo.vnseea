@@ -21,6 +21,14 @@
     </div>
 
     <div class="comment-composer__shell">
+      <UProgress
+        v-if="uploadPending"
+        size="xs"
+        animation="carousel"
+        :aria-label="t('uploadValidation.uploading')"
+        class="mb-2"
+      />
+
       <div class="comment-composer__field">
         <div class="comment-composer__main-row">
           <div class="comment-composer__input-wrap">
@@ -352,7 +360,7 @@
         ref="imageInputRef"
         class="comment-composer__file"
         type="file"
-        accept="image/png,image/jpeg,image/gif"
+        :accept="FEED_IMAGE_ACCEPT"
         @change="selectImageFile"
       />
       <input
@@ -374,6 +382,11 @@ import type {
   FeedCommentAttachment,
   FeedCommentSubmitPayload,
 } from "../../domain/types/feed.types";
+import {
+  FEED_IMAGE_ACCEPT,
+  validateFeedCommentImage,
+  type UploadValidationResult,
+} from "../../../shared-kernel/application/utils/uploadValidation";
 
 const props = withDefaults(
   defineProps<{
@@ -397,6 +410,25 @@ const emit = defineEmits<{
 }>();
 const { t } = useI18n();
 const toast = useToast();
+
+function getUploadValidationMessage(result: UploadValidationResult) {
+  if (result.valid) {
+    return "";
+  }
+
+  if (result.code === "too-large") {
+    return t("uploadValidation.tooLarge", {
+      name: result.fileName,
+      maxSize: result.maxSizeLabel,
+    });
+  }
+
+  if (result.code === "empty-file") {
+    return t("uploadValidation.emptyFile", { name: result.fileName });
+  }
+
+  return t("uploadValidation.unsupportedType", { name: result.fileName });
+}
 
 const emojiOptions = computed(() =>
   feedCommentComposerReactionAssets.map((reaction) => ({
@@ -430,6 +462,7 @@ const pcmChunks = ref<Float32Array[]>([]);
 const recordingSampleRate = ref(44100);
 const recordingStartedAt = ref<number | null>(null);
 const recordingElapsedMs = ref(0);
+const submittedWithUpload = ref(false);
 let recordingTimer: ReturnType<typeof setInterval> | null = null;
 
 const trimmedMessage = computed(() => message.value.trim());
@@ -439,6 +472,9 @@ const canSubmit = computed(() =>
     (props.enableAttachments &&
       (imageFile.value || gifFile.value || audioFile.value)),
   ),
+);
+const uploadPending = computed(
+  () => props.submitting && submittedWithUpload.value,
 );
 const recordingDurationLabel = computed(() =>
   formatRecordingDuration(recordingElapsedMs.value),
@@ -544,9 +580,22 @@ function openGifPicker() {
 }
 
 function selectImageFile(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0];
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
 
   if (!file) {
+    return;
+  }
+
+  const validation = validateFeedCommentImage(file);
+  input.value = "";
+
+  if (!validation.valid) {
+    toast.add({
+      title: t("uploadValidation.title"),
+      description: getUploadValidationMessage(validation),
+      color: "error",
+    });
     return;
   }
 
@@ -554,9 +603,24 @@ function selectImageFile(event: Event) {
 }
 
 function selectGifFile(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0];
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
 
   if (!file) {
+    return;
+  }
+
+  const validation = validateFeedCommentImage(file);
+  input.value = "";
+
+  if (!validation.valid || file.name.toLowerCase().split(".").pop() !== "gif") {
+    toast.add({
+      title: t("uploadValidation.title"),
+      description: validation.valid
+        ? t("uploadValidation.unsupportedType", { name: file.name })
+        : getUploadValidationMessage(validation),
+      color: "error",
+    });
     return;
   }
 
@@ -885,6 +949,9 @@ function submitComment() {
   }
 
   const displayText = trimmedMessage.value;
+  submittedWithUpload.value = Boolean(
+    imageFile.value || gifFile.value || audioFile.value,
+  );
 
   emit("submit", {
     text: displayText,
@@ -902,6 +969,15 @@ function submitComment() {
   resetComposerState();
   nextTick(syncTextareaHeight);
 }
+
+watch(
+  () => props.submitting,
+  (submitting) => {
+    if (!submitting) {
+      submittedWithUpload.value = false;
+    }
+  },
+);
 
 watch(message, () => {
   nextTick(syncTextareaHeight);

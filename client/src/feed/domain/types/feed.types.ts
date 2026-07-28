@@ -129,6 +129,10 @@ export type FeedPostRecord = {
   role: string
   audience: string
   isAnonymous: boolean
+  location: string
+  locationLat: number | null
+  locationLng: number | null
+  locationPlaceId: string
   time: string
   text: string
   videoTitle?: string

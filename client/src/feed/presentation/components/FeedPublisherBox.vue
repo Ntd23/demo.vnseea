@@ -5,7 +5,7 @@
       ref="imageInputRef"
       class="publisher__file-input"
       type="file"
-      accept="image/png,image/jpeg,image/gif"
+      :accept="FEED_IMAGE_ACCEPT"
       multiple
       @change="selectImageFile"
     >
@@ -13,7 +13,7 @@
       ref="videoInputRef"
       class="publisher__file-input"
       type="file"
-      accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v"
+      :accept="FEED_VIDEO_ACCEPT"
       @change="selectVideoFile"
     >
 
@@ -72,7 +72,21 @@
           <span v-else>{{ currentUserInitials }}</span>
         </div>
         <div class="publisher__meta">
-          <p class="publisher__name">{{ currentUserName || t("feed.publisherBox.expandedOpen") }}</p>
+          <p class="publisher__identity-line">
+            <span class="publisher__name">{{ currentUserName || t("feed.publisherBox.expandedOpen") }}</span>
+            <template v-if="hasPublisherLocation">
+              <span class="publisher__location-lead">— {{ locale === "vi" ? "tại" : "at" }}</span>
+              <a
+                :href="publisherLocationHref"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="publisher__identity-location"
+                @click.stop
+              >
+                {{ draft.location.address }}
+              </a>
+            </template>
+          </p>
           <div class="publisher__meta-controls">
             <div v-if="audiences.length" class="publisher__audience-dropdown">
               <button
@@ -146,6 +160,13 @@
         {{ statusMessage }}
       </div>
 
+      <UProgress
+        v-if="submitting && (imageFiles.length > 0 || videoFile)"
+        size="sm"
+        animation="carousel"
+        :aria-label="t('uploadValidation.uploading')"
+      />
+
       <div v-if="!showProductForm" class="publisher__textarea-shell" :class="{ 'publisher__textarea-shell--colored': Boolean(activeColorOption) }" :style="activeColorOption ? { background: activeColorOption.bg, color: activeColorOption.text } : {}">
         <div class="publisher__textarea-highlight" aria-hidden="true">
           <template v-for="segment in highlightedDraftSegments" :key="segment.key">
@@ -168,13 +189,6 @@
           @keydown.esc.prevent="closeMentionSuggestions"
         />
       </div>
-
-      <LocationPreviewMap
-        v-if="!showProductForm && hasPublisherLocation"
-        :location="draft.location"
-        @edit="showLocationForm = true"
-        @remove="clearLocation"
-      />
 
       <!-- Media Preview Grid -->
       <div v-if="!showProductForm && mediaPreviews.length > 0" class="publisher__media-previews">
@@ -399,9 +413,13 @@ import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFe
 import { useJobComposerVM } from "../../../jobs/application/view-models/useJobComposerVM"
 import JobPostModal from "../../../jobs/presentation/components/JobPostModal.vue"
 import NewProductPage from "../../../product/presentation/pages/NewProductPage.vue"
+import { buildPostLocationMapUrl } from "../../../location/application/utils/location-map-link"
 import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
-import LocationPreviewMap from "../../../location/presentation/components/LocationPreviewMap.vue"
 import PreciseLocationPicker from "../../../location/presentation/components/PreciseLocationPicker.vue"
+import {
+  FEED_IMAGE_ACCEPT,
+  FEED_VIDEO_ACCEPT,
+} from "../../../shared-kernel/application/utils/uploadValidation"
 
 const { t } = useI18n()
 const { locale } = useI18n()
@@ -444,7 +462,6 @@ const {
   selectImageFile,
   selectVideoFile,
   clearSelectedMedia,
-  clearLocation,
   selectFeeling,
   publish: publishPost,
   selectedColorId,
@@ -526,6 +543,10 @@ const activeColorOption = computed(() => {
 
 const hasPublisherLocation = computed(() =>
   Boolean(draft.value.location.address.trim()),
+)
+
+const publisherLocationHref = computed(() =>
+  buildPostLocationMapUrl(draft.value.location),
 )
 
 const draftText = computed({
@@ -1000,6 +1021,40 @@ function goToLive() {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.publisher__identity-line {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.publisher__location-lead {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.publisher__identity-location {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.publisher__identity-location:hover {
+  color: var(--text-brand);
+  text-decoration: underline;
 }
 
 .publisher__location-trigger {

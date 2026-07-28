@@ -384,7 +384,11 @@ export default defineAppConfig({
     },
     progress: {
       slots: {
-        base: "bg-[var(--bg-surface-active)]",
+        root: "w-full gap-1",
+        base:
+          "overflow-hidden rounded-full bg-[var(--bg-surface-active)] ring-1 ring-inset ring-[var(--border-light)]",
+        indicator:
+          "rounded-full bg-[var(--bg-brand)] shadow-[var(--shadow-brand)]",
         status: "text-[var(--text-secondary)]",
       },
     },

@@ -1,4 +1,13 @@
 {
+  "uploadValidation": {
+    "title": "Không thể tải tệp lên",
+    "tooLarge": "Tệp “{name}” vượt quá dung lượng tối đa {maxSize}.",
+    "unsupportedType": "Định dạng của tệp “{name}” không được hỗ trợ.",
+    "tooManyFiles": "Bạn chỉ có thể chọn tối đa {maxFiles} ảnh cho mỗi bài viết.",
+    "emptyFile": "Tệp “{name}” đang trống hoặc không thể đọc được.",
+    "messageRules": "Tối đa {maxSize}. Hỗ trợ ảnh, video, âm thanh, PDF, Word, TXT, ZIP và RAR.",
+    "uploading": "Đang tải tệp lên..."
+  },
   "pages": {
     "welcomePage": {
       "eyebrow": "Tài khoản",
@@ -1067,7 +1076,8 @@
       "statusErrorTitle": "Còn vài trường cần hoàn thiện",
       "statusErrorDescription": "Kiểm tra lại tên, mô tả, địa điểm và thời gian trước khi tiếp tục.",
       "draftRestoredTitle": "Đã khôi phục bản nháp gần nhất",
-      "draftRestoredDescription": "Thông tin sự kiện trước đó đã được điền lại trên thiết bị này."
+      "draftRestoredDescription": "Thông tin sự kiện trước đó đã được điền lại trên thiết bị này.",
+      "title": "Tạo sự kiện"
     },
     "eventDetailPage": {
       "seoTitle": "Chi tiết sự kiện",
@@ -1141,7 +1151,8 @@
       "coverUpdateError": "Không thể cập nhật ảnh bìa sự kiện.",
       "editMockMessage": "Flow chỉnh sửa sẽ được xử lý ở đợt migration tiếp theo.",
       "deleteMockMessage": "Đây là hành động mô phỏng, chưa xóa dữ liệu thật.",
-      "relatedEvents": "Sự kiện liên quan"
+      "relatedEvents": "Sự kiện liên quan",
+      "rsvpCleared": "Đã hủy phản hồi tham gia sự kiện"
     },
     "explorePage": {
       "seoTitle": "Khám phá cộng đồng",
@@ -3152,7 +3163,9 @@
       "messageSeven": "Ok, cứ bắn route lỗi tiếp, mình xử lý từng cái cho sạch.",
       "messageTimeOne": "09:12",
       "messageTimeTwo": "09:24",
-      "messageTimeThree": "09:31"
+      "messageTimeThree": "09:31",
+      "emptyThread": "Chưa có tin nhắn nào trong cuộc trò chuyện này.",
+      "tagColorLabel": "Màu thẻ"
     },
     "reelsPage": {
       "seoTitle": "Cuộn phim | VNSEEA",
@@ -5468,7 +5481,7 @@
       "actionStory": "Câu chuyện",
       "actionProduct": "Sản phẩm",
       "chipOnlyMe": "Chỉ có tôi",
-      "chipAddLocation": "Thêm vị trí",
+      "chipAddLocation": "Vị trí",
       "chipTagFriends": "Gắn thẻ bạn bè",
       "chipColors": "Màu sắc",
       "colorPurpleBlue": "Tím lam",
@@ -7079,7 +7092,9 @@
       "removeItemAria": "Xóa {name} khỏi giỏ hàng",
       "decreaseQuantityAria": "Giảm số lượng của {name}",
       "increaseQuantityAria": "Tăng số lượng của {name}",
-      "quantityValue": "Số lượng hiện tại {count}"
+      "quantityValue": "Số lượng hiện tại {count}",
+      "pointPrice": "Giá điểm",
+      "totalPoints": "Tổng điểm"
     },
     "shippingForm": {
       "shippingAddress": "Địa chỉ giao hàng",
@@ -8123,12 +8138,20 @@
         "privacy": "Quyền riêng tư",
         "category": "Danh mục",
         "members": "Thành viên",
-        "inviteMore": "Mời thêm"
+        "inviteMore": "Mời thêm",
+        "owner": "Sở hữu",
+        "preview": "Xem trước trang"
       },
       "empty": {
         "title": "Không tìm thấy nhóm để cài đặt",
         "desc": "Slug nhóm này hiện không khả dụng. Hãy quay lại danh sách hoặc flow tạo nhóm để chọn một cộng đồng hợp lệ.",
         "back": "Quay lại nhóm"
+      },
+      "preview": {
+        "eyebrow": "Xem trước",
+        "follow": "Theo dõi",
+        "navDesc": "Xem trang dưới dạng khách truy cập",
+        "share": "Chia sẻ"
       }
     },
     "pageSettings": {
@@ -8267,7 +8290,8 @@
         "passwordLabel": "Mật khẩu xác nhận",
         "passwordPlaceholder": "Nhập mật khẩu của bạn...",
         "confirm": "Xóa trang",
-        "confirmDialog": "Bạn có chắc chắn muốn xóa trang này không? Hành động này không thể hoàn tác."
+        "confirmDialog": "Bạn có chắc chắn muốn xóa trang này không? Hành động này không thể hoàn tác.",
+        "cancel": "Hủy"
       },
       "empty": {
         "title": "Không tìm thấy fanpage để cài đặt",
@@ -8299,6 +8323,13 @@
           "month": "Tháng",
           "year": "Năm"
         }
+      },
+      "admins": {
+        "desc": "Quản lý quyền truy cập và phân vai trò cho trang của bạn.",
+        "eyebrow": "Quyền truy cập",
+        "navDesc": "Danh sách quản trị viên và người quản lý",
+        "primaryRole": "Vai trò chính",
+        "title": "Quản trị viên"
       }
     },
     "mock": {

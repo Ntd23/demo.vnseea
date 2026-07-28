@@ -234,6 +234,28 @@ const firstNumber = (entity: BackendEntity, keys: string[]) => {
   return 0
 }
 
+const firstCoordinate = (
+  entity: BackendEntity,
+  keys: string[],
+  min: number,
+  max: number,
+) => {
+  for (const key of keys) {
+    const rawValue = entity[key]
+
+    if (rawValue === null || rawValue === undefined || rawValue === "") {
+      continue
+    }
+
+    const value = Number(rawValue)
+    if (Number.isFinite(value) && value >= min && value <= max) {
+      return value
+    }
+  }
+
+  return null
+}
+
 const normalizeReactionType = (value: unknown): FeedStoryReactionType | null => {
   const rawValue = asString(value)
 
@@ -651,7 +673,6 @@ const buildPostText = (entity: BackendEntity) => {
       firstString(entity, ["postLinkTitle"]),
       firstString(entity, ["postLinkContent"]),
     ].filter(Boolean).join("\n"),
-    firstString(entity, ["postMap"]),
     [
       firstString(thread, ["headline", "title"]),
       firstString(thread, ["post_subject", "description"]),
@@ -1138,6 +1159,10 @@ export const mapPostRecord = (
         || author,
     audience: contentAudienceLabel(audienceSelection.audience),
     isAnonymous: audienceSelection.isAnonymous,
+    location: stripHtml(firstString(entity, ["postMap", "location"])),
+    locationLat: firstCoordinate(entity, ["postMapLat", "post_map_lat"], -90, 90),
+    locationLng: firstCoordinate(entity, ["postMapLng", "post_map_lng"], -180, 180),
+    locationPlaceId: firstString(entity, ["postMapPlaceId", "post_map_place_id"]),
     time: formatPostTime(entity),
     text,
     videoTitle: stripHtml(firstString(entity, ["videoTitle", "video_title"])) || undefined,

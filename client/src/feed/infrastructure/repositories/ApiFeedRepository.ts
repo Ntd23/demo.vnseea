@@ -202,7 +202,14 @@ export function createApiFeedRepository(): FeedRepository {
       }
 
       if (input.location) {
-        formData.append("location", input.location)
+        formData.append("location", input.location.address)
+        if (input.location.lat !== null && input.location.lng !== null) {
+          formData.append("locationLat", String(input.location.lat))
+          formData.append("locationLng", String(input.location.lng))
+        }
+        if (input.location.placeId) {
+          formData.append("locationPlaceId", input.location.placeId)
+        }
       }
 
       for (const answer of input.pollAnswers ?? []) {

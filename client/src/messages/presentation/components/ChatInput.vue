@@ -1,142 +1,162 @@
 <!-- English description: Renders the active thread composer with a PHP-style core shell for text, file, and voice note sending plus one-to-one typing events. -->
 <template>
-  <div class="border-t border-[var(--border-light)] bg-[var(--bg-surface)] px-4 py-4 sm:px-6">
-    <div class="chat-input-shell">
-      <div class="chat-input-main-row">
-        <div class="chat-input-body">
-          <div class="chat-input-field-wrap">
-            <UTextarea
-              v-model="modelValue"
-              autoresize
-              class="chat-input-textarea-control"
-              :rows="1"
-              :disabled="disabled"
-              :placeholder="placeholder || $t('pages.messagesPage.composerPlaceholder')"
-              :ui="{
-                base: 'chat-input-textarea',
-              }"
-              @input="handleTypingInput"
-              @focus="handleTypingFocus"
-              @keydown.enter.exact.prevent="handleEnterKey"
+  <div class="chat-input-root">
+      <!-- Alerts — shown above input area -->
+      <UAlert
+        v-if="permissionDenied || errorMessage"
+        color="error"
+        variant="subtle"
+        icon="i-ph-warning-circle-duotone"
+        :title="$t('pages.messagesPage.recordPermissionTitle')"
+        :description="permissionDenied ? $t('pages.messagesPage.recordPermissionDenied') : errorMessage"
+        class="rounded-[18px]"
+      />
+
+      <UAlert
+        v-if="locationErrorMessage"
+        color="warning"
+        variant="subtle"
+        icon="i-ph-map-pin-line-duotone"
+        :title="$t('pages.messagesPage.locationErrorTitle')"
+        :description="locationErrorMessage"
+        class="rounded-[18px]"
+      />
+
+      <!-- Attachment file upload panel -->
+      <div v-if="attachmentPanelOpen && !recordDraft" class="chat-input-panel">
+        <UFileUpload
+          v-model="attachmentFile"
+          :multiple="false"
+          :accept="MESSAGE_ATTACHMENT_ACCEPT"
+          :disabled="disabled || isRecording"
+          layout="list"
+          highlight
+          :label="$t('pages.messagesPage.chooseFile')"
+          :description="$t('uploadValidation.messageRules', { maxSize: UPLOAD_MAX_FILE_SIZE_LABEL })"
+          class="w-full"
+        />
+      </div>
+
+      <UAlert
+        v-if="attachmentValidationMessage"
+        color="error"
+        variant="subtle"
+        icon="i-ph-file-x-duotone"
+        :title="$t('uploadValidation.title')"
+        :description="attachmentValidationMessage"
+        class="rounded-[var(--radius-md)]"
+      />
+
+      <UProgress
+        v-if="uploadPending"
+        size="xs"
+        animation="carousel"
+        :aria-label="$t('uploadValidation.uploading')"
+      />
+
+      <!-- Attached file preview -->
+      <div v-if="attachmentFile" class="chat-input-attachment-preview">
+        <div class="min-w-0">
+          <p class="truncate text-sm font-semibold text-[var(--text-primary)]">{{ attachmentFile.name }}</p>
+          <p class="text-xs text-[var(--text-secondary)]">
+            {{ formatFileSize(attachmentFile.size) }}
+          </p>
+        </div>
+        <UButton
+          type="button"
+          color="error"
+          variant="ghost"
+          icon="i-ph-x-bold"
+          class="rounded-full"
+          @click="clearFile"
+        />
+      </div>
+
+      <!-- Recording state -->
+      <div v-if="isRecording || recordDraft" class="chat-input-record-preview">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span
+              class="h-2.5 w-2.5 rounded-full"
+              :class="isRecording ? 'animate-pulse bg-rose-500' : 'bg-primary-500'"
             />
-
-            <div class="chat-input-send-wrap">
-              <UTooltip :text="$t('pages.messagesPage.sendMessage')">
-                <UButton
-                  type="button"
-                  variant="solid"
-                  icon="i-ph-paper-plane-tilt-bold"
-                  class="chat-input-send-button btn-primary"
-                  :disabled="disabled || !canSend"
-                  @click="submitMessage"
-                />
-              </UTooltip>
-            </div>
-          </div>
-
-          <div v-if="attachmentPanelOpen && !recordDraft" class="chat-input-panel">
-            <UFileUpload
-              v-model="attachmentFile"
-              :multiple="false"
-              :disabled="disabled || isRecording"
-              layout="list"
-              highlight
-              :label="$t('pages.messagesPage.chooseFile')"
-              :description="$t('pages.messagesPage.attachmentOptional')"
-              class="w-full"
-            />
-          </div>
-
-          <div v-if="attachmentFile" class="flex items-center justify-between gap-3 rounded-[16px] border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3">
-            <div class="min-w-0">
-              <p class="truncate text-sm font-semibold text-[var(--text-primary)]">{{ attachmentFile.name }}</p>
+            <div>
+              <p class="text-sm font-semibold text-[var(--text-primary)]">
+                {{ isRecording ? $t('pages.messagesPage.recordingInProgress') : $t('pages.messagesPage.recordReady') }}
+              </p>
               <p class="text-xs text-[var(--text-secondary)]">
-                {{ formatFileSize(attachmentFile.size) }}
+                {{ formattedRecordDuration }}
               </p>
             </div>
+          </div>
+
+          <div class="flex items-center gap-2">
             <UButton
+              v-if="isRecording"
               type="button"
-              color="error"
-              variant="ghost"
-              icon="i-ph-x-bold"
+              color="warning"
+              variant="soft"
+              icon="i-ph-stop-circle-duotone"
               class="rounded-full"
-              @click="clearFile"
-            />
+              @click="stopRecordingDraft"
+            >
+              {{ $t("pages.messagesPage.stopRecording") }}
+            </UButton>
+
+            <template v-else-if="recordDraft">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="soft"
+                icon="i-ph-trash-duotone"
+                class="rounded-full"
+                @click="discardRecording"
+              >
+                {{ $t("pages.messagesPage.discardRecording") }}
+              </UButton>
+            </template>
           </div>
+        </div>
 
-          <div v-if="isRecording || recordDraft" class="rounded-[20px] border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <span
-                  class="h-2.5 w-2.5 rounded-full"
-                  :class="isRecording ? 'animate-pulse bg-rose-500' : 'bg-primary-500'"
-                />
-                <div>
-                  <p class="text-sm font-semibold text-[var(--text-primary)]">
-                    {{ isRecording ? $t('pages.messagesPage.recordingInProgress') : $t('pages.messagesPage.recordReady') }}
-                  </p>
-                  <p class="text-xs text-[var(--text-secondary)]">
-                    {{ formattedRecordDuration }}
-                  </p>
-                </div>
-              </div>
+        <audio
+          v-if="recordDraft"
+          :src="recordDraft.previewUrl"
+          class="mt-3 w-full"
+          controls
+          preload="none"
+        />
+      </div>
 
-              <div class="flex items-center gap-2">
-                <UButton
-                  v-if="isRecording"
-                  type="button"
-                  color="warning"
-                  variant="soft"
-                  icon="i-ph-stop-circle-duotone"
-                  class="rounded-full"
-                  @click="stopRecordingDraft"
-                >
-                  {{ $t("pages.messagesPage.stopRecording") }}
-                </UButton>
-
-                <template v-else-if="recordDraft">
-                  <UButton
-                    type="button"
-                    color="neutral"
-                    variant="soft"
-                    icon="i-ph-trash-duotone"
-                    class="rounded-full"
-                    @click="discardRecording"
-                  >
-                    {{ $t("pages.messagesPage.discardRecording") }}
-                  </UButton>
-                </template>
-              </div>
-            </div>
-
-            <audio
-              v-if="recordDraft"
-              :src="recordDraft.previewUrl"
-              class="mt-3 w-full"
-              controls
-              preload="none"
-            />
-          </div>
-
-          <UAlert
-            v-if="permissionDenied || errorMessage"
-            color="error"
-            variant="subtle"
-            icon="i-ph-warning-circle-duotone"
-            :title="$t('pages.messagesPage.recordPermissionTitle')"
-            :description="permissionDenied ? $t('pages.messagesPage.recordPermissionDenied') : errorMessage"
-            class="rounded-[18px]"
+      <!-- Main input row: textarea + actions -->
+      <div class="chat-input-main-row">
+        <div class="chat-input-field-wrap">
+          <UTextarea
+            v-model="modelValue"
+            autoresize
+            class="chat-input-textarea-control"
+            :rows="1"
+            :disabled="disabled"
+            :placeholder="placeholder || $t('pages.messagesPage.composerPlaceholder')"
+            :ui="{
+              base: 'chat-input-textarea',
+            }"
+            @input="handleTypingInput"
+            @focus="handleTypingFocus"
+            @keydown.enter.exact.prevent="handleEnterKey"
           />
 
-          <UAlert
-            v-if="locationErrorMessage"
-            color="warning"
-            variant="subtle"
-            icon="i-ph-map-pin-line-duotone"
-            :title="$t('pages.messagesPage.locationErrorTitle')"
-            :description="locationErrorMessage"
-            class="rounded-[18px]"
-          />
+          <div class="chat-input-send-wrap">
+            <UTooltip :text="$t('pages.messagesPage.sendMessage')">
+              <UButton
+                type="button"
+                variant="solid"
+                icon="i-ph-paper-plane-tilt-bold"
+                class="chat-input-send-button btn-primary"
+                :disabled="disabled || !canSend"
+                @click="submitMessage"
+              />
+            </UTooltip>
+          </div>
         </div>
 
         <div class="chat-input-actions-right">
@@ -179,7 +199,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -187,12 +206,19 @@ import { computed, ref, watch } from "vue"
 import { useCurrentLocationShare } from "../../application/composables/useCurrentLocationShare"
 import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
 import type { MessageComposerDraft } from "../../domain/types/messages.types"
+import {
+  MESSAGE_ATTACHMENT_ACCEPT,
+  UPLOAD_MAX_FILE_SIZE_LABEL,
+  validateMessageAttachment,
+  type UploadValidationResult,
+} from "../../../shared-kernel/application/utils/uploadValidation"
 
 const modelValue = defineModel<string>({ default: "" })
 
-defineProps<{
+const props = defineProps<{
   disabled?: boolean
   placeholder?: string
+  submitting?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -203,7 +229,28 @@ const emit = defineEmits<{
 
 const attachmentPanelOpen = ref(false)
 const attachmentFile = ref<File | null>(null)
+const attachmentValidationMessage = ref("")
+const submittedWithUpload = ref(false)
 const { t } = useI18n()
+
+function getUploadValidationMessage(result: UploadValidationResult) {
+  if (result.valid) {
+    return ""
+  }
+
+  if (result.code === "too-large") {
+    return t("uploadValidation.tooLarge", {
+      name: result.fileName,
+      maxSize: result.maxSizeLabel,
+    })
+  }
+
+  if (result.code === "empty-file") {
+    return t("uploadValidation.emptyFile", { name: result.fileName })
+  }
+
+  return t("uploadValidation.unsupportedType", { name: result.fileName })
+}
 const {
   isLocating,
   locationError,
@@ -224,6 +271,9 @@ const {
 
 const canSend = computed(() =>
   modelValue.value.trim().length > 0 || Boolean(attachmentFile.value) || Boolean(recordDraft.value),
+)
+const uploadPending = computed(() =>
+  Boolean(props.submitting && submittedWithUpload.value),
 )
 
 const formattedRecordDuration = computed(() => {
@@ -251,7 +301,20 @@ const locationErrorMessage = computed(() => {
 })
 
 watch(attachmentFile, (file) => {
-  if (file && recordDraft.value) {
+  if (!file) {
+    return
+  }
+
+  const validation = validateMessageAttachment(file)
+  if (!validation.valid) {
+    attachmentValidationMessage.value = getUploadValidationMessage(validation)
+    attachmentFile.value = null
+    return
+  }
+
+  attachmentValidationMessage.value = ""
+
+  if (recordDraft.value) {
     clearRecording()
   }
 })
@@ -267,6 +330,15 @@ watch(modelValue, (value) => {
     emit("typing-stop")
   }
 })
+
+watch(
+  () => props.submitting,
+  (submitting) => {
+    if (!submitting) {
+      submittedWithUpload.value = false
+    }
+  },
+)
 
 function formatFileSize(size: number) {
   if (size < 1024) return `${size} B`
@@ -299,6 +371,7 @@ function toggleAttachmentPanel() {
 
 function clearFile() {
   attachmentFile.value = null
+  attachmentValidationMessage.value = ""
 }
 
 async function shareCurrentLocation() {
@@ -349,17 +422,28 @@ function handleEnterKey(event: KeyboardEvent) {
 function resetComposerState() {
   modelValue.value = ""
   attachmentFile.value = null
+  attachmentValidationMessage.value = ""
   attachmentPanelOpen.value = false
   clearRecording()
   emit("typing-stop")
 }
 
 function submitMessage() {
-  if (!canSend.value || isSubmitting.value) {
+  if (!canSend.value || isSubmitting.value || props.submitting) {
     return
   }
 
+  if (attachmentFile.value) {
+    const validation = validateMessageAttachment(attachmentFile.value)
+    if (!validation.valid) {
+      attachmentValidationMessage.value = getUploadValidationMessage(validation)
+      attachmentPanelOpen.value = true
+      return
+    }
+  }
+
   isSubmitting.value = true
+  submittedWithUpload.value = Boolean(attachmentFile.value || recordDraft.value)
 
   emit("send", {
     text: modelValue.value.trim(),
@@ -376,7 +460,24 @@ function submitMessage() {
 </script>
 
 <style scoped>
+/* Root wrapper — sticky at bottom, never scrolls off */
+.chat-input-root {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  padding: 12px 16px;
+}
+
+@media (min-width: 640px) {
+  .chat-input-root {
+    padding: 16px 24px;
+  }
+}
+
 .chat-input-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   border-radius: 24px;
   border: 1px solid var(--border-light);
   background: var(--bg-surface);
@@ -384,17 +485,19 @@ function submitMessage() {
   box-shadow: var(--shadow-sm);
 }
 
+/* Main row: textarea + action buttons on the same line */
 .chat-input-main-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
+/* Action buttons column — stays at bottom-right */
 .chat-input-actions-right {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .chat-input-icon-button {
@@ -404,14 +507,13 @@ function submitMessage() {
   border-radius: 999px !important;
 }
 
-.chat-input-body {
-  min-width: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+@media (min-width: 640px) {
+  .chat-input-actions-right {
+    gap: 8px;
+  }
 }
 
+/* Textarea wrapper */
 .chat-input-field-wrap {
   position: relative;
   width: 100%;
@@ -452,11 +554,10 @@ function submitMessage() {
   height: 36px !important;
   justify-content: center;
   border-radius: 999px !important;
-  /* position: absolute !important; */
-  /* right: 4px !important; */
   box-shadow: var(--shadow-brand);
 }
 
+/* Expandable panels */
 .chat-input-panel {
   border-radius: 20px;
   border: 1px solid var(--border-light);
@@ -464,13 +565,32 @@ function submitMessage() {
   padding: 12px;
 }
 
+.chat-input-attachment-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
+  padding: 12px 16px;
+}
+
+.chat-input-record-preview {
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
+  padding: 12px 16px;
+}
+
+/* Mobile: compact action buttons */
 @media (max-width: 520px) {
   .chat-input-main-row {
-    gap: 8px;
+    gap: 6px;
   }
 
   .chat-input-actions-right {
-    gap: 6px;
+    gap: 4px;
   }
 
   .chat-input-icon-button {

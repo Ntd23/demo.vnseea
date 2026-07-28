@@ -21,6 +21,17 @@
       <div class="post-header__info">
         <div class="post-header__name-row">
           <NuxtLink :to="authorPath || '#'" class="post-header__name">{{ author }}</NuxtLink>
+          <template v-if="location">
+            <span class="post-header__location-lead">— {{ locale === "vi" ? "tại" : "at" }}</span>
+            <a
+              :href="locationMapHref"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="post-header__location-name"
+            >
+              {{ location }}
+            </a>
+          </template>
           <span v-if="profileMediaUpdate" class="post-header__profile-update">
             đã cập nhật {{ profileMediaUpdate === "avatar" ? "ảnh đại diện" : "ảnh bìa" }} của {{ possessivePronoun }}
           </span>
@@ -87,9 +98,10 @@
 
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core"
+import { buildPostLocationMapUrl } from "../../../location/application/utils/location-map-link"
 import IdentityHoverCard from "./IdentityHoverCard.vue"
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 
 const props = defineProps<{
@@ -118,6 +130,10 @@ const props = defineProps<{
   role: string
   time: string
   audience: string
+  location?: string
+  locationLat?: number | null
+  locationLng?: number | null
+  locationPlaceId?: string
   isSaved?: boolean
   isOwner?: boolean
   canDelete?: boolean
@@ -133,6 +149,15 @@ const initials = computed(() =>
     .slice(0, 2)
     .map(part => part[0])
     .join(""),
+)
+
+const locationMapHref = computed(() =>
+  buildPostLocationMapUrl({
+    address: props.location || "",
+    lat: props.locationLat,
+    lng: props.locationLng,
+    placeId: props.locationPlaceId,
+  }),
 )
 
 const possessivePronoun = computed(() => {
@@ -349,8 +374,26 @@ function handleMenuAction(item: { key: string }) {
   transition: color 0.15s ease;
 }
 
+.post-header__location-lead {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.post-header__location-name {
+  max-width: min(420px, 100%);
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .post-header__name:hover,
-.post-header__event-link:hover {
+.post-header__event-link:hover,
+.post-header__location-name:hover {
   color: var(--bg-brand);
   text-decoration: underline;
 }
@@ -494,6 +537,8 @@ function handleMenuAction(item: { key: string }) {
 
   .post-header__name,
   .post-header__profile-update,
+  .post-header__location-lead,
+  .post-header__location-name,
   .post-header__feeling-text,
   .post-header__feeling-emoji,
   .post-header__feeling-label,
@@ -504,12 +549,20 @@ function handleMenuAction(item: { key: string }) {
 
   .post-header__name,
   .post-header__profile-update,
+  .post-header__location-lead,
+  .post-header__location-name,
   .post-header__feeling-text,
   .post-header__feeling-emoji,
   .post-header__feeling-label,
   .post-header__context-icon,
   .post-header__event-link {
     margin-right: 4px;
+  }
+
+  .post-header__location-name {
+    max-width: none;
+    overflow: visible;
+    white-space: normal;
   }
 
   .post-header__event-link {

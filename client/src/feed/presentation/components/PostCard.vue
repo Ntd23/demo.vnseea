@@ -9,7 +9,6 @@
   >
     <div class="post-card__body py-2">
       <FeedPostHeader
-        v-if="!post.jobId"
         :author="post.author"
         :author-id="post.authorId"
         :author-avatar-url="post.authorAvatarUrl"
@@ -19,6 +18,10 @@
         :group-context="post.groupContext"
         :feeling="post.feeling"
         :role="post.role"
+        :location="post.location"
+        :location-lat="post.locationLat"
+        :location-lng="post.locationLng"
+        :location-place-id="post.locationPlaceId"
         :time="post.time"
         :audience="post.audience"
         :is-saved="post.isSaved"

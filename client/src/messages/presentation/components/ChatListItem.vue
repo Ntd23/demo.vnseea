@@ -14,7 +14,7 @@
       <UChip
         :show="type === 'user' ? isOnline : type === 'group' && isOnline"
         position="bottom-right"
-        color="success"
+        color="error"
         :ui="{ base: '!bg-[var(--color-success)]' }"
         inset
       >

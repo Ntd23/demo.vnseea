@@ -75,7 +75,7 @@ export interface FeedRepository {
     sharedPostId?: number
     colorId?: number
     pollAnswers?: string[]
-    location?: string
+    location?: LocationSelection
   }): Promise<FeedCreatePostResponse>
   createProduct(input: {
     name: string

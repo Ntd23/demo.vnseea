@@ -1,4 +1,5 @@
 <?php
+// English description: Creates API posts with media, audience, tagged users, and exact map location metadata.
 if (!empty($_POST['postText'])) {
 
 
@@ -323,11 +324,35 @@ if (!empty($_POST['url_link']) && !empty($_POST['url_title'])) {
 }
 $post_text = '';
 $post_map  = '';
+$post_map_lat = null;
+$post_map_lng = null;
+$post_map_place_id = '';
 if (!empty($_POST['postText']) && !ctype_space($_POST['postText'])) {
     $post_text = $_POST['postText'];
 }
 if (!empty($_POST['postMap'])) {
     $post_map = $_POST['postMap'];
+}
+if (
+    isset($_POST['postMapLat'], $_POST['postMapLng'])
+    && is_numeric($_POST['postMapLat'])
+    && is_numeric($_POST['postMapLng'])
+) {
+    $candidate_lat = (float) $_POST['postMapLat'];
+    $candidate_lng = (float) $_POST['postMapLng'];
+
+    if (
+        $candidate_lat >= -90
+        && $candidate_lat <= 90
+        && $candidate_lng >= -180
+        && $candidate_lng <= 180
+    ) {
+        $post_map_lat = $candidate_lat;
+        $post_map_lng = $candidate_lng;
+    }
+}
+if (!empty($_POST['postMapPlaceId'])) {
+    $post_map_place_id = $_POST['postMapPlaceId'];
 }
 $album_name = '';
 if (!empty($_POST['album_name'])) {
@@ -444,6 +469,13 @@ if (empty($error_message)) {
         'time' => time(),
         'multi_image_post' => 0,
     );
+    if ($post_map_lat !== null && $post_map_lng !== null) {
+        $post_data['postMapLat'] = Wo_Secure($post_map_lat);
+        $post_data['postMapLng'] = Wo_Secure($post_map_lng);
+    }
+    if (!empty($post_map_place_id)) {
+        $post_data['postMapPlaceId'] = Wo_Secure($post_map_place_id);
+    }
     if (isset($_POST['postSticker']) && Wo_IsUrl($_POST['postSticker']) && empty($_FILES) && empty($_POST['postRecord'])) {
         $_POST['postSticker'] = preg_replace('/on[^<>=]+=[^<>]*/m', '', $_POST['postSticker']);
         $_POST['postSticker'] = preg_replace('/\((.*?)\)/m', '', $_POST['postSticker']);

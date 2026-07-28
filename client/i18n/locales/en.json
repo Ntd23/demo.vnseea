@@ -1,4 +1,13 @@
 {
+  "uploadValidation": {
+    "title": "Unable to upload file",
+    "tooLarge": "“{name}” exceeds the maximum file size of {maxSize}.",
+    "unsupportedType": "The format of “{name}” is not supported.",
+    "tooManyFiles": "You can select up to {maxFiles} images per post.",
+    "emptyFile": "“{name}” is empty or cannot be read.",
+    "messageRules": "Maximum {maxSize}. Supports images, video, audio, PDF, Word, TXT, ZIP, and RAR.",
+    "uploading": "Uploading file..."
+  },
   "pages": {
     "welcomePage": {
       "eyebrow": "Account",
@@ -82,8 +91,8 @@
           "step1": "Open Settings on your iPhone or iPad home screen.",
           "step2": "Scroll down and choose Safari or Chrome (the browser you are using).",
           "step3": "Find Location -> switch it to Ask or Allow.",
-          "step4":"Return to Settings. Scroll down and tap on Privacy & Security.",
-          "step5":"Select Location Services and toggle the switch to the on position."
+          "step4": "Return to Settings. Scroll down and tap on Privacy & Security.",
+          "step5": "Select Location Services and toggle the switch to the on position."
         },
         "android": {
           "step1": "Open Settings on your phone -> choose Apps / App management.",
@@ -1590,7 +1599,9 @@
         "inviteButton": "Invite",
         "invitedButton": "Invited",
         "empty": "No friends found",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "inviteError": "Failed to send invitation.",
+        "inviteSuccess": "Invitation sent successfully."
       }
     },
     "profilePage": {
@@ -4447,7 +4458,15 @@
         "plan": "Creator Pro",
         "status": "Stable and active",
         "renewsAt": "Renews on May 15, 2026"
-      }
+      },
+      "create": "Create Product",
+      "marketplace": "Marketplace",
+      "myProducts": "My Products",
+      "orders": "Orders",
+      "pointPrice": "Points Price",
+      "purchased": "Purchased Products",
+      "title": "Pro Membership",
+      "totalPoints": "Total Points"
     },
     "jobsPage": {
       "seoTitle": "Jobs | VNSEEA",
@@ -5462,7 +5481,7 @@
       "actionStory": "Story",
       "actionProduct": "Product",
       "chipOnlyMe": "Only me",
-      "chipAddLocation": "Add location",
+      "chipAddLocation": "Location",
       "chipTagFriends": "Tag friends",
       "chipColors": "Colors",
       "colorPurpleBlue": "Purple blue",
@@ -7145,13 +7164,20 @@
       "deleteSuccessTitle": "Address deleted",
       "deleteSuccessDescription": "The address has been successfully deleted.",
       "deleteErrorTitle": "Delete failed",
-      "deleteErrorDescription": "Could not delete this address. Please try again later."
+      "deleteErrorDescription": "Could not delete this address. Please try again later.",
+      "agreeTermsPrefix": "I agree to the",
+      "termsAndConditions": "Terms and Conditions"
     },
     "confirmModal": {
       "title": "Confirm order",
       "description": "You are about to purchase these items. Do you want to continue?",
       "cancel": "Cancel",
       "confirm": "Place order"
+    },
+    "stepper": {
+      "cart": "Cart",
+      "confirm": "Confirm",
+      "payment": "Payment"
     }
   },
   "orders": {
@@ -7623,7 +7649,14 @@
         "categoryDesc": "{entity} will appear in a better context when the right category is chosen.",
         "privacyLabel": "Display type selected",
         "privacyDesc": "This setting directly affects who can find and view {entity}."
-      }
+      },
+      "createCategoryError": "Failed to create category. Please try again.",
+      "createGroupTitle": "Create Group",
+      "createPageTitle": "Create Page",
+      "groupCategoryLabel": "Group Category",
+      "groupUrlLabel": "Group URL",
+      "pageCategoryLabel": "Page Category",
+      "tryAgain": "Try Again"
     },
     "cta": {
       "message": {
@@ -8112,6 +8145,13 @@
         "title": "Group to set up not found",
         "desc": "This group slug is not available. Please go back to the group list and select a valid community.",
         "back": "Back to group list"
+      },
+      "admins": {
+        "desc": "Manage access permissions and assign roles for your page.",
+        "eyebrow": "Access Permissions",
+        "navDesc": "List of administrators and managers",
+        "primaryRole": "Primary Role",
+        "title": "Administrators"
       }
     },
     "pageSettings": {
@@ -8254,7 +8294,11 @@
       "delete": {
         "warning": "Are you sure you want to delete this fanpage?",
         "confirm": "Yes, delete this page",
-        "cancel": "No, keep this page"
+        "cancel": "No, keep this page",
+        "confirmDialog": "Are you sure you want to delete this page? This action cannot be undone.",
+        "passwordLabel": "Confirmation Password",
+        "passwordNotice": "For security, please enter your password to confirm.",
+        "passwordPlaceholder": "Enter password..."
       },
       "empty": {
         "title": "Fanpage to setup not found",
@@ -8263,7 +8307,30 @@
       },
       "seoTitle": "{name} Settings | VNSEEA",
       "seoTitleFallback": "Page Settings | VNSEEA",
-      "seoDescFallback": "Manage fanpage configurations on VNSEEA."
+      "seoDescFallback": "Manage fanpage configurations on VNSEEA.",
+      "admin": {
+        "addAdmin": "Add Administrator",
+        "removeConfirm": "Are you sure you want to remove this administrator?",
+        "roleAdmin": "Administrator",
+        "roleOwner": "Owner",
+        "searchPlaceholder": "Search users to add..."
+      },
+      "analytics": {
+        "chartEmpty": "No analytics data available for this period.",
+        "chartSubtitle": "Page activity and engagement stats over time.",
+        "empty": "No analytics records found.",
+        "filterAria": "Select timeframe filter",
+        "likes": "Likes",
+        "likesIn": "Likes in",
+        "loading": "Loading analytics...",
+        "peak": "Peak Activity",
+        "periods": {
+          "day": "24 Hours",
+          "month": "This Month",
+          "week": "This Week",
+          "year": "This Year"
+        }
+      }
     },
     "creationForm": {
       "pageLink": "Page link",
@@ -8363,7 +8430,9 @@
             "0": "When reviewing locations, include cost, travel time, and practical notes.",
             "1": "Respect the local environment, avoid promoting activities that affect nature.",
             "2": "Do not post tour hunting information with low credibility or unknown origin."
-          }
+          },
+          "inviteLabel": "Invite",
+          "joinLabel": "Join Group"
         }
       },
       "pages": {
@@ -8410,6 +8479,115 @@
           }
         }
       }
+    },
+    "detail": {
+      "about": "About",
+      "addFriends": "Add Friends",
+      "back": "Back",
+      "changeCover": "Change Cover",
+      "emptyPostsDesc": "No posts have been published in this community yet.",
+      "emptyPostsTitle": "No posts yet",
+      "error": "An error occurred",
+      "info": "Information",
+      "inviteFriends": "Invite Friends",
+      "jobs": "Jobs",
+      "likesCount": "Likes",
+      "noSummary": "No summary available.",
+      "offers": "Offers",
+      "pagesYouMayLike": "Pages You May Like",
+      "postsCount": "Posts",
+      "searchGroupPlaceholder": "Search group...",
+      "searchGroupPosts": "Search Group Posts",
+      "searchPosts": "Search Posts",
+      "success": "Success",
+      "thisWeek": "This Week",
+      "updateAvatarError": "Failed to update avatar.",
+      "updateAvatarSuccess": "Avatar updated successfully.",
+      "updateCoverError": "Failed to update cover photo.",
+      "updateCoverSuccess": "Cover photo updated successfully."
+    },
+    "groupSettings": {
+      "analytics": {
+        "joined": "Joined",
+        "loading": "Loading analytics...",
+        "membersTotal": "Total Members",
+        "periods": {
+          "month": "This Month",
+          "today": "Today",
+          "week": "This Week",
+          "year": "This Year"
+        },
+        "title": "Group Analytics"
+      },
+      "basics": {
+        "categoryLabel": "Category",
+        "nameLabel": "Group Name",
+        "namePlaceholder": "Enter group name...",
+        "slugHint": "Custom URL path for the group.",
+        "slugLabel": "Group URL Slug",
+        "summaryLabel": "Summary",
+        "summaryPlaceholder": "Describe your group...",
+        "title": "Basic Settings",
+        "useSuggestion": "Use Suggestion"
+      },
+      "controls": {
+        "approvalLabel": "Member Approval",
+        "optionNo": "No",
+        "optionYes": "Yes",
+        "privacyPrivate": "Private",
+        "privacyPublic": "Public",
+        "title": "Privacy & Permissions",
+        "typeLabel": "Group Type"
+      },
+      "delete": {
+        "confirmDialog": "Are you sure you want to delete this group? This action cannot be undone.",
+        "deleteBtn": "Delete Group",
+        "passwordLabel": "Password",
+        "title": "Delete Group"
+      },
+      "media": {
+        "changeAvatar": "Change Avatar",
+        "changeCover": "Change Cover",
+        "title": "Media & Branding"
+      },
+      "members": {
+        "empty": "No members found.",
+        "emptyFiltered": "No members match your search criteria.",
+        "owner": "Group Owner",
+        "showLess": "Show Less",
+        "showMore": "Show More"
+      },
+      "requests": {
+        "approveAll": "Approve All",
+        "empty": "No pending join requests.",
+        "loading": "Loading requests...",
+        "showLess": "Show Less",
+        "showMore": "Show More"
+      }
     }
+  },
+  "appShell": {
+    "runtimeError": {
+      "desc": "Navigation still works. You can switch to another page right away or try reloading the current page.",
+      "error": "Error details",
+      "eyebrow": "Application Error",
+      "retry": "Try this page again",
+      "route": "Route",
+      "safe": "Go to safe page",
+      "title": "This page just crashed"
+    }
+  },
+  "errorScreen": {
+    "autoRecoverHint": "The page will automatically return in a moment so you can continue navigating without reloading.",
+    "back": "Go back",
+    "descFallback": "An error occurred while loading content for this path.",
+    "descNotFound": "The link you just opened is broken or the page has been removed.",
+    "descServerError": "The page you accessed encountered a system error during navigation.",
+    "errorMessageFallback": "An unknown error occurred during navigation.",
+    "eyebrow": "Navigation Error",
+    "home": "Go to Homepage",
+    "statusFallback": "Unable to open page",
+    "statusNotFound": "Page does not exist",
+    "statusServerError": "This page is having issues"
   }
 }
