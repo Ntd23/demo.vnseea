@@ -163,7 +163,13 @@ export default defineAppConfig({
     },
     checkbox: {
       slots: {
-        base: "ring-[var(--border-light)]",
+        root: "min-w-0 text-[var(--text-primary)]",
+        container: "shrink-0",
+        base:
+          "bg-[var(--bg-surface)] ring-1 ring-inset ring-[var(--border-light)]",
+        indicator: "text-[var(--color-on-brand)]",
+        icon: "text-[var(--color-on-brand)]",
+        wrapper: "min-w-0",
         label: "text-[var(--text-primary)]",
         description: "text-[var(--text-secondary)]",
       },

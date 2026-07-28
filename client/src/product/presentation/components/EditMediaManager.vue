@@ -3,9 +3,11 @@
   <div class="space-y-8">
     <div class="space-y-3">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-[1.02rem] font-black text-[var(--text-primary)]">Ảnh hiện tại</p>
+        <p class="text-[1.02rem] font-black text-[var(--text-primary)]">
+          {{ $t("product.editMediaManager.currentImagesTitle") }}
+        </p>
         <UBadge color="warning" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
-          {{ removedCount }} ảnh sẽ bị xóa
+          {{ $t("product.editMediaManager.removedCountBadge", { count: removedCount }) }}
         </UBadge>
       </div>
 
@@ -50,14 +52,16 @@
           variant="subtle"
           icon="i-ph-image-broken"
           class="sm:col-span-2 xl:col-span-3"
-          description="Không còn ảnh cũ nào được giữ lại."
+          :description="$t('product.editMediaManager.noCurrentImages')"
         />
       </div>
     </div>
 
     <div class="space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="text-[1.02rem] font-black text-[var(--text-primary)]">Ảnh mới</p>
+        <p class="text-[1.02rem] font-black text-[var(--text-primary)]">
+          {{ $t("product.editMediaManager.newImagesTitle") }}
+        </p>
         <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5">
           {{ imageButtonLabel }}
         </UBadge>
@@ -69,8 +73,8 @@
         accept="image/*"
         layout="grid"
         highlight
-        label="Bổ sung ảnh mới"
-        description="Ảnh local chỉ dùng cho preview UI trước khi nối upload thật."
+        :label="$t('product.editMediaManager.uploadLabel')"
+        :description="$t('product.editMediaManager.uploadDescription')"
         class="w-full"
       />
 
@@ -78,7 +82,7 @@
         color="neutral"
         variant="subtle"
         icon="i-ph-images-square-fill"
-        :description="`Đang thêm ${filesModel.length} ảnh mới. Ảnh cũ có thể bỏ khỏi tin đăng trước khi lưu.`"
+        :description="$t('product.editMediaManager.newImagesStatus', { current: filesModel.length })"
         class="rounded-[20px]"
       />
     </div>

@@ -391,7 +391,7 @@ async function buyNow() {
 }
 
 .product-post-card__prices strong {
-  color: var(--text-success);
+  color: var(--text-brand);
   font-size: 17px;
   line-height: 1.25;
 }

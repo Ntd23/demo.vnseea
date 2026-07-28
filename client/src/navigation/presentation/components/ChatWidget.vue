@@ -89,6 +89,13 @@
               multiple
               selected-icon="i-ph-x-bold"
               class="chat-widget__recipient-listbox"
+              :ui="{
+                root: 'w-full min-w-0',
+                content: 'max-h-[108px] overflow-y-auto',
+                item: 'min-w-0',
+                itemWrapper: 'min-w-0',
+                itemLabel: 'truncate',
+              }"
             />
             <span v-else class="chat-widget__recipient-empty">{{ $t("navigation.chatWidget.noRecipientSelected") }}</span>
           </div>
@@ -148,16 +155,14 @@
             </template>
           </div>
 
-          <label class="chat-widget__select-all">
-            <input
-              type="checkbox"
-              :checked="allVisibleSendRecipientsSelected"
-              class="chat-widget__select-all-checkbox"
-              :disabled="sendCandidates.length === 0"
-              @change="toggleAllVisibleSendRecipients"
-            >
-            <span>{{ $t("navigation.chatWidget.selectAll") }}</span>
-          </label>
+          <UCheckbox
+            :model-value="allVisibleSendRecipientsSelected"
+            :label="$t('navigation.chatWidget.selectAll')"
+            :disabled="sendCandidates.length === 0"
+            size="sm"
+            class="chat-widget__select-all"
+            @update:model-value="updateAllVisibleSendRecipients"
+          />
 
           <UButton
             type="button"
@@ -181,6 +186,7 @@
           <div class="chat-widget__field chat-widget__tag-filter">
             <USelectMenu
               v-model="activeSendTagFilterModel"
+              v-model:open="sendTagFilterOpen"
               :items="sendTagFilterItems"
               value-key="value"
               :placeholder="$t('pages.messagesPage.chooseTag')"
@@ -231,12 +237,18 @@
                   }"
                 />
                 <div class="chat-widget__candidate-actions">
-                  <span class="chat-widget__select-state" aria-hidden="true">
-                    <span class="chat-widget__checkbox" :class="{ 'chat-widget__checkbox--checked': isSendRecipientSelected(item.value) }">
-                      <Icon v-if="isSendRecipientSelected(item.value)" name="i-ph-check-bold" class="h-3 w-3" />
-                    </span>
-                    <span>{{ $t("pages.messagesPage.selectRecipient") }}</span>
-                  </span>
+                  <div
+                    class="chat-widget__select-state"
+                    @pointerdown.stop
+                    @click.stop
+                  >
+                    <UCheckbox
+                      :model-value="isSendRecipientSelected(item.value)"
+                      :label="$t('pages.messagesPage.selectRecipient')"
+                      size="sm"
+                      @update:model-value="updateSendRecipientSelection(item.value, $event)"
+                    />
+                  </div>
                   <UButton
                     type="button"
                     size="xs"
@@ -856,6 +868,7 @@ const defaultMiniReaction = defaultFeedReactionAsset
 type AvatarMenuContact = (typeof filteredContacts)['value'][number]
 const contactTagModalOpen = ref(false)
 const contactTagModalContact = ref<MessageContact | null>(null)
+const sendTagFilterOpen = ref(false)
 const messageAvatarMenuContact = ref<AvatarMenuContact | null>(null)
 const messageAvatarMenuStyle = ref<Record<string, string>>({})
 const messageAvatarMenuMessageId = ref<number | null>(null)
@@ -881,6 +894,7 @@ const {
   activeTab,
   search,
   activeSendTagFilter,
+  setInboxRefreshPaused,
   sendTo,
   sendMessage,
   attachFile,
@@ -942,6 +956,10 @@ const activeSendTagFilterModel = computed<string | null>({
   get: () => activeSendTagFilter.value || null,
   set: tagId => { activeSendTagFilter.value = tagId ?? "" },
 })
+
+watch(sendTagFilterOpen, (isOpen) => {
+  setInboxRefreshPaused(isOpen)
+}, { flush: "sync" })
 const contactTagModalLiveContact = computed(() => {
   const userId = contactTagModalContact.value?.userId ?? 0
 
@@ -1060,6 +1078,27 @@ function canSubmitMiniMessage(session: MiniChatSessionView) {
 
 function isSendRecipientSelected(userId: number) {
   return selectedSendRecipientIds.value.includes(userId)
+}
+
+function updateAllVisibleSendRecipients(checked: boolean | "indeterminate") {
+  const shouldSelectAll = checked === true
+
+  if (shouldSelectAll !== allVisibleSendRecipientsSelected.value) {
+    toggleAllVisibleSendRecipients()
+  }
+}
+
+function updateSendRecipientSelection(userId: number, checked: boolean | "indeterminate") {
+  const nextRecipientIds = new Set(selectedSendRecipientIds.value)
+
+  if (checked === true) {
+    nextRecipientIds.add(userId)
+  }
+  else {
+    nextRecipientIds.delete(userId)
+  }
+
+  setSelectedSendRecipientIds([...nextRecipientIds])
 }
 
 async function openMiniChat(contact: Parameters<typeof openMiniChatVm>[0]) {
@@ -1229,7 +1268,12 @@ function closeFloatingMenusOnOutsideClick(event: MouseEvent) {
 }
 
 watch(activeTab, async (tab) => {
-  if (tab !== "send" || !import.meta.client) return
+  if (tab !== "send") {
+    sendTagFilterOpen.value = false
+    return
+  }
+
+  if (!import.meta.client) return
 
   await nextTick()
   await nextTick()
@@ -1247,11 +1291,18 @@ watch(activeTab, async (tab) => {
   })
 })
 
+watch(collapsed, (isCollapsed) => {
+  if (isCollapsed) {
+    sendTagFilterOpen.value = false
+  }
+})
+
 onMounted(() => {
   document.addEventListener("click", closeFloatingMenusOnOutsideClick)
 })
 
 onBeforeUnmount(() => {
+  setInboxRefreshPaused(false)
   document.removeEventListener("click", closeFloatingMenusOnOutsideClick)
   if (sendPanelResetFrame !== null) {
     window.cancelAnimationFrame(sendPanelResetFrame)
@@ -2175,19 +2226,8 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__select-all {
-  display: inline-flex;
+  width: fit-content;
   flex-shrink: 0;
-  cursor: pointer;
-  align-items: center;
-  gap: 6px;
-  color: var(--text-primary);
-  font-size: 11px;
-  font-weight: 650;
-}
-
-.chat-widget__select-all:has(input:disabled) {
-  cursor: default;
-  opacity: 0.45;
 }
 
 .chat-widget__recipient-box {
@@ -2209,8 +2249,6 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__recipient-listbox {
   width: 100%;
-  max-height: 108px;
-  overflow-y: auto;
   scrollbar-gutter: stable;
 }
 
@@ -2285,19 +2323,6 @@ watch(miniChatAutoOpenVersion, (version) => {
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
-.chat-widget__select-all-checkbox {
-  width: 16px;
-  height: 16px;
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  accent-color: var(--color-primary-600);
-}
-
-.chat-widget__select-all-checkbox:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--color-primary-500) 35%, transparent);
-  outline-offset: 2px;
-}
-
 .chat-widget__tag-filter {
   padding-top: 2px;
 }
@@ -2334,29 +2359,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__select-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--text-secondary);
-  font-size: 10px;
   white-space: nowrap;
-}
-
-.chat-widget__checkbox {
-  display: inline-flex;
-  width: 15px;
-  height: 15px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  background: var(--bg-surface);
-  color: var(--color-on-brand);
-}
-
-.chat-widget__checkbox--checked {
-  border-color: var(--border-light);
-  background: var(--color-primary-500);
 }
 
 .chat-widget__open-chat {
