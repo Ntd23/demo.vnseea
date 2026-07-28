@@ -304,7 +304,7 @@ export const normalizeProductRecord = (event: H3Event, product: BackendProduct):
   const seller = product.seller || product.user_data
   const images = (Array.isArray(product.images) ? product.images : []).map((image, index) => {
     const imageId = typeof image === "string" ? `${asString(product.id)}-${index}` : asString(image.id, `${asString(product.id)}-${index}`)
-    const imagePath = typeof image === "string" ? image : image.image_org || image.image
+    const imagePath = typeof image === "string" ? image : image.image || image.image_org
 
     return {
       id: imageId,

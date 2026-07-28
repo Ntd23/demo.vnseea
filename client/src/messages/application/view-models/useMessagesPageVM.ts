@@ -527,6 +527,7 @@ export function useMessagesPageVM() {
   )
 
   onMounted(() => {
+    void inbox.refreshInbox()
     void realtime.start()
     void syncActiveTypingState()
 

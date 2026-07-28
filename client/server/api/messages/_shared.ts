@@ -39,6 +39,17 @@ type BackendInboxResponse = {
   }
 }
 
+type BackendConnectionsResponse = {
+  api_status?: number | string
+  data?: {
+    following?: BackendEntity[]
+    followers?: BackendEntity[]
+  }
+  errors?: {
+    error_text?: string
+  }
+}
+
 type BackendUserThreadResponse = {
   api_status?: number | string
   messages?: BackendEntity[]
@@ -818,7 +829,10 @@ const buildUserOnlineState = (entity: BackendEntity, lastSeenAt: number) => {
 }
 
 const buildLastSeenAt = (entity: BackendEntity) => {
-  const lastSeenAt = asNumber(entity.lastseen) || asNumber(entity.last_seen) || asNumber(entity.lastSeenAt)
+  const lastSeenAt = asNumber(entity.lastseen_unix_time)
+    || asNumber(entity.lastseen)
+    || asNumber(entity.last_seen)
+    || asNumber(entity.lastSeenAt)
   return lastSeenAt > 0 ? lastSeenAt : 0
 }
 
@@ -865,6 +879,15 @@ const mapMessageContact = (
       preview: buildContactPreview(lastMessage, currentUserId, currentUserName, name),
       time: firstString(lastMessage, ["time_text"]),
       unreadCount: asNumber(entity.message_count),
+      lastActivityAt: Math.max(
+        asNumber(entity.chat_time),
+        asNumber(lastMessage.time),
+        asNumber(entity.relationship_activity_at),
+      ) || undefined,
+      isFollowing: asNumber(entity.is_following) > 0,
+      isFollowingMe: asNumber(entity.is_following_me) > 0,
+      hasFollowRelationship: asNumber(entity.has_follow_relationship) > 0,
+      relationshipActivityAt: asNumber(entity.relationship_activity_at) || undefined,
       members: [firstString(entity, ["name", "username"])].filter(Boolean),
       type: "user",
       userId,
@@ -1146,23 +1169,124 @@ export async function fetchInboxContacts(event: H3Event) {
     const currentUser = await getBackendCurrentUser(event)
     const client = createBackendApiClient(event)
     const resolveMediaUrl = createBackendMediaUrlResolver(event)
-    const response = await client.post<BackendInboxResponse, Record<string, unknown>>(
-      "get_chats",
-      {
-        data_type: "users,groups,pages",
-        user_limit: 30,
-        group_limit: 30,
-        page_limit: 30,
-      },
-    )
-
     const currentUserId = asNumber(currentUser.user_id)
     const currentUserName = buildDisplayName(asRecord(currentUser))
+
+    const [response, connectionsResponse] = await Promise.all([
+      client.post<BackendInboxResponse, Record<string, unknown>>(
+        "get_chats",
+        {
+          data_type: "users,groups,pages",
+          user_limit: 30,
+          group_limit: 30,
+          page_limit: 30,
+        },
+      ),
+      client.post<BackendConnectionsResponse, Record<string, unknown>>(
+        "get-friends",
+        {
+          user_id: currentUserId,
+          type: "following,followers",
+          limit: 50,
+        },
+      ).catch(() => null),
+    ])
+
     const contacts = (response.data ?? [])
       .map(entity => mapMessageContact(entity, currentUserId, currentUserName, resolveMediaUrl))
       .filter(Boolean) as MessageContact[]
 
-    return contacts
+    const relationships = new Map<number, {
+      entity: BackendEntity
+      isFollowing: boolean
+      isFollowingMe: boolean
+      activityAt: number
+    }>()
+
+    const registerRelationship = (
+      entity: BackendEntity,
+      direction: "following" | "follower",
+    ) => {
+      const userId = asNumber(entity.user_id)
+
+      if (userId <= 0 || userId === currentUserId) {
+        return
+      }
+
+      const existing = relationships.get(userId)
+      relationships.set(userId, {
+        entity: existing?.entity ?? entity,
+        isFollowing: existing?.isFollowing || direction === "following",
+        isFollowingMe: existing?.isFollowingMe || direction === "follower",
+        activityAt: Math.max(
+          existing?.activityAt ?? 0,
+          asNumber(entity.relationship_activity_at),
+        ),
+      })
+    }
+
+    for (const entity of connectionsResponse?.data?.following ?? []) {
+      registerRelationship(entity, "following")
+    }
+
+    for (const entity of connectionsResponse?.data?.followers ?? []) {
+      registerRelationship(entity, "follower")
+    }
+
+    const userContactIds = new Set<number>()
+    const enrichedContacts = contacts.map((contact) => {
+      if (contact.type !== "user" || !contact.userId) {
+        return contact
+      }
+
+      userContactIds.add(contact.userId)
+      const relationship = relationships.get(contact.userId)
+
+      if (!relationship) {
+        return contact
+      }
+
+      return {
+        ...contact,
+        isFollowing: relationship.isFollowing,
+        isFollowingMe: relationship.isFollowingMe,
+        hasFollowRelationship: true,
+        relationshipActivityAt: relationship.activityAt || undefined,
+        lastActivityAt: Math.max(
+          contact.lastActivityAt ?? 0,
+          relationship.activityAt,
+        ) || undefined,
+      }
+    })
+
+    for (const [userId, relationship] of relationships) {
+      if (userContactIds.has(userId)) {
+        continue
+      }
+
+      const contact = mapMessageContact(
+        {
+          ...relationship.entity,
+          chat_type: "user",
+          chat_time: 0,
+          last_message: {},
+          message_count: 0,
+          is_following: relationship.isFollowing ? 1 : 0,
+          is_following_me: relationship.isFollowingMe ? 1 : 0,
+          has_follow_relationship: 1,
+          relationship_activity_at: relationship.activityAt,
+        },
+        currentUserId,
+        currentUserName,
+        resolveMediaUrl,
+      )
+
+      if (contact) {
+        enrichedContacts.push(contact)
+      }
+    }
+
+    return enrichedContacts
   }
   catch (error) {
     throw error

@@ -1,4 +1,4 @@
-<!-- Description: Renders the feed publisher box with backend post creation and current-user session data instead of local mock submission. -->
+<!-- English description: Renders the feed publisher with media actions, reusable Google location selection, and backend post creation. -->
 <template>
   <section class="publisher">
     <input
@@ -73,40 +73,64 @@
         </div>
         <div class="publisher__meta">
           <p class="publisher__name">{{ currentUserName || t("feed.publisherBox.expandedOpen") }}</p>
-          <div v-if="audiences.length" class="publisher__audience-dropdown">
-            <button 
-              type="button" 
-              class="publisher__audience-btn"
-              :disabled="draft.isAnonymous"
-              @click.stop="toggleAudienceMenu"
-            >
-              <Icon :name="selectedAudienceInfo.icon" class="h-3.5 w-3.5 text-[var(--text-secondary)] mr-1" />
-              <span>{{ selectedAudienceInfo.label }}</span>
-              <Icon name="i-ph-caret-down-bold" class="h-2.5 w-2.5 text-[var(--text-tertiary)] ml-1.5" />
-            </button>
-            
-            <div 
-              v-if="showAudienceMenu && !draft.isAnonymous"
-              class="publisher__audience-menu"
-              @click.stop
+          <div class="publisher__meta-controls">
+            <div v-if="audiences.length" class="publisher__audience-dropdown">
+              <button
+                type="button"
+                class="publisher__audience-btn"
+                :disabled="draft.isAnonymous"
+                @click.stop="toggleAudienceMenu"
+              >
+                <Icon :name="selectedAudienceInfo.icon" class="mr-1 h-3.5 w-3.5 text-[var(--text-secondary)]" />
+                <span>{{ selectedAudienceInfo.label }}</span>
+                <Icon name="i-ph-caret-down-bold" class="ml-1.5 h-2.5 w-2.5 text-[var(--text-tertiary)]" />
+              </button>
+
+              <div
+                v-if="showAudienceMenu && !draft.isAnonymous"
+                class="publisher__audience-menu"
+                @click.stop
+              >
+                <button
+                  v-for="opt in audiences"
+                  :key="opt.value"
+                  type="button"
+                  class="publisher__audience-item"
+                  :class="{ 'publisher__audience-item--active': opt.value === selectedAudience }"
+                  @click="selectAudienceOption(opt.value)"
+                >
+                  <Icon :name="opt.icon" class="mr-2 h-4 w-4" />
+                  <span>{{ opt.label }}</span>
+                  <Icon
+                    v-if="opt.value === selectedAudience"
+                    name="i-ph-check-bold"
+                    class="ml-auto h-3.5 w-3.5 text-primary-500"
+                  />
+                </button>
+              </div>
+            </div>
+
+            <UChip
+              :show="hasPublisherLocation"
+              color="success"
+              size="2xs"
+              inset
             >
               <button
-                v-for="opt in audiences"
-                :key="opt.value"
                 type="button"
-                class="publisher__audience-item"
-                :class="{ 'publisher__audience-item--active': opt.value === selectedAudience }"
-                @click="selectAudienceOption(opt.value)"
+                class="publisher__location-trigger"
+                :class="{ 'publisher__location-trigger--active': hasPublisherLocation || showLocationForm }"
+                :title="t('feed.publisherBox.chipAddLocation')"
+                @click.stop="handleActionOverride('location')"
               >
-                <Icon :name="opt.icon" class="h-4 w-4 mr-2" />
-                <span>{{ opt.label }}</span>
-                <Icon 
-                  v-if="opt.value === selectedAudience" 
-                  name="i-ph-check-bold" 
-                  class="h-3.5 w-3.5 ml-auto text-primary-500" 
-                />
+                <Icon name="i-ph-map-pin-bold" class="h-3.5 w-3.5" />
+                <span>
+                  {{ hasPublisherLocation
+                    ? draft.location.address
+                    : t("feed.publisherBox.chipAddLocation") }}
+                </span>
               </button>
-            </div>
+            </UChip>
           </div>
           <!-- <label v-if="isPersonalComposer" class="publisher__anonymous-toggle">
             <UCheckbox v-model="draft.isAnonymous" />
@@ -144,6 +168,13 @@
           @keydown.esc.prevent="closeMentionSuggestions"
         />
       </div>
+
+      <LocationPreviewMap
+        v-if="!showProductForm && hasPublisherLocation"
+        :location="draft.location"
+        @edit="showLocationForm = true"
+        @remove="clearLocation"
+      />
 
       <!-- Media Preview Grid -->
       <div v-if="!showProductForm && mediaPreviews.length > 0" class="publisher__media-previews">
@@ -234,6 +265,19 @@
         </div>
       </div>
 
+      <div v-if="!showProductForm && showLocationForm" class="publisher__location-panel">
+        <div class="publisher__location-heading">
+          <Icon name="i-ph-map-pin-area-duotone" class="h-5 w-5" />
+          <span>{{ t("feed.publisherBox.chipAddLocation") }}</span>
+        </div>
+        <GooglePlaceField
+          v-model="draft.location"
+          :placeholder="t('community.pageSettings.basics.fields.locationPlaceholder')"
+          require-coordinates
+        />
+        <PreciseLocationPicker v-model="draft.location" />
+      </div>
+
       <div v-if="!showProductForm" class="publisher__toolbar">
         <div class="publisher__actions">
           <button
@@ -249,6 +293,7 @@
                 || (action.value === 'product' && showProductForm),
             }"
             type="button"
+            :title="action.label"
             @click="handleActionOverride(action.value)"
           >
             <Icon :name="action.icon" class="h-4 w-4" />
@@ -354,6 +399,9 @@ import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFe
 import { useJobComposerVM } from "../../../jobs/application/view-models/useJobComposerVM"
 import JobPostModal from "../../../jobs/presentation/components/JobPostModal.vue"
 import NewProductPage from "../../../product/presentation/pages/NewProductPage.vue"
+import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
+import LocationPreviewMap from "../../../location/presentation/components/LocationPreviewMap.vue"
+import PreciseLocationPicker from "../../../location/presentation/components/PreciseLocationPicker.vue"
 
 const { t } = useI18n()
 const { locale } = useI18n()
@@ -396,12 +444,14 @@ const {
   selectImageFile,
   selectVideoFile,
   clearSelectedMedia,
+  clearLocation,
   selectFeeling,
   publish: publishPost,
   selectedColorId,
   showColorsPicker,
   postColorOptions,
   showProductForm,
+  showLocationForm,
   imageFiles,
   videoFile,
 } = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId, props.eventId, props.groupId)
@@ -473,6 +523,10 @@ const activeColorOption = computed(() => {
   if (selectedColorId.value === null) return null
   return postColorOptions.value.find(opt => opt.id === selectedColorId.value) || null
 })
+
+const hasPublisherLocation = computed(() =>
+  Boolean(draft.value.location.address.trim()),
+)
 
 const draftText = computed({
   get: () => draft.value?.text || "",
@@ -579,6 +633,7 @@ function handleActionOverride(value: any) {
       showPollForm.value = false
       showColorsPicker.value = false
       showProductForm.value = false
+      showLocationForm.value = false
       console.log("[FeedPublisherBox] Clicking imageInputRef:", imageInputRef.value)
       imageInputRef.value?.click()
       expanded.value = true
@@ -590,6 +645,7 @@ function handleActionOverride(value: any) {
       showPollForm.value = false
       showColorsPicker.value = false
       showProductForm.value = false
+      showLocationForm.value = false
       console.log("[FeedPublisherBox] Clicking videoInputRef:", videoInputRef.value)
       videoInputRef.value?.click()
       expanded.value = true
@@ -617,6 +673,7 @@ function handleCompactActionOverride(value: any) {
       showPollForm.value = false
       showColorsPicker.value = false
       showProductForm.value = false
+      showLocationForm.value = false
       console.log("[FeedPublisherBox] Clicking compact imageInputRef:", imageInputRef.value)
       imageInputRef.value?.click()
       expanded.value = true
@@ -628,6 +685,7 @@ function handleCompactActionOverride(value: any) {
       showPollForm.value = false
       showColorsPicker.value = false
       showProductForm.value = false
+      showLocationForm.value = false
       console.log("[FeedPublisherBox] Clicking compact videoInputRef:", videoInputRef.value)
       videoInputRef.value?.click()
       expanded.value = true
@@ -652,6 +710,7 @@ async function openComposer() {
   showFeelingPicker.value = false
   showPollForm.value = false
   showColorsPicker.value = false
+  showLocationForm.value = false
   expanded.value = true
   await nextTick()
   resizeTextarea()
@@ -928,10 +987,54 @@ function goToLive() {
   min-width: 0;
 }
 
+.publisher__meta-controls {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+}
+
 .publisher__name {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.publisher__location-trigger {
+  display: inline-flex;
+  min-width: 0;
+  max-width: min(280px, 100%);
+  min-height: 28px;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--bg-muted);
+  padding: 4px 9px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.publisher__location-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.publisher__location-trigger:hover,
+.publisher__location-trigger--active {
+  border-color: color-mix(in srgb, var(--bg-brand) 35%, var(--border-default));
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
 }
 
 .publisher__close {
@@ -1151,6 +1254,24 @@ function goToLive() {
   padding: 0;
 }
 
+.publisher__location-panel {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  background: var(--bg-muted);
+  padding: 14px;
+}
+
+.publisher__location-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .publisher__toolbar {
   display: flex;
   flex-direction: column;
@@ -1259,6 +1380,10 @@ function goToLive() {
 @media (min-width: 480px) {
   .publisher__action-label {
     display: inline;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -1442,7 +1567,7 @@ function goToLive() {
 .publisher__audience-dropdown {
   position: relative;
   display: inline-block;
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .publisher__audience-btn {
@@ -1524,5 +1649,11 @@ function goToLive() {
   height: 10px;
   color: var(--text-secondary);
   pointer-events: none;
+}
+
+@media (max-width: 639px) {
+  .publisher__location-trigger {
+    max-width: min(180px, calc(100vw - 190px));
+  }
 }
 </style>

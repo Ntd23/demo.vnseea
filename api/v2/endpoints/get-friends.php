@@ -1,4 +1,5 @@
 <?php
+// English description: Returns a user's following and follower contacts with relationship activity timestamps.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -56,9 +57,80 @@ if (!empty($_POST['type'])) {
 	            unset($following[$key2][$value]);
 	        }
 		}
-		
+
 		$f_data['followers'] = $following;
 	}
+
+    $relationship_user_ids = array();
+    foreach (array('following', 'followers') as $relationship_type) {
+        foreach ($f_data[$relationship_type] as $relationship_user) {
+            $relationship_user_id = !empty($relationship_user['user_id']) ? (int) $relationship_user['user_id'] : 0;
+            if ($relationship_user_id > 0 && $relationship_user_id !== (int) $user_id) {
+                $relationship_user_ids[$relationship_user_id] = $relationship_user_id;
+            }
+        }
+    }
+
+    $relationship_activity_times = array();
+    if (!empty($relationship_user_ids)) {
+        $current_user_id = (int) $user_id;
+        $relationship_user_ids_sql = implode(',', $relationship_user_ids);
+        $relationship_activity_query = mysqli_query(
+            $sqlConnect,
+            "SELECT
+                relationship_events.`related_user_id`,
+                MAX(relationship_events.`time`) AS `relationship_activity_at`
+             FROM (
+                SELECT
+                    CASE
+                        WHEN `user_id` = {$current_user_id} THEN `follow_id`
+                        ELSE `user_id`
+                    END AS `related_user_id`,
+                    `time`
+                FROM " . T_ACTIVITIES . "
+                WHERE `activity_type` IN ('following', 'friend')
+                AND (
+                    (`user_id` = {$current_user_id} AND `follow_id` IN ({$relationship_user_ids_sql}))
+                    OR
+                    (`follow_id` = {$current_user_id} AND `user_id` IN ({$relationship_user_ids_sql}))
+                )
+
+                UNION ALL
+
+                SELECT
+                    CASE
+                        WHEN `notifier_id` = {$current_user_id} THEN `recipient_id`
+                        ELSE `notifier_id`
+                    END AS `related_user_id`,
+                    `time`
+                FROM " . T_NOTIFICATION . "
+                WHERE `type` IN ('following', 'accepted_request')
+                AND (
+                    (`notifier_id` = {$current_user_id} AND `recipient_id` IN ({$relationship_user_ids_sql}))
+                    OR
+                    (`recipient_id` = {$current_user_id} AND `notifier_id` IN ({$relationship_user_ids_sql}))
+                )
+             ) relationship_events
+             GROUP BY `related_user_id`"
+        );
+
+        if ($relationship_activity_query) {
+            while ($relationship_activity = mysqli_fetch_assoc($relationship_activity_query)) {
+                $related_user_id = (int) $relationship_activity['related_user_id'];
+                $relationship_activity_times[$related_user_id] = (int) $relationship_activity['relationship_activity_at'];
+            }
+        }
+    }
+
+    foreach (array('following', 'followers') as $relationship_type) {
+        foreach ($f_data[$relationship_type] as $relationship_key => $relationship_user) {
+            $relationship_user_id = !empty($relationship_user['user_id']) ? (int) $relationship_user['user_id'] : 0;
+            $f_data[$relationship_type][$relationship_key]['relationship_activity_at'] = !empty($relationship_activity_times[$relationship_user_id])
+                ? $relationship_activity_times[$relationship_user_id]
+                : 0;
+        }
+    }
+
 	$response_data = array(
 			    'api_status' => 200,
 			    'data' => $f_data

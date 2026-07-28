@@ -1,176 +1,81 @@
 <!-- English description: Wowonder-aligned product creation form that submits multipart data through the Nuxt API bridge. -->
 
 <template>
-  <div
-    class="new-product-page w-full"
-    :class="embedded ? 'new-product-page--embedded' : 'mt-1.5'"
-  >
-    <form
-      class="new-product-form"
-      :class="{ 'new-product-form--embedded': embedded }"
-      @submit.prevent="submitProduct"
-    >
+  <div class="new-product-page w-full" :class="embedded ? 'new-product-page--embedded' : 'mt-1.5'">
+    <form class="new-product-form" :class="{ 'new-product-form--embedded': embedded }" @submit.prevent="submitProduct">
       <UFormField class="new-product-field" :label="$t('pages.productEditor.titleLabel')">
-        <UInput
-          v-model="draft.fields.title"
-          class="w-full"
-          size="lg"
-          autocomplete="off"
-          :ui="{ base: 'h-11 rounded-xl' }"
-        />
+        <UInput v-model="draft.fields.title" class="w-full" size="lg" autocomplete="off"
+          :ui="{ base: 'h-11 rounded-xl' }" />
       </UFormField>
 
       <div class="new-product-row new-product-row--price-point">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.priceLabel')">
-          <UInputNumber
-            v-model="priceInput"
-            class="w-full"
-            size="lg"
-            orientation="vertical"
-            :min="0"
-            :step="0.01"
-            disable-wheel-change
-            placeholder="0.00"
-            :ui="{ base: 'h-11 rounded-xl' }"
-          />
+          <UInputNumber v-model="priceInput" class="w-full" size="lg" orientation="vertical" :min="0" :step="0.01"
+            disable-wheel-change placeholder="0.00" :ui="{ base: 'h-11 rounded-xl' }" />
         </UFormField>
 
         <UFormField class="new-product-field" :label="$t('pages.productEditor.pointLabel')">
-          <UInputNumber
-            v-model="pointInput"
-            class="w-full"
-            size="lg"
-            orientation="vertical"
-            :min="0"
-            :step="1"
-            disable-wheel-change
-            placeholder="0"
-            :ui="{ base: 'h-11 rounded-xl' }"
-          />
+          <UInputNumber v-model="pointInput" class="w-full" size="lg" orientation="vertical" :min="0" :step="1"
+            disable-wheel-change placeholder="0" :ui="{ base: 'h-11 rounded-xl' }" />
         </UFormField>
       </div>
+      <div class="new-product-row new-product-row--currency-stock">
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.currencyLabel')">
+          <USelect v-model="draft.fields.currency" arrow class="w-full" :items="currencyOptions" value-key="value"
+            label-key="label" size="lg" :disabled="currencyOptions.length === 0"
+            :placeholder="$t('pages.productEditor.emptyCurrency')" :ui="{ base: 'h-11 rounded-xl' }" />
+        </UFormField>
 
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.stockLabel')">
+          <UInput v-model="stockInput" class="w-full" size="lg" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+            :ui="{ base: 'h-11 rounded-xl' }" @input="hasTouchedStockInput = true" />
+        </UFormField>
+      </div>
       <UFormField class="new-product-field" :label="$t('pages.productEditor.descriptionLabel')">
-        <UTextarea
-          v-model="draft.fields.description"
-          class="w-full"
-          rows="4"
-          autoresize
-          :placeholder="$t('pages.productEditor.descriptionPlaceholder')"
-          :ui="{ base: 'rounded-xl' }"
-        />
+        <UTextarea v-model="draft.fields.description" class="w-full" rows="4" autoresize
+          :placeholder="$t('pages.productEditor.descriptionPlaceholder')" :ui="{ base: 'rounded-xl' }" />
       </UFormField>
 
       <div class="new-product-row new-product-row--category">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.categoryLabel')">
-          <USelect
-            v-model="draft.fields.category"
-            arrow
-            class="w-full"
-            :items="categoryOptions"
-            value-key="value"
-            label-key="label"
-            size="lg"
-            :disabled="categoryOptions.length === 0"
-            :placeholder="$t('pages.productEditor.emptyCategory')"
-            :ui="{ base: 'h-11 rounded-xl' }"
-          />
+          <USelect v-model="draft.fields.category" arrow class="w-full" :items="categoryOptions" value-key="value"
+            label-key="label" size="lg" :disabled="categoryOptions.length === 0"
+            :placeholder="$t('pages.productEditor.emptyCategory')" :ui="{ base: 'h-11 rounded-xl' }" />
         </UFormField>
 
         <UFormField class="new-product-field" :label="$t('pages.productEditor.conditionLabel')">
-          <USelect
-            v-model="draft.fields.condition"
-            arrow
-            class="w-full"
-            :items="conditionOptions"
-            value-key="value"
-            label-key="label"
-            size="lg"
-            :ui="{ base: 'h-11 rounded-xl' }"
-          />
+          <USelect v-model="draft.fields.condition" arrow class="w-full" :items="conditionOptions" value-key="value"
+            label-key="label" size="lg" :ui="{ base: 'h-11 rounded-xl' }" />
         </UFormField>
       </div>
 
       <div v-if="subCategoryOptions.length > 0" class="new-product-row new-product-row--stock">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.subCategoryLabel')">
-          <USelect
-            v-model="selectedSubCategory"
-            arrow
-            class="w-full"
-            :items="subCategoryOptions"
-            value-key="value"
-            label-key="label"
-            size="lg"
-            :ui="{ base: 'h-11 rounded-xl' }"
-          />
+          <USelect v-model="selectedSubCategory" arrow class="w-full" :items="subCategoryOptions" value-key="value"
+            label-key="label" size="lg" :ui="{ base: 'h-11 rounded-xl' }" />
         </UFormField>
       </div>
 
       <div class="new-product-row new-product-row--location">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.locationLabel')">
-          <GooglePlaceField
-            v-model="locationModel"
-            :helper-text="$t('pages.productEditor.locationHelper')"
-            require-coordinates
-            :placeholder="$t('pages.productEditor.locationPlaceholder')"
-          />
+          <GooglePlaceField v-model="locationModel" :helper-text="$t('pages.productEditor.locationHelper')"
+            require-coordinates :placeholder="$t('pages.productEditor.locationPlaceholder')" />
         </UFormField>
 
-      </div>
-
-      <div class="new-product-row new-product-row--currency-stock">
-        <UFormField class="new-product-field" :label="$t('pages.productEditor.currencyLabel')">
-          <USelect
-            v-model="draft.fields.currency"
-            arrow
-            class="w-full"
-            :items="currencyOptions"
-            value-key="value"
-            label-key="label"
-            size="lg"
-            :disabled="currencyOptions.length === 0"
-            :placeholder="$t('pages.productEditor.emptyCurrency')"
-            :ui="{ base: 'h-11 rounded-xl' }"
-          />
-        </UFormField>
-
-        <UFormField class="new-product-field" :label="$t('pages.productEditor.stockLabel')">
-          <UInput
-            v-model="stockInput"
-            class="w-full"
-            size="lg"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            autocomplete="off"
-            :ui="{ base: 'h-11 rounded-xl' }"
-            @input="hasTouchedStockInput = true"
-          />
-        </UFormField>
       </div>
 
       <div class="new-product-media">
         <label>{{ $t("pages.productEditor.mediaLabel") }}</label>
         <div class="new-product-images">
-          <button
-            type="button"
-            class="new-product-upload"
-            :aria-label="$t('pages.newProductPage.addImage')"
-            @click="fileInput?.click()"
-          >
+          <button type="button" class="new-product-upload" :aria-label="$t('pages.newProductPage.addImage')"
+            @click="fileInput?.click()">
             <Icon name="i-ph-camera-fill" class="new-product-upload__icon" />
           </button>
 
-          <span
-            v-for="preview in newFilePreviews"
-            :key="preview.key"
-            class="new-product-thumb"
-          >
-            <button
-              type="button"
-              class="new-product-thumb__remove"
+          <span v-for="preview in newFilePreviews" :key="preview.key" class="new-product-thumb">
+            <button type="button" class="new-product-thumb__remove"
               :aria-label="$t('pages.newProductPage.removeImage', { name: preview.name })"
-              @click="removeNewFile(preview.key)"
-            >
+              @click="removeNewFile(preview.key)">
               <Icon name="i-ph-x-bold" class="new-product-thumb__remove-icon" />
             </button>
             <img :src="preview.src" :alt="preview.name">
@@ -180,35 +85,17 @@
         <p class="new-product-media__helper">
           {{ $t("pages.newProductPage.imageHelper") }}
         </p>
-        <input
-          ref="fileInput"
-          class="hidden"
-          type="file"
-          accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
-          multiple
-          @change="handleFileInput"
-        >
+        <input ref="fileInput" class="hidden" type="file" accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
+          multiple @change="handleFileInput">
       </div>
 
       <div class="new-product-actions" :class="{ 'new-product-actions--embedded': embedded }">
-        <UButton
-          v-if="!embedded"
-          to="/my-products"
-          color="neutral"
-          variant="soft"
-          icon="i-ph-arrow-left"
-          class="new-product-back"
-        >
+        <UButton v-if="!embedded" to="/my-products" color="neutral" variant="soft" icon="i-ph-arrow-left"
+          class="new-product-back">
           {{ $t("pages.productEditor.back") }}
         </UButton>
-        <UButton
-          type="submit"
-          color="primary"
-          icon="i-ph-paper-plane-tilt-fill"
-          class="new-product-submit"
-          :loading="isSubmitting"
-          :disabled="isSubmitting"
-        >
+        <UButton type="submit" color="primary" icon="i-ph-paper-plane-tilt-fill" class="new-product-submit"
+          :loading="isSubmitting" :disabled="isSubmitting">
           {{ isSubmitting ? $t("pages.productEditor.submitting") : $t("pages.newProductPage.submitCta") }}
         </UButton>
       </div>
@@ -758,7 +645,7 @@ onBeforeUnmount(() => {
   --google-place-field-control-height: 44px;
 }
 
-.new-product-media > label {
+.new-product-media>label {
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
@@ -903,6 +790,7 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 760px) {
+
   .new-product-row--price-point,
   .new-product-row--currency-stock,
   .new-product-row--location,

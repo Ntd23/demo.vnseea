@@ -18,6 +18,7 @@ import {
   getMessageReplyPreviewText,
 } from "../utils/message-bubble-content"
 import { getMessageLocationMeta } from "../utils/message-location"
+import { sortUserInboxContacts } from "../utils/message-contact-order"
 
 type MessageFeedbackTone = "neutral" | "success" | "warning" | "error"
 type QueuedMessageDraft = {
@@ -306,13 +307,15 @@ export function useMessagesInbox(
       : inboxContacts.value.filter(contact => contact.type === "user" && (contact.userId ?? 0) > 0)
 
     if (!tagId || tagId === "0") {
-      return baseContacts
+      return sortUserInboxContacts(baseContacts)
     }
 
     const selectedTagId = Number(tagId)
 
-    return baseContacts.filter(contact =>
-      contact.tags?.some(tag => tag.id === selectedTagId),
+    return sortUserInboxContacts(
+      baseContacts.filter(contact =>
+        contact.tags?.some(tag => tag.id === selectedTagId),
+      ),
     )
   })
 
@@ -325,7 +328,11 @@ export function useMessagesInbox(
       return source
     }
 
-    return source.filter(contact => contact.tab === activeTab.value)
+    const tabContacts = source.filter(contact => contact.tab === activeTab.value)
+
+    return activeTab.value === "user"
+      ? sortUserInboxContacts(tabContacts)
+      : tabContacts
   })
 
   const filteredContacts = computed(() =>

@@ -558,6 +558,14 @@ function Wo_GetProduct($id = 0)
 	$fetched_data['user_data']     = Wo_UserData($fetched_data['user_id']);
 	$fetched_data['rating']        = $db->where('product_id', $fetched_data['id'])->getValue(T_PRODUCT_REVIEW, "FLOOR(sum(star)/count(id))");
 	$fetched_data['reviews_count'] = $db->where('product_id', $fetched_data['id'])->getValue(T_PRODUCT_REVIEW, "count(id)");
+	$currency_rule = Wo_GetCurrencyRule($fetched_data['currency']);
+	$fetched_data['currency_code'] = $currency_rule['code'];
+	$fetched_data['currency_symbol'] = $currency_rule['symbol'];
+	$fetched_data['currency_rule'] = array(
+		'decimals' => $currency_rule['decimals'],
+		'decimal_sep' => $currency_rule['decimal_sep'],
+		'thousand_sep' => $currency_rule['thousand_sep']
+	);
 	$fetched_data['price_format'] = Wo_FormatPriceByCurrency($fetched_data['price'], $fetched_data['currency']);
 	$fetched_data['price_input_format'] = $fetched_data['price_format'];
 	$fetched_data['point'] = isset($fetched_data['point']) ? max(0, (int) $fetched_data['point']) : 0;

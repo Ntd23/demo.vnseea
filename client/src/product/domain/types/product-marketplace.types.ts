@@ -49,6 +49,34 @@ export type ProductListing = {
   mine?: boolean
 }
 
+export type ProductFeedAttachment = {
+  id: number
+  images: Array<{
+    id: string
+    src: string
+    thumb?: string
+    alt: string
+  }>
+  sellerId: number
+  sellerName: string
+  price: number
+  point: number
+  currency: string
+  currencySymbol: string
+  currencyRule?: {
+    decimals?: number | string
+    decimal_sep?: string
+    thousand_sep?: string
+  }
+  priceFormat: string
+  location: string
+  stock: number
+  condition: "new" | "used"
+  rating: number
+  reviewsCount: number
+  addedToCart: boolean
+}
+
 export type ProductMarketplaceQuery = {
   keyword?: string
   category?: ProductCategory
