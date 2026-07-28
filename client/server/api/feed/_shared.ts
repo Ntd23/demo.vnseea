@@ -36,6 +36,8 @@ import type {
   FeedPostReactionsResponse,
   FeedPostRecord,
   FeedPostsResponse,
+  FeedStoryOverlayItem,
+  FeedStoryOverlays,
   FeedStoryRecord,
 } from "../../../src/feed/domain/types/feed.types"
 import {
@@ -1200,6 +1202,44 @@ export const mapPostRecord = (
   }
 }
 
+const normalizeStoryOverlayItem = (value: unknown): FeedStoryOverlayItem | undefined => {
+  const item = asRecord(value)
+  const content = asString(item.content).trim()
+  const x = Number(item.x)
+  const y = Number(item.y)
+  const username = asString(item.username).trim().replace(/^@/, "")
+
+  if (!content) return undefined
+
+  return {
+    content,
+    x: Number.isFinite(x) ? Math.min(0.94, Math.max(0.06, x)) : 0.5,
+    y: Number.isFinite(y) ? Math.min(0.9, Math.max(0.1, y)) : 0.5,
+    ...(username ? { username } : {}),
+  }
+}
+
+const normalizeStoryOverlays = (value: unknown): FeedStoryOverlays => {
+  let record = asRecord(value)
+
+  if (typeof value === "string" && value.trim()) {
+    try {
+      record = asRecord(JSON.parse(value))
+    }
+    catch {
+      return {}
+    }
+  }
+
+  const text = normalizeStoryOverlayItem(record.text)
+  const mention = normalizeStoryOverlayItem(record.mention)
+
+  return {
+    ...(text ? { text } : {}),
+    ...(mention ? { mention } : {}),
+  }
+}
+
 const mapStoryRecord = (
   entity: BackendEntity,
   currentUserId: number,
@@ -1250,6 +1290,19 @@ const mapStoryRecord = (
     ],
     resolveMediaUrl,
   )
+  const storyCaption = firstString(entity, ["description"]) || ""
+  const normalizedOverlays = normalizeStoryOverlays(entity.overlay_data)
+  const fallbackMentionUsername = storyCaption.match(/@([^\s@]+)/u)?.[1]?.replace(/[^\p{L}\p{N}_.-]/gu, "")
+  const overlays = normalizedOverlays.mention && !normalizedOverlays.mention.username && fallbackMentionUsername
+    ? {
+        ...normalizedOverlays,
+        mention: {
+          ...normalizedOverlays.mention,
+          username: fallbackMentionUsername,
+        },
+      }
+    : normalizedOverlays
+  const storyAudience = normalizeContentAudienceSelection(entity.privacy).audience
 
   return {
     id,
@@ -1265,7 +1318,9 @@ const mapStoryRecord = (
     mediaType: videoUrl ? "video" : "image",
     poster: imageUrl || avatarUrl,
     title: firstString(entity, ["title"]),
-    caption: firstString(entity, ["description"]) || "",
+    caption: storyCaption,
+    overlays,
+    audience: storyAudience,
     meta: firstString(entity, ["time_text"]) || "",
     likes: firstNumber(entity, ["reaction_count", "likes"]),
     comments: firstNumber(entity, ["comment_count", "comments"]),

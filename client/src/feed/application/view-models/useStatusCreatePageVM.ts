@@ -13,6 +13,7 @@ import {
 } from "../constants/story-carousel"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import type { ContentAudience } from "../../../shared-kernel/domain/content-audience"
+import type { FeedStoryOverlays } from "../../domain/types/feed.types"
 import { usePendingCreatedStories } from "../composables/usePendingCreatedStories"
 
 type MediaType = "image" | "video" | null
@@ -219,7 +220,10 @@ export function useStatusCreatePageVM(
 
   onUnmounted(revokePreview)
 
-  async function submitStory() {
+  async function submitStory(input?: {
+    description?: string
+    overlays?: FeedStoryOverlays
+  }) {
     if (!selectedFile.value || !mediaType.value || submitting.value) {
       return
     }
@@ -242,7 +246,8 @@ export function useStatusCreatePageVM(
         coverFile,
         privacy: privacy.value,
         title: title.value.trim() || undefined,
-        description: caption.value.trim() || undefined,
+        description: input?.description?.trim() || caption.value.trim() || undefined,
+        overlays: input?.overlays,
       })
 
       if (response.story) {

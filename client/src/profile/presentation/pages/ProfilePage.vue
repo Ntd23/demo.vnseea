@@ -417,7 +417,10 @@
           <!-- RIGHT: feed -->
           <main class="profile-page__feed">
             <!-- Publisher -->
-            <FeedPublisherBox v-if="profile.isOwner" />
+            <FeedPublisherBox
+              v-if="profile.isOwner"
+              @created="handlePostCreated"
+            />
 
             <!-- Posts -->
             <div
@@ -429,6 +432,9 @@
                 :key="`profile-post-${post.id}`"
                 :post="post"
                 class="profile-page__post-card"
+                @updated="updateProfilePost"
+                @deleted="handleProfilePostRemoved"
+                @hidden="handleProfilePostRemoved"
               />
             </div>
             <div
@@ -932,7 +938,14 @@
           <h2 class="profile-card__title">{{ copy.photosTitle }}</h2>
         </div>
         <div v-if="photos.length" class="profile-page__media-posts">
-          <FeedPostCard v-for="post in photos" :key="post.id" :post="post" />
+          <FeedPostCard
+            v-for="post in photos"
+            :key="post.id"
+            :post="post"
+            @updated="updateProfilePost"
+            @deleted="handleProfilePostRemoved"
+            @hidden="handleProfilePostRemoved"
+          />
         </div>
         <UAlert
           v-else
@@ -954,7 +967,14 @@
           <h2 class="profile-card__title">{{ copy.videosTitle }}</h2>
         </div>
         <div v-if="videos.length" class="profile-page__media-posts">
-          <FeedPostCard v-for="post in videos" :key="post.id" :post="post" />
+          <FeedPostCard
+            v-for="post in videos"
+            :key="post.id"
+            :post="post"
+            @updated="updateProfilePost"
+            @deleted="handleProfilePostRemoved"
+            @hidden="handleProfilePostRemoved"
+          />
         </div>
         <UAlert
           v-else
@@ -1099,6 +1119,7 @@ import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue
 import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM";
 import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository";
 import type { FeedPostRecord } from "../../../feed/domain/types/feed.types";
+import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions";
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue";
 import { useProfileVM } from "../../application/composables/useProfileVM";
 import ProfileImageCropModal from "../components/ProfileImageCropModal.vue";
@@ -1132,6 +1153,7 @@ const {
   friends,
   heroActions,
   hasHiddenProducts,
+  handlePostCreated,
   joinedGroups,
   likedPages,
   albums,
@@ -1143,12 +1165,14 @@ const {
   products,
   productsExpanded,
   refresh,
+  removeProfilePost,
   resolveProfileMediaPostId,
   selectProfileTab,
   tabs,
   timelineHasMore,
   timelineLoadingMore,
   timelinePosts,
+  updateProfilePost,
   runHeroAction,
   visibleProducts,
   videos,
@@ -1188,14 +1212,67 @@ const {
   mediaItems: profileLightboxMediaItems,
   shareUrl: profileLightboxShareUrl,
   commentActionRepository: profileLightboxCommentRepository,
-  toggleLike: toggleProfileLightboxLike,
-  reactToPost: reactToProfileLightboxPost,
+  toggleLike: toggleProfileLightboxLikeAction,
+  reactToPost: reactToProfileLightboxPostAction,
   onOpenMedia: openProfileLightboxMedia,
   submitComment: submitProfileLightboxComment,
-  handleShared: handleProfileLightboxShared,
+  handleShared: handleProfileLightboxSharedAction,
   downloadMedia: downloadProfileLightboxMedia,
   openComments: openProfileLightboxComments,
 } = useFeedPostCardVM(profileLightboxPost, feedRepository);
+
+function syncProfileLightboxPost() {
+  const currentPost = profileLightboxPost.value;
+  if (!currentPost) return;
+
+  const updatedPost: FeedPostRecord = {
+    ...currentPost,
+    isLiked: Boolean(profileLightboxReaction.value),
+    reaction: profileLightboxReaction.value,
+    stats: {
+      ...currentPost.stats,
+      likes: profileLightboxLikesCount.value,
+      shares: profileLightboxSharesCount.value,
+    },
+  };
+
+  profileLightboxPost.value = updatedPost;
+  updateProfilePost(updatedPost);
+}
+
+async function toggleProfileLightboxLike() {
+  await toggleProfileLightboxLikeAction();
+  syncProfileLightboxPost();
+}
+
+async function reactToProfileLightboxPost(reaction: FeedStoryReactionType) {
+  await reactToProfileLightboxPostAction(reaction);
+  syncProfileLightboxPost();
+}
+
+function handleProfileLightboxShared() {
+  handleProfileLightboxSharedAction();
+  syncProfileLightboxPost();
+}
+
+function handleProfilePostRemoved(postId: number) {
+  removeProfilePost(postId);
+
+  if (profileLightboxPost.value?.id === postId) {
+    profileLightboxOpen.value = false;
+    profileLightboxPost.value = null;
+  }
+}
+
+watch(timelinePosts, (posts) => {
+  const currentPostId = profileLightboxPost.value?.id;
+  if (!currentPostId) return;
+
+  const updatedPost = posts.find(post => post.id === currentPostId);
+  if (updatedPost && updatedPost !== profileLightboxPost.value) {
+    profileLightboxPost.value = updatedPost;
+  }
+});
 
 useIntersectionObserver(
   profileLoadMoreSentinel,

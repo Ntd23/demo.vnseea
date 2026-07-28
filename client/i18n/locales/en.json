@@ -1276,6 +1276,15 @@
       "pickerHint": "Stories only need one media file. Pick the file first, preview it on the right, then upload it directly to the backend.",
       "captionLabel": "Caption",
       "captionPlaceholder": "Add a caption to your story…",
+      "addText": "Add text",
+      "tagPeople": "Tag someone you follow",
+      "textPlaceholder": "Enter text",
+      "tagPlaceholder": "{'@'} Tag someone you follow",
+      "moveText": "Move text",
+      "moveMention": "Move user tag",
+      "mentionLoading": "Searching people you follow…",
+      "mentionTypeToSearch": "Type a name after {'@'} to search people you follow.",
+      "mentionEmpty": "No matching person was found in your following list.",
       "submitCta": "Publish story",
       "previewEyebrow": "Preview",
       "previewAlt": "Story preview",
@@ -5528,6 +5537,12 @@
       "nextStory": "Next story",
       "openStory": "Open {author}'s story",
       "viewsLabel": "{count} views",
+      "audiences": {
+        "public": "Public",
+        "friends": "Friends",
+        "followers": "Followers",
+        "only_me": "Only me"
+      },
       "reactStory": "React to story",
       "replyStory": "Reply to story",
       "sendReply": "Send story reply",
@@ -6043,7 +6058,11 @@
     "headerSearchInput": {
       "placeholder": "Search people, pages, groups, and #hashtags",
       "hashtagLabel": "Hashtag",
-      "hashtagsLabel": "Hashtags"
+      "hashtagsLabel": "Hashtags",
+      "historyLabel": "Recent searches",
+      "clearHistory": "Clear search history",
+      "clearHistoryDescription": "Remove all recent searches",
+      "removeHistoryItem": "Remove {name} from search history"
     },
     "headerLogo": {
       "tagline": "Social hub"

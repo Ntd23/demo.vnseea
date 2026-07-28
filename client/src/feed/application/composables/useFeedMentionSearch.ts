@@ -34,7 +34,7 @@ export type FeedMentionSuggestion = {
 
 type UseFeedMentionSearchOptions = {
   text: Ref<string>
-  textarea: Readonly<Ref<HTMLTextAreaElement | null>>
+  textarea: Readonly<Ref<HTMLInputElement | HTMLTextAreaElement | null>>
   active?: Ref<boolean>
   followingOnly?: boolean
 }
@@ -256,6 +256,7 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
 
   function updateMentionQuery(event?: Event) {
     const textarea = event?.target instanceof HTMLTextAreaElement
+      || event?.target instanceof HTMLInputElement
       ? event.target
       : options.textarea.value
     const text = textarea?.value ?? options.text.value
@@ -318,6 +319,7 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
     mentionQuery,
     mentionLoading,
     mentionSuggestions,
+    selectedMentionUsernames,
     showMentionSuggestions,
     highlightedMentionSegments,
     updateMentionQuery,

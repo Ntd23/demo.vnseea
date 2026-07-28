@@ -1276,6 +1276,15 @@
       "pickerHint": "Story chỉ cần một tệp media. Chọn file trước, xem trước ở cột phải, sau đó đăng thẳng lên backend.",
       "captionLabel": "Chú thích",
       "captionPlaceholder": "Thêm mô tả cho story của bạn…",
+      "addText": "Thêm văn bản",
+      "tagPeople": "Tag người bạn theo dõi",
+      "textPlaceholder": "Nhập văn bản",
+      "tagPlaceholder": "{'@'} Tag người bạn theo dõi",
+      "moveText": "Di chuyển văn bản",
+      "moveMention": "Di chuyển thẻ người dùng",
+      "mentionLoading": "Đang tìm người bạn theo dõi…",
+      "mentionTypeToSearch": "Nhập tên sau dấu {'@'} để tìm người bạn theo dõi.",
+      "mentionEmpty": "Không tìm thấy người phù hợp trong danh sách đang theo dõi.",
       "submitCta": "Đăng tin",
       "previewEyebrow": "Preview",
       "previewAlt": "Xem trước story",
@@ -5528,6 +5537,12 @@
       "nextStory": "Story sau",
       "openStory": "Mở story của {author}",
       "viewsLabel": "{count} lượt xem",
+      "audiences": {
+        "public": "Công khai",
+        "friends": "Bạn bè",
+        "followers": "Người theo dõi",
+        "only_me": "Chỉ mình tôi"
+      },
       "reactStory": "Thả cảm xúc",
       "replyStory": "Trả lời story",
       "sendReply": "Gửi trả lời story",
@@ -6043,7 +6058,11 @@
     "headerSearchInput": {
       "placeholder": "Tìm kiếm người, trang, nhóm và #hashtags",
       "hashtagLabel": "Hashtag",
-      "hashtagsLabel": "Hashtags"
+      "hashtagsLabel": "Hashtags",
+      "historyLabel": "Tìm kiếm gần đây",
+      "clearHistory": "Xóa lịch sử tìm kiếm",
+      "clearHistoryDescription": "Xóa toàn bộ nội dung tìm kiếm gần đây",
+      "removeHistoryItem": "Xóa {name} khỏi lịch sử tìm kiếm"
     },
     "headerLogo": {
       "tagline": "Social hub"

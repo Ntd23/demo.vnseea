@@ -9,7 +9,7 @@
   >
     <div v-if="loading" class="analytics-state mt-6">
       <Icon name="i-ph-spinner-gap-bold" class="h-5 w-5 animate-spin" />
-      <span>{{ copy.value.loading }}</span>
+      <span>{{ copy.loading }}</span>
     </div>
 
     <div v-else-if="errorMessage" class="analytics-state analytics-state--error mt-6">
@@ -19,7 +19,7 @@
 
     <div v-else-if="!analytics" class="analytics-state mt-6">
       <Icon name="i-ph-chart-line-bold" class="h-5 w-5" />
-      <span>{{ copy.value.empty }}</span>
+      <span>{{ copy.empty }}</span>
     </div>
 
     <template v-else>
@@ -40,11 +40,11 @@
           <div>
             <h4 class="analytics-panel__title">{{ chartTitle }}</h4>
             <p class="analytics-panel__subtitle">
-              {{ copy.value.chartSubtitle }}
+              {{ copy.chartSubtitle }}
             </p>
           </div>
 
-          <div class="analytics-toolbar" :aria-label="copy.value.filterAria">
+          <div class="analytics-toolbar" :aria-label="copy.filterAria">
             <button
               v-for="option in periodOptions"
               :key="option.value"
@@ -68,13 +68,13 @@
           </ClientOnly>
 
           <div v-if="chartTotal === 0" class="analytics-chart__empty">
-            {{ copy.value.chartEmpty }}
+            {{ copy.chartEmpty }}
           </div>
         </div>
 
         <div class="analytics-summary">
-          <span>{{ formatNumber(analytics.likesInPeriod) }} {{ copy.value.likesIn }} {{ periodLabelLower }}</span>
-          <span>{{ formatNumber(chartPeak) }} {{ copy.value.peak }}</span>
+          <span>{{ formatNumber(analytics.likesInPeriod) }} {{ copy.likesIn }} {{ periodLabelLower }}</span>
+          <span>{{ formatNumber(chartPeak) }} {{ copy.peak }}</span>
         </div>
       </div>
     </template>
@@ -139,7 +139,7 @@ const formatNumber = (value: number) =>
   new Intl.NumberFormat("vi-VN").format(Math.max(0, Math.round(value)))
 
 const activePeriodOption = computed(() =>
-  periodOptions.value.find(option => option.value === props.period) ?? periodOptions[1],
+  periodOptions.value.find(option => option.value === props.period) ?? periodOptions.value[1],
 )
 
 const periodLabelLower = computed(() => activePeriodOption.value.label.toLowerCase())

@@ -528,6 +528,7 @@ const emit = defineEmits<{
   open: [index: number]
   deleted: [postId: number]
   hidden: [postId: number]
+  updated: [post: FeedPostRecord]
 }>()
 
 const postRealtimeStore = usePostRealtimeStore()
@@ -635,6 +636,25 @@ watch(
   () => postRealtimeStore.commentVersionFor(props.post.id),
   (version, previousVersion) => {
     if (version > previousVersion && enableComments.value) void refreshComments()
+  },
+)
+
+watch(
+  [likesCount, sharesCount, selectedPostReaction],
+  () => {
+    const currentPost = post.value
+    if (!currentPost) return
+
+    emit("updated", {
+      ...currentPost,
+      isLiked: liked.value,
+      reaction: selectedPostReaction.value,
+      stats: {
+        ...currentPost.stats,
+        likes: likesCount.value,
+        shares: sharesCount.value,
+      },
+    })
   },
 )
 

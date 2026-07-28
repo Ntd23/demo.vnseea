@@ -150,6 +150,7 @@ export type MessageItem = {
   senderId?: number
   senderIsOnline?: boolean
   authorName?: string
+  authorProfileUrl?: string
   threadType?: MessageThreadType
   mediaUrl?: string
   mediaName?: string

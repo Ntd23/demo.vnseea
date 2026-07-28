@@ -291,6 +291,10 @@ export function createApiFeedRepository(): FeedRepository {
         formData.append("description", input.description)
       }
 
+      if (input.overlays && Object.keys(input.overlays).length) {
+        formData.append("overlays", JSON.stringify(input.overlays))
+      }
+
       return await client.post<FeedCreateStoryResponse, FormData>(
         apiRoutes.feed.stories.create,
         formData,

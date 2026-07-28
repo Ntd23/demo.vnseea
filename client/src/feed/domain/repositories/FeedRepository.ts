@@ -14,9 +14,9 @@ import type {
   FeedPostReactionsResponse,
   FeedPostsResponse,
   FeedStoryActionResult,
+  FeedStoryOverlays,
   FeedStoryReactionType,
 } from "../types/feed.types"
-import type { LocationSelection } from "../../../location/domain/types/location.types"
 
 export interface FeedRepository {
   getPostById(id: number): Promise<FeedPostRecord | null>
@@ -93,6 +93,7 @@ export interface FeedRepository {
     privacy?: string
     title?: string
     description?: string
+    overlays?: FeedStoryOverlays
   }): Promise<FeedCreateStoryResponse>
   runStoryAction(input:
     | {
