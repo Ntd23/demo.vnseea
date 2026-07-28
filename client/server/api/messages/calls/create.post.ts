@@ -3,14 +3,12 @@
 import {
   assertBackendStatus,
   callBackend,
-  getSessionHash,
   mapCreateResult,
   readCallBody,
 } from "./_shared"
 
 export default defineEventHandler(async (event) => {
   const input = await readCallBody(event)
-  const { currentUserId } = await getSessionHash(event)
 
   if (!input.userId) {
     throw createError({
@@ -19,11 +17,9 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const action = input.type === "audio" ? "create_new_audio_call" : "create_new_video_call"
-  const response = await callBackend(event, action, {
-    new: "true",
-    user_id1: currentUserId,
-    user_id2: input.userId,
+  const response = await callBackend(event, "create_livekit_call", {
+    recipient_id: input.userId,
+    call_type: input.type,
   })
 
   assertBackendStatus(response, "Unable to start call.")
