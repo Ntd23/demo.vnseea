@@ -10,6 +10,11 @@ import { createBackendMediaUrlResolver } from "../../../utils/backend-media-url"
 import { postBackendApiUpload } from "../../../utils/backend-api-upload"
 import type { FeedPostRecord } from "../../../../src/feed/domain/types/feed.types"
 import {
+  emptyLocationSelection,
+  normalizeLocationSelection,
+  type LocationSelection,
+} from "../../../../src/location/domain/types/location.types"
+import {
   validateContentPostAudience,
   type ContentPostContext,
 } from "../../../../src/shared-kernel/domain/content-audience"
@@ -65,7 +70,7 @@ type CreatePostPayload = {
   audienceProvided: boolean
   isAnonymous: boolean
   feeling: string
-  location: string
+  location: LocationSelection
   imageFiles: {
     filename?: string
     type?: string
@@ -94,6 +99,39 @@ const hasOwn = (entity: Record<string, unknown>, key: string) =>
 
 const parseBooleanFlag = (value: unknown) =>
   value === true || value === 1 || value === "1" || value === "true"
+
+const parseCoordinate = (value: unknown, min: number, max: number) => {
+  if (value === null || value === undefined || value === "") {
+    return null
+  }
+
+  const coordinate = Number(value)
+
+  return Number.isFinite(coordinate) && coordinate >= min && coordinate <= max
+    ? coordinate
+    : null
+}
+
+const parseLocationSelection = (
+  value: unknown,
+  rawLat?: unknown,
+  rawLng?: unknown,
+  rawPlaceId?: unknown,
+): LocationSelection => {
+  const entity = value && typeof value === "object"
+    ? value as Record<string, unknown>
+    : {}
+  const address = typeof value === "string" || typeof value === "number"
+    ? asString(value)
+    : asString(entity.address)
+
+  return normalizeLocationSelection({
+    address,
+    lat: parseCoordinate(rawLat ?? entity.lat, -90, 90),
+    lng: parseCoordinate(rawLng ?? entity.lng, -180, 180),
+    placeId: asString(rawPlaceId ?? entity.placeId),
+  })
+}
 
 const allowedFeelings = new Set([
   "happy",
@@ -125,7 +163,12 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     audienceProvided: hasOwn(body, "audience"),
     isAnonymous: parseBooleanFlag(body.isAnonymous),
     feeling: typeof body.feeling === "string" ? body.feeling.trim() : "",
-    location: asString(body.location),
+    location: parseLocationSelection(
+      body.location,
+      body.locationLat,
+      body.locationLng,
+      body.locationPlaceId,
+    ),
     imageFiles: [],
     videoFile: null,
     pageId: body.pageId ? Number(body.pageId) : undefined,
@@ -147,7 +190,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     audienceProvided: false,
     isAnonymous: false,
     feeling: "",
-    location: "",
+    location: emptyLocationSelection(),
     imageFiles: [],
     videoFile: null,
     pageId: undefined,
@@ -188,7 +231,10 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     }
     if (part.name === "is_anonymous") payload.isAnonymous = parseBooleanFlag(value)
     if (part.name === "feeling") payload.feeling = value
-    if (part.name === "location") payload.location = value
+    if (part.name === "location") payload.location.address = value
+    if (part.name === "locationLat") payload.location.lat = parseCoordinate(value, -90, 90)
+    if (part.name === "locationLng") payload.location.lng = parseCoordinate(value, -180, 180)
+    if (part.name === "locationPlaceId") payload.location.placeId = value
     if (part.name === "pageId") payload.pageId = Number(value)
     if (part.name === "eventId") payload.eventId = Number(value)
     if (part.name === "groupId") payload.groupId = Number(value)
@@ -243,7 +289,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (!payload.text && !payload.imageFiles.length && !payload.videoFile && !payload.feeling && !payload.location && !payload.sharedPostId && !payload.pollAnswers.length) {
+  if (!payload.text && !payload.imageFiles.length && !payload.videoFile && !payload.feeling && !payload.location.address && !payload.sharedPostId && !payload.pollAnswers.length) {
     throw createError({
       statusCode: 400,
       statusMessage: "Post content is required.",
@@ -418,8 +464,15 @@ export default defineEventHandler(async (event) => {
     requestBody.append("feeling", payload.feeling)
   }
 
-  if (payload.location) {
-    requestBody.append("postMap", payload.location)
+  if (payload.location.address) {
+    requestBody.append("postMap", payload.location.address)
+    if (payload.location.lat !== null && payload.location.lng !== null) {
+      requestBody.append("postMapLat", String(payload.location.lat))
+      requestBody.append("postMapLng", String(payload.location.lng))
+    }
+    if (payload.location.placeId) {
+      requestBody.append("postMapPlaceId", payload.location.placeId)
+    }
   }
 
   if (payload.colorId) {

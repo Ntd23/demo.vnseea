@@ -52,6 +52,7 @@
           :group-typing-avatar-url="activeGroupTypingAvatarUrl"
           :inbox-pending="inboxPending"
           :is-pending="threadPending"
+          :message-sending="isSending"
           :is-typing="isTyping"
           :messages="messages"
           :thread-key="selectedThreadKey"
@@ -228,6 +229,7 @@ const {
   isCreatingGroup,
   isDeletingConversation,
   isMarkingRead,
+  isSending,
   isUpdatingGroupDetails,
   isMultiSending,
   isTyping,

@@ -96,9 +96,27 @@
               <UFileUpload
                 v-model="multiFileModel"
                 :multiple="false"
+                :accept="MESSAGE_ATTACHMENT_ACCEPT"
                 layout="list"
                 :label="$t('pages.messagesPage.chooseFile')"
+                :description="$t('uploadValidation.messageRules', { maxSize: UPLOAD_MAX_FILE_SIZE_LABEL })"
                 class="w-full"
+              />
+              <UAlert
+                v-if="multiFileValidationMessage"
+                color="error"
+                variant="subtle"
+                icon="i-ph-file-x-duotone"
+                :title="$t('uploadValidation.title')"
+                :description="multiFileValidationMessage"
+                class="mt-2 rounded-[var(--radius-md)]"
+              />
+              <UProgress
+                v-if="multiPending && (multiFile || activeRecordDraft)"
+                size="xs"
+                animation="carousel"
+                :aria-label="$t('uploadValidation.uploading')"
+                class="mt-2"
               />
             </div>
           </div>
@@ -313,11 +331,18 @@ import UListbox from "@nuxt/ui/components/Listbox.vue"
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue"
 import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
 import type { MessageContact, MessageRecordDraft, MessageTab, MessageTabKey, MessageUserTag } from "../../domain/types/messages.types"
+import {
+  MESSAGE_ATTACHMENT_ACCEPT,
+  UPLOAD_MAX_FILE_SIZE_LABEL,
+  validateMessageAttachment,
+  type UploadValidationResult,
+} from "../../../shared-kernel/application/utils/uploadValidation"
 import MessagesChatListItem from "./ChatListItem.vue"
 
 const multiRecordModel = defineModel<MessageRecordDraft | null>("multiRecord", { default: null })
 const tabListRef = ref<HTMLElement | null>(null)
 const multiStackRef = ref<HTMLElement | null>(null)
+const multiFileValidationMessage = ref("")
 let multiPanelResetFrame: number | null = null
 let multiPanelSettleFrame: number | null = null
 
@@ -367,11 +392,50 @@ const {
 
 const multiFileModel = computed<File | null>({
   get: () => props.multiFile,
-  set: (file) => { emit("update:multiFile", file ?? null) },
+  set: (file) => {
+    if (!file) {
+      multiFileValidationMessage.value = ""
+      emit("update:multiFile", null)
+      return
+    }
+
+    const validation = validateMessageAttachment(file)
+    if (!validation.valid) {
+      multiFileValidationMessage.value = getUploadValidationMessage(validation)
+      return
+    }
+
+    multiFileValidationMessage.value = ""
+    emit("update:multiFile", file)
+  },
 })
 
+function getUploadValidationMessage(result: UploadValidationResult) {
+  if (result.valid) {
+    return ""
+  }
+
+  if (result.code === "too-large") {
+    return t("uploadValidation.tooLarge", {
+      name: result.fileName,
+      maxSize: result.maxSizeLabel,
+    })
+  }
+
+  if (result.code === "empty-file") {
+    return t("uploadValidation.emptyFile", { name: result.fileName })
+  }
+
+  return t("uploadValidation.unsupportedType", { name: result.fileName })
+}
+
 watch(recordDraft, (draft) => { multiRecordModel.value = draft })
-watch(() => props.multiFile, (file) => { if (file && recordDraft.value) clearRecording() })
+watch(() => props.multiFile, (file) => {
+  if (!file) {
+    multiFileValidationMessage.value = ""
+  }
+  if (file && recordDraft.value) clearRecording()
+})
 watch(() => multiRecordModel.value, (draft) => {
   if (!draft && recordDraft.value && !isRecording.value) clearRecording()
 })

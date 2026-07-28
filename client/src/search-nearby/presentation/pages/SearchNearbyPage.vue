@@ -463,6 +463,7 @@ const mapZoomInKey = ref(0)
 const mapZoomOutKey = ref(0)
 const locationPermissionState = ref<LocationPermissionState>("checking")
 const liveOriginHeading = ref<number | null>(null)
+const directionsLocationPending = ref(false)
 const showGuide = ref(false)
 const showMapGuide = ref(false)
 const guideTab = ref<"ios" | "android" | "desktop">("ios")
@@ -515,17 +516,21 @@ const showSuggestionPanel = computed(() =>
   isSuggestionPanelOpen.value
   && (searchText.value.trim().length > 0 || suggestionOptions.value.length > 0),
 )
+const hasSharedLocationRoute = computed(() => {
+  const source = Array.isArray(route.query.source) ? route.query.source[0] : route.query.source
+
+  return source === "message" || source === "post"
+})
 const canUseNearbyMap = computed(() =>
   hasOrigin.value
+  || hasSharedLocationRoute.value
   || (locationPermissionState.value !== "denied" && locationPermissionState.value !== "unsupported"),
 )
 const shouldShowGoogleNearbyResults = computed(() =>
   googleNearbyLoading.value || googleNearbyQuery.value.length > 0,
 )
 const sharedLocationSelection = computed(() => {
-  const source = Array.isArray(route.query.source) ? route.query.source[0] : route.query.source
-
-  return source === "message" ? selectedSuggestionItem.value : null
+  return hasSharedLocationRoute.value ? selectedSuggestionItem.value : null
 })
 
 const displayMapItems = computed(() =>
@@ -1290,17 +1295,61 @@ function scrollSelectedResultCardIntoView() {
   })
 }
 
-function handleDirectionsRequest(item: NearbySearchItem) {
-  void startDeviceOrientationTracking(true)
-  requestDirections(item)
+function getCurrentPositionForDirections() {
+  return new Promise<boolean>((resolve) => {
+    if (!import.meta.client || !navigator.geolocation) {
+      locationPermissionState.value = "unsupported"
+      resolve(false)
+      return
+    }
 
-  if (!import.meta.client || !window.matchMedia("(max-width: 760px)").matches) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        handleLocationPosition(position)
+        resolve(hasOrigin.value)
+      },
+      (error) => {
+        handleLocationError(error)
+        resolve(false)
+      },
+      geolocationOptions,
+    )
+  })
+}
+
+async function handleDirectionsRequest(item: NearbySearchItem) {
+  if (directionsLocationPending.value) {
     return
   }
 
-  shouldFocusNextLocationUpdate = true
-  if (navigator.geolocation) {
-    pollCurrentLocation()
+  directionsLocationPending.value = true
+  clearRoute()
+  void startDeviceOrientationTracking(true)
+
+  try {
+    const hasFreshLocation = Boolean(
+      hasOrigin.value
+      && lastLiveLocation
+      && Date.now() - lastLiveLocation.updatedAt < locationWatchStaleMs,
+    )
+    const canStartRoute = hasFreshLocation || await getCurrentPositionForDirections()
+
+    if (!canStartRoute) {
+      handleRouteError(
+        locationPermissionState.value === "denied"
+          ? locationPermissionDescription.value
+          : t("pages.searchNearby.routeUnavailable"),
+      )
+      return
+    }
+
+    requestDirections(item)
+    void requestLocationPermission({
+      requestDeviceHeadingPermission: true,
+    })
+  }
+  finally {
+    directionsLocationPending.value = false
   }
 }
 
@@ -1576,60 +1625,84 @@ function getGooglePlaceDetails(placeId: string) {
 
 async function hydrateSharedLocationCard() {
   const source = Array.isArray(route.query.source) ? route.query.source[0] : route.query.source
-  const latitude = Number(Array.isArray(route.query.lat) ? route.query.lat[0] : route.query.lat)
-  const longitude = Number(Array.isArray(route.query.lng) ? route.query.lng[0] : route.query.lng)
+  const rawLatitude = Array.isArray(route.query.lat) ? route.query.lat[0] : route.query.lat
+  const rawLongitude = Array.isArray(route.query.lng) ? route.query.lng[0] : route.query.lng
+  const latitude = rawLatitude === undefined || rawLatitude === "" ? null : Number(rawLatitude)
+  const longitude = rawLongitude === undefined || rawLongitude === "" ? null : Number(rawLongitude)
+  const address = String(Array.isArray(route.query.address) ? route.query.address[0] || "" : route.query.address || "").trim()
+  const placeId = String(Array.isArray(route.query.placeId) ? route.query.placeId[0] || "" : route.query.placeId || "").trim()
+  const hasCoordinates = (
+    latitude !== null
+    && longitude !== null
+    && Number.isFinite(latitude)
+    && Number.isFinite(longitude)
+    && latitude >= -90
+    && latitude <= 90
+    && longitude >= -180
+    && longitude <= 180
+  )
 
   if (
-    source !== "message"
-    || !Number.isFinite(latitude)
-    || !Number.isFinite(longitude)
-    || latitude < -90
-    || latitude > 90
-    || longitude < -180
-    || longitude > 180
+    (source !== "message" && source !== "post")
+    || (!hasCoordinates && !address && !placeId)
   ) {
     return
   }
 
-  await nextTick()
-  const selected = selectedSuggestionItem.value
-  if (!selected || selected.lat !== latitude || selected.lng !== longitude) {
-    return
-  }
-
   try {
-    await loadGoogleMaps()
-    if (!window.google?.maps?.Geocoder) {
+    const servicesReady = await ensureGooglePlacesServices()
+    if (!servicesReady || !window.google?.maps?.Geocoder) {
       return
     }
 
-    const geocoder = new window.google.maps.Geocoder()
-    const result = await new Promise<google.maps.GeocoderResult | null>((resolve) => {
-      geocoder.geocode(
-        { location: { lat: latitude, lng: longitude } },
-        (results, status) => {
-          const okStatus = window.google?.maps?.GeocoderStatus?.OK
-          resolve(status === okStatus ? results?.[0] ?? null : null)
-        },
-      )
-    })
+    let place: google.maps.places.PlaceResult | null = hasCoordinates
+      ? {
+          place_id: placeId || `${latitude},${longitude}`,
+          name: address || "Google Maps",
+          formatted_address: address,
+          geometry: {
+            location: new window.google.maps.LatLng(latitude, longitude),
+          },
+        }
+      : null
 
-    if (!result || selectedSuggestionItem.value?.id !== selected.id) {
-      return
+    if (!place && placeId && placesService.value) {
+      place = await getGooglePlaceDetails(placeId)
     }
 
-    const address = String(result.formatted_address || selected.locationLabel).trim()
-    const placeId = String(result.place_id || "").trim()
-    selectSuggestion({
-      ...selected,
-      locationLabel: address,
-      href: placeId
-        ? createGoogleMapsHref(placeId, address)
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${latitude}, ${longitude}`)}`,
-    })
+    if (!place) {
+      const geocoder = new window.google.maps.Geocoder()
+      const result = await new Promise<google.maps.GeocoderResult | null>((resolve) => {
+        geocoder.geocode(
+          hasCoordinates
+            ? { location: { lat: latitude, lng: longitude } }
+            : { address },
+          (results, status) => {
+            const okStatus = window.google?.maps?.GeocoderStatus?.OK
+            resolve(status === okStatus ? results?.[0] ?? null : null)
+          },
+        )
+      })
+
+      if (result) {
+        place = {
+          place_id: result.place_id,
+          name: address || result.formatted_address,
+          formatted_address: result.formatted_address,
+          geometry: result.geometry,
+        }
+      }
+    }
+
+    const hydratedItem = place ? googlePlaceToNearbyItem(place, 0, false) : null
+    if (hydratedItem) {
+      selectSuggestion(hydratedItem)
+      await nextTick()
+      scrollSelectedResultCardIntoView()
+    }
   }
   catch {
-    // The route-provided card remains usable when reverse geocoding is unavailable.
+    // A coordinate-backed location remains selectable when Google place hydration is unavailable.
   }
 }
 
@@ -1810,7 +1883,13 @@ watch(googlePlacesEnabled, (enabled) => {
 })
 
 watch(
-  () => [route.query.source, route.query.lat, route.query.lng],
+  () => [
+    route.query.source,
+    route.query.lat,
+    route.query.lng,
+    route.query.address,
+    route.query.placeId,
+  ],
   () => {
     void hydrateSharedLocationCard()
   },

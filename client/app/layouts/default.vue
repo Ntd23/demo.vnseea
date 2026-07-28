@@ -2,10 +2,6 @@
 <template>
   <div class="phone-safe min-h-screen bg-[var(--bg-base)] overflow-x-clip" :class="isReelsPage ? 'overflow-hidden' : ''">
     <ClientOnly>
-      <HeaderSearchContent />
-    </ClientOnly>
-
-    <ClientOnly>
       <ReelsPresentationReelsViewerOverlay />
     </ClientOnly>
 
@@ -43,6 +39,10 @@
           class="hidden min-w-0 xl:sticky xl:top-[70px] xl:z-50 xl:block xl:h-[calc(100dvh-70px)] xl:overflow-visible">
           <ClientOnly>
             <NavigationRightSidebar />
+
+            <template #fallback>
+              <NavigationChatWidgetLoadingState />
+            </template>
           </ClientOnly>
         </aside>
       </div>
@@ -54,10 +54,10 @@
 <script setup>
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import NavigationHeaderBar from "../../src/navigation/presentation/components/HeaderBar.vue"
-import HeaderSearchContent from "../../src/navigation/presentation/components/HeaderSearchContent.client.vue"
 import NavigationHeaderIconNav from "../../src/navigation/presentation/components/HeaderIconNav.vue"
 import NavigationLeftSidebar from "../../src/navigation/presentation/components/LeftSidebar.vue"
 import NavigationRightSidebar from "../../src/navigation/presentation/components/RightSidebar.vue"
+import NavigationChatWidgetLoadingState from "../../src/navigation/presentation/components/ChatWidgetLoadingState.vue"
 import DirectoryLeftSidebar from "../../src/directory/presentation/components/LeftSidebar.vue"
 import ReelsPresentationReelsViewerOverlay from "../../src/reels/presentation/components/ReelsViewerOverlay.vue"
 

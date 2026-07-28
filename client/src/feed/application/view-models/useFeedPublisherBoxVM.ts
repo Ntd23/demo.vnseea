@@ -11,6 +11,11 @@ import {
   normalizeLocationSelection,
   type LocationSelection,
 } from "../../../location/domain/types/location.types"
+import {
+  validateFeedImages,
+  validateFeedVideo,
+  type UploadValidationResult,
+} from "../../../shared-kernel/application/utils/uploadValidation"
 
 type PublisherAction = "image" | "video" | "poll" | "job" | "feeling" | "story" | "colors" | "product" | "location"
 type PublisherAudience = ContentAudience
@@ -65,6 +70,41 @@ export function useFeedPublisherBoxVM(
   const submitting = ref(false)
   const statusMessage = ref("")
   const statusTone = ref<"neutral" | "success" | "warning">("neutral")
+
+  function getUploadValidationMessage(result: UploadValidationResult) {
+    if (result.valid) {
+      return ""
+    }
+
+    if (result.code === "too-large") {
+      return t("uploadValidation.tooLarge", {
+        name: result.fileName,
+        maxSize: result.maxSizeLabel,
+      })
+    }
+
+    if (result.code === "too-many-files") {
+      return t("uploadValidation.tooManyFiles", {
+        maxFiles: result.maxFiles,
+      })
+    }
+
+    if (result.code === "empty-file") {
+      return t("uploadValidation.emptyFile", {
+        name: result.fileName,
+      })
+    }
+
+    return t("uploadValidation.unsupportedType", {
+      name: result.fileName,
+    })
+  }
+
+  function showUploadValidationError(result: UploadValidationResult) {
+    statusTone.value = "warning"
+    statusMessage.value = getUploadValidationMessage(result)
+    expanded.value = true
+  }
 
   const currentUserName = computed(() => currentAuthUserStore.user?.name || "")
   const currentUserAvatar = computed(() => currentAuthUserStore.user?.avatarUrl || "")
@@ -366,36 +406,51 @@ export function useFeedPublisherBoxVM(
   }
 
   function selectImageFile(event: Event) {
-    const files = Array.from((event.target as HTMLInputElement).files ?? [])
+    const input = event.target as HTMLInputElement
+    const files = Array.from(input.files ?? [])
 
     if (!files.length) {
+      return
+    }
+
+    const validation = validateFeedImages(files)
+    input.value = ""
+
+    if (!validation.valid) {
+      showUploadValidationError(validation)
       return
     }
 
     videoFile.value = null
     imageFiles.value = files
     showFeelingPicker.value = false
+    statusMessage.value = ""
   }
 
   function selectVideoFile(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0]
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
 
     if (!file) {
+      return
+    }
+
+    const validation = validateFeedVideo(file)
+    input.value = ""
+
+    if (!validation.valid) {
+      showUploadValidationError(validation)
       return
     }
 
     imageFiles.value = []
     videoFile.value = file
     showFeelingPicker.value = false
+    statusMessage.value = ""
   }
 
   function clearSelectedMedia() {
     resetSelectedMedia()
-  }
-
-  function clearLocation() {
-    draft.value.location = emptyLocationSelection()
-    showLocationForm.value = false
   }
 
   function addPollAnswer() {
@@ -421,6 +476,17 @@ export function useFeedPublisherBoxVM(
   }
 
   async function publish() {
+    const mediaValidation = imageFiles.value.length
+      ? validateFeedImages(imageFiles.value)
+      : videoFile.value
+        ? validateFeedVideo(videoFile.value)
+        : { valid: true as const }
+
+    if (!mediaValidation.valid) {
+      showUploadValidationError(mediaValidation)
+      return
+    }
+
     if (!canPublish.value) {
       statusTone.value = "warning"
       statusMessage.value = showPollForm.value
@@ -445,7 +511,9 @@ export function useFeedPublisherBoxVM(
         eventId,
         groupId,
         colorId: selectedColorId.value || undefined,
-        location: draft.value.location.address.trim() || undefined,
+        location: draft.value.location.address.trim()
+          ? normalizeLocationSelection(draft.value.location)
+          : undefined,
         pollAnswers: showPollForm.value
           ? pollAnswers.value.map(answer => answer.trim()).filter(Boolean)
           : undefined,
@@ -517,7 +585,6 @@ export function useFeedPublisherBoxVM(
     selectImageFile,
     selectVideoFile,
     clearSelectedMedia,
-    clearLocation,
     selectFeeling,
     addPollAnswer,
     removePollAnswer,

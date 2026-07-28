@@ -10,6 +10,10 @@ import type { MessagesRepository } from "../../../messages/domain/repositories/M
 import { getMessageLocationMeta } from "../../../messages/application/utils/message-location"
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
 import { sortUserInboxContacts } from "../../../messages/application/utils/message-contact-order"
+import {
+  validateMessageAttachment,
+  type UploadValidationResult,
+} from "../../../shared-kernel/application/utils/uploadValidation"
 import { useChatWidgetLauncher, type ProductChatLaunchRequest } from "../composables/useChatWidgetLauncher"
 
 type ChatWidgetTab = "send" | "contacts" | "groups"
@@ -209,6 +213,39 @@ export function useChatWidgetVM(
   const router = useRouter()
   const toast = useToast()
   const currentAuthUserStore = useCurrentAuthUserStore()
+
+  function getUploadValidationMessage(result: UploadValidationResult) {
+    if (result.valid) {
+      return ""
+    }
+
+    if (result.code === "too-large") {
+      return t("uploadValidation.tooLarge", {
+        name: result.fileName,
+        maxSize: result.maxSizeLabel,
+      })
+    }
+
+    if (result.code === "empty-file") {
+      return t("uploadValidation.emptyFile", { name: result.fileName })
+    }
+
+    return t("uploadValidation.unsupportedType", { name: result.fileName })
+  }
+
+  function validateAndReportMessageFile(file: File) {
+    const validation = validateMessageAttachment(file)
+    if (validation.valid) {
+      return true
+    }
+
+    toast.add({
+      title: t("uploadValidation.title"),
+      description: getUploadValidationMessage(validation),
+      color: "error",
+    })
+    return false
+  }
   const currentOwnerId = computed(() => currentAuthUserStore.user?.id ?? 0)
   const currentOwnerKey = computed(() => currentOwnerId.value > 0 ? `user:${currentOwnerId.value}` : "anonymous")
   const inboxAsyncDataKey = computed(() => `navigation:chat-widget:inbox:${currentOwnerKey.value}`)
@@ -310,6 +347,7 @@ export function useChatWidgetVM(
     }
   }
 
+  const hasResolvedInitialInboxRequest = ref(false)
   const {
     data: inbox,
     status: inboxStatus,
@@ -343,7 +381,12 @@ export function useChatWidgetVM(
       },
     },
   )
-  const hasLoadedInboxOnce = computed(() => (inbox.value?.length ?? 0) > 0)
+
+  watch(inboxStatus, (status) => {
+    if (status === "success" || status === "error") {
+      hasResolvedInitialInboxRequest.value = true
+    }
+  }, { immediate: true })
 
   const {
     data: messageTags,
@@ -531,7 +574,9 @@ export function useChatWidgetVM(
     && visibleSendRecipientIds.value.every(id => selectedSendRecipientIds.value.includes(id)),
   )
 
-  const isLoadingInbox = computed(() => inboxStatus.value === "pending" && !hasLoadedInboxOnce.value)
+  const isLoadingInbox = computed(() =>
+    inboxStatus.value === "pending" && !hasResolvedInitialInboxRequest.value,
+  )
   const messageTagLabels = computed(() => messageTags.value?.labels ?? [])
 
   const canSendQuickMessage = computed(() =>
@@ -1027,6 +1072,10 @@ export function useChatWidgetVM(
       return
     }
 
+    if (attachFile.value && !validateAndReportMessageFile(attachFile.value)) {
+      return
+    }
+
     isSendingQuick.value = true
 
     try {
@@ -1036,6 +1085,24 @@ export function useChatWidgetVM(
         file: attachFile.value,
         record: null,
       })
+
+      if (result.invalidFile === 1) {
+        toast.add({
+          title: t("uploadValidation.title"),
+          description: t("pages.messagesPage.invalidFileTooLarge"),
+          color: "error",
+        })
+        return
+      }
+
+      if (result.invalidFile === 2) {
+        toast.add({
+          title: t("uploadValidation.title"),
+          description: t("pages.messagesPage.invalidFileType"),
+          color: "error",
+        })
+        return
+      }
 
       if (result.status !== 200 && result.status !== 207) {
         throw new Error(result.error || "Unable to send multi message")
@@ -1145,6 +1212,10 @@ export function useChatWidgetVM(
     const recordDraft = options?.record ?? null
 
     if (!session || !contact || (!text && !session.attachFile && !recordDraft)) {
+      return
+    }
+
+    if (session.attachFile && !validateAndReportMessageFile(session.attachFile)) {
       return
     }
 
@@ -1275,18 +1346,24 @@ export function useChatWidgetVM(
   function onMiniFile(event: Event, contactId = activeMiniSession.value?.contactId ?? "") {
     const input = event.target as HTMLInputElement
     const session = contactId ? findMiniSession(contactId) : activeMiniSession.value
+    const file = input.files?.[0] ?? null
+
+    input.value = ""
+
+    if (file && !validateAndReportMessageFile(file)) {
+      return
+    }
+
     if (session) {
       if (session.attachFilePreviewUrl) {
         URL.revokeObjectURL(session.attachFilePreviewUrl)
         session.attachFilePreviewUrl = null
       }
-      const file = input.files?.[0] ?? null
       session.attachFile = file
       if (file && file.type.startsWith("image/")) {
         session.attachFilePreviewUrl = URL.createObjectURL(file)
       }
     }
-    input.value = ""
   }
 
   function clearMiniFile(contactId = activeMiniSession.value?.contactId ?? "") {
@@ -1404,8 +1481,13 @@ export function useChatWidgetVM(
   function onFile(event: Event) {
     const input = event.target as HTMLInputElement
     const nextFile = input.files?.[0] ?? null
-    attachFile.value = nextFile
     input.value = ""
+
+    if (nextFile && !validateAndReportMessageFile(nextFile)) {
+      return
+    }
+
+    attachFile.value = nextFile
   }
 
   function clearFile() {
@@ -1542,6 +1624,7 @@ export function useChatWidgetVM(
 
   async function resetForOwnerChange(ownerId: number) {
     disconnectRealtime()
+    hasResolvedInitialInboxRequest.value = false
     pendingMiniThreadRequests.clear()
     cachedThreads.clear()
     launchedContacts.value = []

@@ -111,6 +111,7 @@
               ref="fileInput"
               class="hidden"
               type="file"
+              :accept="MESSAGE_ATTACHMENT_ACCEPT"
               @change="onFile"
             >
             <button
@@ -170,6 +171,13 @@
             {{ $t("navigation.chatWidget.sendMessage") }}
           </UButton>
 
+          <UProgress
+            v-if="isSendingQuick && attachFile"
+            size="xs"
+            animation="carousel"
+            :aria-label="$t('uploadValidation.uploading')"
+          />
+
           <div class="chat-widget__field chat-widget__tag-filter">
             <USelectMenu
               v-model="activeSendTagFilterModel"
@@ -189,8 +197,16 @@
         <section class="chat-widget__send-card chat-widget__users-card">
           <h2 class="chat-widget__section-title">{{ $t("pages.messagesPage.users") }}</h2>
 
+          <div v-if="isLoadingInbox" class="space-y-2" aria-hidden="true">
+            <div v-for="index in 3" :key="index" class="chat-widget__user-skeleton">
+              <USkeleton class="h-9 w-9 shrink-0 rounded-full" />
+              <USkeleton class="h-3 w-24" />
+              <USkeleton class="ml-auto h-7 w-16 rounded-[var(--radius-sm)]" />
+            </div>
+          </div>
+
           <UListbox
-            v-if="sendCandidates.length > 0"
+            v-else-if="sendCandidates.length > 0"
             v-model="selectedSendRecipientIdModel"
             :items="sendCandidateListboxItems"
             value-key="value"
@@ -234,14 +250,6 @@
               </div>
             </template>
           </UListbox>
-
-          <div v-else-if="isLoadingInbox" class="space-y-2" aria-hidden="true">
-            <div v-for="index in 3" :key="index" class="chat-widget__user-skeleton">
-              <USkeleton class="h-9 w-9 shrink-0 rounded-full" />
-              <USkeleton class="h-3 w-24" />
-              <USkeleton class="ml-auto h-7 w-16 rounded-[var(--radius-sm)]" />
-            </div>
-          </div>
 
           <p v-else class="chat-widget__hint">
             {{ $t("navigation.chatWidget.noMatchingRecipients") }}
@@ -724,6 +732,12 @@
               <Icon name="i-ph-x-bold" class="h-3 w-3" />
             </button>
           </div>
+          <UProgress
+            v-if="miniSession.isSending && (miniSession.sendQueue?.[0]?.file || miniSession.sendQueue?.[0]?.record)"
+            size="xs"
+            animation="carousel"
+            :aria-label="$t('uploadValidation.uploading')"
+          />
         </div>
 
         <div class="chat-widget__mini-input-wrap">
@@ -751,8 +765,8 @@
               />
             </button>
           </div>
-          <input :id="`mini-image-input-${miniSession.contact.id}`" type="file" accept="image/*" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
-          <input :id="`mini-file-input-${miniSession.contact.id}`" type="file" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
+          <input :id="`mini-image-input-${miniSession.contact.id}`" type="file" :accept="MESSAGE_IMAGE_ACCEPT" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
+          <input :id="`mini-file-input-${miniSession.contact.id}`" type="file" :accept="MESSAGE_ATTACHMENT_ACCEPT" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
           <button
             type="button"
             class="chat-widget__mini-tool-btn"
@@ -873,6 +887,10 @@ import {
   getMessageReplyPreviewText,
 } from "../../../messages/application/utils/message-bubble-content"
 import { getMessageLocationMeta } from "../../../messages/application/utils/message-location"
+import {
+  MESSAGE_ATTACHMENT_ACCEPT,
+  MESSAGE_IMAGE_ACCEPT,
+} from "../../../shared-kernel/application/utils/uploadValidation"
 import { useChatWidgetVM } from "../../application/view-models/useChatWidgetVM"
 
 const collapsed = ref(false)
@@ -2701,10 +2719,10 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__contact-tag-btn {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
   justify-content: center;
   border-radius: var(--radius-md);
   padding: 0;

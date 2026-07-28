@@ -16,6 +16,7 @@ import type {
   FeedStoryActionResult,
   FeedStoryReactionType,
 } from "../types/feed.types"
+import type { LocationSelection } from "../../../location/domain/types/location.types"
 
 export interface FeedRepository {
   getPostById(id: number): Promise<FeedPostRecord | null>
@@ -74,7 +75,7 @@ export interface FeedRepository {
     sharedPostId?: number
     colorId?: number
     pollAnswers?: string[]
-    location?: string
+    location?: LocationSelection
   }): Promise<FeedCreatePostResponse>
   createProduct(input: {
     name: string

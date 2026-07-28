@@ -19,6 +19,10 @@ import {
 } from "../utils/message-bubble-content"
 import { getMessageLocationMeta } from "../utils/message-location"
 import { sortUserInboxContacts } from "../utils/message-contact-order"
+import {
+  validateMessageAttachment,
+  type UploadValidationResult,
+} from "../../../shared-kernel/application/utils/uploadValidation"
 
 type MessageFeedbackTone = "neutral" | "success" | "warning" | "error"
 type QueuedMessageDraft = {
@@ -169,6 +173,25 @@ export function useMessagesInbox(
   const route = useRoute()
   const router = useRouter()
   const toast = useToast()
+
+  function getUploadValidationMessage(result: UploadValidationResult) {
+    if (result.valid) {
+      return ""
+    }
+
+    if (result.code === "too-large") {
+      return t("uploadValidation.tooLarge", {
+        name: result.fileName,
+        maxSize: result.maxSizeLabel,
+      })
+    }
+
+    if (result.code === "empty-file") {
+      return t("uploadValidation.emptyFile", { name: result.fileName })
+    }
+
+    return t("uploadValidation.unsupportedType", { name: result.fileName })
+  }
 
   const activeTab = ref<MessageTabKey>(normalizeTab(readQueryValue(route.query.tab)))
   const query = ref("")
@@ -810,6 +833,18 @@ export function useMessagesInbox(
       return
     }
 
+    if (input.file) {
+      const validation = validateMessageAttachment(input.file)
+      if (!validation.valid) {
+        toast.add({
+          title: t("uploadValidation.title"),
+          description: getUploadValidationMessage(validation),
+          color: "error",
+        })
+        return
+      }
+    }
+
     const contact = selectedContact.value
 
     if (!contact || activeTab.value === "multi") {
@@ -1013,6 +1048,14 @@ export function useMessagesInbox(
       return
     }
 
+    if (multiFile.value) {
+      const validation = validateMessageAttachment(multiFile.value)
+      if (!validation.valid) {
+        setMultiFeedbackMessage("error", getUploadValidationMessage(validation))
+        return
+      }
+    }
+
     isMultiSending.value = true
     setMultiFeedbackMessage("neutral", t("pages.messagesPage.multiSending"))
 
@@ -1194,6 +1237,7 @@ export function useMessagesInbox(
     updateContactTags,
     isDeletingConversation,
     isMarkingRead,
+    isSending,
     isMultiSending,
     isUpdatingTags,
     isTyping,

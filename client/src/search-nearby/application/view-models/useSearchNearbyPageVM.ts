@@ -80,15 +80,19 @@ export function useSearchNearbyPageVM() {
   const route = useRoute()
   const repository = createApiNearbySearchRepository()
 
-  const initialSharedLatitude = readCoordinate(route.query.lat, -90, 90)
-  const initialSharedLongitude = readCoordinate(route.query.lng, -180, 180)
-  const initialSharedOrigin = initialSharedLatitude !== null && initialSharedLongitude !== null
-    ? { lat: initialSharedLatitude, lng: initialSharedLongitude }
+  const initialSource = readString(route.query.source)
+  const initialTargetLatitude = readCoordinate(route.query.lat, -90, 90)
+  const initialTargetLongitude = readCoordinate(route.query.lng, -180, 180)
+  const initialTargetCoordinates = initialTargetLatitude !== null && initialTargetLongitude !== null
+    ? { lat: initialTargetLatitude, lng: initialTargetLongitude }
     : null
-  const initialSharedLocationItem = initialSharedOrigin && readString(route.query.source) === "message"
+  const initialSharedOrigin = initialSource === "message" && initialTargetCoordinates
+    ? initialTargetCoordinates
+    : null
+  const initialSharedLocationItem = initialTargetCoordinates && ["message", "post"].includes(initialSource)
     ? createSharedLocationItem({
-        latitude: initialSharedOrigin.lat,
-        longitude: initialSharedOrigin.lng,
+        latitude: initialTargetCoordinates.lat,
+        longitude: initialTargetCoordinates.lng,
         title: readString(route.query.title).trim(),
         address: readString(route.query.address).trim(),
         avatarUrl: readString(route.query.avatar).trim(),
@@ -458,17 +462,20 @@ export function useSearchNearbyPageVM() {
     () => {
       const latitude = readCoordinate(route.query.lat, -90, 90)
       const longitude = readCoordinate(route.query.lng, -180, 180)
+      const source = readString(route.query.source)
 
       if (latitude === null || longitude === null) return
 
       sharedOriginTitle.value = readString(route.query.title).trim()
-      hasSharedOrigin.value = true
-      setCurrentDeviceLocation(latitude, longitude, {
-        focus: readString(route.query.source) !== "message",
-        updateSearchOrigin: true,
-      })
+      if (source === "message") {
+        hasSharedOrigin.value = true
+        setCurrentDeviceLocation(latitude, longitude, {
+          focus: false,
+          updateSearchOrigin: true,
+        })
+      }
 
-      if (readString(route.query.source) === "message") {
+      if (source === "message" || source === "post") {
         const item = createSharedLocationItem({
           latitude,
           longitude,
