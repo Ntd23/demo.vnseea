@@ -126,7 +126,13 @@ if (isset($_POST['recipient_id']) && !empty($_POST['recipient_id'])) {
 } else if (isset($_POST['group_id']) && !empty($_POST['group_id'])) {
     $group_id = Wo_Secure($_POST['group_id']);
     $group    = Wo_GroupData($group_id);
-    if (!empty($group['id'])) {
+    if (empty($group['id'])) {
+        $error_code = 14;
+        $error_message = 'Group not found.';
+    } else if ((int) $group['user_id'] !== (int) $wo['user']['user_id'] && Wo_IsGroupJoined($group_id) !== true) {
+        $error_code = 15;
+        $error_message = 'You must join this group before publishing posts.';
+    } else {
         if ($group['privacy'] == 1) {
             $_POST['postPrivacy'] = 0;
         } else if ($group['privacy'] == 2) {

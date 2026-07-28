@@ -44,7 +44,7 @@ if (!empty($_POST['id']) && is_numeric($_POST['id']) && $_POST['id'] > 0) {
             Wo_RegisterNotification($notification_data_array);
         }
     }
-    $story->view_count = $db->where('story_id',$id)->where('user_id',$story->user_id,'!=')->getValue(T_STORY_SEEN,'COUNT(*)');
+    $story->view_count = $db->where('story_id',$id)->where('user_id',$story->user_id,'!=')->getValue(T_STORY_SEEN,'COUNT(DISTINCT user_id)');
     $response_data = array(
 	    'api_status' => 200,
 	    'story' => $story

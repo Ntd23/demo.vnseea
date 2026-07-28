@@ -107,6 +107,7 @@ export interface CommunityGroupRecord {
   members: number
   privacy: CommunityPrivacy
   category: string
+  categoryLabel?: string
   banner: string
   avatar?: string
   accent: string

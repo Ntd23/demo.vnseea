@@ -13,8 +13,7 @@
       <span
         v-if="item.logoBadge"
         class="icon-nav__logo-badge"
-      >
-       
+      >    
       </span>
       <div v-if="item.active" class="icon-nav__indicator" />
     </NuxtLink>

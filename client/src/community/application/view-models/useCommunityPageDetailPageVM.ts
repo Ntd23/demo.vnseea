@@ -31,7 +31,6 @@ export function useCommunityPageDetailPageVM(
     status,
     error,
     refresh,
-    followPage,
     likePage,
     pagePosts,
     pageFollowers,
@@ -46,8 +45,9 @@ export function useCommunityPageDetailPageVM(
 
   const pageName = computed(() => translateText(page.value?.name || ""))
   const pageSummary = computed(() => translateText(page.value?.summary || ""))
-  const isFollowing = computed(() => page.value?.following === true)
-  const isLiked = computed(() => page.value?.liked === true)
+  const engagementPending = computed(() => followPending.value || likePending.value)
+  const isFollowing = computed(() => page.value?.liked === true)
+  const isLiked = computed(() => isFollowing.value)
   const avatarLabel = computed(() => pageName.value.slice(0, 2).toUpperCase())
   const pageVideoPosts = computed(() =>
     pagePosts.value.filter(post => post.mediaItems.some(item => item.type === "video")),
@@ -82,14 +82,14 @@ export function useCommunityPageDetailPageVM(
   ])
 
   async function handleFollowPage() {
-    if (followPending.value || !page.value) return
+    if (engagementPending.value || !page.value) return
 
     followPending.value = true
     actionState.value = "idle"
     actionMessage.value = ""
 
     try {
-      const updatedPage = await followPage()
+      const updatedPage = await likePage()
       actionState.value = "success"
       actionMessage.value = t("pages.pageDetailPage.followSuccessDescription", {
         page: translateText(updatedPage?.name || page.value?.name || ""),
@@ -107,7 +107,7 @@ export function useCommunityPageDetailPageVM(
   }
 
   async function handleLikePage() {
-    if (likePending.value || !page.value) return
+    if (engagementPending.value || !page.value) return
 
     likePending.value = true
     actionState.value = "idle"
@@ -200,6 +200,7 @@ export function useCommunityPageDetailPageVM(
     activeTab,
     followPending,
     likePending,
+    engagementPending,
     sharePending,
     followerActionPending,
     followerSearchQuery,

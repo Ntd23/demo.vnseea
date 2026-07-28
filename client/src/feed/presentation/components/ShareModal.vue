@@ -687,7 +687,7 @@ watch(
 .share-modal {
   position: fixed;
   inset: 0;
-  z-index: 1300;
+  z-index: 2100;
   display: flex;
   align-items: center;
   justify-content: center;

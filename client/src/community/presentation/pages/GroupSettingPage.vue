@@ -53,7 +53,11 @@
           @error="handleSaveError"
         >
           <section id="basics">
-            <CommunityGroupSettingsBasicsCard v-model="draft" />
+            <CommunityGroupSettingsBasicsCard
+              v-model="draft"
+              :category-options="categoryOptions"
+              :category-loading="isLoadingCategories"
+            />
             <!-- Save Button at the bottom -->
             <div class="flex justify-end pt-2">
               <UButton
@@ -186,6 +190,7 @@ import CommunityGroupSettingsMembersCard from "../components/GroupSettingsMember
 import CommunityGroupSettingsAnalyticCard from "../components/GroupSettingsAnalyticCard.vue"
 import CommunityGroupSettingsDeleteCard from "../components/GroupSettingsDeleteCard.vue"
 import { useCommunityGroupSettingPageVM } from "../../application/view-models/useCommunityGroupSettingPageVM"
+import { useCommunityGroupCategories } from "../../application/composables/useCommunityGroupCategories"
 
 const {
   group,
@@ -213,6 +218,16 @@ const {
   appRoutes,
   status,
 } = useCommunityGroupSettingPageVM()
+
+const {
+  categoryOptions,
+  isLoadingCategories,
+  loadCategories,
+} = useCommunityGroupCategories()
+
+onMounted(() => {
+  void loadCategories()
+})
 
 function onTabClick(tabId: string) {
   activeTab.value = tabId

@@ -1090,6 +1090,7 @@ export const mapPostRecord = (
     isAnonymous: audienceSelection.isAnonymous,
     time: formatPostTime(entity),
     text,
+    videoTitle: stripHtml(firstString(entity, ["videoTitle", "video_title"])) || undefined,
     mentions,
     feeling,
     pollOptions,
@@ -1114,6 +1115,9 @@ export const mapPostRecord = (
       ? "feed"
       : pageSlug ? "page" : groupSlug ? "group" : "feed",
     sourcePath: audienceSelection.isAnonymous ? appRoutes.feed : sourcePath,
+    sourceFollowing: pageSlug
+      ? isTruthy(pageData.is_liked) || isTruthy(pageData.is_following) || isTruthy(pageData.is_followed)
+      : undefined,
     profileMediaUpdate,
     isSaved: isTruthy(entity.is_post_saved) || isTruthy(entity.is_saved),
     isLiked: postReaction.isLiked,

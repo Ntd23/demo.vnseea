@@ -44,6 +44,7 @@
         :key="page.id"
         :page="page"
         :action-label="actionLabel"
+        @liked-change="handlePageLikedChange"
       />
     </div>
   </div>
@@ -70,6 +71,7 @@ const {
   tabItems,
   actionLabel,
   filterStatusLabel,
+  handlePageLikedChange,
 } = useCommunityPagesDirectoryVM(() => props.mode)
 </script>
 

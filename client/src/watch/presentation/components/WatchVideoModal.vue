@@ -154,8 +154,12 @@
                  <!-- Reaction Button with Tray -->
                  <div
                     class="watch-modal__interaction-wrapper"
+                    :class="{ 'watch-modal__interaction-wrapper--open': postReactionTrayOpen }"
                     @mouseenter="openPostReactionTray"
                     @mouseleave="closePostReactionTray"
+                    @focusin="openPostReactionTray"
+                    @focusout="closePostReactionTray"
+                    @contextmenu.prevent
                  >
                     <Transition
                       enter-active-class="transition duration-150 ease-out"
@@ -164,28 +168,58 @@
                       leave-active-class="transition duration-100 ease-in"
                       leave-to-class="opacity-0 translate-y-2 scale-95"
                     >
-                      <div v-if="postReactionTrayOpen" class="watch-modal__reaction-tray">
+                      <div
+                        v-if="postReactionTrayOpen"
+                        class="watch-modal__reaction-tray"
+                        @click.stop
+                        @pointerdown.stop
+                        @contextmenu.prevent
+                      >
                         <button
-                          v-for="reaction in postReactionOptions"
+                          v-for="(reaction, reactionIndex) in postReactionOptions"
                           :key="reaction.value"
                           class="watch-modal__reaction-option"
+                          :class="{ 'watch-modal__reaction-option--active': selectedPostReaction === reaction.value }"
+                          :style="{ '--reaction-index': String(reactionIndex) }"
                           type="button"
-                          @click="reactToPost(reaction.value)"
+                          :aria-label="reaction.label"
+                          @pointerdown.prevent.stop="reactToPost(reaction.value)"
+                          @click.prevent.stop
+                          @keydown.enter.prevent="reactToPost(reaction.value)"
+                          @keydown.space.prevent="reactToPost(reaction.value)"
                         >
-                          <img :src="reaction.src" :alt="reaction.label" class="watch-modal__reaction-img">
+                          <img
+                            :src="reaction.src"
+                            :alt="reaction.label"
+                            class="watch-modal__reaction-img"
+                            draggable="false"
+                          >
                         </button>
                       </div>
                     </Transition>
 
                     <button
                       class="watch-modal__interaction-btn"
-                      :class="{ 'watch-modal__interaction-btn--active': liked }"
+                      :class="{
+                        'watch-modal__interaction-btn--active': liked,
+                        'watch-modal__interaction-btn--reacted': selectedPostReaction,
+                      }"
+                      type="button"
+                      :aria-pressed="liked"
+                      :aria-label="activePostReactionLabel"
+                      @pointerdown="startPostReactionPress"
+                      @pointerup="finishPostReactionPress"
+                      @pointerleave="cancelPostReactionPress"
+                      @pointercancel="cancelPostReactionPress"
+                      @contextmenu.prevent
                       @click="handlePostReactionButtonClick"
                     >
                       <img
                         v-if="selectedPostReaction"
                         :src="activePostReactionAsset.src"
-                        class="h-5 w-5"
+                        :alt="activePostReactionLabel"
+                        class="watch-modal__active-reaction-img"
+                        draggable="false"
                       >
                       <Icon v-else name="i-ph-thumbs-up" class="h-5 w-5" />
                       <span>{{ selectedPostReaction ? activePostReactionLabel : liked ? t('feed.postCard.likeActive') : t('feed.postCard.like') }}</span>
@@ -197,11 +231,24 @@
                     <span>{{ t('feed.postCard.comment') }}</span>
                  </button>
 
-                 <button class="watch-modal__interaction-btn" @click="handleMenuAction('copy')">
+                 <button
+                   class="watch-modal__interaction-btn"
+                   :disabled="!post?.permissions.canShare"
+                   @click="post?.permissions.canShare && (showShare = true)"
+                 >
                     <Icon name="i-ph-share-fat" class="h-5 w-5" />
                     <span>{{ t('feed.postCard.share') }}</span>
                  </button>
               </div>
+
+              <UAlert
+                v-if="actionState === 'error' && actionMessage"
+                class="watch-modal__action-alert"
+                color="warning"
+                variant="subtle"
+                icon="i-ph-warning-circle-bold"
+                :description="actionMessage"
+              />
 
               <!-- Comments List -->
               <div class="watch-modal__comments-section">
@@ -234,6 +281,24 @@
             </footer>
           </aside>
         </div>
+
+        <ClientOnly>
+          <FeedShareModal
+            v-if="post?.permissions.canShare"
+            :open="showShare"
+            :can-share="post.permissions.canShare"
+            :share-url="shareUrl"
+            :post="{
+              id: post.id,
+              author: post.author,
+              text: post.text,
+              authorAvatar: post.authorAvatarUrl,
+              authorVerified: post.authorVerified,
+            }"
+            @close="showShare = false"
+            @shared="handleShared"
+          />
+        </ClientOnly>
       </div>
     </Transition>
   </Teleport>
@@ -244,6 +309,7 @@ import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeed
 import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
 import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
+import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
 import { useTimeAgo } from "@vueuse/core"
 
 const { t } = useI18n()
@@ -268,6 +334,7 @@ const commentComposerRef = ref<any>(null)
 // Use the FeedPostCardVM for all interaction logic
 const {
   currentAuthUserStore,
+  showShare,
   liked,
   selectedPostReaction,
   postReactionTrayOpen,
@@ -275,18 +342,24 @@ const {
   likesCount,
   commentsCount,
   sharesCount,
+  actionState,
+  actionMessage,
   commenting,
   postReactionOptions,
   activePostReactionAsset,
   activePostReactionLabel,
   previewReactions,
+  shareUrl,
   commentActionRepository,
   openPostReactionTray,
   closePostReactionTray,
+  startPostReactionPress,
+  finishPostReactionPress,
+  cancelPostReactionPress,
   handlePostReactionButtonClick,
   reactToPost,
   submitComment,
-  handleMenuAction,
+  handleShared,
   downloadMedia,
   refreshComments,
 } = useFeedPostCardVM(toRef(props, "post") as Ref<FeedPostRecord>)
@@ -422,6 +495,7 @@ onBeforeUnmount(() => {
 
 .watch-modal__stage {
   position: relative;
+  z-index: 0;
   display: flex;
   flex-direction: column;
   background: var(--bg-media);
@@ -552,6 +626,8 @@ onBeforeUnmount(() => {
 
 /* Sidebar */
 .watch-modal__sidebar {
+  position: relative;
+  z-index: 20;
   background: var(--bg-surface);
   color: var(--text-primary);
   display: flex;
@@ -718,6 +794,8 @@ onBeforeUnmount(() => {
 }
 
 .watch-modal__interaction-bar {
+  position: relative;
+  z-index: 30;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4px;
@@ -730,6 +808,10 @@ onBeforeUnmount(() => {
 .watch-modal__interaction-wrapper {
   position: relative;
   width: 100%;
+}
+
+.watch-modal__interaction-wrapper--open {
+  z-index: 40;
 }
 
 .watch-modal__interaction-btn {
@@ -754,43 +836,147 @@ onBeforeUnmount(() => {
   color: var(--bg-brand);
 }
 
+.watch-modal__interaction-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.watch-modal__interaction-btn:disabled:hover {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
 .watch-modal__interaction-btn--active {
   color: var(--bg-brand);
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
 }
 
+.watch-modal__interaction-btn--reacted .watch-modal__active-reaction-img {
+  animation: watch-reaction-selected-pop 0.24s ease-out;
+}
+
+.watch-modal__active-reaction-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 .watch-modal__reaction-tray {
   position: absolute;
-  bottom: calc(100% + 12px);
-  left: 0; /* Shift to the right from the left edge of the sidebar */
+  bottom: calc(100% + 2px);
+  left: 0;
   display: flex;
-  gap: 6px;
+  gap: 10px;
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
-  padding: 5px;
+  padding: 8px 10px;
   border-radius: 999px;
   box-shadow: var(--shadow-lg);
-  z-index: 100;
+  z-index: 200;
+  transform-origin: 0 100%;
+  animation: watch-reaction-tray-in 0.16s ease-out both;
+  pointer-events: auto;
+  touch-action: manipulation;
+  user-select: none;
+  white-space: nowrap;
 }
 
 .watch-modal__reaction-option {
-  width: 28px; /* Smaller icons like in comments */
-  height: 28px;
+  display: flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
   border: none;
+  border-radius: 999px;
   background: transparent;
   padding: 0;
   cursor: pointer;
-  transition: transform 0.2s;
+  touch-action: manipulation;
+  transition: transform 0.15s ease;
 }
 
-.watch-modal__reaction-option:hover {
-  transform: scale(1.15) translateY(-2px);
+.watch-modal__reaction-option:hover,
+.watch-modal__reaction-option:focus-visible,
+.watch-modal__reaction-option--active {
+  transform: translateY(-8px) scale(1.18);
 }
 
 .watch-modal__reaction-img {
-  width: 100%;
-  height: 100%;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
+  pointer-events: none;
+}
+
+.watch-modal__action-alert {
+  margin-bottom: 14px;
+  border-radius: 14px;
+}
+
+@keyframes watch-reaction-tray-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes watch-reaction-selected-pop {
+  0% {
+    transform: scale(0.72) rotate(-8deg);
+  }
+
+  65% {
+    transform: scale(1.24) rotate(4deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (max-width: 520px) {
+  .watch-modal__reaction-tray {
+    left: 0;
+    gap: 4px;
+    padding-inline: 8px;
+    animation-name: watch-reaction-tray-in-mobile;
+  }
+
+  .watch-modal__reaction-option {
+    width: 32px;
+    height: 32px;
+  }
+
+  .watch-modal__reaction-img {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@keyframes watch-reaction-tray-in-mobile {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .watch-modal__reaction-tray,
+  .watch-modal__interaction-btn--reacted .watch-modal__active-reaction-img {
+    animation: none;
+  }
 }
 
 .watch-modal__stats-summary {

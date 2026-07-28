@@ -89,19 +89,19 @@ const emit = defineEmits<{
   "update:period": [period: AnalyticsPeriod]
 }>()
 
+const { t } = useI18n()
 
-
-const periodOptions: Array<{ value: AnalyticsPeriod; label: string }> = [
+const periodOptions = computed<Array<{ value: AnalyticsPeriod; label: string }>>(() => [
   { value: "day", label: t("community.groupSettings.analytics.periods.today") },
   { value: "week", label: t("community.groupSettings.analytics.periods.week") },
   { value: "month", label: t("community.groupSettings.analytics.periods.month") },
   { value: "year", label: t("community.groupSettings.analytics.periods.year") },
-]
+])
 
 function handlePeriodChange(value: unknown) {
   const nextPeriod = String(value || "day") as AnalyticsPeriod
 
-  if (periodOptions.some(option => option.value === nextPeriod)) {
+  if (periodOptions.value.some(option => option.value === nextPeriod)) {
     emit("update:period", nextPeriod)
   }
 }
@@ -163,7 +163,7 @@ const chartOption = computed<EChartsOption>(() => {
       },
     },
     series: [{
-      name: "{{ $t('community.groupSettings.analytics.joined') }}",
+      name: t("community.groupSettings.analytics.joined"),
       type: "line",
       data: points.map(point => point.likes),
       smooth: true,

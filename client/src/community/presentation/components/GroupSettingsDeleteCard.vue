@@ -44,6 +44,7 @@ const emit = defineEmits<{
   delete: [password: string]
 }>()
 
+const { t } = useI18n()
 const password = ref("")
 const isDeleting = ref(false)
 

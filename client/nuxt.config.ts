@@ -227,6 +227,21 @@ export default defineNuxtConfig({
     "@nuxtjs/i18n",
     "nuxt-tiptap-editor",
   ],
+  icon: {
+    clientBundle: {
+      icons: [
+        "ph:caret-left-bold",
+        "ph:caret-right-bold",
+        "ph:play-fill",
+        "ph:x-bold",
+        "ph:thumbs-up",
+        "ph:chat-circle",
+        "ph:chat-circle-text",
+        "ph:share-fat",
+        "ph:warning-circle-bold",
+      ],
+    },
+  },
   tiptap: {
     prefix: "Tiptap",
   },

@@ -3,8 +3,56 @@
   <div class="left-sidebar">
     <nav class="left-sidebar__nav scrollbar-hide">
       <div class="left-sidebar__items">
+        <div class="left-sidebar__feed-row">
+          <NavigationSidebarMenuItem
+            :to="sidebarNav[0].to"
+            :label="$t(sidebarNav[0].label)"
+            :icon="sidebarNav[0].icon"
+            :active="isItemActive(sidebarNav[0].to)"
+          />
+
+          <UPopover
+            v-model:open="isFeedFilterOpen"
+            :content="{ side: 'right', align: 'start', sideOffset: 8 }"
+          >
+            <button
+              class="left-sidebar__feed-filter"
+              :class="{ 'left-sidebar__feed-filter--active': activeFeedOrder === 'following' || isFeedFilterOpen }"
+              type="button"
+              :aria-label="$t('pages.homeFeedPage.orderTitle')"
+              :aria-expanded="isFeedFilterOpen"
+              @click.stop
+            >
+              <Icon name="i-ph-sliders-horizontal-bold" class="h-3.5 w-3.5" />
+            </button>
+
+            <template #content>
+              <div class="left-sidebar__feed-filter-panel">
+                <button
+                  v-for="option in feedOrderOptions"
+                  :key="option.key"
+                  class="left-sidebar__feed-filter-option"
+                  :class="{ 'left-sidebar__feed-filter-option--active': activeFeedOrder === option.key }"
+                  type="button"
+                  @click="selectFeedOrder(option.key)"
+                >
+                  <span class="left-sidebar__feed-filter-copy">
+                    <strong>{{ option.label }}</strong>
+                    <small>{{ option.description }}</small>
+                  </span>
+                  <Icon
+                    v-if="activeFeedOrder === option.key"
+                    name="i-ph-check-circle-fill"
+                    class="left-sidebar__feed-filter-check"
+                  />
+                </button>
+              </div>
+            </template>
+          </UPopover>
+        </div>
+
         <NavigationSidebarMenuItem
-          v-for="item in sidebarNav"
+          v-for="item in sidebarNav.slice(1)"
           :key="item.label"
           :to="item.to"
           :label="$t(item.label)"
@@ -46,10 +94,30 @@
 
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import {
+  type HomeFeedOrderKey,
+  useHomeFeedOrder,
+} from "../../../feed/application/composables/useHomeFeedOrder"
 import NavigationSidebarMenuItem from './SidebarMenuItem.vue'
 
 const route = useRoute()
+const { t } = useI18n()
 const expanded = ref(false)
+const isFeedFilterOpen = ref(false)
+const activeFeedOrder = useHomeFeedOrder()
+
+const feedOrderOptions = computed(() => [
+  {
+    key: "all" as const,
+    label: t("pages.homeFeedPage.orders.allLabel"),
+    description: t("pages.homeFeedPage.orders.allDescription"),
+  },
+  {
+    key: "following" as const,
+    label: t("pages.homeFeedPage.orders.followingLabel"),
+    description: t("pages.homeFeedPage.orders.followingDescription"),
+  },
+])
 
 const sidebarNav = [
   { label: 'navigation.leftSidebar.items.feed', icon: 'i-ph-house-simple-fill', to: '/' },
@@ -126,6 +194,15 @@ const isItemActive = (to: string) => {
 
   return route.path === normalized
 }
+
+async function selectFeedOrder(order: HomeFeedOrderKey) {
+  activeFeedOrder.value = order
+  isFeedFilterOpen.value = false
+
+  if (route.path !== appRoutes.home && route.path !== appRoutes.feed) {
+    await navigateTo(appRoutes.home)
+  }
+}
 </script>
 
 <style scoped>
@@ -164,6 +241,102 @@ const isItemActive = (to: string) => {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+.left-sidebar__feed-row {
+  position: relative;
+}
+
+.left-sidebar__feed-row :deep(.sidebar-item) {
+  gap: 8px;
+  padding-right: 36px;
+}
+
+.left-sidebar__feed-row :deep(.sidebar-item__icon) {
+  width: 28px;
+  height: 28px;
+}
+
+.left-sidebar__feed-filter {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.left-sidebar__feed-filter:hover,
+.left-sidebar__feed-filter--active {
+  border-color: var(--border-light);
+  background: color-mix(in srgb, var(--bg-brand) 8%, var(--bg-surface));
+  color: var(--bg-brand);
+}
+
+.left-sidebar__feed-filter-panel {
+  display: grid;
+  width: min(340px, calc(100vw - 32px));
+  gap: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  background: var(--bg-surface);
+  padding: 10px;
+  box-shadow: var(--shadow-lg);
+}
+
+.left-sidebar__feed-filter-option {
+  display: flex;
+  width: 100%;
+  min-height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-muted);
+  padding: 14px 16px;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.left-sidebar__feed-filter-option:hover,
+.left-sidebar__feed-filter-option--active {
+  border-color: var(--border-strong);
+  background: var(--bg-surface-active);
+}
+
+.left-sidebar__feed-filter-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.left-sidebar__feed-filter-copy strong {
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.left-sidebar__feed-filter-copy small {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.left-sidebar__feed-filter-check {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--bg-brand);
 }
 
 .left-sidebar__toggle {

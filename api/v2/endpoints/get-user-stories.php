@@ -61,7 +61,7 @@ if (!empty($get_all_stories) && is_array($get_all_stories)) {
                     $story_owner_id = Wo_Secure($story['user_id']);
                     $view_count = 0;
 
-                    $view_query = mysqli_query($sqlConnect, "SELECT COUNT(*) AS count FROM " . T_STORY_SEEN . " WHERE `story_id` = '{$story_id}' AND `user_id` != '{$story_owner_id}'");
+                    $view_query = mysqli_query($sqlConnect, "SELECT COUNT(DISTINCT `user_id`) AS count FROM " . T_STORY_SEEN . " WHERE `story_id` = '{$story_id}' AND `user_id` != '{$story_owner_id}'");
 
                     if ($view_query) {
                         $view_data = mysqli_fetch_assoc($view_query);

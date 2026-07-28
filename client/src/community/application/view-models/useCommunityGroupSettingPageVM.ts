@@ -5,7 +5,6 @@ import { appRoutes } from "../../../shared-kernel/application/constants/route-re
 import { useCommunityGroupDetail } from "../composables/useCommunityGroupDetail"
 import { createCommunityGroupSettingsDraft } from "../factories/community-drafts"
 import {
-  communityCategoryOptions,
   communityPrivacyOptions,
 } from "../../domain/constants/community-options"
 import {
@@ -82,7 +81,9 @@ export function useCommunityGroupSettingPageVM(
     t(getCommunityOptionDescription(communityPrivacyOptions, draft.value.privacy, "community.settings.controls.noPrivacy")),
   )
   const selectedCategoryLabel = computed(() =>
-    t(getCommunityOptionLabel(communityCategoryOptions, draft.value.category, "community.groups.card.noCategory")),
+    group.value?.category === draft.value.category
+      ? group.value.categoryLabel || draft.value.category
+      : draft.value.category,
   )
 
   const totalPolicies = 1
@@ -261,6 +262,10 @@ export function useCommunityGroupSettingPageVM(
         description: t("community.settings.finish.statusSuccessDescription"),
         color: "success",
       })
+
+      if (savedGroup.slug && savedGroup.slug !== String(route.params.group || "")) {
+        await router.replace(appRoutes.groupSetting(savedGroup.slug))
+      }
     }
     catch (err: any) {
       saveState.value = "error"
@@ -349,7 +354,15 @@ export function useCommunityGroupSettingPageVM(
     const shouldRestore = restoredDraft && !isSameDraft(restoredDraft, baseDraft)
 
     applyDraft(
-      shouldRestore ? { ...baseDraft, ...restoredDraft } : baseDraft,
+      shouldRestore
+        ? {
+            ...baseDraft,
+            ...restoredDraft,
+            // Identity fields must always reflect the latest persisted group data.
+            slug: baseDraft.slug,
+            category: baseDraft.category,
+          }
+        : baseDraft,
       Boolean(shouldRestore),
     )
   }
