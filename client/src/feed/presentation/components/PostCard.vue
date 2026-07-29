@@ -38,19 +38,17 @@
       >
         <p v-if="post.text" class="post-card__text">
           <template v-for="segment in postTextSegments" :key="segment.key">
-            <span :class="{ 'post-card__mention': segment.isMention }">{{ segment.text }}</span>
+            <NuxtLink
+              v-if="segment.isHashtag"
+              :to="createHashtagPath(segment.hashtag)"
+              class="post-card__hashtag"
+              @click.stop
+            >
+              {{ segment.text }}
+            </NuxtLink>
+            <span v-else :class="{ 'post-card__mention': segment.isMention }">{{ segment.text }}</span>
           </template>
         </p>
-        <div v-if="post.tags.length" class="post-card__tags">
-          <NuxtLink
-            v-for="tag in post.tags"
-            :key="tag"
-            :to="createHashtagPath(tag)"
-            class="post-card__tag"
-          >
-            {{ formatHashtagLabel(tag) }}
-          </NuxtLink>
-        </div>
       </div>
 
       <div v-if="!post.jobId && localPollOptions.length" class="post-card__poll">
@@ -504,7 +502,7 @@
 </template>
 
 <script setup lang="ts">
-import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useHashtagData"
+import { createHashtagPath } from "../../application/composables/useHashtagData"
 import { feedReactionAssetByValue as postReactionAssetByValue } from "../../application/constants/reaction-assets"
 import { useFeedPostColors } from "../../application/composables/useFeedPostColors"
 import { createPostTextMentionSegments } from "../../application/utils/feed-mentions"
@@ -798,27 +796,14 @@ function handleMediaOpen(index: number) {
   font-weight: 600;
 }
 
-.post-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.post-card__tag {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
-  font-size: 12px;
-  font-weight: 600;
+.post-card__hashtag {
   color: var(--bg-brand);
-  transition: all 0.15s ease;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.post-card__tag:hover {
-  background: var(--bg-brand);
-  color: #ffffff;
+.post-card__hashtag:hover {
+  text-decoration: underline;
 }
 
 .post-card__media {
