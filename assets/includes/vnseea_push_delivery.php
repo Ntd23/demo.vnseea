@@ -15,6 +15,27 @@ if (!function_exists('VNSEEA_PushUuidV4')) {
     }
 }
 
+if (!function_exists('VNSEEA_PushDeliveryDebugLog')) {
+    function VNSEEA_PushDeliveryDebugLog($event, $context = array())
+    {
+        if (function_exists('Wo_VnseeaPushDebugLog')) {
+            Wo_VnseeaPushDebugLog($event, $context);
+            return;
+        }
+        error_log(
+            '[vnseea_push_delivery] ' .
+            json_encode(
+                array(
+                    'event' => (string)$event,
+                    'time' => date('c'),
+                    'context' => is_array($context) ? $context : array()
+                ),
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            )
+        );
+    }
+}
+
 if (!function_exists('VNSEEA_PushDeviceSecretHash')) {
     function VNSEEA_PushDeviceSecretHash($device_secret)
     {
@@ -375,6 +396,13 @@ if (!function_exists('VNSEEA_DeactivatePushProvider')) {
     }
 }
 
+if (!function_exists('VNSEEA_ShouldUseLegacyPushFallback')) {
+    function VNSEEA_ShouldUseLegacyPushFallback($has_provider_registration, $active_target_count)
+    {
+        return empty($has_provider_registration) && (int)$active_target_count === 0;
+    }
+}
+
 if (!function_exists('VNSEEA_GetUserPushTargets')) {
     function VNSEEA_GetUserPushTargets($user_id, $provider = 'onesignal')
     {
@@ -387,42 +415,46 @@ if (!function_exists('VNSEEA_GetUserPushTargets')) {
 
         $provider_sql = mysqli_real_escape_string($sqlConnect, $provider);
         $targets = array();
-        $has_installation = false;
-        $installation_query = @mysqli_query(
+        $has_provider_registration = false;
+        $provider_registration_query = @mysqli_query(
             $sqlConnect,
-            "SELECT COUNT(*) AS `total` FROM " . T_PUSH_INSTALLATIONS . " WHERE `user_id`={$user_id}"
+            "SELECT COUNT(*) AS `total` FROM " . T_PUSH_TOKENS . " AS token_row" .
+            " INNER JOIN " . T_PUSH_INSTALLATIONS . " AS installation" .
+            " ON installation.`id`=token_row.`installation_id`" .
+            " WHERE installation.`user_id`={$user_id}" .
+            " AND token_row.`provider`='{$provider_sql}'"
         );
-        if ($installation_query) {
-            $installation_count = mysqli_fetch_assoc($installation_query);
-            $has_installation = !empty($installation_count['total']);
-            $token_query = mysqli_query(
-                $sqlConnect,
-                "SELECT token_row.`id` AS `push_token_id`, token_row.`token`, token_row.`token_hash`," .
-                " token_row.`apns_environment`, installation.`id` AS `installation_row_id`, installation.`platform`" .
-                " FROM " . T_PUSH_TOKENS . " AS token_row" .
-                " INNER JOIN " . T_PUSH_INSTALLATIONS . " AS installation ON installation.`id`=token_row.`installation_id`" .
-                " WHERE installation.`user_id`={$user_id} AND installation.`active`=1" .
-                " AND token_row.`active`=1 AND token_row.`provider`='{$provider_sql}'"
-            );
-            if ($token_query) {
-                while ($token = mysqli_fetch_assoc($token_query)) {
-                    $targets[] = array(
-                        'installation_id' => (int)$token['installation_row_id'],
-                        'push_token_id' => (int)$token['push_token_id'],
-                        'provider' => $provider,
-                        'token' => (string)$token['token'],
-                        'token_hash' => (string)$token['token_hash'],
-                        'platform' => (string)$token['platform'],
-                        'apns_environment' => !empty($token['apns_environment']) ? (string)$token['apns_environment'] : null,
-                        'legacy' => false
-                    );
-                }
+        if ($provider_registration_query) {
+            $provider_registration_count = mysqli_fetch_assoc($provider_registration_query);
+            $has_provider_registration = !empty($provider_registration_count['total']);
+        }
+        $token_query = @mysqli_query(
+            $sqlConnect,
+            "SELECT token_row.`id` AS `push_token_id`, token_row.`token`, token_row.`token_hash`," .
+            " token_row.`apns_environment`, installation.`id` AS `installation_row_id`, installation.`platform`" .
+            " FROM " . T_PUSH_TOKENS . " AS token_row" .
+            " INNER JOIN " . T_PUSH_INSTALLATIONS . " AS installation ON installation.`id`=token_row.`installation_id`" .
+            " WHERE installation.`user_id`={$user_id} AND installation.`active`=1" .
+            " AND token_row.`active`=1 AND token_row.`provider`='{$provider_sql}'"
+        );
+        if ($token_query) {
+            while ($token = mysqli_fetch_assoc($token_query)) {
+                $targets[] = array(
+                    'installation_id' => (int)$token['installation_row_id'],
+                    'push_token_id' => (int)$token['push_token_id'],
+                    'provider' => $provider,
+                    'token' => (string)$token['token'],
+                    'token_hash' => (string)$token['token_hash'],
+                    'platform' => (string)$token['platform'],
+                    'apns_environment' => !empty($token['apns_environment']) ? (string)$token['apns_environment'] : null,
+                    'legacy' => false
+                );
             }
         }
 
-        // Once an installation exists, inactive or missing providers are
-        // intentional. Falling back would revive stale account-level tokens.
-        if ($has_installation || !empty($targets)) {
+        // Provider state is scoped independently. A VoIP registration must not
+        // suppress the legacy OneSignal token while OneSignal is still syncing.
+        if (!VNSEEA_ShouldUseLegacyPushFallback($has_provider_registration, count($targets))) {
             return $targets;
         }
 
@@ -768,7 +800,17 @@ if (!function_exists('VNSEEA_EnqueueMessagePush')) {
                 'title' => !empty($sender['name']) ? $sender['name'] : 'VNSEEA',
                 'body' => $descriptor['text']
             );
-            foreach (VNSEEA_GetUserPushTargets($recipient_id, 'onesignal') as $target) {
+            $targets = VNSEEA_GetUserPushTargets($recipient_id, 'onesignal');
+            if (empty($targets)) {
+                VNSEEA_PushDeliveryDebugLog('push_targets_missing', array(
+                    'recipient_user_id' => (int)$recipient_id,
+                    'provider' => 'onesignal',
+                    'delivery_kind' => 'message',
+                    'source_type' => 'message',
+                    'source_id' => $message_id
+                ));
+            }
+            foreach ($targets as $target) {
                 $queued = VNSEEA_QueuePushDelivery(
                     $recipient_id,
                     $target,
@@ -859,7 +901,17 @@ if (!function_exists('VNSEEA_EnqueueNotificationPush')) {
         );
         $batch_uuid = VNSEEA_PushUuidV4();
         $queued = false;
-        foreach (VNSEEA_GetUserPushTargets($recipient_id, 'onesignal') as $target) {
+        $targets = VNSEEA_GetUserPushTargets($recipient_id, 'onesignal');
+        if (empty($targets)) {
+            VNSEEA_PushDeliveryDebugLog('push_targets_missing', array(
+                'recipient_user_id' => $recipient_id,
+                'provider' => 'onesignal',
+                'delivery_kind' => 'social',
+                'source_type' => 'notification',
+                'source_id' => $notification_id
+            ));
+        }
+        foreach ($targets as $target) {
             $queued = VNSEEA_QueuePushDelivery(
                 $recipient_id,
                 $target,
@@ -908,7 +960,39 @@ if (!function_exists('VNSEEA_SendOneSignalDelivery')) {
     {
         $platform = !empty($delivery['platform']) ? $delivery['platform'] : 'android';
         $config = VNSEEA_OneSignalConfigForPlatform($platform);
+        $debug_context = array(
+            'delivery_id' => !empty($delivery['id']) ? (int)$delivery['id'] : 0,
+            'recipient_user_id' => !empty($delivery['recipient_user_id'])
+                ? (int)$delivery['recipient_user_id']
+                : 0,
+            'platform' => $platform,
+            'delivery_kind' => !empty($delivery['delivery_kind'])
+                ? (string)$delivery['delivery_kind']
+                : '',
+            'source_type' => !empty($delivery['source_type'])
+                ? (string)$delivery['source_type']
+                : '',
+            'source_id' => !empty($delivery['source_id'])
+                ? (int)$delivery['source_id']
+                : 0,
+            'token_suffix' => !empty($delivery['token'])
+                ? substr((string)$delivery['token'], -8)
+                : '',
+            'app_id_suffix' => !empty($config['app_id'])
+                ? substr((string)$config['app_id'], -8)
+                : '',
+            'app_id_present' => !empty($config['app_id']) ? 1 : 0,
+            'api_key_present' => !empty($config['api_key']) ? 1 : 0
+        );
         if (empty($config['app_id']) || empty($config['api_key'])) {
+            VNSEEA_PushDeliveryDebugLog(
+                'onesignal_delivery_response',
+                array_merge($debug_context, array(
+                    'accepted' => 0,
+                    'http_status' => 0,
+                    'error' => 'onesignal_not_configured'
+                ))
+            );
             return array('accepted' => false, 'terminal' => true, 'error' => 'onesignal_not_configured');
         }
 
@@ -935,6 +1019,7 @@ if (!function_exists('VNSEEA_SendOneSignalDelivery')) {
             $request['ios_sound'] = 'app_notification_sound.mp3';
         }
 
+        VNSEEA_PushDeliveryDebugLog('onesignal_delivery_attempt', $debug_context);
         $ch = curl_init('https://api.onesignal.com/notifications');
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json; charset=utf-8',
@@ -953,7 +1038,20 @@ if (!function_exists('VNSEEA_SendOneSignalDelivery')) {
         curl_close($ch);
 
         $decoded = json_decode((string)$response, true);
-        if ($http_status >= 200 && $http_status < 300 && !empty($decoded['id'])) {
+        $accepted = $http_status >= 200 && $http_status < 300 && !empty($decoded['id']);
+        VNSEEA_PushDeliveryDebugLog(
+            'onesignal_delivery_response',
+            array_merge($debug_context, array(
+                'accepted' => $accepted ? 1 : 0,
+                'http_status' => $http_status,
+                'curl_error' => $curl_error,
+                'provider_id_suffix' => !empty($decoded['id'])
+                    ? substr((string)$decoded['id'], -8)
+                    : '',
+                'response_preview' => substr((string)$response, 0, 500)
+            ))
+        );
+        if ($accepted) {
             return array(
                 'accepted' => true,
                 'terminal' => false,
