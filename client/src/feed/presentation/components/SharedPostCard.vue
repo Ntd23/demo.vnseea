@@ -1,3 +1,4 @@
+<!-- English description: Renders the original post embedded inside a shared feed post. -->
 <template>
   <article class="shared-post-card">
     <div class="shared-post-card__header">
@@ -18,7 +19,21 @@
       </div>
     </div>
 
-    <p v-if="post.text" class="shared-post-card__text">{{ post.text }}</p>
+    <p v-if="post.text" class="shared-post-card__text">
+      <template v-for="segment in postTextSegments" :key="segment.key">
+        <NuxtLink
+          v-if="segment.isHashtag"
+          :to="createHashtagPath(segment.hashtag)"
+          class="shared-post-card__hashtag"
+          @click.stop
+        >
+          {{ segment.text }}
+        </NuxtLink>
+        <span v-else :class="{ 'shared-post-card__mention': segment.isMention }">
+          {{ segment.text }}
+        </span>
+      </template>
+    </p>
     <FeedPostMediaGrid
       v-if="post.mediaItems.length"
       class="shared-post-card__media"
@@ -29,12 +44,18 @@
 </template>
 
 <script setup lang="ts">
+import { createHashtagPath } from "../../application/composables/useHashtagData"
+import { createPostTextMentionSegments } from "../../application/utils/feed-mentions"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 import FeedPostMediaGrid from "./PostMediaGrid.vue"
 
 const props = defineProps<{
   post: FeedPostRecord
 }>()
+
+const postTextSegments = computed(() =>
+  createPostTextMentionSegments(props.post.text, props.post.mentions ?? []),
+)
 
 const authorInitials = computed(() => {
   const initials = props.post.author
@@ -105,10 +126,24 @@ const authorInitials = computed(() => {
 
 .shared-post-card__text {
   padding: 10px 12px 0;
-  color: var(--text-primary);;
+  color: var(--text-primary);
   font-size: 13.5px;
   line-height: 1.65;
   white-space: pre-line;
+}
+
+.shared-post-card__mention,
+.shared-post-card__hashtag {
+  color: var(--bg-brand);
+  font-weight: 600;
+}
+
+.shared-post-card__hashtag {
+  text-decoration: none;
+}
+
+.shared-post-card__hashtag:hover {
+  text-decoration: underline;
 }
 
 .shared-post-card__media {

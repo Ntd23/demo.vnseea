@@ -48,7 +48,6 @@
                 <p v-if="identityLabel" class="mm__admin-subtitle">{{ identityLabel }}</p>
               </div>
             </div>
-            <div class="mm__admin-icon">VN</div>
           </div>
 
           <div v-if="showStats" class="mm__stats">
@@ -224,6 +223,7 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.search', icon: 'i-ph-map-pin-fill', to: appRoutes.searchNearby },
   { label: 'navigation.mobileMenu.mainNav.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
   { label: 'navigation.mobileMenu.mainNav.wallet', icon: 'i-ph-wallet-fill', to: appRoutes.wallet },
+  { label: 'navigation.leftSidebar.items.live', icon: 'i-ph-broadcast-fill', to: appRoutes.live },
   { label: 'navigation.mobileMenu.mainNav.pages', icon: 'i-ph-flag-fill', to: '/pages' },
   { label: 'navigation.mobileMenu.mainNav.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
   { label: 'navigation.mobileMenu.mainNav.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },

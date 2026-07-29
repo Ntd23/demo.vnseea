@@ -6,9 +6,11 @@ export type FeedMentionSegment = {
   key: string
   text: string
   isMention: boolean
+  isHashtag: boolean
+  hashtag: string
 }
 
-const mentionPattern = /(@[\p{L}\p{N}_][\p{L}\p{N}_.-]*)/gu
+const feedTextTokenPattern = /(@[\p{L}\p{N}_][\p{L}\p{N}_.-]*|#[\p{L}\p{N}_][\p{L}\p{N}_-]*)/gu
 
 export function normalizeFeedMentionSearchText(value: string) {
   return value
@@ -32,14 +34,20 @@ export function createMentionSegments(
   const highlightUnknownMentions = options.highlightUnknownMentions ?? true
 
   return text
-    .split(mentionPattern)
+    .split(feedTextTokenPattern)
     .filter(segment => segment.length > 0)
-    .map<FeedMentionSegment>((segment, index) => ({
-      key: `${index}:${segment}`,
-      text: segment,
-      isMention: segment.startsWith("@")
-        && (labelSet.has(segment.toLowerCase()) || (labelSet.size === 0 && highlightUnknownMentions)),
-    }))
+    .map<FeedMentionSegment>((segment, index) => {
+      const isHashtag = segment.startsWith("#")
+
+      return {
+        key: `${index}:${segment}`,
+        text: segment,
+        isMention: segment.startsWith("@")
+          && (labelSet.has(segment.toLowerCase()) || (labelSet.size === 0 && highlightUnknownMentions)),
+        isHashtag,
+        hashtag: isHashtag ? segment.slice(1) : "",
+      }
+    })
 }
 
 export function getFeedMentionDisplayName(mention: FeedPostMention) {

@@ -170,7 +170,12 @@
       <div v-if="!showProductForm" class="publisher__textarea-shell" :class="{ 'publisher__textarea-shell--colored': Boolean(activeColorOption) }" :style="activeColorOption ? { background: activeColorOption.bg, color: activeColorOption.text } : {}">
         <div class="publisher__textarea-highlight" aria-hidden="true">
           <template v-for="segment in highlightedDraftSegments" :key="segment.key">
-            <span :class="{ 'publisher__textarea-mention': segment.isMention }">{{ segment.text }}</span>
+            <span
+              :class="{
+                'publisher__textarea-mention': segment.isMention,
+                'publisher__textarea-hashtag': segment.isHashtag,
+              }"
+            >{{ segment.text }}</span>
           </template>
         </div>
         <textarea
@@ -1151,6 +1156,8 @@ function goToLive() {
   font-size: 14.5px;
   line-height: 1.7;
   font-family: inherit;
+  font-weight: inherit;
+  letter-spacing: 0;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -1158,26 +1165,27 @@ function goToLive() {
 .publisher__textarea-highlight {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 14px;
-  color: transparent;
+  color: var(--text-primary);
 }
 
-.publisher__textarea-mention {
+.publisher__textarea-mention,
+.publisher__textarea-hashtag {
   color: var(--bg-brand);
 }
 
 .publisher__textarea {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   resize: none;
   border-radius: 14px;
   border: 1px solid var(--border-default);
   background: transparent;
-  color: var(--text-primary);
+  color: transparent;
   caret-color: var(--text-primary);
   outline: none;
   text-decoration: none;

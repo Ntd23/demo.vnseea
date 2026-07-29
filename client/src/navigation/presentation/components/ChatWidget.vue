@@ -378,6 +378,14 @@
                   :style="{ backgroundColor: tag.color || 'var(--icon-secondary)' }"
                 />
                 <span
+                  v-if="(contact.tags?.length || 0) > 2"
+                  class="chat-widget__contact-tag-more"
+                  :title="buildHiddenContactTagsTitle(contact.tags)"
+                  :aria-label="buildHiddenContactTagsAriaLabel(contact.tags)"
+                >
+                  +{{ (contact.tags?.length || 0) - 2 }}
+                </span>
+                <span
                   v-if="!contact.tags?.length"
                   class="chat-widget__contact-presence-dot"
                   :class="{ 'chat-widget__contact-presence-dot--online': contact.isOnline }"
@@ -1109,6 +1117,16 @@ function canSubmitMiniMessage(session: MiniChatSessionView) {
 
 function isSendRecipientSelected(userId: number) {
   return selectedSendRecipientIds.value.includes(userId)
+}
+
+function buildHiddenContactTagsTitle(tags?: Array<{ name: string }>) {
+  return tags?.slice(2).map(tag => tag.name).join(", ") || ""
+}
+
+function buildHiddenContactTagsAriaLabel(tags?: Array<{ name: string }>) {
+  const hiddenTags = tags?.slice(2) || []
+
+  return `${hiddenTags.length} ${t("pages.messagesPage.label")}: ${hiddenTags.map(tag => tag.name).join(", ")}`
 }
 
 function updateAllVisibleSendRecipients(checked: boolean | "indeterminate") {
@@ -2641,6 +2659,22 @@ watch(miniChatAutoOpenVersion, (version) => {
   height: 18px;
   border: 1px solid var(--border-light);
   border-radius: 5px;
+}
+
+.chat-widget__contact-tag-more {
+  display: inline-flex;
+  min-width: 20px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  background: var(--bg-muted);
+  padding: 0 4px;
+  color: var(--text-secondary);
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  line-height: 1;
 }
 
 .chat-widget__contact-presence-dot {
