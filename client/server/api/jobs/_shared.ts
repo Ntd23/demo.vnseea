@@ -50,6 +50,14 @@ type BackendJobsSearchResponse = {
   }
 }
 
+type BackendJobDetailResponse = {
+  api_status?: number | string
+  data?: BackendEntity
+  errors?: {
+    error_text?: string
+  }
+}
+
 type BackendJobPostResponse = {
   api_status?: number | string
   post_data?: BackendEntity
@@ -462,6 +470,65 @@ export async function fetchJobDetailByPostId(
 
   return {
     job,
+    currentUser: {
+      name: asString(meta.current_user?.name),
+      email: asString(meta.current_user?.email),
+      phoneNumber: asString(meta.current_user?.phone_number),
+      location: asString(meta.current_user?.address),
+      lat: asNullableNumber(meta.current_user?.lat),
+      lng: asNullableNumber(meta.current_user?.lng),
+    },
+  }
+}
+
+export async function fetchJobDetailByJobId(
+  event: H3Event,
+  jobId: number,
+): Promise<JobDetailRecord | null> {
+  if (!Number.isInteger(jobId) || jobId < 1) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Invalid job id.",
+    })
+  }
+
+  const currentUser = await getBackendCurrentUser(event)
+  const client = createBackendApiClient(event)
+  const baseUrl = getBackendWebBaseUrl(event)
+  const [metaResponse, detailResponse] = await Promise.all([
+    client.get<BackendJobsMetaResponse>("jobs-meta"),
+    client.post<BackendJobDetailResponse, Record<string, unknown>>("job", {
+      type: "detail",
+      job_id: jobId,
+    }),
+  ])
+  const meta = assertBackendApiSuccess(metaResponse, "Unable to load jobs metadata.")
+  const detail = assertBackendApiSuccess(detailResponse, "Unable to load job detail.")
+  const entity = asRecord(detail.data)
+
+  if (!asNumber(entity.id)) {
+    return null
+  }
+
+  const categories = normalizeOptions(meta.categories)
+  const types = normalizeOptions(meta.types)
+  const salaryDates = normalizeOptions(meta.salary_dates)
+  const currencies = (meta.currencies ?? [])
+    .map(item => ({
+      value: asString(item.value),
+      symbol: asString(item.symbol) || asString(item.value),
+    }))
+    .filter(item => item.value)
+
+  return {
+    job: mapJobRecord(entity, {
+      currentUserId: asNumber(currentUser.user_id),
+      categoryLabels: Object.fromEntries(categories.map(item => [item.value, item.label])),
+      typeLabels: Object.fromEntries(types.map(item => [item.value, item.label])),
+      salaryDateLabels: Object.fromEntries(salaryDates.map(item => [item.value, item.label])),
+      currencySymbols: Object.fromEntries(currencies.map(item => [item.value, item.symbol])),
+      baseUrl,
+    }),
     currentUser: {
       name: asString(meta.current_user?.name),
       email: asString(meta.current_user?.email),

@@ -12,6 +12,7 @@ import type {
 
 export interface JobsRepository {
   getCatalog(input?: JobCatalogQuery): Promise<JobsCatalogRecord>
+  getDetailByJobId(jobId: number): Promise<JobDetailRecord | null>
   getDetailByPostId(postId: number): Promise<JobDetailRecord | null>
   getApplicantsByPostId(postId: number): Promise<JobApplicantRecord[]>
   applyToJob(input: JobApplicationDraft): Promise<JobMutationResult>

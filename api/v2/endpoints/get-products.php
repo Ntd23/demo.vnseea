@@ -12,6 +12,7 @@ $products = array();
 
 $options['limit'] = (!empty($_POST['limit'])) ? (int) $_POST['limit'] : 35;
 $options['user_id'] = (!empty($_POST['user_id'])) ? (int) $_POST['user_id'] : 0;
+$options['page_id'] = (!empty($_POST['page_id'])) ? (int) $_POST['page_id'] : 0;
 $options['after_id'] = (!empty($_POST['offset'])) ? (int) $_POST['offset'] : 0;
 $options['c_id'] = (!empty($_POST['category_id'])) ? (int) $_POST['category_id'] : 0;
 $options['sub_id'] = (!empty($_POST['sub_id'])) ? (int) $_POST['sub_id'] : 0;

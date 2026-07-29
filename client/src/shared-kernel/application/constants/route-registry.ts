@@ -64,6 +64,7 @@ export const appRoutes = {
   orderDetail: (id: string | number) => `/order/${encodeSegment(id)}`,
   customerOrder: (id: string | number) => `/customer_order/${encodeSegment(id)}`,
   jobs: "/jobs",
+  jobDetail: (id: string | number) => `/jobs/${encodeSegment(id)}`,
   funding: "/funding",
   createFunding: "/create_funding",
   showFund: (id: string | number) => `/show_fund/${encodeSegment(id)}`,

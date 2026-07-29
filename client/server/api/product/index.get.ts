@@ -14,6 +14,8 @@ export default defineEventHandler(async (event) => {
   const currentUserId = await getBackendCurrentUserId(event)
   const sellerUserIdValue = Array.isArray(query.sellerUserId) ? query.sellerUserId[0] : query.sellerUserId
   const sellerUserId = String(sellerUserIdValue || "")
+  const pageIdValue = Array.isArray(query.pageId) ? query.pageId[0] : query.pageId
+  const pageId = String(pageIdValue || "")
   const sort = String(query.sort || "")
   const distanceValue = Array.isArray(query.distance) ? query.distance[0] : query.distance
   const parsedDistance = Number(distanceValue)
@@ -31,6 +33,7 @@ export default defineEventHandler(async (event) => {
   const mineValue = Array.isArray(query.mine) ? query.mine[0] : query.mine
   const mineOnly = ["1", "true"].includes(String(mineValue ?? "0").toLowerCase())
   const normalizedSellerUserId = /^\d+$/.test(sellerUserId) ? sellerUserId : ""
+  const normalizedPageId = /^\d+$/.test(pageId) ? pageId : ""
 
   if (mineOnly && !currentUserId) {
     throw createError({
@@ -44,6 +47,7 @@ export default defineEventHandler(async (event) => {
     action: currentUserId ? undefined : "products",
     limit,
     user_id: mineOnly ? currentUserId : normalizedSellerUserId || undefined,
+    page_id: normalizedPageId || undefined,
     offset: query.offset,
     keyword: query.keyword || query.q,
     category_id: /^\d+$/.test(category) ? category : undefined,

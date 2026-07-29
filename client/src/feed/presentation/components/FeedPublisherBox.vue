@@ -225,7 +225,11 @@
           <Icon name="i-ph-shopping-cart-bold" class="h-5 w-5 mr-1 text-orange-500" />
           {{ locale === "vi" ? "Đăng bán sản phẩm" : "List a Product for Sale" }}
         </p>
-        <NewProductPage embedded @created="handleEmbeddedProductCreated" />
+        <NewProductPage
+          embedded
+          :page-id="pageId"
+          @created="handleEmbeddedProductCreated"
+        />
       </div>
 
       <div v-if="!showProductForm && showMentionSuggestions" class="publisher__mention-popover">

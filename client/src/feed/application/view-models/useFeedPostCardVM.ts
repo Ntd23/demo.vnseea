@@ -471,8 +471,14 @@ export function useFeedPostCardVM(
 
   async function refreshComments() {
     const currentPost = post.value
+    const currentPostId = Number(currentPost?.id ?? 0)
 
-    if (!currentPost || loadingComments.value) {
+    if (
+      !currentPost
+      || !Number.isInteger(currentPostId)
+      || currentPostId < 1
+      || loadingComments.value
+    ) {
       return
     }
 
@@ -480,7 +486,7 @@ export function useFeedPostCardVM(
 
     try {
       const comments = await repository.getPostComments({
-        postId: currentPost.id,
+        postId: currentPostId,
         limit: 50,
         offset: 0,
       })

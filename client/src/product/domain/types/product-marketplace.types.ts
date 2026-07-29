@@ -89,6 +89,7 @@ export type ProductMarketplaceQuery = {
   offset?: number | string
   mine?: boolean
   sellerUserId?: number | string
+  pageId?: number | string
 }
 
 export type ProductCategoryOption = {

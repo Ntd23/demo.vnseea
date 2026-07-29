@@ -392,7 +392,8 @@ function Wo_PublicContent_Products()
         'c_id' => Wo_PublicContent_Read('category_id', 0),
         'sub_id' => Wo_PublicContent_Read('sub_id', 0),
         'order_by' => Wo_PublicContent_Read('order_by', ''),
-        'user_id' => Wo_PublicContent_Read('user_id', 0)
+        'user_id' => Wo_PublicContent_Read('user_id', 0),
+        'page_id' => Wo_PublicContent_Read('page_id', 0)
     );
 
     if (is_numeric($requested_distance) && (float) $requested_distance > 0 && $has_request_coordinates) {
@@ -418,6 +419,9 @@ function Wo_PublicContent_Products()
     }
     if (empty($filter['user_id']) || !is_numeric($filter['user_id'])) {
         unset($filter['user_id']);
+    }
+    if (empty($filter['page_id']) || !is_numeric($filter['page_id'])) {
+        unset($filter['page_id']);
     }
 
     return array_map('Wo_PublicContent_ProductPublicData', Wo_GetProducts($filter));
