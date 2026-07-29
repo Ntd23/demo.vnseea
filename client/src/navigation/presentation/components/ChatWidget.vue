@@ -83,20 +83,44 @@
           <div class="chat-widget__recipient-box" :class="{ 'chat-widget__recipient-box--empty': selectedSendRecipients.length === 0 }">
             <UListbox
               v-if="selectedSendRecipients.length > 0"
-              v-model="selectedSendRecipientIdModel"
               :items="selectedSendRecipientListboxItems"
               value-key="value"
               multiple
-              selected-icon="i-ph-x-bold"
               class="chat-widget__recipient-listbox"
               :ui="{
-                root: 'w-full min-w-0',
-                content: 'max-h-[108px] overflow-y-auto',
-                item: 'min-w-0',
-                itemWrapper: 'min-w-0',
-                itemLabel: 'truncate',
+                root: 'w-full min-w-0 max-w-full overflow-hidden',
+                content: 'w-full min-w-0 max-h-[108px] overflow-x-hidden overflow-y-auto overscroll-contain',
+                item: 'w-full min-w-0 max-w-full overflow-hidden',
               }"
-            />
+            >
+              <template #item="{ item }">
+                <div class="chat-widget__selected-recipient-row">
+                  <UUser
+                    :name="item.label"
+                    :description="item.description"
+                    :avatar="item.avatar"
+                    size="sm"
+                    class="min-w-0 w-full"
+                    :ui="{
+                      wrapper: 'min-w-0',
+                      name: 'truncate text-sm font-semibold text-[var(--text-primary)]',
+                      description: 'truncate text-xs text-[var(--text-secondary)]',
+                    }"
+                  />
+                  <UButton
+                    type="button"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    icon="i-ph-x-bold"
+                    :aria-label="`${$t('pages.messagesPage.remove')}: ${item.label}`"
+                    class="chat-widget__remove-recipient"
+                    @pointerdown.stop
+                    @click.stop="updateSendRecipientSelection(item.value, false)"
+                  />
+                </div>
+              </template>
+            </UListbox>
             <span v-else class="chat-widget__recipient-empty">{{ $t("navigation.chatWidget.noRecipientSelected") }}</span>
           </div>
 
@@ -213,15 +237,17 @@
 
           <UListbox
             v-else-if="sendCandidates.length > 0"
-            v-model="selectedSendRecipientIdModel"
             :items="sendCandidateListboxItems"
             value-key="value"
             multiple
             class="chat-widget__users-listbox"
             :ui="{
-              root: 'gap-2',
-              item: 'rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--border-light)] data-[state=checked]:bg-[var(--bg-surface-active)]',
+              root: 'w-full min-w-0 max-w-full overflow-hidden',
+              content: 'max-h-[286px] overflow-x-hidden overflow-y-auto overscroll-contain',
+              item: 'w-full min-w-0 max-w-full overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--border-light)] data-[state=checked]:bg-[var(--bg-surface-active)]',
             }"
+            @wheel.stop
+            @touchmove.stop
           >
             <template #item="{ item }">
               <div class="chat-widget__candidate-row">
@@ -973,6 +999,7 @@ const selectedSendRecipientListboxItems = computed(() => selectedSendRecipients.
   label: recipient.name,
   description: buildPresenceLabel(recipient),
   value: recipient.userId ?? 0,
+  onSelect: (event: Event) => event.preventDefault(),
   avatar: {
     src: recipient.avatarUrl,
     alt: recipient.name,
@@ -986,11 +1013,15 @@ const sendCandidateListboxItems = computed(() => sendCandidates.value
     avatarUrl: candidate.avatarUrl,
     online: candidate.isOnline,
     contact: candidate,
+    onSelect: (event: Event) => {
+      event.preventDefault()
+      const userId = candidate.userId ?? 0
+
+      if (userId > 0) {
+        updateSendRecipientSelection(userId, !isSendRecipientSelected(userId))
+      }
+    },
   })))
-const selectedSendRecipientIdModel = computed<number[]>({
-  get: () => selectedSendRecipientIds.value,
-  set: userIds => setSelectedSendRecipientIds(userIds),
-})
 
 type MiniChatSessionView = (typeof miniChatSessions)["value"][number]
 
@@ -2126,9 +2157,13 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__send-scroll {
+  width: 100%;
   min-height: 0;
+  min-width: 0;
   flex: 1;
+  overflow-x: hidden;
   overflow-y: auto;
+  overflow-anchor: none;
   overscroll-behavior: contain;
   padding: 12px;
   scrollbar-width: thin;
@@ -2146,6 +2181,10 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__send-card {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   background: var(--bg-surface);
@@ -2160,7 +2199,14 @@ watch(miniChatAutoOpenVersion, (version) => {
 .chat-widget__compose-card,
 .chat-widget__users-card {
   display: grid;
+  min-width: 0;
   gap: 10px;
+}
+
+.chat-widget__compose-card > *,
+.chat-widget__users-card > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .chat-widget__section-title {
@@ -2205,6 +2251,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 12px;
   margin-bottom: 8px;
@@ -2212,6 +2259,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__selected-count {
   display: inline-flex;
+  max-width: 100%;
   min-height: 22px;
   flex-shrink: 0;
   align-items: center;
@@ -2223,15 +2271,23 @@ watch(miniChatAutoOpenVersion, (version) => {
   font-size: 10px;
   font-weight: var(--weight-bold);
   line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .chat-widget__select-all {
+  max-width: 100%;
   width: fit-content;
   flex-shrink: 0;
 }
 
 .chat-widget__recipient-box {
-  min-height: 44px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: 122px;
+  min-height: 122px;
+  box-sizing: border-box;
+  overflow: hidden;
   margin-top: 10px;
   border: 1px solid var(--border-light);
   border-radius: 12px;
@@ -2242,6 +2298,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 .chat-widget__recipient-box--empty {
   display: flex;
   align-items: center;
+  justify-content: center;
   border-style: dashed;
   background: var(--bg-muted);
   padding: 10px 12px;
@@ -2249,7 +2306,21 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__recipient-listbox {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   scrollbar-gutter: stable;
+}
+
+.chat-widget__selected-recipient-row {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-widget__remove-recipient {
+  flex: 0 0 auto;
 }
 
 .chat-widget__recipient-empty {
@@ -2329,17 +2400,22 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__users-listbox {
   width: 100%;
-  max-height: 286px;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
+  min-width: 0;
+  max-width: 100%;
 }
 
-.chat-widget__users-listbox::-webkit-scrollbar {
+.chat-widget__users-listbox :deep([data-slot="content"]) {
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  touch-action: pan-y;
+}
+
+.chat-widget__users-listbox :deep([data-slot="content"]::-webkit-scrollbar) {
   width: 5px;
 }
 
-.chat-widget__users-listbox::-webkit-scrollbar-thumb {
+.chat-widget__users-listbox :deep([data-slot="content"]::-webkit-scrollbar-thumb) {
   border-radius: 999px;
   background: var(--color-secondary-300);
 }

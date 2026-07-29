@@ -892,7 +892,12 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.08) 42%, rgba(0, 0, 0, 0.68) 100%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-media) 42%, transparent) 0%,
+    color-mix(in srgb, var(--bg-media) 8%, transparent) 42%,
+    color-mix(in srgb, var(--bg-media) 68%, transparent) 100%
+  );
   pointer-events: none;
 }
 
@@ -905,7 +910,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   height: 3px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, var(--text-media) 30%, transparent);
 }
 
 .story-create__preview-progress span {
@@ -913,7 +918,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   width: 42%;
   height: 100%;
   border-radius: inherit;
-  background: #ffffff;
+  background: var(--text-media);
 }
 
 .story-create__preview-author {
@@ -926,7 +931,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   min-width: 0;
   align-items: center;
   gap: 10px;
-  color: #ffffff;
+  color: var(--text-media);
 }
 
 .story-create__preview-avatar {
@@ -937,7 +942,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--text-media);
   border-radius: 50%;
   background: var(--bg-brand);
   font-size: 11px;
@@ -967,7 +972,7 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
 .story-create__preview-author-copy small {
   overflow: hidden;
   margin-top: 2px;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--text-media) 80%, transparent);
   font-size: 11px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -990,10 +995,10 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   height: 38px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid color-mix(in srgb, var(--text-media) 30%, transparent);
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.38);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--bg-media) 38%, transparent);
+  color: var(--text-media);
   cursor: pointer;
   backdrop-filter: blur(10px);
   transition: background-color 0.15s ease, transform 0.15s ease;
@@ -1028,26 +1033,26 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   padding: 4px 6px;
   outline: none;
   background: transparent;
-  color: #ffffff;
-  caret-color: #ffffff;
+  color: var(--text-media);
+  caret-color: var(--text-media);
   font-family: inherit;
   font-size: clamp(16px, 2.4vw, 20px);
   font-weight: 800;
   line-height: 1.45;
   text-align: center;
-  text-shadow: 0 2px 7px rgba(0, 0, 0, 0.72);
+  text-shadow: 0 2px 7px color-mix(in srgb, var(--bg-media) 72%, transparent);
 }
 
 .story-create__overlay-input--mention {
-  color: #fde68a;
+  color: var(--color-accent-100);
 }
 
 .story-create__overlay-input::placeholder {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-media-muted);
 }
 
 .story-create__overlay-input--mention::placeholder {
-  color: rgba(253, 230, 138, 0.78);
+  color: color-mix(in srgb, var(--color-accent-100) 78%, transparent);
 }
 
 .story-create__overlay-drag {
@@ -1060,10 +1065,10 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   transform: translateX(-50%);
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid color-mix(in srgb, var(--text-media) 35%, transparent);
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.32);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--bg-media) 32%, transparent);
+  color: var(--text-media);
   cursor: grab;
   backdrop-filter: blur(10px);
 }
