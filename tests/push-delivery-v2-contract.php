@@ -113,6 +113,30 @@ assert_push_v2_contract(
     'delivery service must use the current OneSignal API contract'
 );
 assert_push_v2_contract(
+    strpos($service, 'function VNSEEA_PushDeliveryDebugLog') !== false &&
+        strpos($service, "'push_targets_missing'") !== false &&
+        strpos($service, "'onesignal_delivery_attempt'") !== false &&
+        strpos($service, "'onesignal_delivery_response'") !== false,
+    'new push delivery path must expose target resolution and provider responses in backend diagnostics'
+);
+$target_lookup_start = strpos($service, 'function VNSEEA_GetUserPushTargets');
+$target_lookup_end = strpos(
+    $service,
+    'function VNSEEA_PushDeliveryTargetIsActive',
+    $target_lookup_start
+);
+$target_lookup = substr(
+    $service,
+    $target_lookup_start,
+    $target_lookup_end - $target_lookup_start
+);
+assert_push_v2_contract(
+    strpos($target_lookup, '$has_provider_registration') !== false &&
+        strpos($target_lookup, 'token_row.`provider`=\'{$provider_sql}\'') !== false &&
+        strpos($target_lookup, '$has_installation') === false,
+    'legacy fallback must be suppressed by registration for the requested provider, not by an unrelated VoIP installation'
+);
+assert_push_v2_contract(
     strpos($service, 'CURLOPT_SSL_VERIFYPEER, true') !== false &&
         strpos($service, 'CURLOPT_SSL_VERIFYHOST, 2') !== false,
     'provider requests must verify TLS'
@@ -227,6 +251,22 @@ assert_push_v2_contract(
 );
 
 require_once $root . '/assets/includes/vnseea_push_delivery.php';
+assert_push_v2_contract(
+    function_exists('VNSEEA_ShouldUseLegacyPushFallback'),
+    'provider-scoped legacy fallback helper is missing'
+);
+assert_push_v2_contract(
+    VNSEEA_ShouldUseLegacyPushFallback(false, 0) === true,
+    'legacy token must remain usable until the requested provider is registered'
+);
+assert_push_v2_contract(
+    VNSEEA_ShouldUseLegacyPushFallback(true, 0) === false,
+    'an intentionally inactive provider must not revive a stale legacy token'
+);
+assert_push_v2_contract(
+    VNSEEA_ShouldUseLegacyPushFallback(false, 1) === false,
+    'active registry targets must take precedence over legacy tokens'
+);
 $preview_cases = array(
     'text' => array(array('text' => 'Xin chào'), 'text'),
     'link' => array(array('text' => 'https://vnseea.vn/about'), 'link'),
