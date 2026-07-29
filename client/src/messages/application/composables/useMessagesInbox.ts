@@ -412,14 +412,15 @@ export function useMessagesInbox(
     () => selectedContact.value ? `messages:thread:${selectedContact.value.id}` : "messages:thread:none",
     () => selectedContact.value
       ? repository.getThread(selectedContact.value)
-      : Promise.resolve<MessageThread>({ messages: [], typing: false }),
+      : Promise.resolve<MessageThread>({ messages: [], pinnedMessages: [], typing: false }),
     {
       watch: [selectedContact],
-      default: () => ({ messages: [], typing: false }),
+      default: () => ({ messages: [], pinnedMessages: [], typing: false }),
     },
   )
 
   const messages = computed(() => thread.value?.messages ?? [])
+  const pinnedMessages = computed(() => thread.value?.pinnedMessages ?? [])
   const messageTagLabels = computed(() => messageTags.value?.labels ?? [])
   const isTyping = computed(() => Boolean(thread.value?.typing || remoteTyping.value))
   const inboxPending = computed(() => inboxStatus.value === "pending")
@@ -669,7 +670,7 @@ export function useMessagesInbox(
     }
 
     if (!isSameContact) {
-      thread.value = { messages: [], typing: false }
+      thread.value = { messages: [], pinnedMessages: [], typing: false }
       replyTarget.value = null
     }
 
@@ -807,6 +808,7 @@ export function useMessagesInbox(
       if (buildContactKey(selectedContact.value) === contactKey) {
         thread.value = {
           messages: mergeMessages(messages.value, createdMessages, "append"),
+          pinnedMessages: pinnedMessages.value,
           typing: false,
         }
         remoteTyping.value = false
@@ -970,6 +972,34 @@ export function useMessagesInbox(
     }
   }
 
+  async function toggleThreadMessagePin(message: MessageItem) {
+    const contact = selectedContact.value
+    const pinned = pinnedMessages.value.find(item => item.id === message.id)
+
+    if (!contact || message.isDeleted || message.id <= 0 || (pinned && !pinned.canUnpin)) {
+      return null
+    }
+
+    activeReactionPickerId.value = null
+
+    try {
+      const result = await repository.setMessagePin(contact, {
+        messageId: message.id,
+        pinned: !pinned,
+      })
+      await refreshThread()
+      return result
+    }
+    catch {
+      toast.add({
+        title: t("navigation.chatWidget.pinErrorTitle"),
+        description: t("navigation.chatWidget.pinErrorDescription"),
+        color: "error",
+      })
+      return null
+    }
+  }
+
   async function markAllAsRead() {
     if (isMarkingRead.value) {
       return
@@ -1012,7 +1042,7 @@ export function useMessagesInbox(
       }
       inbox.value = (inbox.value ?? []).filter(item => item.id !== contact.id)
       selectedContactId.value = filteredContacts.value[0]?.id ?? ""
-      thread.value = { messages: [], typing: false }
+      thread.value = { messages: [], pinnedMessages: [], typing: false }
       replyTarget.value = null
       remoteTyping.value = false
       activeReactionPickerId.value = null
@@ -1210,6 +1240,7 @@ export function useMessagesInbox(
       if (olderThread.messages.length > 0) {
         thread.value = {
           messages: mergeMessages(messages.value, olderThread.messages, "prepend"),
+          pinnedMessages: thread.value?.pinnedMessages ?? olderThread.pinnedMessages,
           typing: Boolean(thread.value?.typing),
         }
       }
@@ -1233,6 +1264,7 @@ export function useMessagesInbox(
     createTagLabel,
     deleteSelectedConversation,
     deleteThreadMessage,
+    toggleThreadMessagePin,
     deleteTagLabel,
     updateContactTags,
     isDeletingConversation,
@@ -1244,6 +1276,7 @@ export function useMessagesInbox(
     loadOlderMessages,
     markAllAsRead,
     messages,
+    pinnedMessages,
     messageTagLabels,
     multiFeedbackMessage,
     multiFeedbackTone,

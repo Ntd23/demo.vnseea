@@ -35,6 +35,7 @@ export type MessageContact = {
   hasFollowRelationship?: boolean
   relationshipActivityAt?: number
   userId?: number
+  chatId?: number
   groupId?: number
   pageId?: number
   recipientId?: number
@@ -176,6 +177,7 @@ export type MessageItem = {
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
   story?: MessageStoryContext
+  productCard?: MessageProductCard
   sharedPost?: MessageSharedPostCard
   selectedReaction?: FeedStoryReactionType | null
   isDeleted?: boolean
@@ -225,7 +227,15 @@ export type MessageSendDraft = {
 
 export type MessageThread = {
   messages: MessageItem[]
+  pinnedMessages: MessagePinnedItem[]
   typing: boolean
+}
+
+export type MessagePinnedItem = MessageItem & {
+  pinnedAt: number
+  pinnedByUserId: number
+  pinnedByName: string
+  canUnpin: boolean
 }
 
 export type MessageTypingState = {

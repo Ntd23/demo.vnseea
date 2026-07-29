@@ -271,15 +271,39 @@
           >
             <Icon name="i-ph-arrow-bend-up-left-bold" class="h-3.5 w-3.5" />
           </button>
-          <button
-            v-if="canDelete"
-            type="button"
-            class="chat-bubble__message-tool chat-bubble__message-tool--danger"
-            :title="deleteTitle"
-            @click="emit('delete')"
-          >
-            <Icon name="i-ph-trash-duotone" class="h-3.5 w-3.5" />
-          </button>
+          <UPopover v-if="canPin || canDelete" :content="{ side: 'top', align: isMine ? 'end' : 'start', sideOffset: 6 }">
+            <button
+              type="button"
+              class="chat-bubble__message-tool"
+              :title="moreTitle"
+              @click.stop
+            >
+              <Icon name="i-ph-dots-three-vertical-bold" class="h-3.5 w-3.5" />
+            </button>
+
+            <template #content>
+              <div class="chat-bubble__action-menu">
+                <button
+                  v-if="canDelete"
+                  type="button"
+                  class="chat-bubble__action-menu-item chat-bubble__action-menu-item--danger"
+                  @click="emit('delete')"
+                >
+                  <Icon name="i-ph-trash-duotone" />
+                  <span>{{ deleteTitle }}</span>
+                </button>
+                <button
+                  v-if="canPin && (!isPinned || canUnpin)"
+                  type="button"
+                  class="chat-bubble__action-menu-item"
+                  @click="emit('pin')"
+                >
+                  <Icon :name="isPinned ? 'i-ph-push-pin-slash-bold' : 'i-ph-push-pin-bold'" />
+                  <span>{{ isPinned ? unpinTitle : pinTitle }}</span>
+                </button>
+              </div>
+            </template>
+          </UPopover>
         </div>
       </div>
     </div>
@@ -340,7 +364,13 @@ const props = defineProps<{
   reactTitle?: string
   replyTitleLabel?: string
   deleteTitle?: string
+  moreTitle?: string
+  pinTitle?: string
+  unpinTitle?: string
   canDelete?: boolean
+  canPin?: boolean
+  isPinned?: boolean
+  canUnpin?: boolean
   isDeleted?: boolean
   mediaUrl?: string
   mediaName?: string
@@ -369,6 +399,7 @@ const emit = defineEmits<{
   "reply": []
   "open-reply-target": [messageId: number]
   "delete": []
+  "pin": []
 }>()
 
 const { t } = useI18n()
@@ -942,7 +973,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   display: inline-flex;
   position: absolute;
   top: 50%;
-  right: -60px;
+  right: -90px;
   z-index: 50;
   align-items: center;
   gap: 3px;
@@ -988,6 +1019,51 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__message-tool--danger:hover {
   background: color-mix(in srgb, var(--color-error) 12%, var(--bg-surface));
+  color: var(--text-danger);
+}
+
+@media (hover: none) {
+  .chat-bubble__message-tools {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+.chat-bubble__action-menu {
+  display: flex;
+  min-width: 150px;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px;
+}
+
+.chat-bubble__action-menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  padding: 9px 10px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chat-bubble__action-menu-item:hover {
+  background: var(--bg-surface-hover);
+}
+
+.chat-bubble__action-menu-item svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+}
+
+.chat-bubble__action-menu-item--danger {
   color: var(--text-danger);
 }
 

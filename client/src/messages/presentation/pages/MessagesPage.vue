@@ -55,6 +55,7 @@
           :message-sending="isSending"
           :is-typing="isTyping"
           :messages="messages"
+          :pinned-messages="pinnedMessages"
           :thread-key="selectedThreadKey"
           :active-reaction-picker-id="activeReactionPickerId"
           :reply-target="replyTarget"
@@ -78,6 +79,7 @@
           @select-reaction="reactToThreadMessage"
           @reply-message="replyToThreadMessage"
           @delete-message="deleteThreadMessage"
+          @pin-message="toggleThreadMessagePin"
           @clear-reply="clearReplyTarget"
           @start-call="startSelectedContactCall"
           @delete-conversation="deleteSelectedConversation"
@@ -236,6 +238,7 @@ const {
   isUpdatingGroupMembers,
   loadOlderMessages,
   messages,
+  pinnedMessages,
   messageTagLabels,
   multiFeedbackMessage,
   multiFeedbackTone,
@@ -257,6 +260,7 @@ const {
   createTagLabel,
   deleteSelectedConversation,
   deleteThreadMessage,
+  toggleThreadMessagePin,
   deleteTagLabel,
   updateContactTags,
   markAllAsRead,

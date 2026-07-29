@@ -36,6 +36,7 @@ const createThreadQuery = (contact: MessageContact, options?: {
 }) => ({
   type: contact.type,
   userId: contact.userId,
+  chatId: contact.chatId,
   groupId: contact.groupId,
   pageId: contact.pageId,
   recipientId: contact.recipientId,
@@ -158,6 +159,18 @@ export function createApiMessagesRepository(): MessagesRepository {
       }, Record<string, unknown>>(
         apiRoutes.messages.deleteMessage,
         input,
+      )
+    },
+    async setMessagePin(contact, input) {
+      return await client.post<MessageActionResult & {
+        messageId: number
+        pinned: boolean
+      }, Record<string, unknown>>(
+        apiRoutes.messages.pinMessage,
+        {
+          ...createThreadQuery(contact),
+          ...input,
+        },
       )
     },
     async sendMultiMessage(input) {

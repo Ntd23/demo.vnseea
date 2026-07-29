@@ -38,6 +38,13 @@ export interface MessagesRepository {
     deletedTime: string
     deletedByName?: string
   }>
+  setMessagePin(contact: MessageContact, input: {
+    messageId: number
+    pinned: boolean
+  }): Promise<MessageActionResult & {
+    messageId: number
+    pinned: boolean
+  }>
   sendMultiMessage(input: {
     recipientIds: number[]
     text: string

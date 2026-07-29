@@ -12,7 +12,6 @@ import { submitBackendBrowserSession } from "../services/backend-browser-session
 type RegisterFieldName =
   | "firstName"
   | "lastName"
-  | "username"
   | "birthDay"
   | "gender"
   | "email"
@@ -22,7 +21,6 @@ type RegisterFieldName =
 type RegisterValidationError = FormError<RegisterFieldName>
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const USERNAME_REGEX = /^[\w]+$/
 const hasValidLoginIdentity = (value: string) => {
   const normalized = value.trim()
 
@@ -40,13 +38,12 @@ const hasValidLoginIdentity = (value: string) => {
 const createDefaultState = (): RegisterAccountInput => ({
   firstName: "",
   lastName: "",
-  username: "",
   email: "",
   password: "",
   confirmPassword: "",
-  birthDay: null,
-  birthMonth: null,
-  birthYear: null,
+  birthDay: 1,
+  birthMonth: 1,
+  birthYear: 2026,
   gender: "",
   hasExistingStorefront: false,
   acceptTerms: false,
@@ -91,20 +88,8 @@ export function useRegisterPageVM(
       errors.push({ name: "firstName", message: t("pages.registerPage.validationFirstNameRequired") })
     }
 
-    const username = currentState.username?.trim() ?? ""
-
-    if (!username) {
-      errors.push({ name: "username", message: t("pages.registerPage.validationUsernameRequired") })
-    }
-    else if (!USERNAME_REGEX.test(username)) {
-      errors.push({ name: "username", message: t("pages.registerPage.validationUsernamePattern") })
-    }
-    else if (username.length < 5 || username.length > 32) {
-      errors.push({ name: "username", message: t("pages.registerPage.validationUsernameLength") })
-    }
-
     if (!currentState.email.trim()) {
-      errors.push({ name: "email", message: "Enter your email address or phone number." })
+      errors.push({ name: "email", message: t("pages.registerPage.validationEmailOrPhoneRequired") })
     }
     else if (!hasValidLoginIdentity(currentState.email)) {
       errors.push({ name: "email", message: t("pages.registerPage.validationEmailOrPhoneInvalid") })
@@ -144,7 +129,6 @@ export function useRegisterPageVM(
     try {
       const result = await repository.register({
         ...state,
-        username: state.username,
         ref: state.ref || routeReferral.value,
       })
 
@@ -198,7 +182,6 @@ export function useRegisterPageVM(
     () => [
       state.firstName,
       state.lastName,
-      state.username,
       state.email,
       state.password,
       state.confirmPassword,

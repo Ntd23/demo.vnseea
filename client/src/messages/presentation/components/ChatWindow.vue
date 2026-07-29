@@ -123,7 +123,13 @@
         </div>
       </div>
 
+      <MessagesPinnedMessagesBar
+        :pinned-messages="pinnedMessages"
+        @select="messageListRef?.scrollToMessage($event)"
+      />
+
       <MessagesChatMessageList
+        ref="messageListRef"
         :contact-avatar="typingAvatarUrl"
         :contact-name="contact.name"
         :contact-type="contact.type"
@@ -131,6 +137,7 @@
         :is-typing="isTyping"
         :loading-label="loadingLabel"
         :messages="messages"
+        :pinned-messages="pinnedMessages"
         :thread-key="threadKey"
         :active-reaction-picker-id="activeReactionPickerId"
         @load-more="$emit('load-more')"
@@ -139,6 +146,7 @@
         @select-reaction="(messageId, reaction) => $emit('select-reaction', messageId, reaction)"
         @reply-message="$emit('reply-message', $event)"
         @delete-message="$emit('delete-message', $event)"
+        @pin-message="$emit('pin-message', $event)"
       />
 
       <div v-if="productContextPending" class="chat-window-product-context" aria-live="polite">
@@ -289,10 +297,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue"
 import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
-import type { MessageComposerDraft, MessageContact, MessageGroupDetails, MessageItem, MessageProductCard, MessageTabKey } from "../../domain/types/messages.types"
+import type { MessageComposerDraft, MessageContact, MessageGroupDetails, MessageItem, MessagePinnedItem, MessageProductCard, MessageTabKey } from "../../domain/types/messages.types"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import MessagesChatInput from "./ChatInput.vue"
 import MessagesChatMessageList from "./ChatMessageList.vue"
+import MessagesPinnedMessagesBar from "./PinnedMessagesBar.vue"
 
 const props = defineProps<{
   activeTab: MessageTabKey
@@ -305,6 +314,7 @@ const props = defineProps<{
   messageSending?: boolean
   inboxPending?: boolean
   messages: MessageItem[]
+  pinnedMessages: MessagePinnedItem[]
   activeReactionPickerId?: number | null
   replyTarget?: MessageItem | null
   replyTitle?: string
@@ -335,12 +345,14 @@ const emit = defineEmits<{
   "select-reaction": [messageId: number, reaction: FeedStoryReactionType]
   "reply-message": [message: MessageItem]
   "delete-message": [message: MessageItem]
+  "pin-message": [message: MessageItem]
   "clear-reply": []
   "send-product-suggestion": [text: string]
   "dismiss-product-context": []
 }>()
 
 const inputModel = ref("")
+const messageListRef = ref<{ scrollToMessage: (messageId: number) => void } | null>(null)
 const productImageFailed = ref(false)
 
 watch(() => props.productCard?.imageUrl, () => {

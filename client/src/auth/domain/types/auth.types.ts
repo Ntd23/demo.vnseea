@@ -53,7 +53,6 @@ export interface ConfirmLoginResult {
 export interface RegisterAccountInput {
   firstName: string
   lastName: string
-  username?: string
   email: AuthIdentity
   password: string
   confirmPassword: string

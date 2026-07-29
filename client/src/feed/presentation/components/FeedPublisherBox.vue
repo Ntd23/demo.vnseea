@@ -196,12 +196,27 @@
       </div>
 
       <!-- Media Preview Grid -->
-      <div v-if="!showProductForm && mediaPreviews.length > 0" class="publisher__media-previews">
+      <div
+        v-if="!showProductForm && mediaPreviews.length > 0"
+        class="publisher__media-previews"
+        :class="[
+          `publisher__media-previews--count-${Math.min(mediaPreviews.length, 4)}`,
+          { 'publisher__media-previews--multiple': mediaPreviews.length > 1 },
+        ]"
+      >
         <div 
-          v-for="(preview, idx) in mediaPreviews" 
+          v-for="(preview, idx) in visibleMediaPreviews"
           :key="preview.url"
           class="publisher__preview-box"
         >
+          <img
+            v-if="preview.type === 'image' && mediaPreviews.length > 1"
+            :src="preview.url"
+            alt=""
+            class="publisher__preview-backdrop"
+            aria-hidden="true"
+            draggable="false"
+          >
           <img 
             v-if="preview.type === 'image'" 
             :src="preview.url" 
@@ -222,6 +237,13 @@
           >
             <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
           </button>
+          <span
+            v-if="idx === visibleMediaPreviews.length - 1 && hiddenMediaCount > 0"
+            class="publisher__preview-more"
+            aria-hidden="true"
+          >
+            +{{ hiddenMediaCount }}
+          </span>
         </div>
       </div>
 
@@ -498,6 +520,8 @@ const jobComposer = useJobComposerVM(async (postId) => {
   }
 })
 const mediaPreviews = ref<{ url: string; type: "image" | "video"; name: string }[]>([])
+const visibleMediaPreviews = computed(() => mediaPreviews.value.slice(0, 4))
+const hiddenMediaCount = computed(() => Math.max(0, mediaPreviews.value.length - visibleMediaPreviews.value.length))
 
 watch([imageFiles, videoFile], () => {
   mediaPreviews.value.forEach(p => {
@@ -1579,11 +1603,41 @@ function goToLive() {
 }
 
 .publisher__media-previews {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: grid;
+  gap: 6px;
   margin-top: 10px;
   padding: 0 4px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.publisher__media-previews--count-1 {
+  grid-template-columns: 1fr;
+}
+
+.publisher__media-previews--multiple {
+  height: clamp(240px, 42vw, 360px);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.publisher__media-previews--count-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.publisher__media-previews--count-2 .publisher__preview-box {
+  grid-row: 1 / -1;
+}
+
+.publisher__media-previews--count-3 {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
+}
+
+.publisher__media-previews--count-3 .publisher__preview-box:first-child {
+  grid-row: 1 / -1;
+}
+
+.publisher__media-previews--count-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .publisher__preview-box {
@@ -1591,7 +1645,6 @@ function goToLive() {
   width: 100%;
   max-height: 380px;
   aspect-ratio: 16 / 9;
-  border-radius: 14px;
   background: #0f172a;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
@@ -1601,10 +1654,55 @@ function goToLive() {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+.publisher__media-previews--count-1 .publisher__preview-box {
+  border-radius: 14px;
+}
+
+.publisher__media-previews--multiple .publisher__preview-box {
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: auto;
+}
+
 .publisher__preview-content {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.publisher__preview-backdrop {
+  position: absolute;
+  inset: -14px;
+  z-index: 0;
+  width: calc(100% + 28px);
+  height: calc(100% + 28px);
+  object-fit: cover;
+  opacity: 0.42;
+  filter: blur(16px) saturate(0.9);
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+.publisher__media-previews--multiple .publisher__preview-content {
+  object-fit: contain;
+}
+
+.publisher__preview-more {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.62);
+  color: #ffffff;
+  font-size: clamp(28px, 5vw, 46px);
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  pointer-events: none;
 }
 
 .publisher__preview-remove-btn {
@@ -1629,6 +1727,12 @@ function goToLive() {
 .publisher__preview-remove-btn:hover {
   background: rgba(15, 23, 42, 0.85);
   transform: scale(1.05);
+}
+
+@media (max-width: 640px) {
+  .publisher__media-previews--multiple {
+    height: clamp(220px, 64vw, 320px);
+  }
 }
 
 .publisher__audience-dropdown {
