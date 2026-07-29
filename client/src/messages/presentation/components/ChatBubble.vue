@@ -170,19 +170,37 @@
           </p>
 
           <div v-if="mediaUrl" :class="text || callLog ? 'mt-2.5' : ''">
-            <NuxtImg
+            <button
               v-if="mediaType === 'image' || mediaType === 'gif'"
-              :src="mediaUrl"
-              :alt="mediaName || text || 'Message media'"
-              class="max-h-[360px] rounded-[10px] border border-[var(--border-light)] bg-[var(--bg-surface)] object-contain p-1"
-            />
-            <video
+              type="button"
+              class="chat-bubble__media-trigger"
+              :aria-label="t('pages.messagesPage.attachmentLabel')"
+              @click.stop="openMediaViewer"
+            >
+              <NuxtImg
+                :src="mediaUrl"
+                :alt="mediaName || text || 'Message media'"
+                class="max-h-[360px] rounded-[10px] border border-[var(--border-light)] bg-[var(--bg-surface)] object-contain p-1"
+              />
+            </button>
+            <button
               v-else-if="mediaType === 'video'"
-              :src="mediaUrl"
-              class="max-h-[360px] rounded-[10px]"
-              controls
-              playsinline
-            />
+              type="button"
+              class="chat-bubble__media-trigger chat-bubble__video-trigger"
+              :aria-label="t('pages.messagesPage.video')"
+              @click.stop="openMediaViewer"
+            >
+              <video
+                :src="mediaUrl"
+                class="max-h-[360px] rounded-[10px]"
+                muted
+                playsinline
+                preload="metadata"
+              />
+              <span class="chat-bubble__video-play" aria-hidden="true">
+                <Icon name="i-ph-play-fill" />
+              </span>
+            </button>
             <audio
               v-else-if="mediaType === 'audio' || mediaType === 'record'"
               :src="mediaUrl"
@@ -265,6 +283,15 @@
         </div>
       </div>
     </div>
+
+    <MessageMediaViewer
+      v-if="previewableMediaType"
+      :open="mediaViewerOpen"
+      :src="mediaUrl || ''"
+      :type="previewableMediaType"
+      :alt="mediaName || text"
+      @close="mediaViewerOpen = false"
+    />
   </div>
 </template>
 
@@ -279,6 +306,7 @@ import type {
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessageLocationMeta } from "../../application/utils/message-location"
 import MessageLocationCard from "./MessageLocationCard.vue"
+import MessageMediaViewer from "./MessageMediaViewer.vue"
 import MessageSharedPostCard from "./MessageSharedPostCard.vue"
 import StoryMessageCard from "./StoryMessageCard.vue"
 
@@ -346,6 +374,12 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const currentAuthUserStore = useCurrentAuthUserStore()
 const productImageFailed = ref(false)
+const mediaViewerOpen = ref(false)
+const previewableMediaType = computed(() =>
+  props.mediaType === "image" || props.mediaType === "gif" || props.mediaType === "video"
+    ? props.mediaType
+    : null,
+)
 const locationAvatarUrl = computed(() =>
   (props.isMine ? currentAuthUserStore.user?.avatarUrl : props.avatar)
   || "",
@@ -354,6 +388,16 @@ const locationAvatarUrl = computed(() =>
 watch(() => props.productCard?.imageUrl, () => {
   productImageFailed.value = false
 })
+
+watch(() => props.mediaUrl, () => {
+  mediaViewerOpen.value = false
+})
+
+function openMediaViewer() {
+  if (!props.mediaUrl || !previewableMediaType.value) return
+
+  mediaViewerOpen.value = true
+}
 
 const isMissedCallLog = computed(() => {
   if (!props.callLog) {
@@ -962,6 +1006,56 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   padding: 5px 7px;
   box-shadow: var(--shadow-lg);
   transform: none;
+}
+
+.chat-bubble__media-trigger {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  padding: 0;
+  cursor: zoom-in;
+}
+
+.chat-bubble__media-trigger img,
+.chat-bubble__media-trigger video {
+  display: block;
+  max-width: 100%;
+}
+
+.chat-bubble__media-trigger:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--bg-brand) 58%, #fff);
+  outline-offset: 3px;
+}
+
+.chat-bubble__video-trigger {
+  background: #000;
+}
+
+.chat-bubble__video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 255 255 / 40%);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 58%);
+  color: #fff;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 24%);
+  transform: translate(-50%, -50%);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.chat-bubble__media-trigger:hover .chat-bubble__video-play {
+  background: rgb(0 0 0 / 72%);
+  transform: translate(-50%, -50%) scale(1.06);
 }
 
 .chat-bubble--story,

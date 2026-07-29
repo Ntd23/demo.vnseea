@@ -72,10 +72,16 @@
           <button
             class="invite-btn"
             :class="{ 'invite-btn--invited': invitedIds.has(user.id) }"
-            :disabled="invitedIds.has(user.id)"
+            :disabled="invitedIds.has(user.id) || sendingIds.has(user.id)"
             @click="$emit('invite', user.id)"
           >
-            {{ invitedIds.has(user.id) ? $t('pages.pageDetailPage.invites.invitedButton') : $t('pages.pageDetailPage.invites.inviteButton') }}
+            {{
+              sendingIds.has(user.id)
+                ? $t('pages.pageDetailPage.invites.sendingButton')
+                : invitedIds.has(user.id)
+                  ? $t('pages.pageDetailPage.invites.invitedButton')
+                  : $t('pages.pageDetailPage.invites.inviteButton')
+            }}
           </button>
         </div>
       </div>
@@ -92,6 +98,7 @@ defineProps<{
   searchQuery: string
   visibleCandidates: UserRecord[]
   invitedIds: Set<number>
+  sendingIds: Set<number>
 }>()
 
 const emit = defineEmits<{

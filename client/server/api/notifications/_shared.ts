@@ -92,6 +92,10 @@ const normalizeLegacyIndexUrl = (rawUrl: string, item: BackendNotification) => {
 
   if (link === "timeline") {
     const username = asString(params.get("u"))
+    if (asNumber(item.page_id) > 0) {
+      return username ? appRoutes.pageDetail(username) : appRoutes.pages
+    }
+
     return username ? appRoutes.profile(username) : ""
   }
 
@@ -159,7 +163,15 @@ const normalizeLegacyIndexUrl = (rawUrl: string, item: BackendNotification) => {
 
 const normalizeNotificationUrl = (event: H3Event, item: BackendNotification) => {
   const postId = asString(item.post_id)
+  const ajaxUrl = asString(item.ajax_url)
   const rawUrl = asString(item.url) || asString(item.full_link)
+
+  if (
+    asNumber(item.page_id) > 0
+    && /(?:^|[?&])link1=timeline(?:&|$)/i.test(ajaxUrl)
+  ) {
+    return normalizeLegacyIndexUrl(ajaxUrl, item) || appRoutes.pages
+  }
 
   if (postId && (!rawUrl || rawUrl === "#" || rawUrl === "/notifications")) {
     return appRoutes.postDetail(postId)
@@ -252,6 +264,16 @@ const normalizeIcon = (icon: unknown) => {
   return "i-ph-bell-duotone"
 }
 
+const normalizeNotificationBody = (item: BackendNotification) => {
+  const body = asString(item.type_text) || asString(item.text)
+
+  if (asString(item.type).toLowerCase() === "invited_page") {
+    return body.replace(/\(\s*\{page_name\}\s*\)|\{page_name\}/gi, "Trang")
+  }
+
+  return body
+}
+
 export const normalizeNotificationSummary = (event: H3Event, response: BackendGeneralDataResponse) => {
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const items = Array.isArray(response.notifications) ? response.notifications : []
@@ -259,7 +281,7 @@ export const normalizeNotificationSummary = (event: H3Event, response: BackendGe
   return {
     items: items.map((item) => {
       const notifierName = asString(item.notifier?.name)
-      const body = asString(item.type_text) || asString(item.text)
+      const body = normalizeNotificationBody(item)
 
       return {
         id: asString(item.id),

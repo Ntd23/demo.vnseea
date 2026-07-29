@@ -603,7 +603,7 @@ onBeforeUnmount(() => {
 }
 
 .new-product-form--embedded {
-  padding: 0;
+  padding: 15px;
   border: 0;
   border-radius: 0;
   box-shadow: none;

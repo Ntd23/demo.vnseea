@@ -3,22 +3,62 @@
   <NuxtLink
     :to="cardHref"
     class="message-shared-post"
-    :class="{ 'message-shared-post--product': post.product }"
+    :class="{
+      'message-shared-post--product': post.product,
+      'message-shared-post--job': post.job,
+    }"
     @click.stop
   >
     <span class="message-shared-post__media">
       <NuxtImg
         v-if="post.imageUrl && !imageFailed"
         :src="post.imageUrl"
-        :alt="post.author || unavailableLabel"
+        :alt="post.job?.title || post.author || unavailableLabel"
         loading="lazy"
         class="message-shared-post__image"
         @error="imageFailed = true"
       />
-      <Icon v-else name="i-ph-article-duotone" class="message-shared-post__fallback-icon" />
+      <Icon
+        v-else
+        :name="post.job ? 'i-ph-briefcase-duotone' : 'i-ph-article-duotone'"
+        class="message-shared-post__fallback-icon"
+      />
     </span>
 
     <span class="message-shared-post__body">
+      <span v-if="post.available && post.job" class="message-shared-post__job">
+        <span class="message-shared-post__kind">
+          <Icon name="i-ph-briefcase-bold" />
+          {{ $t("pages.messagesPage.sharedJobLabel") }}
+        </span>
+        <strong class="message-shared-post__job-title">
+          {{ post.job.title }}
+        </strong>
+        <span
+          v-if="post.job.location || post.job.typeLabel || post.job.categoryLabel"
+          class="message-shared-post__job-meta"
+        >
+          <span v-if="post.job.location">
+            <Icon name="i-ph-map-pin-fill" />
+            {{ post.job.location }}
+          </span>
+          <span v-if="post.job.typeLabel">
+            <Icon name="i-ph-briefcase-fill" />
+            {{ post.job.typeLabel }}
+          </span>
+          <span v-if="post.job.categoryLabel">
+            <Icon name="i-ph-tag-fill" />
+            {{ post.job.categoryLabel }}
+          </span>
+        </span>
+        <strong v-if="post.job.salaryLabel" class="message-shared-post__salary">
+          {{ post.job.salaryLabel }}
+        </strong>
+        <span v-if="post.job.description" class="message-shared-post__description">
+          {{ post.job.description }}
+        </span>
+      </span>
+
       <span v-if="post.available && post.product" class="message-shared-post__product">
         <span class="message-shared-post__kind">
           <Icon name="i-ph-storefront-bold" />
@@ -50,7 +90,7 @@
         </span>
         <strong>{{ post.available ? post.author : unavailableLabel }}</strong>
       </span>
-      <span v-if="post.available && !post.product && post.text" class="message-shared-post__text">
+      <span v-if="post.available && !post.product && !post.job && post.text" class="message-shared-post__text">
         {{ post.text }}
       </span>
     </span>
@@ -67,7 +107,7 @@ const props = defineProps<{
 
 const { locale } = useI18n()
 const imageFailed = ref(false)
-const cardHref = computed(() => props.post.product?.href || props.post.href)
+const cardHref = computed(() => props.post.job?.href || props.post.product?.href || props.post.href)
 const productLabel = computed(() => locale.value === "vi" ? "Sản phẩm" : "Product")
 const productPrice = computed(() => props.post.product
   ? formatProductPrice(props.post.product, locale.value)
@@ -145,12 +185,14 @@ watch(() => props.post.imageUrl, () => {
   gap: 7px;
 }
 
+.message-shared-post--job .message-shared-post__author-row,
 .message-shared-post--product .message-shared-post__author-row {
   margin-top: 2px;
   padding-top: 9px;
   border-top: 1px solid var(--border-light);
 }
 
+.message-shared-post__job,
 .message-shared-post__product {
   display: flex;
   min-width: 0;
@@ -186,6 +228,7 @@ watch(() => props.post.imageUrl, () => {
   height: 14px;
 }
 
+.message-shared-post__job-title,
 .message-shared-post__product-title {
   display: -webkit-box;
   min-width: 0;
@@ -198,6 +241,31 @@ watch(() => props.post.imageUrl, () => {
   -webkit-line-clamp: 2;
 }
 
+.message-shared-post__job-meta {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+.message-shared-post__job-meta span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.message-shared-post__job-meta :deep(svg) {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  color: var(--text-brand);
+}
+
+.message-shared-post__salary,
 .message-shared-post__price {
   color: var(--bg-brand);
   font-size: 15px;

@@ -1597,11 +1597,18 @@
         "title": "Mời bạn bè thích trang",
         "searchPlaceholder": "Tìm kiếm bạn bè…",
         "inviteButton": "Mời",
+        "sendingButton": "Đang gửi…",
+        "loadErrorTitle": "Không thể tải danh sách bạn bè",
+        "loadError": "Danh sách người có thể mời chưa tải được. Vui lòng thử lại.",
+        "inviteSuccessTitle": "Đã gửi lời mời",
+        "inviteSuccessDescription": "Đã mời {user} thích trang này.",
+        "inviteErrorTitle": "Không thể gửi lời mời",
+        "friendFallback": "người bạn này",
         "invitedButton": "Đã mời",
         "empty": "Không tìm thấy bạn bè",
         "loading": "Đang tải…",
         "inviteSuccess": "Đã mời bạn bè thích trang.",
-        "inviteError": "Đã có lỗi xảy ra. Vui lòng thử lại sau."
+        "inviteError": "Lời mời chưa được gửi. Người này có thể đã được mời hoặc đã thích trang."
       }
     },
     "profilePage": {
@@ -2941,6 +2948,7 @@
       ]
     },
     "messagesPage": {
+      "sharedJobLabel": "Tuyển dụng",
       "seoTitle": "Tin nhắn | VNSEEA",
       "seoDescription": "Quản lý hội thoại trên VNSEEA với danh sách người dùng rõ ràng, khung chat ổn định và form gửi tin nhắn gọn hơn.",
       "searchPlaceholder": "Tìm kiếm",
@@ -4684,6 +4692,7 @@
       "jobImageSource": "Nguồn ảnh",
       "uploadImage": "Tải ảnh lên",
       "imageUploadRequired": "Hãy chọn ảnh khi dùng nguồn upload.",
+      "jobImagePreview": "Xem trước ảnh công việc",
       "questions": "Câu hỏi ứng tuyển",
       "questionOne": "Câu hỏi 1",
       "questionTwo": "Câu hỏi 2",
