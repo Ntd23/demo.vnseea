@@ -3777,8 +3777,8 @@ function Wo_RegisterNotification($data = array())
                     $send = Wo_SendMessage($send_message_data);
                 }
             }
-            if ($wo['config']['android_push_native'] == 1 || $wo['config']['ios_push_native'] == 1 || $wo['config']['web_push'] == 1) {
-                Wo_NotificationWebPushNotifier();
+            if (function_exists('VNSEEA_EnqueueNotificationPush')) {
+                VNSEEA_EnqueueNotificationPush($realtime_notification_id);
             }
             return true;
         }
@@ -5306,6 +5306,7 @@ function Wo_RegisterMessage($ms_data = array())
         }
         $update_user_chats = Wo_CreateUserChat($ms_data['to_id'], $from_id);
         VNSEEA_PublishRealtimeMessageChange($message_id);
+        VNSEEA_EnqueueMessagePush($message_id);
         return $message_id;
     } else {
         return false;
@@ -5381,6 +5382,7 @@ function Wo_RegisterMessageGroup($ms_data = array())
             $from_id = $ms_data['from_id'];
         }
         VNSEEA_PublishRealtimeMessageChange($message_id);
+        VNSEEA_EnqueueMessagePush($message_id);
         return $message_id;
     } else {
         return false;
@@ -5450,6 +5452,7 @@ function Wo_RegisterGroupMessage($ms_data = array())
     if ($query) {
         $message_id = mysqli_insert_id($sqlConnect);
         VNSEEA_PublishRealtimeMessageChange($message_id);
+        VNSEEA_EnqueueMessagePush($message_id);
         return $message_id;
     } else {
         return false;
@@ -5523,6 +5526,8 @@ function Wo_RegisterPageMessage($ms_data = array())
     if ($query) {
         $message_id = mysqli_insert_id($sqlConnect);
         Wo_CreateUserChat($ms_data['to_id'], $ms_data['from_id'], $ms_data['page_id']);
+        VNSEEA_PublishRealtimeMessageChange($message_id);
+        VNSEEA_EnqueueMessagePush($message_id);
         return $message_id;
     } else {
         return false;

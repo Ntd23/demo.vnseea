@@ -33,7 +33,11 @@ assert_pin_contract(strpos($pin, "\$db->commit();", strpos($pin, "\$event_id = \
 assert_pin_contract(strpos($pin, 'Wo_SendPushNotification') === false && strpos($pin, 'OneSignal') === false, 'pin event must not send a push notification');
 assert_pin_contract(strpos($pinned, 'pinned_by_user_id') !== false, 'pinned response must expose actor id');
 assert_pin_contract(strpos($pinned, 'can_unpin') !== false, 'pinned response must expose unpin permission');
-assert_pin_contract(strpos($messages, 'return VNSEEA_AttachMessageSystemEvent($fetched_data)') !== false, 'direct conversation preview must expose the pin event');
+assert_pin_contract(
+    strpos($messages, 'function VNSEEA_AttachCanonicalMessageContext') !== false &&
+    strpos($messages, 'VNSEEA_AttachMessageSystemEvent($message)') !== false,
+    'direct conversation preview must expose the pin event through canonical message context'
+);
 assert_pin_contract(strpos($group_messages, 'VNSEEA_AttachMessageSystemEvent($fetched_data)') !== false, 'group conversation preview must expose the pin event');
 
 echo "shared message pins contract: OK\n";
