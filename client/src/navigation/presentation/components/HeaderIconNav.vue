@@ -8,6 +8,7 @@
       class="icon-nav__item"
       :class="{ 'icon-nav__item--active': item.active }"
       :aria-label="$t(item.label)"
+      @click="handleNavigationClick($event, item.active)"
     >
       <Icon :name="item.icon.replace('-fill', '-bold')" class="icon-nav__icon" />
       <span
@@ -24,6 +25,8 @@
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 
 const route = useRoute()
+const router = useRouter()
+const loadingIndicator = useLoadingIndicator()
 
 const items = computed(() => [
   {
@@ -57,6 +60,32 @@ const items = computed(() => [
     active: route.path === appRoutes.products,
   },
 ])
+
+async function handleNavigationClick(event: MouseEvent, isActive: boolean) {
+  if (
+    event.button !== 0
+    || event.metaKey
+    || event.ctrlKey
+    || event.shiftKey
+    || event.altKey
+  ) {
+    return
+  }
+
+  loadingIndicator.start({ force: true })
+
+  if (!isActive) {
+    return
+  }
+
+  event.preventDefault()
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" })
+  await nextTick()
+
+  window.setTimeout(() => {
+    router.go(0)
+  }, 0)
+}
 </script>
 
 <style scoped>

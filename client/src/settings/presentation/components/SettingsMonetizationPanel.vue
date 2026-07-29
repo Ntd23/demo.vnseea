@@ -1,8 +1,10 @@
+<!-- English description: Renders monetization eligibility and plan settings with shared theme tokens. -->
+
 <template>
   <section class="settings-money" aria-labelledby="settings-money-title">
     <div class="settings-money__summary">
       <div class="settings-money__summary-main">
-        <span class="settings-money__icon text-[var(--text-primary)]" aria-hidden="true">
+        <span class="settings-money__icon" aria-hidden="true">
           <Icon name="i-ph-currency-circle-dollar-bold" class="h-6 w-6" />
         </span>
         <div>
@@ -118,10 +120,10 @@ const requirementLabel = (key: string) =>
 .settings-money__summary,
 .settings-money__card,
 .settings-money__panel {
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-money__summary {
@@ -148,7 +150,7 @@ const requirementLabel = (key: string) =>
   justify-content: center;
   border-radius: 14px;
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .settings-money__eyebrow,
@@ -194,8 +196,8 @@ const requirementLabel = (key: string) =>
 }
 
 .settings-money__status--active {
-  background: rgba(22, 163, 74, 0.12);
-  color: #15803d;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--text-success);
 }
 
 .settings-money__grid {
@@ -247,9 +249,9 @@ const requirementLabel = (key: string) =>
   align-items: center;
   gap: 10px;
   padding: 11px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .settings-money__requirement-icon {
@@ -260,13 +262,13 @@ const requirementLabel = (key: string) =>
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: rgba(100, 116, 139, 0.1);
+  background: var(--bg-surface-active);
   color: var(--text-secondary);
 }
 
 .settings-money__requirement-icon--done {
-  background: rgba(22, 163, 74, 0.12);
-  color: #16a34a;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--text-success);
 }
 
 .settings-money__plan {
@@ -298,9 +300,9 @@ const requirementLabel = (key: string) =>
   justify-content: center;
   gap: 8px;
   margin-top: 14px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--border-strong);
   border-radius: 14px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 @media (max-width: 860px) {

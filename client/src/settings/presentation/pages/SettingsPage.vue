@@ -122,9 +122,9 @@ const isVerificationPage = computed(() =>
   gap: 12px;
   padding: 16px;
   background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-page__page-icon {
@@ -135,7 +135,7 @@ const isVerificationPage = computed(() =>
   justify-content: center;
   border-radius: 12px;
   background: var(--bg-muted);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   color: var(--text-primary);
   flex-shrink: 0;
 }

@@ -158,7 +158,7 @@ const realtimeViewportRadiusMeters = 50
 const realtimeViewportRefitDistanceMeters = 250
 
 const googleMapsMapId = computed(() =>
-  String(runtimeConfig.public.scripts?.googleMaps?.mapId || "").trim(),
+  String(runtimeConfig.public.googleMaps?.mapId || "").trim(),
 )
 
 const normalizedValue = computed(() =>

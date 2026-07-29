@@ -324,10 +324,10 @@ onBeforeUnmount(() => {
 .verification-panel__hero,
 .verification-panel__features,
 .verification-panel__form {
-  border: 1px solid var(--color-primary-100);
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   background: var(--bg-surface);
-  box-shadow: 0 8px 24px rgba(15, 35, 110, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 .verification-panel__hero {
@@ -335,7 +335,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 18px;
   padding: 18px;
-  background: linear-gradient(135deg, var(--color-primary-50) 0%, #ffffff 100%);
+  background: linear-gradient(135deg, var(--bg-surface-active) 0%, var(--bg-surface) 100%);
 }
 
 .verification-panel__avatar-wrap {
@@ -352,8 +352,8 @@ onBeforeUnmount(() => {
   justify-content: center;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--color-primary-100);
-  color: var(--bg-brand);
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
   font-size: 24px;
   font-weight: 900;
   object-fit: cover;
@@ -368,11 +368,11 @@ onBeforeUnmount(() => {
   height: 36px;
   align-items: center;
   justify-content: center;
-  border: 3px solid #ffffff;
+  border: 3px solid var(--bg-surface);
   border-radius: 999px;
-  background: #2196f3;
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(33, 150, 243, 0.28);
+  background: var(--bg-brand);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-brand);
 }
 
 .verification-panel__hero-copy {
@@ -380,7 +380,7 @@ onBeforeUnmount(() => {
 }
 
 .verification-panel__username {
-  color: var(--bg-brand);
+  color: var(--text-brand);
   font-size: 15px;
   font-weight: 800;
   text-decoration: none;
@@ -388,7 +388,7 @@ onBeforeUnmount(() => {
 
 .verification-panel__hero-copy h2 {
   margin: 2px 0 0;
-  color: #2196f3;
+  color: var(--text-brand);
   font-size: clamp(26px, 4vw, 36px);
   font-weight: 900;
   line-height: 1.15;
@@ -446,7 +446,7 @@ onBeforeUnmount(() => {
 .verification-panel__upload-tile {
   min-height: 210px;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-muted);
   color: var(--text-secondary);
@@ -455,8 +455,8 @@ onBeforeUnmount(() => {
 }
 
 .verification-panel__upload-tile:hover {
-  border-color: var(--color-primary-300);
-  background: var(--color-primary-50);
+  border-color: var(--border-default);
+  background: var(--bg-surface-hover);
   transform: translateY(-1px);
 }
 
@@ -487,8 +487,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #90a4ae;
-  color: #ffffff;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .verification-panel__pdf-chip {
@@ -497,9 +497,9 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #e0f2fe;
+  background: var(--bg-surface-active);
   padding: 10px 14px;
-  color: #0369a1;
+  color: var(--text-brand);
   font-size: 14px;
   font-weight: 800;
 }

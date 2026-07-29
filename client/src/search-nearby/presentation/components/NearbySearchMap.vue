@@ -40,7 +40,7 @@ const emit = defineEmits<{
 
 const runtimeConfig = useRuntimeConfig()
 const { t } = useI18n()
-const googleMapsMapId = computed(() => String(runtimeConfig.public.scripts?.googleMaps?.mapId || "").trim())
+const googleMapsMapId = computed(() => String(runtimeConfig.public.googleMaps?.mapId || "").trim())
 const mapElement = ref<HTMLDivElement | null>(null)
 const mapError = ref("")
 type NearbyMarkerInstance = google.maps.Marker | google.maps.OverlayView
