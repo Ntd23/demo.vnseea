@@ -19,6 +19,20 @@ export default defineAppConfig({
         base: "relative cursor-pointer pointer-events-auto select-none",
       },
     },
+    error: {
+      slots: {
+        root:
+          "min-h-[100dvh] bg-[var(--bg-base)] px-4 py-10 flex flex-col items-center justify-center text-center",
+        statusCode:
+          "text-sm font-bold text-[var(--text-brand)]",
+        statusMessage:
+          "mt-2 max-w-3xl text-3xl font-extrabold text-[var(--text-primary)] text-balance sm:text-5xl",
+        message:
+          "mt-4 flex max-w-3xl flex-col items-center text-base leading-7 text-[var(--text-secondary)] text-balance",
+        links:
+          "mt-8 flex w-full max-w-xl flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center",
+      },
+    },
     avatar: {
       slots: {
         root: "bg-[var(--bg-muted)]",
