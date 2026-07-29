@@ -22,16 +22,23 @@ if (!function_exists('VNSEEA_PushDeliveryDebugLog')) {
             Wo_VnseeaPushDebugLog($event, $context);
             return;
         }
-        error_log(
-            '[vnseea_push_delivery] ' .
-            json_encode(
-                array(
-                    'event' => (string)$event,
-                    'time' => date('c'),
-                    'context' => is_array($context) ? $context : array()
-                ),
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-            )
+        $line = '[vnseea_push_debug] ' . json_encode(
+            array(
+                'event' => (string)$event,
+                'time' => date('c'),
+                'context' => is_array($context) ? $context : array()
+            ),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+        error_log($line);
+        $log_dir = dirname(dirname(__DIR__)) . '/xhr/logs';
+        if (!is_dir($log_dir)) {
+            @mkdir($log_dir, 0755, true);
+        }
+        @file_put_contents(
+            $log_dir . '/vnseea_push_debug.log',
+            $line . PHP_EOL,
+            FILE_APPEND | LOCK_EX
         );
     }
 }
@@ -103,6 +110,12 @@ if (!function_exists('VNSEEA_RegisterPushInstallation')) {
         $user_id = (int)$user_id;
         $validated = VNSEEA_ValidatePushInstallationInput($input, true);
         if ($user_id < 1 || empty($validated['ok'])) {
+            VNSEEA_PushDeliveryDebugLog('push_device_register_error', array(
+                'user_id' => $user_id,
+                'provider' => isset($input['provider']) ? (string)$input['provider'] : '',
+                'platform' => isset($input['platform']) ? (string)$input['platform'] : '',
+                'error' => $user_id < 1 ? 'not_authorized' : $validated['error_code']
+            ));
             return array(
                 'ok' => false,
                 'error_code' => $user_id < 1 ? 'not_authorized' : $validated['error_code']
@@ -119,6 +132,17 @@ if (!function_exists('VNSEEA_RegisterPushInstallation')) {
             ? 'NULL'
             : "'" . mysqli_real_escape_string($sqlConnect, $validated['apns_environment']) . "'";
         $now = time();
+        $debug_context = array(
+            'user_id' => $user_id,
+            'platform' => $validated['platform'],
+            'provider' => $validated['provider'],
+            'installation_suffix' => substr($validated['installation_id'], -8),
+            'token_suffix' => substr($validated['token'], -8),
+            'apns_environment' => !empty($validated['apns_environment'])
+                ? $validated['apns_environment']
+                : ''
+        );
+        VNSEEA_PushDeliveryDebugLog('push_device_register_attempt', $debug_context);
 
         mysqli_begin_transaction($sqlConnect);
         try {
@@ -133,6 +157,10 @@ if (!function_exists('VNSEEA_RegisterPushInstallation')) {
             $installation = mysqli_fetch_assoc($installation_result);
             if (!empty($installation) && !hash_equals((string)$installation['device_secret_hash'], $secret_hash)) {
                 mysqli_rollback($sqlConnect);
+                VNSEEA_PushDeliveryDebugLog(
+                    'push_device_register_error',
+                    array_merge($debug_context, array('error' => 'installation_secret_mismatch'))
+                );
                 return array('ok' => false, 'error_code' => 'installation_secret_mismatch');
             }
 
@@ -239,6 +267,13 @@ if (!function_exists('VNSEEA_RegisterPushInstallation')) {
             }
 
             mysqli_commit($sqlConnect);
+            VNSEEA_PushDeliveryDebugLog(
+                'push_device_register_success',
+                array_merge($debug_context, array(
+                    'installation_row_id' => $installation_row_id,
+                    'token_row_id' => $token_row_id
+                ))
+            );
             return array(
                 'ok' => true,
                 'installation_row_id' => $installation_row_id,
@@ -247,6 +282,10 @@ if (!function_exists('VNSEEA_RegisterPushInstallation')) {
         } catch (Exception $exception) {
             mysqli_rollback($sqlConnect);
             error_log('[vnseea_push] register_failed code=' . $exception->getMessage());
+            VNSEEA_PushDeliveryDebugLog(
+                'push_device_register_error',
+                array_merge($debug_context, array('error' => $exception->getMessage()))
+            );
             return array('ok' => false, 'error_code' => 'push_device_register_failed');
         }
     }
@@ -262,12 +301,20 @@ if (!function_exists('VNSEEA_ReleasePushInstallation')) {
             'device_secret' => $device_secret
         ), false);
         if (empty($validated['ok'])) {
+            VNSEEA_PushDeliveryDebugLog('push_device_release_error', array(
+                'installation_suffix' => substr((string)$installation_id, -8),
+                'error' => $validated['error_code']
+            ));
             return array('ok' => false, 'error_code' => $validated['error_code']);
         }
 
         $installation_key = mysqli_real_escape_string($sqlConnect, $validated['installation_id']);
         $provided_hash = VNSEEA_PushDeviceSecretHash($validated['device_secret']);
         $now = time();
+        $debug_context = array(
+            'installation_suffix' => substr($validated['installation_id'], -8)
+        );
+        VNSEEA_PushDeliveryDebugLog('push_device_release_attempt', $debug_context);
 
         mysqli_begin_transaction($sqlConnect);
         try {
@@ -282,10 +329,18 @@ if (!function_exists('VNSEEA_ReleasePushInstallation')) {
             $installation = mysqli_fetch_assoc($result);
             if (empty($installation)) {
                 mysqli_commit($sqlConnect);
+                VNSEEA_PushDeliveryDebugLog(
+                    'push_device_release_success',
+                    array_merge($debug_context, array('idempotent_replay' => 1))
+                );
                 return array('ok' => true, 'idempotent_replay' => true);
             }
             if (!hash_equals((string)$installation['device_secret_hash'], $provided_hash)) {
                 mysqli_rollback($sqlConnect);
+                VNSEEA_PushDeliveryDebugLog(
+                    'push_device_release_error',
+                    array_merge($debug_context, array('error' => 'installation_secret_mismatch'))
+                );
                 return array('ok' => false, 'error_code' => 'installation_secret_mismatch');
             }
 
@@ -306,10 +361,21 @@ if (!function_exists('VNSEEA_ReleasePushInstallation')) {
                 throw new Exception('token_release_failed');
             }
             mysqli_commit($sqlConnect);
+            VNSEEA_PushDeliveryDebugLog(
+                'push_device_release_success',
+                array_merge($debug_context, array(
+                    'installation_row_id' => $row_id,
+                    'idempotent_replay' => empty($installation['active']) ? 1 : 0
+                ))
+            );
             return array('ok' => true, 'idempotent_replay' => empty($installation['active']));
         } catch (Exception $exception) {
             mysqli_rollback($sqlConnect);
             error_log('[vnseea_push] release_failed code=' . $exception->getMessage());
+            VNSEEA_PushDeliveryDebugLog(
+                'push_device_release_error',
+                array_merge($debug_context, array('error' => $exception->getMessage()))
+            );
             return array('ok' => false, 'error_code' => 'push_device_release_failed');
         }
     }
@@ -955,6 +1021,17 @@ if (!function_exists('VNSEEA_OneSignalConfigForPlatform')) {
     }
 }
 
+if (!function_exists('VNSEEA_OneSignalResponseHasRecipient')) {
+    function VNSEEA_OneSignalResponseHasRecipient($http_status, $decoded)
+    {
+        if ((int)$http_status < 200 || (int)$http_status >= 300 ||
+            !is_array($decoded) || empty($decoded['id'])) {
+            return false;
+        }
+        return !array_key_exists('recipients', $decoded) || (int)$decoded['recipients'] > 0;
+    }
+}
+
 if (!function_exists('VNSEEA_SendOneSignalDelivery')) {
     function VNSEEA_SendOneSignalDelivery($delivery, $payload)
     {
@@ -1038,12 +1115,16 @@ if (!function_exists('VNSEEA_SendOneSignalDelivery')) {
         curl_close($ch);
 
         $decoded = json_decode((string)$response, true);
-        $accepted = $http_status >= 200 && $http_status < 300 && !empty($decoded['id']);
+        $recipient_count = is_array($decoded) && array_key_exists('recipients', $decoded)
+            ? (int)$decoded['recipients']
+            : null;
+        $accepted = VNSEEA_OneSignalResponseHasRecipient($http_status, $decoded);
         VNSEEA_PushDeliveryDebugLog(
             'onesignal_delivery_response',
             array_merge($debug_context, array(
                 'accepted' => $accepted ? 1 : 0,
                 'http_status' => $http_status,
+                'recipient_count' => $recipient_count,
                 'curl_error' => $curl_error,
                 'provider_id_suffix' => !empty($decoded['id'])
                     ? substr((string)$decoded['id'], -8)
@@ -1060,7 +1141,8 @@ if (!function_exists('VNSEEA_SendOneSignalDelivery')) {
             );
         }
         $no_valid_subscriptions =
-            $http_status >= 200 && $http_status < 300 && empty($decoded['id']);
+            $http_status >= 200 && $http_status < 300 &&
+            (empty($decoded['id']) || ($recipient_count !== null && $recipient_count < 1));
         $error_text = trim($curl_error . ' ' . (is_string($response) ? $response : ''));
         $invalid_token = in_array($http_status, array(400, 404, 410), true) &&
             preg_match('/subscription|player|token|not a valid/i', $error_text);
