@@ -18,6 +18,7 @@ $required_fields =  array(
                         'edit',
                         'apply',
                         'search',
+                        'detail',
                         'get_apply',
                         'get'
                     );
@@ -412,6 +413,31 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                                     'api_status' => 200,
                                     'data' => $result
                                 );
+    }
+
+    if ($_POST['type'] == 'detail') {
+        if (!empty($_POST['job_id']) && is_numeric($_POST['job_id']) && $_POST['job_id'] > 0) {
+            $job = Wo_GetJobById(Wo_Secure($_POST['job_id']));
+            if (!empty($job)) {
+                $post = $db->where('job_id', $job['id'])->getOne(T_POSTS, array('id'));
+                if (!empty($post)) {
+                    $job['post_id'] = $post->id;
+                }
+                $job['image'] = Wo_GetMedia($job['image']);
+                $response_data = array(
+                    'api_status' => 200,
+                    'data' => $job
+                );
+            }
+            else {
+                $error_code = 9;
+                $error_message = 'job not found';
+            }
+        }
+        else {
+            $error_code = 8;
+            $error_message = 'job_id can not be empty';
+        }
     }
 
     if ($_POST['type'] == 'get_apply') {

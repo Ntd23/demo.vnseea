@@ -1027,9 +1027,21 @@ export const mapPostRecord = (
   )
   const publisher = asRecord(entity.publisher)
   const userData = asRecord(entity.user_data)
-  const pageData = asRecord(entity.page_data)
+  const directPageData = asRecord(entity.page_data)
+  const pageInfo = asRecord(entity.page_info)
+  const pageData = Object.keys(directPageData).length > 0 ? directPageData : pageInfo
   const groupData = asRecord(entity.group_data)
-  const sourceEntity = Object.keys(publisher).length > 0 ? publisher : userData
+  const pageId = firstNumber(entity, ["page_id"])
+    || firstNumber(pageData, ["page_id", "id"])
+    || firstNumber(publisher, ["page_id"])
+  const publisherIsPage = firstString(publisher, ["type"]).toLowerCase() === "page"
+    || firstNumber(publisher, ["page_id"]) > 0
+  const pageIdentity = Object.keys(pageData).length > 0
+    ? pageData
+    : publisherIsPage ? publisher : {}
+  const sourceEntity = pageId && Object.keys(pageIdentity).length > 0
+    ? pageIdentity
+    : Object.keys(publisher).length > 0 ? publisher : userData
   const postType = firstString(entity, ["postType", "post_type"]).toLowerCase()
   const profileMediaUpdate = postType === "profile_picture"
     ? "avatar" as const
@@ -1042,8 +1054,10 @@ export const mapPostRecord = (
       || firstNumber(entity, ["user_id", "owner_id"])
   const author = audienceSelection.isAnonymous
     ? "Anonymous"
-    : firstString(sourceEntity, ["name", "username"])
-      || firstString(pageData, ["page_title", "page_name"])
+    : (pageId
+        ? firstString(pageIdentity, ["name", "page_title", "page_name", "username"])
+        : firstString(sourceEntity, ["name", "username"]))
+      || firstString(pageIdentity, ["page_title", "page_name", "username"])
       || firstString(groupData, ["group_title", "group_name"])
       || "User"
   const authorUsername = audienceSelection.isAnonymous
@@ -1052,14 +1066,11 @@ export const mapPostRecord = (
   const authorAvatarUrl = audienceSelection.isAnonymous
     ? ""
     : resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"]))
-  const pageId = firstNumber(entity, ["page_id"])
-    || firstNumber(pageData, ["page_id", "id"])
-    || firstNumber(sourceEntity, ["page_id"])
   const groupId = firstNumber(entity, ["group_id"])
     || firstNumber(groupData, ["group_id", "id"])
     || firstNumber(sourceEntity, ["group_id"])
   const pageSlug = firstString(pageData, ["page_name"])
-    || (pageId ? firstString(sourceEntity, ["page_name", "username"]) : "")
+    || (pageId ? firstString(pageIdentity, ["page_name", "username"]) : "")
   const groupSlug = firstString(groupData, ["group_name"])
     || (groupId ? firstString(sourceEntity, ["group_name", "username"]) : "")
   const sourcePath = pageSlug
@@ -1141,7 +1152,7 @@ export const mapPostRecord = (
       : firstString(sourceEntity, ["gender"]) || undefined,
     authorVerified: audienceSelection.isAnonymous
       ? false
-      : isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
+      : isTruthy(sourceEntity.verified) || isTruthy(pageIdentity.verified),
     authorPath: audienceSelection.isAnonymous
       ? undefined
       : pageSlug || groupSlug
@@ -1154,7 +1165,7 @@ export const mapPostRecord = (
     role: audienceSelection.isAnonymous
       ? "Anonymous"
       : firstString(sourceEntity, ["working", "school", "address"])
-        || firstString(pageData, ["category_name", "phone"])
+        || firstString(pageIdentity, ["category_name", "phone"])
         || firstString(groupData, ["category_name", "group_title"])
         || author,
     audience: contentAudienceLabel(audienceSelection.audience),
@@ -1191,7 +1202,7 @@ export const mapPostRecord = (
       : pageSlug ? "page" : groupSlug ? "group" : "feed",
     sourcePath: audienceSelection.isAnonymous ? appRoutes.feed : sourcePath,
     sourceFollowing: pageSlug
-      ? isTruthy(pageData.is_liked) || isTruthy(pageData.is_following) || isTruthy(pageData.is_followed)
+      ? isTruthy(pageIdentity.is_liked) || isTruthy(pageIdentity.is_following) || isTruthy(pageIdentity.is_followed)
       : undefined,
     profileMediaUpdate,
     isSaved: isTruthy(entity.is_post_saved) || isTruthy(entity.is_saved),

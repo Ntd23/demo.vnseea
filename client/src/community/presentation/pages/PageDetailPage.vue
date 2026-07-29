@@ -338,6 +338,11 @@
             </p>
           </section>
 
+          <PageProductsCard
+            :products="pageProducts"
+            :pending="pageProductsStatus === 'pending'"
+          />
+
           <section v-if="suggestedPages.length" class="profile-card profile-card--suggestions">
             <div class="profile-card__head profile-card__head--bordered">
               <span class="profile-card__section-icon">
@@ -392,6 +397,7 @@ import FeedPublisherBox from "../../../feed/presentation/components/FeedPublishe
 import NavigationHeaderIconNav from "../../../navigation/presentation/components/HeaderIconNav.vue"
 import OfferFormModal from "../../../offer/presentation/components/OfferFormModal.vue"
 import PageInviteModal from "../components/PageInviteModal.vue"
+import PageProductsCard from "../components/PageProductsCard.vue"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { getCommunityPagePath, getCommunityPageSettingsPath } from "../../domain/services/community-helpers.service"
 import type { Offer } from "../../../offer/domain/types/offer.types"
@@ -399,6 +405,8 @@ import type { CommunityPageRecord } from "../../domain/types/community.types"
 import { useCommunityPageDetailPageVM } from "../../application/view-models/useCommunityPageDetailPageVM"
 import { useCommunityPageInviteVM } from "../../application/view-models/useCommunityPageInviteVM"
 import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
+import { createApiProductRepository } from "../../../product/infrastructure/repositories/ApiProductRepository"
+import type { ProductMarketplaceResponse } from "../../../product/domain/types/product-marketplace.types"
 
 const { t } = useI18n()
 const {
@@ -442,7 +450,50 @@ const bannerUploading = ref(false)
 const postSearchQuery = ref("")
 
 const repository = createApiCommunityRepository()
+const productRepository = createApiProductRepository()
 const toast = useToast()
+const pageRouteSlug = computed(() => String(useRoute().params.name || "").trim())
+const {
+  data: pageProductsData,
+  status: pageProductsStatus,
+  refresh: refreshPageProducts,
+} = await useAsyncData<ProductMarketplaceResponse>(
+  () => `page-detail:products:${pageRouteSlug.value || "none"}`,
+  async () => {
+    let resolvedPageId = page.value?.slug === pageRouteSlug.value
+      ? page.value.id
+      : 0
+
+    if (!resolvedPageId && pageRouteSlug.value) {
+      resolvedPageId = (await repository.getPageBySlug(pageRouteSlug.value))?.id || 0
+    }
+
+    if (!resolvedPageId) {
+      return {
+        items: [],
+        hasMore: false,
+        nextOffset: null,
+        categories: [],
+        subCategories: [],
+      }
+    }
+
+    return productRepository.list({
+      pageId: resolvedPageId,
+      limit: 50,
+    })
+  },
+  {
+    default: () => ({
+      items: [],
+      hasMore: false,
+      nextOffset: null,
+      categories: [],
+      subCategories: [],
+    }),
+    watch: [pageRouteSlug],
+  },
+)
 const { data: suggestedPagesData } = await useAsyncData<CommunityPageRecord[]>(
   "page-detail:suggested-pages",
   () => repository.getPages("suggested"),
@@ -450,6 +501,8 @@ const { data: suggestedPagesData } = await useAsyncData<CommunityPageRecord[]>(
     default: () => [],
   },
 )
+
+const pageProducts = computed(() => pageProductsData.value?.items ?? [])
 
 const suggestedPages = computed(() =>
   (suggestedPagesData.value || [])
@@ -535,8 +588,11 @@ const filteredPosts = computed(() => {
   )
 })
 
-function handlePostCreated() {
-  refreshPagePosts()
+async function handlePostCreated() {
+  await Promise.all([
+    refreshPagePosts(),
+    refreshPageProducts(),
+  ])
 }
 
 function openCreateOffer() {

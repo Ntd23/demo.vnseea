@@ -62,10 +62,17 @@
           {{ $t("pages.jobsPage.applyNow") }}
         </UButton>
 
-        <span v-else-if="job.alreadyApplied" class="job-card__applied">
-          <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
+        <UButton
+          v-else-if="job.alreadyApplied"
+          block
+          color="neutral"
+          variant="soft"
+          icon="i-ph-check-circle-fill"
+          class="job-card__action job-card__applied"
+          disabled
+        >
           {{ $t("pages.jobsPage.alreadyApplied") }}
-        </span>
+        </UButton>
       </div>
     </div>
   </article>
@@ -83,7 +90,7 @@ const props = defineProps<{
 const jobHref = computed(() =>
   props.job.postId
     ? appRoutes.postDetail(props.job.postId)
-    : props.job.postUrl || appRoutes.jobs,
+    : appRoutes.jobDetail(props.job.id),
 )
 
 const salaryRangeLabel = computed(() =>

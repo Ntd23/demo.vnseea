@@ -101,6 +101,25 @@ if (empty($error_code)) {
     }
 
     if (empty($error_code)) {
+        $page_id = 0;
+        if (!empty($_POST['page_id'])) {
+            if (!is_numeric($_POST['page_id']) || (int) $_POST['page_id'] < 1) {
+                $error_code = 9;
+                $error_message = 'Please choose a valid page';
+            } else {
+                $requested_page_id = (int) $_POST['page_id'];
+                $page_data = Wo_PageData($requested_page_id);
+                if (empty($page_data['page_id']) || Wo_IsPageOnwer($requested_page_id) !== true) {
+                    $error_code = 10;
+                    $error_message = 'You are not allowed to publish products as this page';
+                } else {
+                    $page_id = Wo_Secure($requested_page_id);
+                }
+            }
+        }
+    }
+
+    if (empty($error_code)) {
         $sub_category = '';
         if (!empty($_POST['product_sub_category']) && !empty($wo['products_sub_categories'][$_POST['product_category']])) {
             foreach ($wo['products_sub_categories'][$_POST['product_category']] as $key => $value) {
@@ -129,6 +148,7 @@ if (empty($error_code)) {
             'lat' => $lat ,
             'lng' => $lng,
             'units' => $units,
+            'page_id' => $page_id,
         );
         $fields = Wo_GetCustomFields('product'); 
         if (!empty($fields)) {
@@ -156,7 +176,8 @@ if (empty($error_code)) {
                 'user_id' => Wo_Secure($wo['user']['user_id']),
                 'product_id' => Wo_Secure($last_id),
                 'postPrivacy' => 0,
-                'time' => time()
+                'time' => time(),
+                'page_id' => $page_id
             );
             $post_id   = Wo_RegisterPost($post_data);
             if (count($_FILES['images']) > 0 && !empty($post_id) && $post_id > 0) {

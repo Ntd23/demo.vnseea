@@ -1593,6 +1593,14 @@
         "actionErrorTitle": "Could not update follower action",
         "actionErrorDescription": "Please try again later."
       },
+      "products": {
+        "title": "Product list",
+        "empty": "This page has not listed any products yet.",
+        "paginationLabel": "Product pagination",
+        "previousPage": "Previous product page",
+        "nextPage": "Next product page",
+        "pageStatus": "Page {current}/{total}"
+      },
       "invites": {
         "title": "Invite friends to like the page",
         "searchPlaceholder": "Search for friends…",

@@ -1007,6 +1007,10 @@ function Wo_GetProducts($filter_data = array())
 		$user_id = Wo_Secure($filter_data['user_id']);
 		$query_one .= " AND `user_id` = '{$user_id}'";
 	}
+	if (!empty($filter_data['page_id'])) {
+		$page_id = Wo_Secure($filter_data['page_id']);
+		$query_one .= " AND `page_id` = '{$page_id}'";
+	}
 	if (!empty($filter_data['order_by']) && $filter_data['order_by'] == 'price_low' && !empty($filter_data['price'])) {
 		$price = Wo_Secure($filter_data['price']);
 		$query_one .= " AND {$vnd_price_sql} >= '{$price}'";
@@ -1073,6 +1077,10 @@ function Wo_GetProducts($filter_data = array())
 		if (!empty($filter_data['user_id'])) {
 			$user_id = Wo_Secure($filter_data['user_id']);
 			$query_one .= " AND `user_id` = '{$user_id}'";
+		}
+		if (!empty($filter_data['page_id'])) {
+			$page_id = Wo_Secure($filter_data['page_id']);
+			$query_one .= " AND `page_id` = '{$page_id}'";
 		}
 		$query_one = "SELECT `id`, `user_id`, (
 			{$unit} * ACOS(

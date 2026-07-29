@@ -2,6 +2,7 @@
 
 export const jobsApiRoutes = {
   catalog: "/_api/jobs",
+  detailByJobId: (jobId: number) => `/_api/jobs/${jobId}`,
   detailByPostId: (postId: number) => `/_api/jobs/by-post/${postId}`,
   applicantsByPostId: (postId: number) => `/_api/jobs/by-post/${postId}/applicants`,
   create: "/_api/jobs/create",

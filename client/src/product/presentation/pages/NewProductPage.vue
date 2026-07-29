@@ -120,8 +120,10 @@ import { appRoutes } from "../../../shared-kernel/application/constants/route-re
 
 const props = withDefaults(defineProps<{
   embedded?: boolean
+  pageId?: number
 }>(), {
   embedded: false,
+  pageId: undefined,
 })
 
 const emit = defineEmits<{
@@ -500,6 +502,10 @@ const submitProduct = async () => {
   form.append("currency", fields.currency)
   form.append("lat", String(productLocationSelection.value.lat))
   form.append("lng", String(productLocationSelection.value.lng))
+
+  if (props.pageId && props.pageId > 0) {
+    form.append("page_id", String(props.pageId))
+  }
 
   if (selectedSubCategory.value) {
     form.append("product_sub_category", selectedSubCategory.value)

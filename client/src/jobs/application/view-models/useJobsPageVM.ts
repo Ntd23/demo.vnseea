@@ -230,6 +230,10 @@ export function useJobsPageVM(
   }
 
   function openApply(job: JobRecord) {
+    if (!job.canApply || job.alreadyApplied) {
+      return
+    }
+
     applyErrorMessage.value = ""
     applyModalJob.value = job
   }
@@ -278,6 +282,17 @@ export function useJobsPageVM(
   )
 
   async function submitApplication(input: JobApplicationDraft) {
+    const selectedJob = items.value.find(job => job.id === input.jobId)
+
+    if (
+      applySubmitting.value
+      || !selectedJob
+      || selectedJob.alreadyApplied
+      || !selectedJob.canApply
+    ) {
+      return
+    }
+
     applySubmitting.value = true
     applyErrorMessage.value = ""
 

@@ -32,6 +32,9 @@ export function createApiJobsRepository(): JobsRepository {
         limit: normalizeNumber(input?.limit),
       })
     },
+    async getDetailByJobId(jobId: number) {
+      return await client.get<JobDetailRecord | null>(jobsApiRoutes.detailByJobId(jobId))
+    },
     async getDetailByPostId(postId: number) {
       return await client.get<JobDetailRecord | null>(jobsApiRoutes.detailByPostId(postId))
     },

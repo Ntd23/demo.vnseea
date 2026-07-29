@@ -1593,6 +1593,14 @@
         "actionErrorTitle": "Không thể cập nhật hành động",
         "actionErrorDescription": "Hãy thử lại sau."
       },
+      "products": {
+        "title": "Danh sách sản phẩm",
+        "empty": "Trang này chưa đăng bán sản phẩm nào.",
+        "paginationLabel": "Phân trang sản phẩm",
+        "previousPage": "Trang sản phẩm trước",
+        "nextPage": "Trang sản phẩm tiếp theo",
+        "pageStatus": "Trang {current}/{total}"
+      },
       "invites": {
         "title": "Mời bạn bè thích trang",
         "searchPlaceholder": "Tìm kiếm bạn bè…",
