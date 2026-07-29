@@ -114,6 +114,7 @@ try {
     if ($chat_type === 'user') {
         Wo_CreateUserChat($other_user_id, $current_user_id);
     }
+    VNSEEA_EnqueueMessagePush($event_id);
     VNSEEA_PublishRealtimeMessageChange($event_id);
     $response_data = array(
         'api_status' => 200,
