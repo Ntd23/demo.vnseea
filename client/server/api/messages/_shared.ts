@@ -9,7 +9,9 @@ import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import { fetchFeedPostById } from "../feed/_shared"
+import { fetchJobDetailByPostId } from "../jobs/_shared"
 import { parseMessageSharedPostReference } from "../../../src/messages/domain/message-shared-post"
+import type { JobRecord } from "../../../src/jobs/domain/types/jobs.types"
 import { getMessageUserPresenceState } from "./_presence"
 import {
   feedStoryReactionByBackendId,
@@ -583,6 +585,7 @@ const removeDuplicatedSharedPostText = (body: string, postText: string) => {
 const buildSharedPostCard = (
   postId: number,
   post: Awaited<ReturnType<typeof fetchFeedPostById>>,
+  job: JobRecord | null = null,
 ): MessageSharedPostCard => {
   if (!post) {
     return {
@@ -607,13 +610,26 @@ const buildSharedPostCard = (
     author: post.author,
     authorAvatarUrl: post.authorAvatarUrl || undefined,
     text: post.text,
-    imageUrl: productAttachment?.imageUrl
+    imageUrl: job?.imageUrl
+      || productAttachment?.imageUrl
       || product?.images[0]?.src
       || image?.src
       || video?.thumb
       || post.attachmentCard?.imageUrl
       || undefined,
     href: appRoutes.postDetail(post.id),
+    job: job
+      ? {
+          title: job.title,
+          description: job.description,
+          imageUrl: job.imageUrl || undefined,
+          href: appRoutes.postDetail(post.id),
+          location: job.location,
+          categoryLabel: job.categoryLabel,
+          typeLabel: job.typeLabel,
+          salaryLabel: job.salaryLabel,
+        }
+      : undefined,
     product: productAttachment
       ? {
           id: product?.id ?? 0,
@@ -672,7 +688,15 @@ const enrichSharedPostMessages = async (
   const cards = new Map<number, MessageSharedPostCard>()
   await Promise.all(postIds.map(async (postId) => {
     const post = await fetchFeedPostById(event, postId).catch(() => null)
-    const card = buildSharedPostCard(postId, post)
+    const jobPost = post?.jobId
+      ? post
+      : post?.sharedPost?.jobId
+        ? post.sharedPost
+        : null
+    const job = jobPost
+      ? (await fetchJobDetailByPostId(event, jobPost.id).catch(() => null))?.job ?? null
+      : null
+    const card = buildSharedPostCard(postId, post, job)
 
     if (card.product) {
       const canonicalPoint = await fetchCanonicalProductPoint(event, card.product.id, postId)

@@ -1,4 +1,6 @@
-import { ref, computed } from "vue"
+// English description: Manages page-like invite candidates with per-user submission state and localized feedback.
+
+import { computed, ref } from "vue"
 import type { UserRecord } from "../../../shared-kernel/domain/types/user.types"
 import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
@@ -14,12 +16,15 @@ export function useCommunityPageInviteVM(
   const searchQuery = ref("")
   const candidates = ref<UserRecord[]>([])
   const invitedIds = ref<Set<number>>(new Set())
+  const sendingIds = ref<Set<number>>(new Set())
 
   const visibleCandidates = computed(() => {
-    const q = searchQuery.value.toLowerCase().trim()
-    if (!q) return candidates.value
-    return candidates.value.filter(
-      user => user.name.toLowerCase().includes(q) || user.username.toLowerCase().includes(q)
+    const query = searchQuery.value.toLowerCase().trim()
+    if (!query) return candidates.value
+
+    return candidates.value.filter(user =>
+      user.name.toLowerCase().includes(query)
+      || user.username.toLowerCase().includes(query),
     )
   })
 
@@ -31,47 +36,57 @@ export function useCommunityPageInviteVM(
   function closeModal() {
     isOpen.value = false
     searchQuery.value = ""
-    // We optionally keep candidates cached or clear them
   }
 
   async function fetchCandidates() {
     if (isPending.value) return
+
     isPending.value = true
     try {
-      const data = await repository.getPageInvites(pageSlug())
-      candidates.value = data
-      // Clear invited IDs that are fetched fresh
-      invitedIds.value.clear()
-    } catch (error: any) {
-      console.error("Failed to fetch invite candidates", error)
+      candidates.value = await repository.getPageInvites(pageSlug())
+      invitedIds.value = new Set()
+    }
+    catch {
       toast.add({
-        title: t('pages.pageDetailPage.actionFailed', 'Lỗi'),
-        description: error?.statusMessage || error?.message || 'Không thể tải danh sách bạn bè',
-        color: 'red',
+        title: t("pages.pageDetailPage.invites.loadErrorTitle"),
+        description: t("pages.pageDetailPage.invites.loadError"),
+        color: "error",
+        icon: "i-ph-warning-circle-fill",
       })
-    } finally {
+    }
+    finally {
       isPending.value = false
     }
   }
 
   async function sendInvite(userId: number) {
-    if (invitedIds.value.has(userId)) return
+    if (invitedIds.value.has(userId) || sendingIds.value.has(userId)) return
+
+    const candidate = candidates.value.find(user => user.id === userId)
+    sendingIds.value = new Set([...sendingIds.value, userId])
 
     try {
       await repository.sendPageInvite(pageSlug(), userId)
       invitedIds.value = new Set([...invitedIds.value, userId])
       toast.add({
-        title: t('community.profilePage.invites.inviteSuccess', 'Thành công'),
-        description: t('community.profilePage.invites.inviteSuccess', 'Đã gửi lời mời thích trang'),
-        color: 'green',
+        title: t("pages.pageDetailPage.invites.inviteSuccessTitle"),
+        description: t("pages.pageDetailPage.invites.inviteSuccessDescription", {
+          user: candidate?.name || candidate?.username || t("pages.pageDetailPage.invites.friendFallback"),
+        }),
+        color: "success",
+        icon: "i-ph-check-circle-fill",
       })
-    } catch (error: any) {
-      console.error("Failed to send invite", error)
+    }
+    catch {
       toast.add({
-        title: t('pages.pageDetailPage.actionFailed', 'Lỗi'),
-        description: error?.statusMessage || error?.message || 'Không thể gửi lời mời',
-        color: 'red',
+        title: t("pages.pageDetailPage.invites.inviteErrorTitle"),
+        description: t("pages.pageDetailPage.invites.inviteError"),
+        color: "error",
+        icon: "i-ph-warning-circle-fill",
       })
+    }
+    finally {
+      sendingIds.value = new Set([...sendingIds.value].filter(id => id !== userId))
     }
   }
 
@@ -81,6 +96,7 @@ export function useCommunityPageInviteVM(
     searchQuery,
     visibleCandidates,
     invitedIds,
+    sendingIds,
     openModal,
     closeModal,
     sendInvite,

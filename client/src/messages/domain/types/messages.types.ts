@@ -112,6 +112,16 @@ export type MessageSharedPostCard = {
   text: string
   imageUrl?: string
   href: string
+  job?: {
+    title: string
+    description: string
+    imageUrl?: string
+    href: string
+    location: string
+    categoryLabel: string
+    typeLabel: string
+    salaryLabel: string
+  }
   product?: {
     id: number
     title: string

@@ -121,6 +121,16 @@
             >
               {{ $t("pages.productDetailPage.buyNow") }}
             </UButton>
+            <UButton
+              v-if="productPost?.permissions.canShare"
+              color="neutral"
+              variant="outline"
+              icon="i-ph-share-fat-bold"
+              class="product-detail-action"
+              @click="shareModalOpen = true"
+            >
+              {{ $t("feed.postCard.share") }}
+            </UButton>
             <NuxtLink
               v-if="product.mine"
               :to="`/edit-product/${product.id}`"
@@ -195,6 +205,23 @@
           @change="changeViewerImage"
         />
       </ClientOnly>
+
+      <ClientOnly>
+        <FeedShareModal
+          v-if="productPost?.permissions.canShare"
+          :open="shareModalOpen"
+          :can-share="productPost.permissions.canShare"
+          :share-url="productShareUrl"
+          :post="{
+            id: productPost.id,
+            author: productPost.author,
+            text: productPost.text || product.title,
+            authorAvatar: productPost.authorAvatarUrl,
+            authorVerified: productPost.authorVerified,
+          }"
+          @close="shareModalOpen = false"
+        />
+      </ClientOnly>
     </template>
   </div>
 </template>
@@ -202,6 +229,8 @@
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useChatWidgetLauncher } from "../../../navigation/application/composables/useChatWidgetLauncher"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
+import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
 import { formatProductPoints, formatProductPrice, formatProductPriceSummary } from "../../application/formatters/product-currency"
 import type { ProductListing } from "../../domain/types/product-marketplace.types"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
@@ -213,18 +242,40 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 const router = useRouter()
+const requestURL = useRequestURL()
 const toast = useToast()
 const { openProductChat } = useChatWidgetLauncher()
 const repository = createApiProductRepository()
+const feedRepository = createApiFeedRepository()
 const mainImageId = ref("")
 const mainImageFailed = ref(false)
 const cartLoading = ref(false)
 const imageViewerOpen = ref(false)
 const imageViewerIndex = ref(0)
+const shareModalOpen = ref(false)
 
 const { data: product, status, error } = await useAsyncData(
   () => `product:detail:${props.productId}`,
   () => repository.getById(props.productId),
+)
+
+const productPostId = computed(() => {
+  const postId = Number(product.value?.postId || 0)
+  return Number.isInteger(postId) && postId > 0 ? postId : 0
+})
+
+const { data: productPost } = await useAsyncData(
+  () => `product:detail:${props.productId}:feed-post`,
+  () => productPostId.value
+    ? feedRepository.getPostById(productPostId.value)
+    : Promise.resolve(null),
+  {
+    watch: [productPostId],
+  },
+)
+
+const productShareUrl = computed(() =>
+  new URL(appRoutes.productDetail(props.productId), requestURL.origin).toString(),
 )
 
 const { data: relatedData } = await useAsyncData(

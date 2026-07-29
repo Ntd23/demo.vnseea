@@ -232,6 +232,7 @@
             :search-query="inviteVM.searchQuery.value"
             :visible-candidates="inviteVM.visibleCandidates.value"
             :invited-ids="inviteVM.invitedIds.value"
+            :sending-ids="inviteVM.sendingIds.value"
             @update:search-query="inviteVM.searchQuery.value = $event"
             @close="inviteVM.closeModal()"
             @invite="inviteVM.sendInvite"

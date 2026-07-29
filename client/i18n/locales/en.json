@@ -1597,10 +1597,17 @@
         "title": "Invite friends to like the page",
         "searchPlaceholder": "Search for friends…",
         "inviteButton": "Invite",
+        "sendingButton": "Sending…",
+        "loadErrorTitle": "Unable to load friends",
+        "loadError": "The list of people you can invite could not be loaded. Please try again.",
+        "inviteSuccessTitle": "Invitation sent",
+        "inviteSuccessDescription": "{user} was invited to like this page.",
+        "inviteErrorTitle": "Unable to send invitation",
+        "friendFallback": "this friend",
         "invitedButton": "Invited",
         "empty": "No friends found",
         "loading": "Loading...",
-        "inviteError": "Failed to send invitation.",
+        "inviteError": "The invitation was not sent. This person may already be invited or may already like the page.",
         "inviteSuccess": "Invitation sent successfully."
       }
     },
@@ -2917,6 +2924,7 @@
       ]
     },
     "messagesPage": {
+      "sharedJobLabel": "Recruitment",
       "seoTitle": "Messages | VNSEEA",
       "seoDescription": "Manage conversations on VNSEEA with a clearer user list, a stable chat window, and a cleaner message composer flow.",
       "searchPlaceholder": "Search",
@@ -4660,6 +4668,7 @@
       "jobImageSource": "Image source",
       "uploadImage": "Upload image",
       "imageUploadRequired": "Choose an image file when you use the upload source.",
+      "jobImagePreview": "Job image preview",
       "questions": "Application questions",
       "questionOne": "Question 1",
       "questionTwo": "Question 2",

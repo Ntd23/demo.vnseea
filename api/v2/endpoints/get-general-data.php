@@ -226,16 +226,18 @@ $timezone = new DateTimeZone($wo['user']['timezone']);
                     $wo['notification']['icon'] .= 'users';
                 }
                 if ($wo['notification']['type'] == 'accepted_invite') {
-                    $page_id                         = @end(explode('/', $wo['notification']['url']));
-                    $page                            = Wo_PageData(Wo_PageIdFromPagename($page_id));
-                    $wo['notification']['type_text'] = str_replace('{page_name}', $page['name'], $wo['lang']['accepted_invited_page']);
+                    $page                            = Wo_PageData($wo['notification']['page_id']);
+                    $page_name                       = !empty($page['name']) ? $page['name'] : (!empty($page['page_title']) ? $page['page_title'] : $wo['lang']['page']);
+                    $wo['notification']['type_text'] = str_replace('{page_name}', $page_name, $wo['lang']['accepted_invited_page']);
                     $wo['notification']['icon'] .= 'user-plus';
                 }
                 
                 if ($wo['notification']['type'] == 'invited_page') {
-                    $page_id                         = @end(explode('/', $wo['notification']['url']));
-                    $page                            = Wo_PageData(Wo_PageIdFromPagename($page_id));
-                    $wo['notification']['type_text'] = str_replace('{page_name}', $page['name'], $wo['lang']['invited_page']);
+                    $wo['notification']['type_text'] = str_replace(
+                        array('({page_name})', '{page_name}'),
+                        $wo['lang']['page'],
+                        $wo['lang']['invited_page']
+                    );
                     $wo['notification']['icon'] .= 'user-plus';
                 }
                 if ($wo['notification']['type'] == 'accepted_join_request') {

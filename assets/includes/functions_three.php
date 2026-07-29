@@ -3242,14 +3242,16 @@ function Wo_NotificationWebPushNotifier()
 							$sql_get_notification_for_push['type_text'] = str_replace('{group_name}', $group['name'], $wo['lang']['joined_group']);
 						}
 						if ($sql_get_notification_for_push['type'] == 'accepted_invite') {
-							$page_id                                    = @end(explode('/', $sql_get_notification_for_push['url']));
-							$page                                       = Wo_PageData(Wo_PageIdFromPagename($page_id));
-							$sql_get_notification_for_push['type_text'] = str_replace('{page_name}', $page['name'], $wo['lang']['accepted_invited_page']);
+							$page                                       = Wo_PageData($sql_get_notification_for_push['page_id']);
+							$page_name                                  = !empty($page['name']) ? $page['name'] : (!empty($page['page_title']) ? $page['page_title'] : $wo['lang']['page']);
+							$sql_get_notification_for_push['type_text'] = str_replace('{page_name}', $page_name, $wo['lang']['accepted_invited_page']);
 						}
 						if ($sql_get_notification_for_push['type'] == 'invited_page') {
-							$page_id                                    = @end(explode('/', $sql_get_notification_for_push['url']));
-							$page                                       = Wo_PageData(Wo_PageIdFromPagename($page_id));
-							$sql_get_notification_for_push['type_text'] = str_replace('{page_name}', $page['name'], $wo['lang']['invited_page']);
+							$sql_get_notification_for_push['type_text'] = str_replace(
+								array('({page_name})', '{page_name}'),
+								$wo['lang']['page'],
+								$wo['lang']['invited_page']
+							);
 						}
 						if ($sql_get_notification_for_push['type'] == 'accepted_join_request') {
 							$group_id                                   = @end(explode('/', $sql_get_notification_for_push['url']));

@@ -48,5 +48,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (!/^\d{8,15}$/.test(payload.phoneNumber)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Phone number must contain 8 to 15 digits.",
+    })
+  }
+
   return await applyToJob(event, payload)
 })

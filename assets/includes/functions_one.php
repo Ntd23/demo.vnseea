@@ -7666,9 +7666,6 @@ function Wo_GetPosts($data = array('filter_by' => 'all', 'after_post_id' => 0, '
     } else if (isset($Wo_page_publisher['page_id'])) {
         $page_id = Wo_Secure($Wo_page_publisher['page_id']);
         $query_text .= " AND (`page_id` = {$page_id}) AND `id` NOT IN (SELECT `post_id` from " . T_PINNED_POSTS . " WHERE `page_id` = {$page_id})";
-        // if ($wo['config']['job_system'] == 1 && $data['filter_by'] != 'job') {
-        //     $query_text .= " AND `job_id` = '0' ";
-        // }
         switch ($data['filter_by']) {
             case 'text':
                 $query_text .= " AND `postText` <> '' AND `postFile` = '' AND `postYoutube` = '' AND `postFacebook` = ''  AND `postVimeo` = ''  AND `postDailymotion` = '' AND `postSoundCloud` = '' ";
@@ -7842,11 +7839,8 @@ function Wo_GetPosts($data = array('filter_by' => 'all', 'after_post_id' => 0, '
         $query_text .= " AND `id` NOT IN (" . $not_in . ") ";
     }
 
-    if ($data['filter_by'] != 'job' && empty($Wo_page_publisher['page_id'])) {
-        if ($wo['config']['website_mode'] != 'linkedin') {
-            $query_text .= " AND `job_id` = '0' ";
-        }
-    }
+    // Public job posts belong in the regular news feed in every website mode.
+    // The dedicated "job" filter remains available when explicitly selected.
     $user = ($wo['loggedin']) ? $wo['user']['id'] : 0;
     if ((!isset($data['publisher_id']) || $data['publisher_id'] == $user) && empty($Wo_page_publisher['page_id']) && empty($Wo_group_publisher['id'])) {
         if ($user !== 0) {

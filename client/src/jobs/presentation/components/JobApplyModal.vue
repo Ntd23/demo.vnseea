@@ -45,7 +45,18 @@
           <UInput v-model="form.userName" class="w-full" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
         </UFormField>
         <UFormField :label="$t('pages.jobsPage.phone')" required :error="errors.phoneNumber || undefined">
-          <UInput v-model="form.phoneNumber" class="w-full" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
+          <UInput
+            v-model="form.phoneNumber"
+            class="w-full"
+            type="tel"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            autocomplete="tel"
+            maxlength="15"
+            size="xl"
+            :ui="{ base: 'h-12 rounded-[18px]' }"
+            @input="sanitizePhoneNumber"
+          />
         </UFormField>
         <UFormField :label="$t('pages.jobsPage.location')" required :error="errors.location || undefined">
           <UInput v-model="form.location" class="w-full" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
@@ -285,6 +296,16 @@ function clearErrors() {
   })
 }
 
+function sanitizePhoneNumber(event: Event) {
+  const input = event.target as HTMLInputElement | null
+  const digits = String(input?.value || "").replace(/\D/g, "").slice(0, 15)
+
+  form.phoneNumber = digits
+  if (input && input.value !== digits) {
+    input.value = digits
+  }
+}
+
 function submit() {
   if (!props.job) {
     return
@@ -293,7 +314,7 @@ function submit() {
   clearErrors()
 
   if (!form.userName.trim()) errors.userName = t("pages.jobsPage.fullNameError")
-  if (!form.phoneNumber.trim()) errors.phoneNumber = t("pages.jobsPage.phoneError")
+  if (!/^\d{8,15}$/.test(form.phoneNumber.trim())) errors.phoneNumber = t("pages.jobsPage.phoneError")
   if (!form.location.trim()) errors.location = t("pages.jobsPage.locationError")
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = t("pages.jobsPage.emailError")
 

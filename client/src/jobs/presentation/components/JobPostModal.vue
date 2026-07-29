@@ -148,6 +148,17 @@
             <p class="text-sm text-[var(--text-secondary)]">
               {{ form.thumbnailFile?.name || $t("pages.jobsPage.imageUploadRequired") }}
             </p>
+
+            <div
+              v-if="thumbnailPreviewUrl"
+              class="overflow-hidden rounded-[20px] border border-[var(--border-light)] bg-[var(--bg-muted)]"
+            >
+              <img
+                :src="thumbnailPreviewUrl"
+                :alt="$t('pages.jobsPage.jobImagePreview')"
+                class="aspect-video w-full object-cover"
+              >
+            </div>
           </div>
         </div>
       </UCard>
@@ -256,6 +267,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const thumbnailInput = ref<HTMLInputElement | null>(null)
+const thumbnailPreviewUrl = ref("")
 
 const normalizedCategories = computed(() =>
   Array.isArray(props.categories) ? props.categories : [],
@@ -389,6 +401,13 @@ const maximumModel = computed({
   },
 })
 
+function revokeThumbnailPreview() {
+  if (thumbnailPreviewUrl.value) {
+    URL.revokeObjectURL(thumbnailPreviewUrl.value)
+    thumbnailPreviewUrl.value = ""
+  }
+}
+
 watch(
   () => [
     props.open,
@@ -417,6 +436,8 @@ watch(
     form.description = ""
     form.imageType = "cover"
     form.thumbnailFile = null
+    if (thumbnailInput.value) thumbnailInput.value.value = ""
+    revokeThumbnailPreview()
     form.questions = [createQuestion(), createQuestion(), createQuestion()]
     clearErrors()
   },
@@ -431,8 +452,25 @@ function clearErrors() {
 
 function setThumbnail(event: Event) {
   const input = event.target as HTMLInputElement | null
-  form.thumbnailFile = input?.files?.[0] ?? null
+  const file = input?.files?.[0] ?? null
+
+  revokeThumbnailPreview()
+  form.thumbnailFile = file
+  thumbnailPreviewUrl.value = file ? URL.createObjectURL(file) : ""
 }
+
+watch(
+  () => form.imageType,
+  (imageType) => {
+    if (imageType !== "upload") {
+      form.thumbnailFile = null
+      if (thumbnailInput.value) thumbnailInput.value.value = ""
+      revokeThumbnailPreview()
+    }
+  },
+)
+
+onBeforeUnmount(revokeThumbnailPreview)
 
 function submit() {
   clearErrors()

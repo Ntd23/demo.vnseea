@@ -49,6 +49,12 @@ test("message BFF enriches shared links with the authorized post card", () => {
   assert.match(shared, /href:\s*productAttachment\.href/)
   assert.match(shared, /point:\s*product\?\.point \?\? 0/)
   assert.match(shared, /fetchCanonicalProductPoint/)
+  assert.match(shared, /post\?\.sharedPost\?\.jobId/)
+  assert.match(shared, /fetchJobDetailByPostId\(event, jobPost\.id\)/)
+  assert.match(shared, /job:\s*job/)
+  assert.match(shared, /title:\s*job\.title/)
+  assert.match(shared, /categoryLabel:\s*job\.categoryLabel/)
+  assert.match(shared, /salaryLabel:\s*job\.salaryLabel/)
   assert.match(shared, /backendRoutes\.api\.publicContent/)
   assert.match(shared, /card\.product\.point = canonicalPoint/)
   assert.match(shared, /href:\s*appRoutes\.postDetail\(post\.id\)/)
@@ -71,19 +77,25 @@ test("full and mini message surfaces render the same shared post card", () => {
   assert.match(card, /post\.authorAvatarUrl/)
   assert.match(card, /post\.imageUrl/)
   assert.match(card, /post\.product\.title/)
+  assert.match(card, /post\.job\.title/)
+  assert.match(card, /post\.job\.location/)
+  assert.match(card, /post\.job\.categoryLabel/)
+  assert.match(card, /pages\.messagesPage\.sharedJobLabel/)
+  assert.match(card, /post\.job\.salaryLabel/)
+  assert.match(card, /i-ph-briefcase-duotone/)
   assert.match(card, /formatProductPrice/)
   assert.match(card, /formatProductPoints/)
   assert.match(card, /message-shared-post__points/)
   assert.match(card, /-webkit-line-clamp:\s*2/)
 
-  const { descriptor, errors: sfcErrors } = parse(bubble, { filename: "ChatBubble.vue" })
-  assert.deepEqual(sfcErrors, [])
-  assert.doesNotThrow(() => compileScript(descriptor, { id: "chat-bubble" }))
-
   for (const [path, source] of [
     ["ChatBubble.vue", bubble],
     ["MessageSharedPostCard.vue", card],
   ]) {
+    const { descriptor, errors: sfcErrors } = parse(source, { filename: path })
+    assert.deepEqual(sfcErrors, [], `${path}: ${sfcErrors.join("; ")}`)
+    assert.doesNotThrow(() => compileScript(descriptor, { id: path }))
+
     const template = source.slice(
       source.indexOf("<template>") + "<template>".length,
       source.indexOf("</template>"),

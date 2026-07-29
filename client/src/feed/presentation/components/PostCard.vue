@@ -165,6 +165,17 @@
         />
       </ClientOnly>
 
+      <JobsJobFeedCard
+        v-else-if="post.sharedPost?.jobId"
+        :post-id="post.sharedPost.id"
+        :post-time="post.sharedPost.time"
+        :fallback-title="post.sharedPost.text"
+        :fallback-cover-url="post.sharedPost.mediaItems[0]?.thumb || post.sharedPost.mediaItems[0]?.src"
+        :fallback-owner-name="post.sharedPost.author"
+        :fallback-owner-avatar-url="post.sharedPost.authorAvatarUrl"
+        :fallback-owner-path="post.sharedPost.authorPath"
+      />
+
       <FeedSharedPostCard v-else-if="post.sharedPost" :post="post.sharedPost" class="mt-4" />
 
       <FeedPostMediaGrid
