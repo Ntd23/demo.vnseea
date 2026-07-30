@@ -42,6 +42,7 @@ export type MessageContact = {
   memberCount?: number
   members?: string[]
   tags?: MessageUserTag[]
+  notificationsMuted?: boolean
 }
 
 export type MessageGroupMember = {
@@ -136,7 +137,7 @@ export type MessageSharedPostCard = {
 }
 
 export type MessageSystemEvent = {
-  type: "message_pinned"
+  type: "message_pinned" | "message_unpinned"
   actorId: number
   actorName: string
   targetMessageId: number
@@ -229,6 +230,25 @@ export type MessageThread = {
   messages: MessageItem[]
   pinnedMessages: MessagePinnedItem[]
   typing: boolean
+}
+
+export type MessageSharedContentKind = "image" | "video" | "file" | "link"
+
+export type MessageSharedContentItem = {
+  id: number
+  kind: MessageSharedContentKind
+  url: string
+  title: string
+  senderName: string
+  time: string
+  timestamp: number
+  isMine: boolean
+}
+
+export type MessageSharedContent = {
+  media: MessageSharedContentItem[]
+  files: MessageSharedContentItem[]
+  links: MessageSharedContentItem[]
 }
 
 export type MessagePinnedItem = MessageItem & {

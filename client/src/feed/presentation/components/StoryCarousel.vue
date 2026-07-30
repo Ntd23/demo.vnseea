@@ -88,6 +88,7 @@
           <div
             ref="dialogRef"
             class="story-viewer__dialog"
+            :class="activeStoryMediaOrientation && `story-viewer__dialog--${activeStoryMediaOrientation}`"
             :style="{ '--story-viewer-gradient': activeStoryData?.gradient || fallbackGradient }"
             role="dialog"
             aria-modal="true"
@@ -119,6 +120,7 @@
               class="story-viewer__media"
               loading="eager"
               sizes="100vw sm:500px"
+              @load="handleActiveStoryImageLoad"
               @error="markStoryMediaFailed(activeStoryData?.id)"
             />
             <div v-else class="story-viewer__fallback">
@@ -193,21 +195,11 @@
                   v-if="activeStoryIsMine"
                   class="story-viewer__author-status"
                 >
-                  {{ activeStoryAudienceLabel }}
+                  <Icon :name="activeStoryAudienceIcon" class="story-viewer__author-status-icon" />
+                  <span>{{ activeStoryAudienceLabel }}</span>
                 </p>
                 <p v-if="activeStoryData?.meta" class="story-viewer__author-meta">{{ activeStoryData.meta }}</p>
               </div>
-              <UBadge
-                v-if="activeStoryIsMine"
-                class="story-viewer__views-pill"
-                color="neutral"
-                variant="soft"
-                :aria-label="activeStoryViewsLabel"
-                :title="activeStoryViewsLabel"
-              >
-                <Icon name="i-ph-eye-fill" class="h-[14px] w-[14px]" />
-                <span>{{ activeStoryViewCount }}</span>
-              </UBadge>
             </div>
 
             <div
@@ -245,6 +237,17 @@
               @touchstart.stop
               @touchend.stop
             >
+              <UBadge
+                v-if="activeStoryIsMine"
+                class="story-viewer__views-pill"
+                color="neutral"
+                variant="soft"
+                :aria-label="activeStoryViewsLabel"
+                :title="activeStoryViewsLabel"
+              >
+                <Icon name="i-ph-eye-fill" class="story-viewer__views-icon" />
+                <span>{{ activeStoryViewCount }}</span>
+              </UBadge>
               <button
                 v-if="activeStoryIsMine"
                 class="story-viewer__action story-viewer__action--delete"
@@ -443,6 +446,8 @@ const { t } = useI18n()
 const router = useRouter()
 const isMobileViewport = useMediaQuery("(max-width: 767px)")
 const appPromptOpen = ref(false)
+type StoryMediaOrientation = "portrait" | "landscape" | "square"
+const activeStoryMediaOrientation = ref<StoryMediaOrientation | null>(null)
 
 const props = defineProps<{
   stories: FeedStoryRecord[]
@@ -516,6 +521,37 @@ const activeStoryHasOverlays = computed(() =>
 const activeStoryAudienceLabel = computed(() =>
   t(`feed.storyCarousel.audiences.${activeStoryData.value?.audience || "public"}`),
 )
+const storyAudienceIcons: Record<FeedStoryRecord["audience"], string> = {
+  public: "i-ph-globe-hemisphere-west-fill",
+  friends: "i-ph-users-fill",
+  followers: "i-ph-user-focus-fill",
+  only_me: "i-ph-lock-key-fill",
+}
+const activeStoryAudienceIcon = computed(() =>
+  storyAudienceIcons[activeStoryData.value?.audience || "public"],
+)
+
+function resolveStoryMediaOrientation(width: number, height: number): StoryMediaOrientation | null {
+  if (!width || !height) {
+    return null
+  }
+
+  const aspectRatio = width / height
+
+  return aspectRatio > 1.08
+    ? "landscape"
+    : aspectRatio < 0.92
+      ? "portrait"
+      : "square"
+}
+
+function handleActiveStoryImageLoad(event: Event) {
+  const image = event.currentTarget as HTMLImageElement
+  activeStoryMediaOrientation.value = resolveStoryMediaOrientation(
+    image.naturalWidth,
+    image.naturalHeight,
+  )
+}
 
 function storyOverlayStyle(item: FeedStoryOverlayItem) {
   return {
@@ -532,6 +568,10 @@ async function handleCreateStory() {
 
   await router.push(feedStoryCreatePath)
 }
+
+watch(() => activeStoryData.value?.id, () => {
+  activeStoryMediaOrientation.value = null
+})
 </script>
 
 <style scoped>
@@ -544,7 +584,7 @@ async function handleCreateStory() {
   inset: 0;
   z-index: 2147483500;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   background: #050505;
   overscroll-behavior: contain;
@@ -559,8 +599,9 @@ async function handleCreateStory() {
 
 .story-viewer__dialog {
   position: relative;
-  width: 100vw;
-  height: 100dvh;
+  width: min(100vw, 56.25dvh);
+  height: auto;
+  aspect-ratio: 9 / 16;
   overflow: hidden;
   outline: none;
   background: var(--story-viewer-gradient, linear-gradient(135deg, #0f172a 0%, var(--bg-brand-hover) 58%, #38bdf8 100%));
@@ -568,8 +609,8 @@ async function handleCreateStory() {
 
 @media (min-width: 1024px) {
   .story-viewer__dialog {
-    width: min(460px, calc(100vw - 48px));
-    height: 86vh;
+    width: min(460px, 48.375dvh, calc(100vw - 48px));
+    height: auto;
     border-radius: 28px;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
   }
@@ -577,7 +618,7 @@ async function handleCreateStory() {
 
 @media (min-width: 1280px) {
   .story-viewer__dialog {
-    width: min(500px, calc(100vw - 48px));
+    width: min(500px, 48.375dvh, calc(100vw - 48px));
   }
 }
 
@@ -595,6 +636,11 @@ async function handleCreateStory() {
 }
 
 .story-viewer__media--video {
+  object-fit: contain;
+}
+
+.story-viewer__dialog--landscape .story-viewer__media,
+.story-viewer__dialog--square .story-viewer__media {
   object-fit: contain;
 }
 
@@ -691,7 +737,7 @@ async function handleCreateStory() {
 }
 
 .story-viewer__author--mine {
-  right: 100px;
+  right: 166px;
 }
 
 .story-viewer__author-avatar {
@@ -739,7 +785,10 @@ async function handleCreateStory() {
 }
 
 .story-viewer__author-status {
+  display: inline-flex;
   max-width: min(280px, calc(100vw - 112px));
+  align-items: center;
+  gap: 4px;
   overflow: hidden;
   margin: 2px 0 0;
   color: rgba(255, 255, 255, 0.9);
@@ -748,6 +797,12 @@ async function handleCreateStory() {
   line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.story-viewer__author-status-icon {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
 }
 
 .story-viewer__author-meta {
@@ -812,6 +867,7 @@ async function handleCreateStory() {
   top: 24px;
   z-index: 5;
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -979,19 +1035,28 @@ async function handleCreateStory() {
 
 .story-viewer__views-pill {
   display: inline-flex;
+  min-width: 54px;
+  height: 34px;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: 3px 9px;
+  padding: 0 10px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   background: rgba(0, 0, 0, 0.32);
   color: rgba(255, 255, 255, 0.88);
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
   backdrop-filter: blur(10px);
   white-space: nowrap;
   flex-shrink: 0;
-  margin-left: auto;
+}
+
+.story-viewer__views-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
 }
 
 .story-viewer__bar-react {

@@ -22,6 +22,8 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
 			if (!empty($_POST['user_id'])) {
 				$user_id = Wo_Secure($_POST['user_id']);
 				$db->where("((from_id = '".$wo['user']['user_id']."' AND to_id = '".$user_id."') OR (from_id = '".$user_id."' AND to_id = '".$wo['user']['user_id']."'))");
+				$db->where("page_id", 0);
+				$db->where("group_id", 0);
 			}
 			elseif (!empty($_POST['page_id'])) {
 				$page_id = Wo_Secure($_POST['page_id']);
@@ -34,7 +36,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
 				$db->where("group_id",$group_id);
 			}
 
-			$messages = $db->where("text","%".$text."%","like")->get(T_MESSAGES);
+			$messages = $db->where("text","%".$text."%","like")->orderBy('id', 'DESC')->get(T_MESSAGES, 50);
 			$search = array_map(function ($message)
 			{
 				return GetMessageById($message->id);
@@ -59,6 +61,8 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
 			if (!empty($_POST['user_id'])) {
 				$user_id = Wo_Secure($_POST['user_id']);
 				$db->where("((from_id = '".$wo['user']['user_id']."' AND to_id = '".$user_id."') OR (from_id = '".$user_id."' AND to_id = '".$wo['user']['user_id']."'))");
+				$db->where("page_id", 0);
+				$db->where("group_id", 0);
 			}
 			elseif (!empty($_POST['page_id'])) {
 				$page_id = Wo_Secure($_POST['page_id']);

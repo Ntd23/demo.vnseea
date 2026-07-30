@@ -1374,6 +1374,9 @@ export function useChatWidgetVM(
       messageId: message.id,
       pinned: !pinned,
     })
+    if (pinned) {
+      session.thread.pinnedMessages = session.thread.pinnedMessages.filter(item => item.id !== message.id)
+    }
     await refreshMiniThread(session, { silent: true })
     return result
   }

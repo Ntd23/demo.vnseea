@@ -12,6 +12,7 @@ import type {
   MessageCreateGroupResult,
   MessageGroupDetails,
   MessageItem,
+  MessageSharedContent,
   MessageRealtimeToken,
   MessageTypingState,
   MessageSendDraft,
@@ -171,6 +172,30 @@ export function createApiMessagesRepository(): MessagesRepository {
           ...createThreadQuery(contact),
           ...input,
         },
+      )
+    },
+    async setConversationNotifications(contact, enabled) {
+      return await client.post<MessageActionResult & { enabled: boolean }, Record<string, unknown>>(
+        apiRoutes.messages.conversationNotifications,
+        {
+          ...createThreadQuery(contact),
+          enabled,
+        },
+      )
+    },
+    async searchConversation(contact, query) {
+      return await client.get<MessageItem[]>(
+        apiRoutes.messages.conversationSearch,
+        {
+          ...createThreadQuery(contact),
+          query,
+        },
+      )
+    },
+    async getSharedContent(contact) {
+      return await client.get<MessageSharedContent>(
+        apiRoutes.messages.sharedContent,
+        createThreadQuery(contact),
       )
     },
     async sendMultiMessage(input) {

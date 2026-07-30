@@ -30,6 +30,8 @@ import type {
   MessageProductCard,
   MessageGroupMember,
   MessageStoryContext,
+  MessageSharedContent,
+  MessageSharedContentItem,
   MessageSharedPostCard,
   MessageTypingState,
   MessageThread,
@@ -549,17 +551,21 @@ const mapMessagePinSystemEvent = (entity: BackendEntity) => {
     || firstString(entity, ["type_two"])
   const targetMessageId = asNumber(rawSystemEvent.target_message_id)
     || asNumber(entity.reply_id)
-  const isPinnedMessageEvent = systemEventType === "message_pinned"
-    || systemEventType === "message_pin_event"
+  const normalizedSystemEventType = systemEventType === "message_unpinned"
+    || systemEventType === "message_unpin_event"
+    ? "message_unpinned"
+    : systemEventType === "message_pinned" || systemEventType === "message_pin_event"
+      ? "message_pinned"
+      : null
 
-  if (!isPinnedMessageEvent || targetMessageId <= 0) {
+  if (!normalizedSystemEventType || targetMessageId <= 0) {
     return undefined
   }
 
   const userData = asRecord(entity.user_data)
   const messageUser = asRecord(entity.messageUser)
   return {
-    type: "message_pinned" as const,
+    type: normalizedSystemEventType,
     actorId: asNumber(rawSystemEvent.actor_id) || asNumber(entity.from_id),
     actorName: firstString(rawSystemEvent, ["actor_name"])
       || buildDisplayName(userData)
@@ -874,7 +880,9 @@ const buildContactPreview = (
     const actorName = systemEvent.actorId === currentUserId
       ? "Bạn"
       : systemEvent.actorName
-    return `${actorName} đã ghim một tin nhắn`
+    return systemEvent.type === "message_unpinned"
+      ? `${actorName} đã bỏ ghim một tin nhắn`
+      : `${actorName} đã ghim một tin nhắn`
   }
 
   if (parseRecalledMessagePayload(text)) {
@@ -941,9 +949,13 @@ const mapBackendMessageProduct = (
   resolveMediaUrl: (value: unknown) => string,
 ): MessageProductCard | undefined => {
   const product = asRecord(entity.product)
+  const marketplaceContext = asRecord(entity.marketplace_context)
   const productId = asNumber(entity.product_id)
-    || firstNumber(product, ["id", "product_id"])
+    || asNumber(product.id)
+    || asNumber(product.product_id)
+    || asNumber(marketplaceContext.product_id)
   const title = firstString(product, ["name", "title"])
+    || firstString(marketplaceContext, ["name", "title"])
 
   if (productId <= 0 || !title) {
     return undefined
@@ -953,9 +965,11 @@ const mapBackendMessageProduct = (
   const firstImage = images[0]
   const imageUrl = resolveMediaUrl(
     firstString(firstImage, ["image_org", "image"])
-    || firstString(product, ["image", "image_url"]),
+    || firstString(product, ["image", "image_url"])
+    || firstString(marketplaceContext, ["image", "image_url"]),
   )
-  const formattedPrice = firstString(product, ["price_format"])
+  const formattedPrice = firstString(marketplaceContext, ["price"])
+    || firstString(product, ["price_format"])
     || firstString(product, ["price"])
   const currency = firstString(product, ["currency_symbol", "currency_code", "currency"])
 
@@ -966,6 +980,72 @@ const mapBackendMessageProduct = (
     price: [formattedPrice, currency].filter(Boolean).join(" "),
     href: appRoutes.productDetail(firstString(product, ["seo_id"]) || productId),
   }
+}
+
+const stripMessageMarkup = (value: string) =>
+  normalizeInlineMessageText(
+    decodeHtmlEntities(value)
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<[^>]+>/g, ""),
+  )
+
+const mapBackendMessageReplyText = (
+  entity: BackendEntity,
+  body: string,
+  currentUserId: number,
+  resolveMediaUrl: (value: unknown) => string,
+) => {
+  if (body.startsWith(MESSAGE_REPLY_PREFIX)) {
+    return body
+  }
+
+  const reply = asRecord(entity.reply)
+  const targetMessageId = asNumber(entity.reply_id) || asNumber(reply.id)
+
+  if (targetMessageId <= 0 || Object.keys(reply).length === 0) {
+    return body
+  }
+
+  const replyUserData = asRecord(reply.user_data)
+  const replyMessageUser = asRecord(reply.messageUser)
+  const replySenderId = asNumber(reply.from_id)
+  const replyProduct = mapBackendMessageProduct(reply, resolveMediaUrl)
+  const replyMediaType = inferMediaType(reply)
+  const replyMediaUrl = buildMediaUrl(reply, resolveMediaUrl)
+  const replyText = stripMessageMarkup(
+    decryptMessageText(
+      firstString(reply, ["or_text", "text"]),
+      reply.time,
+    ),
+  )
+  const replyMediaName = firstString(reply, ["mediaFileName", "media_file_name", "filename"])
+  const quote = replyProduct?.title
+    || replyText
+    || replyMediaName
+    || (replyMediaType === "image" || replyMediaType === "gif"
+      ? "Ảnh"
+      : replyMediaType === "video"
+        ? "Video"
+        : replyMediaType === "audio" || replyMediaType === "record"
+          ? "Tin nhắn thoại"
+          : "Tin nhắn")
+  const author = replySenderId === currentUserId
+    ? "Bạn"
+    : buildDisplayName(replyUserData)
+      || buildDisplayName(replyMessageUser)
+      || "Người dùng"
+  const previewableMediaUrl = replyMediaType === "image" || replyMediaType === "gif"
+    ? replyMediaUrl
+    : ""
+  const payload = encodeURIComponent(JSON.stringify({
+    author,
+    quote: quote.length > 120 ? `${quote.slice(0, 120)}...` : quote,
+    mediaUrl: previewableMediaUrl,
+    mediaType: previewableMediaUrl ? replyMediaType : "",
+    targetMessageId,
+  }))
+
+  return `${MESSAGE_REPLY_PREFIX}${payload}\n${body}`
 }
 
 const getGroupParts = (entity: BackendEntity) =>
@@ -1070,6 +1150,7 @@ const mapMessageContact = (
   if (type === "user") {
     const userId = asNumber(entity.user_id)
     const lastSeenAt = buildLastSeenAt(entity)
+    const mute = asRecord(entity.mute)
 
     if (userId <= 0) {
       return null
@@ -1106,6 +1187,7 @@ const mapMessageContact = (
       type: "user",
       userId,
       chatId: asNumber(entity.chat_id) || undefined,
+      notificationsMuted: firstString(mute, ["notify"]) === "no",
     }
   }
 
@@ -1209,10 +1291,14 @@ const mapThreadMessage = (
   const systemEvent = mapMessagePinSystemEvent(entity)
   const story = recalledPayload ? undefined : mapMessageStoryContext(entity, resolveMediaUrl)
   const productCard = recalledPayload ? undefined : mapBackendMessageProduct(entity, resolveMediaUrl)
+  const normalizedText = normalizeMessageText(rawText, entity)
+  const text = recalledPayload || systemEvent
+    ? ""
+    : mapBackendMessageReplyText(entity, normalizedText, currentUserId, resolveMediaUrl)
 
   return {
     id: asNumber(entity.id),
-    text: recalledPayload || systemEvent ? "" : normalizeMessageText(rawText, entity),
+    text,
     isMine: senderId === currentUserId || asString(entity.position).startsWith("right"),
     time: firstString(entity, ["time_text"]),
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
@@ -2024,6 +2110,182 @@ export async function updateMessagePin(
     ok: true,
     messageId,
     pinned: input.pinned,
+  }
+}
+
+const extractMessageLink = (entity: BackendEntity) => {
+  const rawText = decryptMessageText(entity.text, entity.time)
+  const markupMatch = rawText.match(/\[a\]([^[]+)\[\/a\]/i)
+  const htmlMatch = rawText.match(/href=["']([^"']+)["']/i)
+  const plainMatch = rawText.match(/https?:\/\/[^\s<>"']+/i)
+  let url = markupMatch?.[1] || htmlMatch?.[1] || plainMatch?.[0] || ""
+
+  if (markupMatch?.[1]) {
+    try {
+      url = decodeURIComponent(markupMatch[1])
+    }
+    catch {
+      url = markupMatch[1]
+    }
+  }
+
+  return decodeHtmlEntities(url).trim()
+}
+
+const buildSharedContentTitle = (url: string, fallback: string) => {
+  if (fallback.trim()) {
+    return fallback.trim()
+  }
+
+  try {
+    return new URL(url).hostname.replace(/^www\./, "")
+  }
+  catch {
+    return url
+  }
+}
+
+const mapSharedContentItem = (
+  entity: BackendEntity,
+  kind: MessageSharedContentItem["kind"],
+  currentUserId: number,
+  resolveMediaUrl: (value: unknown) => string,
+): MessageSharedContentItem | null => {
+  const message = mapThreadMessage(entity, currentUserId, resolveMediaUrl, "user")
+  const url = kind === "link" ? extractMessageLink(entity) : message.mediaUrl || ""
+
+  if (message.id <= 0 || !url) {
+    return null
+  }
+
+  const fallbackTitle = kind === "file"
+    ? message.mediaName || url.split("/").pop() || ""
+    : kind === "link"
+      ? ""
+      : message.authorName || ""
+
+  return {
+    id: message.id,
+    kind,
+    url,
+    title: buildSharedContentTitle(url, fallbackTitle),
+    senderName: message.isMine ? "Bạn" : message.authorName || "Người dùng",
+    time: message.time || "",
+    timestamp: message.timestamp || 0,
+    isMine: message.isMine,
+  }
+}
+
+export async function searchUserConversation(
+  event: H3Event,
+  userId: number,
+  query: string,
+): Promise<MessageItem[]> {
+  const normalizedUserId = asNumber(userId)
+  const normalizedQuery = asString(query).trim().slice(0, 120)
+
+  if (normalizedUserId <= 0 || !normalizedQuery) {
+    return []
+  }
+
+  const currentUser = await getBackendCurrentUser(event)
+  const currentUserId = asNumber(currentUser.user_id)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const response = assertBackendApiSuccess(
+    await createBackendApiClient(event).post<BackendCollectionResponse, Record<string, unknown>>(
+      "chat",
+      {
+        type: "search",
+        user_id: normalizedUserId,
+        text: normalizedQuery,
+      },
+    ),
+    "Unable to search this conversation.",
+  )
+
+  return extractCollectionMessages(response)
+    .map(entity => mapThreadMessage(entity, currentUserId, resolveMediaUrl, "user"))
+    .filter(message => message.id > 0 && !message.isDeleted && !message.systemEvent)
+}
+
+export async function fetchUserConversationSharedContent(
+  event: H3Event,
+  userId: number,
+): Promise<MessageSharedContent> {
+  const normalizedUserId = asNumber(userId)
+
+  if (normalizedUserId <= 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "A valid user conversation is required.",
+    })
+  }
+
+  const currentUser = await getBackendCurrentUser(event)
+  const currentUserId = asNumber(currentUser.user_id)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const client = createBackendApiClient(event)
+  const mediaTypes = ["images", "videos", "docs", "links"] as const
+  const responses = await Promise.all(mediaTypes.map(async mediaType =>
+    assertBackendApiSuccess(
+      await client.post<BackendCollectionResponse, Record<string, unknown>>(
+        "chat",
+        {
+          type: "get_media",
+          user_id: normalizedUserId,
+          media_type: mediaType,
+          limit: 50,
+        },
+      ),
+      "Unable to load shared conversation content.",
+    ),
+  ))
+
+  const mapCollection = (
+    response: BackendCollectionResponse,
+    kind: MessageSharedContentItem["kind"],
+  ) => extractCollectionMessages(response)
+    .map(entity => mapSharedContentItem(entity, kind, currentUserId, resolveMediaUrl))
+    .filter(Boolean) as MessageSharedContentItem[]
+
+  return {
+    media: [
+      ...mapCollection(responses[0], "image"),
+      ...mapCollection(responses[1], "video"),
+    ].sort((left, right) => right.timestamp - left.timestamp),
+    files: mapCollection(responses[2], "file"),
+    links: mapCollection(responses[3], "link"),
+  }
+}
+
+export async function updateUserConversationNotifications(
+  event: H3Event,
+  input: { chatId: number, enabled: boolean },
+) {
+  const chatId = asNumber(input.chatId)
+
+  if (chatId <= 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "A valid user chat is required.",
+    })
+  }
+
+  assertBackendApiSuccess(
+    await createBackendApiClient(event).post<BackendCollectionResponse, Record<string, unknown>>(
+      "mute",
+      {
+        type: "user",
+        chat_id: chatId,
+        notify: input.enabled ? "yes" : "no",
+      },
+    ),
+    "Unable to update conversation notifications.",
+  )
+
+  return {
+    ok: true,
+    enabled: input.enabled,
   }
 }
 

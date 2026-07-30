@@ -126,6 +126,7 @@
       <MessagesPinnedMessagesBar
         :pinned-messages="pinnedMessages"
         @select="messageListRef?.scrollToMessage($event)"
+        @unpin="$emit('pin-message', $event)"
       />
 
       <MessagesChatMessageList
@@ -354,6 +355,10 @@ const emit = defineEmits<{
 const inputModel = ref("")
 const messageListRef = ref<{ scrollToMessage: (messageId: number) => void } | null>(null)
 const productImageFailed = ref(false)
+
+defineExpose({
+  scrollToMessage: (messageId: number) => messageListRef.value?.scrollToMessage(messageId),
+})
 
 watch(() => props.productCard?.imageUrl, () => {
   productImageFailed.value = false

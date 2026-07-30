@@ -551,6 +551,7 @@
           :pinned-messages="miniSession.thread.pinnedMessages"
           compact
           @select="scrollToMiniReplyTarget(miniSession.contactId, $event)"
+          @unpin="toggleMiniMessagePinAction(miniSession, $event)"
         />
 
         <div
@@ -578,12 +579,22 @@
               class="chat-widget__mini-message"
               :class="{
                 'chat-widget__mini-message--mine': message.isMine,
+                'chat-widget__mini-message--system': Boolean(message.systemEvent),
                 'chat-widget__mini-message--product': Boolean(getMiniProductMeta(message)),
                 'chat-widget__mini-message--location': Boolean(getMessageLocationMeta(message)),
                 'chat-widget__mini-message--highlighted': highlightedMiniMessageKey === `${miniSession.contactId}:${message.id}`,
               }"
             >
+              <div
+                v-if="message.systemEvent"
+                class="chat-widget__mini-pin-event"
+              >
+                <Icon :name="message.systemEvent.type === 'message_unpinned' ? 'i-ph-push-pin-slash-bold' : 'i-ph-push-pin-fill'" />
+                <span>{{ getMiniPinnedEventLabel(message) }}</span>
+              </div>
+
               <ChatBubble
+                v-else
                 :text="getMiniBubbleText(message)"
                 :is-mine="message.isMine"
                 :is-last="message.isLast"
@@ -1527,6 +1538,15 @@ async function deleteMiniMessageAction(message: MessageItem) {
       [message.id]: previousReaction,
     }
   }
+}
+
+function getMiniPinnedEventLabel(message: MessageItem) {
+  const translationKey = message.systemEvent?.type === "message_unpinned"
+    ? "navigation.chatWidget.userUnpinnedMessage"
+    : "navigation.chatWidget.userPinnedMessage"
+  return t(translationKey, {
+    name: message.systemEvent?.actorName || message.authorName || t("navigation.chatWidget.pinnedUserFallback"),
+  })
 }
 
 function getMiniPinnedMessage(session: MiniChatSessionView, messageId: number) {
@@ -3011,6 +3031,35 @@ watch(miniChatAutoOpenVersion, (version) => {
 .chat-widget__mini-message--mine {
   align-items: flex-end;
   padding-inline: 38px 0;
+}
+
+.chat-widget__mini-message--system,
+.chat-widget__mini-message--mine.chat-widget__mini-message--system {
+  align-items: center;
+  padding-inline: 0;
+}
+
+.chat-widget__mini-pin-event {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: var(--bg-muted);
+  padding: 6px 11px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.chat-widget__mini-pin-event svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  color: var(--color-primary);
 }
 
 .chat-widget__mini-message--product {

@@ -104,6 +104,11 @@ if (!empty($_POST['recipient_id']) && is_numeric($_POST['recipient_id']) && $_PO
                     if ($message['reply']['from_id'] == $user_id) {
                         $message_po  = 'right';
                     }
+                    if (!empty($message['reply']['messageUser'])) {
+                        $reply_user = Wo_UserData((int)$message['reply']['from_id']);
+                        $message['reply']['messageUser']['name'] = !empty($reply_user['name']) ? $reply_user['name'] : '';
+                        $message['reply']['messageUser']['username'] = !empty($reply_user['username']) ? $reply_user['username'] : '';
+                    }
                     
                     $message['reply']['position']  = $message_po;
                     $message['reply']['type']      = Wo_GetFilePosition($message['reply']['media']);

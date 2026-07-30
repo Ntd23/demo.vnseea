@@ -982,13 +982,12 @@ export function useMessagesInbox(
 
     activeReactionPickerId.value = null
 
+    let result
     try {
-      const result = await repository.setMessagePin(contact, {
+      result = await repository.setMessagePin(contact, {
         messageId: message.id,
         pinned: !pinned,
       })
-      await refreshThread()
-      return result
     }
     catch {
       toast.add({
@@ -998,6 +997,22 @@ export function useMessagesInbox(
       })
       return null
     }
+
+    if (pinned && thread.value) {
+      thread.value = {
+        ...thread.value,
+        pinnedMessages: thread.value.pinnedMessages.filter(item => item.id !== message.id),
+      }
+    }
+
+    try {
+      await refreshThread()
+    }
+    catch {
+      // The pin mutation already succeeded. Realtime synchronization will
+      // retry the thread refresh without showing a misleading pin error.
+    }
+    return result
   }
 
   async function markAllAsRead() {

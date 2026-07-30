@@ -13,6 +13,7 @@ import type {
   MessageTypingState,
   MessageTagsPayload,
   MessageItem,
+  MessageSharedContent,
   MessageSendDraft,
   MessageThread,
   MultiMessageSendResult,
@@ -45,6 +46,11 @@ export interface MessagesRepository {
     messageId: number
     pinned: boolean
   }>
+  setConversationNotifications(contact: MessageContact, enabled: boolean): Promise<MessageActionResult & {
+    enabled: boolean
+  }>
+  searchConversation(contact: MessageContact, query: string): Promise<MessageItem[]>
+  getSharedContent(contact: MessageContact): Promise<MessageSharedContent>
   sendMultiMessage(input: {
     recipientIds: number[]
     text: string
