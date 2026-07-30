@@ -53,6 +53,18 @@ post_tags_assert_true(strpos($new_post, 'mysqli_begin_transaction') !== false, '
 post_tags_assert_true(strpos($new_post, 'VNSEEA_SavePostTaggedUsers') !== false, 'new post must persist tags');
 post_tags_assert_true(strpos($new_post, 'mysqli_commit') !== false, 'new post must commit before notifying');
 post_tags_assert_true(strpos($new_post, 'VNSEEA_NotifyPostTaggedUsers') !== false, 'new post must notify tagged users');
+post_tags_assert_true(
+    strpos($new_post, '$should_register_album_photos') !== false,
+    'post creation must distinguish a pre-uploaded single photo from deferred album photos'
+);
+post_tags_assert_true(
+    strpos($new_post, "if (\$should_register_album_photos)") !== false,
+    'a pre-uploaded single photo must not be uploaded again after the post insert'
+);
+post_tags_assert_true(
+    strpos($new_post, "'post_media_save_failed'") !== false,
+    'media dependency failures must not be reported as tagged-user failures'
+);
 post_tags_assert_true(strpos($functions, 'VNSEEA_GetPostTaggedUsers') !== false, 'Wo_PostData must hydrate tagged users');
 post_tags_assert_true(strpos($functions, 'T_POST_TAGGED_USERS') !== false, 'post deletion must clean tag rows');
 
