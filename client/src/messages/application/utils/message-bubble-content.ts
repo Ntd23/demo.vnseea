@@ -87,7 +87,14 @@ export function getMessageReplyMeta(message: Pick<MessageItem, "text">): Message
   }
 }
 
-export function getMessageProductMeta(message: Pick<MessageItem, "text">): MessageProductMeta | null {
+export function getMessageProductMeta(message: Pick<MessageItem, "text" | "productCard">): MessageProductMeta | null {
+  if (message.productCard) {
+    return {
+      card: message.productCard,
+      body: normalizeMessageText(message.text),
+    }
+  }
+
   const normalizedText = normalizeMessageText(message.text)
   const [productLine, ...bodyLines] = normalizedText.split("\n")
 

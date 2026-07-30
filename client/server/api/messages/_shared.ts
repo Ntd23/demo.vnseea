@@ -26,6 +26,8 @@ import type {
   MessageCreateGroupResult,
   MessageGroupDetails,
   MessageItem,
+  MessagePinnedItem,
+  MessageProductCard,
   MessageGroupMember,
   MessageStoryContext,
   MessageSharedPostCard,
@@ -105,9 +107,18 @@ type BackendMessageRecallResponse = {
   message?: string
 }
 
+type BackendMessagePinResponse = {
+  api_status?: number | string
+  message?: string
+  errors?: {
+    error_text?: string
+  }
+}
+
 type MessageThreadQuery = {
   type: MessageThreadType
   userId?: number
+  chatId?: number
   groupId?: number
   pageId?: number
   recipientId?: number
@@ -925,6 +936,38 @@ const buildMediaUrl = (
   return source ? resolveMediaUrl(source) : ""
 }
 
+const mapBackendMessageProduct = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): MessageProductCard | undefined => {
+  const product = asRecord(entity.product)
+  const productId = asNumber(entity.product_id)
+    || firstNumber(product, ["id", "product_id"])
+  const title = firstString(product, ["name", "title"])
+
+  if (productId <= 0 || !title) {
+    return undefined
+  }
+
+  const images = asArray(product.images)
+  const firstImage = images[0]
+  const imageUrl = resolveMediaUrl(
+    firstString(firstImage, ["image_org", "image"])
+    || firstString(product, ["image", "image_url"]),
+  )
+  const formattedPrice = firstString(product, ["price_format"])
+    || firstString(product, ["price"])
+  const currency = firstString(product, ["currency_symbol", "currency_code", "currency"])
+
+  return {
+    id: String(productId),
+    title,
+    imageUrl: imageUrl || undefined,
+    price: [formattedPrice, currency].filter(Boolean).join(" "),
+    href: appRoutes.productDetail(firstString(product, ["seo_id"]) || productId),
+  }
+}
+
 const getGroupParts = (entity: BackendEntity) =>
   asArray(entity.parts).length
     ? asArray(entity.parts)
@@ -1062,6 +1105,7 @@ const mapMessageContact = (
       members: [firstString(entity, ["name", "username"])].filter(Boolean),
       type: "user",
       userId,
+      chatId: asNumber(entity.chat_id) || undefined,
     }
   }
 
@@ -1098,6 +1142,7 @@ const mapMessageContact = (
       members,
       type: "group",
       groupId,
+      chatId: asNumber(entity.chat_id) || undefined,
       memberCount: members.length,
     }
   }
@@ -1133,6 +1178,7 @@ const mapMessageContact = (
       type: "page",
       pageId,
       recipientId,
+      chatId: asNumber(entity.chat_id) || undefined,
     }
   }
 
@@ -1162,6 +1208,7 @@ const mapThreadMessage = (
   )
   const systemEvent = mapMessagePinSystemEvent(entity)
   const story = recalledPayload ? undefined : mapMessageStoryContext(entity, resolveMediaUrl)
+  const productCard = recalledPayload ? undefined : mapBackendMessageProduct(entity, resolveMediaUrl)
 
   return {
     id: asNumber(entity.id),
@@ -1183,6 +1230,7 @@ const mapThreadMessage = (
     mediaName: recalledPayload ? "" : firstString(entity, ["mediaFileName", "media_file_name", "filename"]),
     mediaType: recalledPayload ? undefined : mediaType,
     story,
+    productCard,
     isDeleted: Boolean(recalledPayload),
     deletedAt: recalledPayload?.deletedAt || undefined,
     deletedTime: recalledPayload?.deletedAt ? formatMessageTime(recalledPayload.deletedAt) : undefined,
@@ -1203,6 +1251,48 @@ const mapThreadMessage = (
         }
       : undefined,
   }
+}
+
+const resolvePinChatId = (input: MessageThreadQuery) =>
+  input.type === "group"
+    ? asNumber(input.groupId)
+    : asNumber(input.chatId)
+
+const fetchPinnedThreadMessages = async (
+  event: H3Event,
+  input: MessageThreadQuery,
+  currentUserId: number,
+  resolveMediaUrl: (value: unknown) => string,
+): Promise<MessagePinnedItem[]> => {
+  const response = assertBackendApiSuccess(
+    await createBackendApiClient(event).post<BackendCollectionResponse, Record<string, unknown>>(
+      "get_pin_message",
+      {
+        type: input.type,
+        chat_id: resolvePinChatId(input) || undefined,
+        participant_id: input.type === "user" ? input.userId : undefined,
+        page_id: input.type === "page" ? input.pageId : undefined,
+        recipient_id: input.type === "page" ? input.recipientId : undefined,
+      },
+    ),
+    "Unable to load pinned messages.",
+  )
+
+  const pinnedMessages = extractCollectionMessages(response)
+    .map((entity) => {
+      const message = mapThreadMessage(entity, currentUserId, resolveMediaUrl, input.type)
+
+      return {
+        ...message,
+        pinnedAt: asNumber(entity.pinned_at),
+        pinnedByUserId: asNumber(entity.pinned_by_user_id),
+        pinnedByName: firstString(entity, ["pinned_by_name"]) || "Người dùng",
+        canUnpin: isTruthy(entity.can_unpin),
+      }
+    })
+    .filter(message => message.id > 0 && !message.isDeleted)
+
+  return await enrichSharedPostMessages(event, pinnedMessages) as MessagePinnedItem[]
 }
 
 const mapGroupMember = (
@@ -1479,6 +1569,7 @@ export function readThreadQuery(event: H3Event): MessageThreadQuery {
   return {
     type,
     userId: asNumber(query.userId),
+    chatId: asNumber(query.chatId),
     groupId: asNumber(query.groupId),
     pageId: asNumber(query.pageId),
     recipientId: asNumber(query.recipientId),
@@ -1495,6 +1586,12 @@ export async function fetchMessageThread(
   const currentUserId = asNumber(currentUser.user_id)
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const pinnedMessagesPromise = fetchPinnedThreadMessages(
+    event,
+    input,
+    currentUserId,
+    resolveMediaUrl,
+  ).catch(() => [])
 
   if (input.type === "user") {
     if (!input.userId) {
@@ -1525,6 +1622,7 @@ export async function fetchMessageThread(
         input,
         await enrichSharedPostMessages(event, messages),
       ),
+      pinnedMessages: await pinnedMessagesPromise,
       typing: isTruthy(response.typing),
     }
   }
@@ -1562,6 +1660,7 @@ export async function fetchMessageThread(
         input,
         await enrichSharedPostMessages(event, messages),
       ),
+      pinnedMessages: await pinnedMessagesPromise,
       typing: false,
     }
   }
@@ -1596,6 +1695,7 @@ export async function fetchMessageThread(
       input,
       await enrichSharedPostMessages(event, messages),
     ),
+    pinnedMessages: await pinnedMessagesPromise,
     typing: false,
   }
 }
@@ -1885,6 +1985,45 @@ export async function recallMessage(
     deletedAt,
     deletedTime: formatMessageTime(deletedAt),
     deletedByName: asString(response.deleted_by_name) || undefined,
+  }
+}
+
+export async function updateMessagePin(
+  event: H3Event,
+  input: MessageThreadQuery & {
+    messageId: number
+    pinned: boolean
+  },
+) {
+  const messageId = asNumber(input.messageId)
+
+  if (messageId <= 0 || !["user", "group", "page"].includes(input.type)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "A valid message pin payload is required.",
+    })
+  }
+
+  assertBackendApiSuccess(
+    await createBackendApiClient(event).post<BackendMessagePinResponse, Record<string, unknown>>(
+      "pin_message",
+      {
+        type: input.type,
+        message_id: messageId,
+        chat_id: resolvePinChatId(input) || undefined,
+        participant_id: input.type === "user" ? input.userId : undefined,
+        page_id: input.type === "page" ? input.pageId : undefined,
+        recipient_id: input.type === "page" ? input.recipientId : undefined,
+        pin: input.pinned ? "yes" : "no",
+      },
+    ),
+    input.pinned ? "Unable to pin the message." : "Unable to unpin the message.",
+  )
+
+  return {
+    ok: true,
+    messageId,
+    pinned: input.pinned,
   }
 }
 

@@ -44,6 +44,13 @@
           :reaction-picker-open="activeReactionPickerId === msg.id"
           :reaction-options="bubbleReactionOptions"
           :can-delete="msg.isMine"
+          can-pin
+          :is-pinned="isMessagePinned(msg.id)"
+          :can-unpin="getPinnedMessage(msg.id)?.canUnpin"
+          :more-title="t('navigation.chatWidget.moreMessageActions')"
+          :pin-title="t('navigation.chatWidget.pinMessage')"
+          :unpin-title="t('navigation.chatWidget.unpinMessage')"
+          :delete-title="t('navigation.chatWidget.deleteMessage')"
           :media-url="msg.isDeleted ? undefined : msg.mediaUrl"
           :media-name="msg.isDeleted ? undefined : msg.mediaName"
           :media-type="msg.isDeleted ? undefined : msg.mediaType"
@@ -58,6 +65,7 @@
           @reply="emit('reply-message', msg)"
           @open-reply-target="scrollToReplyTarget"
           @delete="emit('delete-message', msg)"
+          @pin="emit('pin-message', msg)"
         />
       </template>
 
@@ -133,7 +141,7 @@ import {
 } from "../../../feed/application/constants/reaction-assets"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessageCallLogAction } from "../../domain/types/calls.types"
-import type { MessageItem, MessageThreadType } from "../../domain/types/messages.types"
+import type { MessageItem, MessagePinnedItem, MessageThreadType } from "../../domain/types/messages.types"
 import {
   formatMessageClock,
   getMessageDisplayText,
@@ -153,6 +161,7 @@ const props = withDefaults(defineProps<{
   isTyping?: boolean
   loadingLabel: string
   messages: MessageItem[]
+  pinnedMessages?: MessagePinnedItem[]
   threadKey?: string
 }>(), {
   emptyLabel: "",
@@ -165,6 +174,7 @@ const emit = defineEmits<{
   "select-reaction": [messageId: number, reaction: FeedStoryReactionType]
   "reply-message": [message: MessageItem]
   "delete-message": [message: MessageItem]
+  "pin-message": [message: MessageItem]
 }>()
 
 const { t } = useI18n()
@@ -269,6 +279,14 @@ function scrollToBottom(behavior: ScrollBehavior = "smooth") {
   })
 }
 
+function getPinnedMessage(messageId: number) {
+  return props.pinnedMessages?.find(message => message.id === messageId)
+}
+
+function isMessagePinned(messageId: number) {
+  return Boolean(getPinnedMessage(messageId))
+}
+
 function scrollToReplyTarget(messageId: number) {
   const target = listContainer.value?.querySelector<HTMLElement>(`[data-message-id="${messageId}"]`)
 
@@ -371,7 +389,7 @@ onBeforeUnmount(() => {
   }
 })
 
-defineExpose({ scrollToBottom })
+defineExpose({ scrollToBottom, scrollToMessage: scrollToReplyTarget })
 </script>
 
 <style scoped>

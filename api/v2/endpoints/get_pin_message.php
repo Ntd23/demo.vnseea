@@ -1,7 +1,20 @@
 <?php
-if (!empty($_POST['chat_id']) && is_numeric($_POST['chat_id']) && $_POST['chat_id'] > 0 && !empty($_POST['type']) && in_array($_POST['type'], array('user','page','group'))) {
-    $chat_id = (int)$_POST['chat_id'];
-    $chat_type = (string)$_POST['type'];
+$chat_id = !empty($_POST['chat_id']) ? (int)$_POST['chat_id'] : 0;
+$chat_type = !empty($_POST['type']) ? (string)$_POST['type'] : '';
+$participant_id = !empty($_POST['participant_id']) ? (int)$_POST['participant_id'] : 0;
+$page_id = !empty($_POST['page_id']) ? (int)$_POST['page_id'] : 0;
+$recipient_id = !empty($_POST['recipient_id']) ? (int)$_POST['recipient_id'] : 0;
+
+if ($chat_id < 1 && $chat_type === 'user' && $participant_id > 0) {
+    $resolved_chat = VNSEEA_GetOwnedUserChatByParticipant($participant_id);
+    $chat_id = !empty($resolved_chat->id) ? (int)$resolved_chat->id : 0;
+}
+if ($chat_id < 1 && $chat_type === 'page' && $page_id > 0 && $recipient_id > 0) {
+    $resolved_chat = VNSEEA_GetOwnedPageChat($page_id, $recipient_id);
+    $chat_id = !empty($resolved_chat->id) ? (int)$resolved_chat->id : 0;
+}
+
+if ($chat_id > 0 && in_array($chat_type, array('user','page','group'))) {
     $is_shared_pin = $chat_type === 'user' || $chat_type === 'group';
     $chats = array();
     if ($chat_type === 'page') {

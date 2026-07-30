@@ -547,6 +547,12 @@
           </div>
         </div>
 
+        <MessagesPinnedMessagesBar
+          :pinned-messages="miniSession.thread.pinnedMessages"
+          compact
+          @select="scrollToMiniReplyTarget(miniSession.contactId, $event)"
+        />
+
         <div
           :ref="element => setMiniMessagesViewport(miniSession.contactId, element)"
           class="chat-widget__mini-messages"
@@ -599,6 +605,13 @@
                 teleport-reaction-picker
                 :reaction-options="miniBubbleReactionOptions"
                 :can-delete="message.isMine"
+                can-pin
+                :is-pinned="Boolean(getMiniPinnedMessage(miniSession, message.id))"
+                :can-unpin="getMiniPinnedMessage(miniSession, message.id)?.canUnpin"
+                :more-title="$t('navigation.chatWidget.moreMessageActions')"
+                :pin-title="$t('navigation.chatWidget.pinMessage')"
+                :unpin-title="$t('navigation.chatWidget.unpinMessage')"
+                :delete-title="$t('navigation.chatWidget.deleteMessage')"
                 :media-url="message.isDeleted ? undefined : message.mediaUrl"
                 :media-name="message.isDeleted ? undefined : message.mediaName"
                 :media-type="message.isDeleted ? undefined : message.mediaType"
@@ -616,6 +629,7 @@
                 @reply="replyToMiniMessage(miniSession.contactId, message)"
                 @open-reply-target="scrollToMiniReplyTarget(miniSession.contactId, $event)"
                 @delete="deleteMiniMessageAction(message)"
+                @pin="toggleMiniMessagePinAction(miniSession, message)"
               />
             </div>
           </div>
@@ -843,6 +857,7 @@ import { useMessageCalls } from "../../../messages/application/composables/useMe
 import { useCurrentLocationShare } from "../../../messages/application/composables/useCurrentLocationShare"
 import { useMessageRecorder } from "../../../messages/application/composables/useMessageRecorder"
 import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
+import MessagesPinnedMessagesBar from "../../../messages/presentation/components/PinnedMessagesBar.vue"
 import MessagesTagModal from "../../../messages/presentation/components/MessageTagsModal.vue"
 import type { MessageCallType } from "../../../messages/domain/types/calls.types"
 import type { MessageContact, MessageItem } from "../../../messages/domain/types/messages.types"
@@ -964,6 +979,7 @@ const {
   sendMiniMessage,
   reactToMiniMessage,
   deleteMiniMessage,
+  toggleMiniMessagePin,
   onMiniFile,
   clearMiniFile,
   clearMiniProductDraft,
@@ -1510,6 +1526,25 @@ async function deleteMiniMessageAction(message: MessageItem) {
       ...miniMessageReactions.value,
       [message.id]: previousReaction,
     }
+  }
+}
+
+function getMiniPinnedMessage(session: MiniChatSessionView, messageId: number) {
+  return session.thread.pinnedMessages.find(message => message.id === messageId)
+}
+
+async function toggleMiniMessagePinAction(session: MiniChatSessionView, message: MessageItem) {
+  activeMiniReactionPickerId.value = null
+
+  try {
+    await toggleMiniMessagePin(session.contactId, message)
+  }
+  catch {
+    toast.add({
+      title: t("navigation.chatWidget.pinErrorTitle"),
+      description: t("navigation.chatWidget.pinErrorDescription"),
+      color: "error",
+    })
   }
 }
 

@@ -18,8 +18,6 @@ type BackendRegisterResponse = {
   }
 }
 
-const USERNAME_PATTERN = /^[A-Za-z0-9_]+$/
-
 function buildOptionalBirthday(body: RegisterAccountInput) {
   const parts = [body.birthYear, body.birthMonth, body.birthDay]
   if (parts.every(value => value === null || value === undefined)) {
@@ -40,6 +38,8 @@ function buildOptionalBirthday(body: RegisterAccountInput) {
   const isValid = Number.isInteger(year)
     && Number.isInteger(month)
     && Number.isInteger(day)
+    && year >= 1900
+    && year <= 3000
     && date.getUTCFullYear() === year
     && date.getUTCMonth() === month - 1
     && date.getUTCDate() === day
@@ -51,22 +51,13 @@ function buildOptionalBirthday(body: RegisterAccountInput) {
     })
   }
 
-  const birthday = `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
-  if (birthday > new Date().toISOString().slice(0, 10)) {
-    throw createError({
-      statusCode: 422,
-      statusMessage: "Birthday cannot be in the future.",
-    })
-  }
-
-  return birthday
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
 }
 
 export default defineEventHandler(async (event): Promise<RegisterAccountResult> => {
   const client = createBackendApiClient(event)
   const body = await readBody<RegisterAccountInput>(event)
   const identity = body.email?.trim() ?? ""
-  const username = body.username?.trim() ?? ""
   const firstName = body.firstName?.trim() ?? ""
   const lastName = body.lastName?.trim() ?? ""
   const digitsOnly = identity.replace(/\D/g, "")
@@ -88,23 +79,8 @@ export default defineEventHandler(async (event): Promise<RegisterAccountResult> 
     })
   }
 
-  if (!username) {
-    throw createError({
-      statusCode: 422,
-      statusMessage: "Username is required.",
-    })
-  }
-
-  if (!USERNAME_PATTERN.test(username) || username.length < 5 || username.length > 32) {
-    throw createError({
-      statusCode: 422,
-      statusMessage: "Username must be 5-32 characters and contain only letters, numbers, or underscores.",
-    })
-  }
-
   const response = assertBackendApiSuccess(
     await client.post<BackendRegisterResponse, Record<string, unknown>>(backendRoutes.api.createAccount, {
-      username,
       first_name: firstName || undefined,
       last_name: lastName || undefined,
       email,

@@ -2,8 +2,20 @@
 
 $message_id = !empty($_POST['message_id']) ? (int)$_POST['message_id'] : 0;
 $chat_id = !empty($_POST['chat_id']) ? (int)$_POST['chat_id'] : 0;
+$participant_id = !empty($_POST['participant_id']) ? (int)$_POST['participant_id'] : 0;
+$page_id = !empty($_POST['page_id']) ? (int)$_POST['page_id'] : 0;
+$recipient_id = !empty($_POST['recipient_id']) ? (int)$_POST['recipient_id'] : 0;
 $pin_action = !empty($_POST['pin']) ? (string)$_POST['pin'] : '';
 $chat_type = !empty($_POST['type']) ? (string)$_POST['type'] : '';
+
+if ($chat_id < 1 && $chat_type === 'user' && $participant_id > 0) {
+    $resolved_chat = VNSEEA_GetOwnedUserChatByParticipant($participant_id);
+    $chat_id = !empty($resolved_chat->id) ? (int)$resolved_chat->id : 0;
+}
+if ($chat_id < 1 && $chat_type === 'page' && $page_id > 0 && $recipient_id > 0) {
+    $resolved_chat = VNSEEA_GetOwnedPageChat($page_id, $recipient_id);
+    $chat_id = !empty($resolved_chat->id) ? (int)$resolved_chat->id : 0;
+}
 
 if ($message_id < 1 || $chat_id < 1 || !in_array($pin_action, array('yes', 'no')) || !in_array($chat_type, array('user', 'page', 'group')) || !VNSEEA_IsMessageInAuthorizedChat($chat_type, $chat_id, $message_id)) {
     $error_code = 4;

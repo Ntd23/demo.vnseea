@@ -36,6 +36,21 @@ const { viewer, close } = useReelsViewerOverlay();
 
 const modalTouchStart = ref<{ x: number; y: number } | null>(null);
 let overlayHistoryEntryActive = false;
+const scrollLockClass = "reels-viewer-scroll-locked";
+
+function lockPageScroll() {
+  if (!import.meta.client) return;
+
+  document.documentElement.classList.add(scrollLockClass);
+  document.body.classList.add(scrollLockClass);
+}
+
+function unlockPageScroll() {
+  if (!import.meta.client) return;
+
+  document.documentElement.classList.remove(scrollLockClass);
+  document.body.classList.remove(scrollLockClass);
+}
 
 function handleOverlayPopState() {
   if (!overlayHistoryEntryActive) return;
@@ -48,6 +63,12 @@ watch(
   viewer,
   (currentViewer, previousViewer) => {
     if (!import.meta.client) return;
+
+    if (currentViewer) {
+      lockPageScroll();
+    } else {
+      unlockPageScroll();
+    }
 
     if (currentViewer && !previousViewer && !overlayHistoryEntryActive) {
       window.history.pushState(
@@ -64,7 +85,7 @@ watch(
       window.history.back();
     }
   },
-  { flush: "sync" },
+  { flush: "sync", immediate: true },
 );
 
 onMounted(() => {
@@ -73,6 +94,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("popstate", handleOverlayPopState);
+  unlockPageScroll();
 });
 
 function handleEdgeTouchStart(event: TouchEvent) {
@@ -118,5 +140,11 @@ function handleEdgeTouchEnd(event: TouchEvent) {
   background: var(--bg-media);
   overscroll-behavior-x: contain;
   touch-action: pan-y;
+}
+
+:global(html.reels-viewer-scroll-locked),
+:global(body.reels-viewer-scroll-locked) {
+  overflow: hidden !important;
+  overscroll-behavior: none;
 }
 </style>

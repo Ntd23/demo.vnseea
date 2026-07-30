@@ -112,8 +112,14 @@
       </div>
 
       <!-- Right side: Authentication Form Card (Slot) -->
-      <main class="auth-hero__form-container"> <!-- Negative top margin to counteract padding and prevent scrollbar -->
-        <div class="auth-hero__form-card">
+      <main
+        class="auth-hero__form-container"
+        :class="{ 'auth-hero__form-container--register': isRegisterRoute }"
+      >
+        <div
+          class="auth-hero__form-card"
+          :class="{ 'auth-hero__form-card--register': isRegisterRoute }"
+        >
           <slot />
         </div>
       </main>
@@ -217,7 +223,9 @@ const props = withDefaults(defineProps<{
 })
 
 const { t, locale, locales, setLocale } = useI18n()
+const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
+const isRegisterRoute = computed(() => route.path.endsWith(appRoutes.register))
 const siteBrandingStore = useSiteBrandingStore()
 const { branding } = storeToRefs(siteBrandingStore)
 const logoFailed = ref(false)
@@ -511,6 +519,16 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   transition: transform var(--duration-normal) var(--ease-default);
+}
+
+.auth-hero__form-card--register {
+  max-width: 40rem;
+}
+
+@media (min-width: 1024px) {
+  .auth-hero__form-container--register {
+    flex: 1.25;
+  }
 }
 
 @media (min-width: 640px) {

@@ -18,20 +18,38 @@
         />
       </UFormField>
 
-      <UFormField name="username" :label="$t('pages.registerPage.username')" required>
-        <UInput v-model="state.username" type="text" autocomplete="username" size="xl" class="w-full"
-          :placeholder="$t('pages.registerPage.usernamePlaceholder')" />
+    <div class="auth-form__row-2">
+      <UFormField name="birthDay" :label="$t('pages.registerPage.birthday')" class="min-w-0">
+        <div class="auth-birthday-selects">
+          <USelect
+            v-model="state.birthDay"
+            :items="birthDayItems"
+            value-key="value"
+            label-key="label"
+            :aria-label="$t('pages.registerPage.day')"
+            size="xl"
+            class="w-full min-w-0"
+          />
+          <USelect
+            v-model="state.birthMonth"
+            :items="birthMonthItems"
+            value-key="value"
+            label-key="label"
+            :aria-label="$t('pages.registerPage.month')"
+            size="xl"
+            class="w-full min-w-0"
+          />
+          <USelect
+            v-model="state.birthYear"
+            :items="birthYearItems"
+            value-key="value"
+            label-key="label"
+            :aria-label="$t('pages.registerPage.year')"
+            size="xl"
+            class="w-full min-w-0"
+          />
+        </div>
       </UFormField>
-
-   <div class="auth-form__row-2">
- <UFormField name="birthDay" :label="$t('pages.registerPage.birthday')" class="min-w-0">
-  <UInputDate
-    v-model="birthDate"
-    :max-value="birthDateMax"
-    size="xl"
-    class="w-full"
-  />
-</UFormField>
 
   <UFormField name="gender" :label="$t('pages.registerPage.gender')" class="min-w-0">
     <USelect
@@ -42,7 +60,7 @@
       class="w-full"
     />
   </UFormField>
-</div>
+    </div>
 
       <UFormField name="email" :label="$t('pages.registerPage.loginIdentity')" required>
         <UInput v-model="state.email" type="text" autocomplete="username" size="xl"
@@ -135,7 +153,6 @@
 </template>
 
 <script setup lang="ts">
-import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 import { useRegisterPageVM } from '../../application/view-models/useRegisterPageVM'
 
@@ -146,21 +163,20 @@ const { state, isSubmitting, validate, handleSubmit } = useRegisterPageVM()
 const termsHref = appRoutes.termsOfUse
 const privacyHref = appRoutes.privacyPolicy
 
-const birthDate = shallowRef<CalendarDate | undefined>(
-  state.birthYear && state.birthMonth && state.birthDay
-    ? new CalendarDate(
-        Number(state.birthYear),
-        Number(state.birthMonth),
-        Number(state.birthDay),
-      )
-    : undefined,
-)
-const birthDateMax = today(getLocalTimeZone())
-
-watch(birthDate, (value) => {
-  state.birthDay = value?.day ?? null
-  state.birthMonth = value?.month ?? null
-  state.birthYear = value?.year ?? null
+const birthDayItems = Array.from({ length: 31 }, (_, index) => ({
+  label: String(index + 1).padStart(2, '0'),
+  value: index + 1,
+}))
+const birthMonthItems = Array.from({ length: 12 }, (_, index) => ({
+  label: String(index + 1).padStart(2, '0'),
+  value: index + 1,
+}))
+const birthYearItems = Array.from({ length: 1101 }, (_, index) => {
+  const year = 1900 + index
+  return {
+    label: String(year),
+    value: year,
+  }
 })
 const genderOptions = [
   { value: 'female', labelKey: 'pages.registerPage.female' },
@@ -188,7 +204,7 @@ const strength = computed(() => {
 <style scoped>
 .auth-form {
   width: 100%;
-  max-width: 420px;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -233,7 +249,7 @@ const strength = computed(() => {
 /* Row grids */
 .auth-form__row-2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   gap: 10px;
 }
 
@@ -353,6 +369,23 @@ const strength = computed(() => {
   box-shadow: 0 12px 28px color-mix(in srgb, var(--bg-brand) 20%, transparent) !important;
   transition: all 0.2s ease !important;
   cursor: pointer;
+}
+
+.auth-birthday-selects {
+  display: grid;
+  grid-template-columns: minmax(72px, 0.8fr) minmax(72px, 0.8fr) minmax(112px, 1.25fr);
+  gap: 8px;
+  width: 100%;
+}
+
+@media (max-width: 639px) {
+  .auth-form__row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-birthday-selects {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 1.25fr);
+  }
 }
 
 .auth-submit:hover:not(:disabled) {

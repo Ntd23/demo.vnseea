@@ -715,11 +715,20 @@ const buildPostAttachmentCard = (
     }
   }
 
-  const fund = asRecord(entity.fund)
+  const fundRaise = asRecord(entity.fund)
   const fundData = asRecord(entity.fund_data)
-  const funding = Object.keys(fundData).length ? fundData : fund
+  const raisedCampaign = asRecord(fundRaise.fund)
+  // A campaign post exposes `fund_data`, while a donation/raised-fund post
+  // wraps the same campaign under `fund.fund`. Always map the campaign record
+  // so its hashed id is used just like the /funding catalog detailUrl.
+  const funding = Object.keys(fundData).length
+    ? fundData
+    : Object.keys(raisedCampaign).length
+      ? raisedCampaign
+      : fundRaise
   const fundTitle = firstString(funding, ["title", "name"])
   const fundId = firstNumber(entity, ["fund_id"])
+    || firstNumber(fundRaise, ["funding_id"])
     || firstNumber(funding, ["id", "fund_id"])
   const hashedId = firstString(funding, ["hashed_id", "hash_id"])
 
@@ -736,7 +745,7 @@ const buildPostAttachmentCard = (
       title: fundTitle || "Funding",
       description: stripHtml(firstString(funding, ["description", "content", "body", "excerpt"])),
       imageUrl: resolveMediaUrl(firstString(funding, ["image", "thumbnail", "cover", "avatar"])),
-      href: appRoutes.showFund(hashedId || fundId),
+      href: hashedId ? appRoutes.showFund(hashedId) : appRoutes.funding,
       progress,
       raised,
       amount,

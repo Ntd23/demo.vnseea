@@ -13,6 +13,30 @@ function VNSEEA_GetOwnedUserChat($chat_id)
               ->getOne(T_U_CHATS);
 }
 
+function VNSEEA_GetOwnedUserChatByParticipant($participant_id)
+{
+    global $wo, $db;
+    if (empty($participant_id) || !is_numeric($participant_id) || empty($wo['user']['user_id'])) {
+        return false;
+    }
+    return $db->where('user_id', $wo['user']['user_id'])
+              ->where('conversation_user_id', Wo_Secure($participant_id))
+              ->where('page_id', 0)
+              ->getOne(T_U_CHATS);
+}
+
+function VNSEEA_GetOwnedPageChat($page_id, $participant_id)
+{
+    global $wo, $db;
+    if (empty($page_id) || empty($participant_id) || empty($wo['user']['user_id'])) {
+        return false;
+    }
+    return $db->where('user_id', $wo['user']['user_id'])
+              ->where('conversation_user_id', Wo_Secure($participant_id))
+              ->where('page_id', Wo_Secure($page_id))
+              ->getOne(T_U_CHATS);
+}
+
 function VNSEEA_IsMessageInOwnedUserChat($chat_id, $message_id)
 {
     global $wo, $db;

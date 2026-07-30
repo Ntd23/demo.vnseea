@@ -13,11 +13,23 @@ $response_data   = array(
     'api_status' => 400
 );
 $required_fields = array(
-    'username',
     'password',
     'email',
     'confirm_password'
 );
+
+function VNSEEA_GenerateNumericUuidUsername()
+{
+    do {
+        $username = (string) random_int(10000000, 99999999);
+        for ($index = 0; $index < 3; $index++) {
+            $username .= str_pad((string) random_int(0, 99999999), 8, '0', STR_PAD_LEFT);
+        }
+    } while (in_array(true, Wo_IsNameExist($username, 0)));
+
+    return $username;
+}
+
 $birthday       = '';
 $birthday_input = isset($_POST['birthday']) ? trim((string) $_POST['birthday']) : '';
 if ($birthday_input !== '') {
@@ -28,7 +40,7 @@ if ($birthday_input !== '') {
         $birthday_year  = (int) $birthday_parts[1];
         $birthday_month = (int) $birthday_parts[2];
         $birthday_day   = (int) $birthday_parts[3];
-        if (!checkdate($birthday_month, $birthday_day, $birthday_year) || $birthday_input > date('Y-m-d')) {
+        if ($birthday_year < 1900 || $birthday_year > 3000 || !checkdate($birthday_month, $birthday_day, $birthday_year)) {
             $error_code    = 13;
             $error_message = 'Birthday is invalid';
         } else {
@@ -44,21 +56,13 @@ foreach ($required_fields as $key => $value) {
 }
 
 if (empty($error_code)) {
-    $username         = trim((string) $_POST['username']);
+    // Never trust a client-supplied username; every account receives a numeric UUID.
+    $username          = VNSEEA_GenerateNumericUuidUsername();
     $_POST['username'] = $username;
     $password         = $_POST['password'];
     $email            = $_POST['email'];
     $confirm_password = $_POST['confirm_password'];
-    if (in_array(true, Wo_IsNameExist($username, 0))) {
-        $error_code    = 4;
-        $error_message = 'Username is already taken';
-    } else if (in_array($username, $wo['site_pages']) || !preg_match('/^[A-Za-z0-9_]+$/', $username)) {
-        $error_code    = 5;
-        $error_message = 'Invalid username characters, please choose another username';
-    } else if (strlen($username) < 5 OR strlen($username) > 32) {
-        $error_code    = 6;
-        $error_message = 'Username must be between 5 / 32 letters';
-    } else if (Wo_EmailExists($email) === true) {
+    if (Wo_EmailExists($email) === true) {
         $error_code    = 7;
         $error_message = 'E-mail is already taken';
     } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

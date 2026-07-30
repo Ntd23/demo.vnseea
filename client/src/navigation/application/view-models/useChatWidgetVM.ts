@@ -98,6 +98,7 @@ function mergeContactTags(contact: MessageContact, taggedContact?: MessageContac
 function createEmptyThread(): MessageThread {
   return {
     messages: [],
+    pinnedMessages: [],
     typing: false,
   }
 }
@@ -824,6 +825,7 @@ export function useChatWidgetVM(
           return a.id - b.id
         })
         session.thread.messages = unique
+        session.thread.pinnedMessages = incomingThread.pinnedMessages
         session.thread.typing = incomingThread.typing
       }
 
@@ -929,6 +931,12 @@ export function useChatWidgetVM(
         }
       }
       catch {}
+    }
+    if (cachedThread) {
+      cachedThread = {
+        ...cachedThread,
+        pinnedMessages: cachedThread.pinnedMessages ?? [],
+      }
     }
 
     const nextSession: MiniChatSession = {
@@ -1350,6 +1358,23 @@ export function useChatWidgetVM(
       },
     }))
 
+    return result
+  }
+
+  async function toggleMiniMessagePin(contactId: string, message: MessageItem) {
+    const session = findMiniSession(contactId)
+    const contact = session ? getSessionContact(session) : null
+    const pinned = session?.thread.pinnedMessages.find(item => item.id === message.id)
+
+    if (!session || !contact || message.isDeleted || message.id <= 0 || (pinned && !pinned.canUnpin)) {
+      return null
+    }
+
+    const result = await repository.setMessagePin(contact, {
+      messageId: message.id,
+      pinned: !pinned,
+    })
+    await refreshMiniThread(session, { silent: true })
     return result
   }
 
@@ -1794,6 +1819,7 @@ export function useChatWidgetVM(
     sendMiniMessage,
     reactToMiniMessage,
     deleteMiniMessage,
+    toggleMiniMessagePin,
     onMiniFile,
     clearMiniFile,
     clearMiniProductDraft,
