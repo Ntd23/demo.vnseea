@@ -76,7 +76,7 @@ const resolvedWebMapUrl = computed(() => {
 
   return `${url.pathname}${url.search}`
 })
-const googleMapsMapId = computed(() => String(runtimeConfig.public.scripts?.googleMaps?.mapId || "").trim())
+const googleMapsMapId = computed(() => String(runtimeConfig.public.googleMaps?.mapId || "").trim())
 const { load } = useScriptGoogleMaps({ trigger: "manual" })
 let visibilityObserver: IntersectionObserver | null = null
 

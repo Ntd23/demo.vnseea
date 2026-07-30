@@ -1,3 +1,5 @@
+<!-- English description: Renders responsive account settings navigation with theme-aware surfaces. -->
+
 <template>
   <aside class="settings-sidebar" aria-label="Settings navigation">
 
@@ -126,9 +128,9 @@ onClickOutside(dropdownRef, () => {
 <style scoped>
 .settings-sidebar {
   background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 4%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   padding: 14px;
   width: 260px;
   flex-shrink: 0;
@@ -156,7 +158,7 @@ onClickOutside(dropdownRef, () => {
   justify-content: center;
   font-size: 12px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-inverse);
   flex-shrink: 0;
   box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
@@ -178,7 +180,7 @@ onClickOutside(dropdownRef, () => {
 /* ─── Divider ─────────────────────────── */
 .settings-sidebar__divider {
   height: 1px;
-  background: var(--bg-muted);
+  background: var(--border-light);
   margin: 0 4px 8px;
 }
 
@@ -212,12 +214,12 @@ onClickOutside(dropdownRef, () => {
 
 .settings-sidebar__item:hover {
   background: color-mix(in srgb, var(--bg-brand) 3%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-sidebar__item--active {
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 /* ─── Icon container ──────────────────── */
@@ -229,21 +231,21 @@ onClickOutside(dropdownRef, () => {
   justify-content: center;
   border-radius: 10px;
   background: var(--bg-surface);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   color: var(--text-primary);
   flex-shrink: 0;
   transition: all 0.15s ease;
 }
 
 .settings-sidebar__item:hover .settings-sidebar__icon {
-  background: var(--bg-muted);
-  border-color: var(--text-primary);
-  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-default);
+  color: var(--text-brand);
 }
 
 .settings-sidebar__icon--active {
   background: var(--bg-brand) !important;
-  color: #ffffff !important;
+  color: var(--text-inverse) !important;
 }
 
 /* ─── Label ───────────────────────────── */
@@ -285,9 +287,9 @@ onClickOutside(dropdownRef, () => {
   right: 0;
   margin-top: 8px;
   background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 8%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -311,12 +313,12 @@ onClickOutside(dropdownRef, () => {
 
 .settings-sidebar__dropdown-item:hover {
   background: var(--bg-muted);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-sidebar__dropdown-item--active {
   background: color-mix(in srgb, var(--bg-brand) 5%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
   font-weight: 700;
 }
 
@@ -369,8 +371,8 @@ onClickOutside(dropdownRef, () => {
   }
 
   .settings-sidebar__item--active {
-    background: var(--color-primary-50);
-    border-color: var(--color-primary-200);
+    background: var(--bg-surface-active);
+    border-color: var(--border-default);
   }
   
   .settings-sidebar__label {
@@ -391,7 +393,7 @@ onClickOutside(dropdownRef, () => {
   
   .settings-sidebar__icon--active {
     background: transparent !important;
-    color: var(--bg-brand) !important;
+    color: var(--text-brand) !important;
     box-shadow: none !important;
   }
   

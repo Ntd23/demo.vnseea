@@ -93,7 +93,7 @@
           v-if="item.action"
           size="sm"
           variant="outline"
-            class="rounded-[10px] text-[12px] font-semibold border-[var(--border-light)] text-[var(--text-brand)] bg-[var(--bg-surface)] hover:bg-[var(--bg-brand)] hover:text-white hover:border-[var(--bg-brand)] active:scale-[0.98] transition-all shrink-0"
+          class="rounded-[10px] text-[12px] font-semibold border-[var(--border-light)] text-[var(--text-brand)] bg-[var(--bg-surface)] hover:bg-[var(--bg-brand)] hover:text-[var(--text-inverse)] hover:border-[var(--bg-brand)] active:scale-[0.98] transition-all shrink-0"
           @click="onAction?.(item)"
         >
           {{ item.action }}
@@ -119,7 +119,7 @@
         <UButton
           color="error"
           size="sm"
-          class="rounded-[10px] text-[12px] font-bold shadow-[0_4px_12px_rgba(220,38,38,0.2)] hover:shadow-[0_6px_18px_rgba(220,38,38,0.28)] hover:-translate-y-px active:scale-[0.98] transition-all shrink-0"
+          class="rounded-[10px] text-[12px] font-bold shadow-[var(--shadow-brand)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-px active:scale-[0.98] transition-all shrink-0"
           :disabled="!canSave"
           :loading="saving"
           @click="handleSave"
@@ -138,7 +138,7 @@
         v-if="savedMessage"
         icon="i-ph-check-circle-bold"
         :title="savedMessage"
-        class="rounded-[10px] border border-[color-mix(in srgb, var(--bg-brand) 12%, transparent)] bg-[color-mix(in srgb, var(--bg-brand) 5%, transparent)]"
+        class="settings-section__alert settings-section__alert--success"
       />
     </Transition>
 
@@ -148,7 +148,7 @@
         color="error"
         icon="i-ph-warning-circle-bold"
         :title="errorMessage"
-        class="rounded-[10px] border border-[rgba(220,38,38,0.12)] bg-[#fef2f2]"
+        class="settings-section__alert settings-section__alert--error"
       />
     </Transition>
   </section>
@@ -299,9 +299,9 @@ const sectionIcon = computed(() => {
   min-width: 0;
   box-sizing: border-box;
   background: var(--bg-surface);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 16px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -310,7 +310,7 @@ const sectionIcon = computed(() => {
 }
 
 .settings-section:hover {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 /* ─── Header ──────────────────────────── */
@@ -334,7 +334,7 @@ const sectionIcon = computed(() => {
   background: var(--bg-muted);
   border-radius: 8px;
   margin-bottom: 12px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
 }
 
 .settings-section__badge-icon {
@@ -346,7 +346,7 @@ const sectionIcon = computed(() => {
   background: var(--bg-surface);
   border-radius: 6px;
   color: var(--text-primary);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
 }
 
 .settings-section__badge-text {
@@ -377,7 +377,7 @@ const sectionIcon = computed(() => {
 .settings-section__save-button {
   border-radius: 10px !important;
   background: var(--bg-brand) !important;
-  color: #ffffff !important;
+  color: var(--text-inverse) !important;
   font-size: 12px !important;
   font-weight: 700 !important;
   padding: 10px 20px !important;
@@ -395,7 +395,7 @@ const sectionIcon = computed(() => {
 /* ─── Divider ─────────────────────────── */
 .settings-section__divider-line {
   height: 1px;
-  background: linear-gradient(to right, #f1f5f9, #f8fafc);
+  background: var(--border-light);
   margin: 4px 0;
 }
 
@@ -453,13 +453,13 @@ const sectionIcon = computed(() => {
   padding: 16px;
   border-radius: 14px;
   background: var(--bg-surface);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   transition: all 0.2s ease;
 }
 
 .settings-section__toggle:hover {
-  border-color: #e2e8f0;
-  background: #fafbfe;
+  border-color: var(--border-default);
+  background: var(--bg-surface-hover);
 }
 
 .settings-section__toggle-label {
@@ -490,13 +490,13 @@ const sectionIcon = computed(() => {
   padding: 16px;
   border-radius: 14px;
   background: var(--bg-surface);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   transition: all 0.2s ease;
 }
 
 .settings-section__item:hover {
-  border-color: #e2e8f0;
-  background: #fafbfe;
+  border-color: var(--border-default);
+  background: var(--bg-surface-hover);
 }
 
 .settings-section__item-title {
@@ -515,8 +515,8 @@ const sectionIcon = computed(() => {
 /* ─── Danger Zone ─────────────────────── */
 .settings-section__danger {
   border-radius: 16px;
-  background: #fffafa;
-  border: 1px solid #fee2e2;
+  background: color-mix(in srgb, var(--color-error) 6%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--color-error) 18%, transparent);
   padding: 20px;
 }
 
@@ -533,28 +533,43 @@ const sectionIcon = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ef4444;
-  color: #ffffff;
+  background: var(--color-error);
+  color: var(--text-inverse);
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  box-shadow: var(--shadow-brand);
 }
 
 .settings-section__danger-label {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #ef4444;
+  color: var(--text-danger);
   letter-spacing: 0.05em;
 }
 
 .settings-section__danger-message {
   font-size: 13px;
   font-weight: 500;
-  color: #7f1d1d;
+  color: var(--text-primary);
   margin-top: 4px;
 }
 
 /* ─── Saved UAlert transition ─────────── */
+.settings-section__alert {
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+}
+
+.settings-section__alert--success {
+  border-color: color-mix(in srgb, var(--color-success) 18%, transparent);
+  background: color-mix(in srgb, var(--color-success) 8%, var(--bg-surface));
+}
+
+.settings-section__alert--error {
+  border-color: color-mix(in srgb, var(--color-error) 18%, transparent);
+  background: color-mix(in srgb, var(--color-error) 8%, var(--bg-surface));
+}
+
 .fade-up-enter-active,
 .fade-up-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;

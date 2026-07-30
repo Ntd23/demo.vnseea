@@ -1,3 +1,5 @@
+<!-- English description: Renders the account settings overview hero using shared theme tokens. -->
+
 <template>
   <section class="settings-hero" aria-labelledby="settings-hero-title">
     <div class="settings-hero__orb settings-hero__orb--right" aria-hidden="true" />
@@ -33,10 +35,10 @@ defineProps<{
   position: relative;
   overflow: hidden;
   border-radius: 16px;
-  background: linear-gradient(135deg, #f8faff 0%, #eef3ff 60%, #f0f4ff 100%);
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 7%, transparent);
+  background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-muted) 100%);
+  border: 1px solid var(--border-light);
   padding: 28px 32px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-hero__orb {
@@ -77,7 +79,7 @@ defineProps<{
 .settings-hero__eyebrow {
   font-size: 10px;
   font-weight: 700;
-  color: var(--bg-brand);
+  color: var(--text-brand);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 6px;
@@ -107,7 +109,7 @@ defineProps<{
   padding: 7px 14px;
   border-radius: 999px;
   background: var(--bg-surface);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   color: var(--text-primary);
   font-size: 12px;
   font-weight: 600;

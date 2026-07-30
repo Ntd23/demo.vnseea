@@ -126,10 +126,12 @@ export default defineNuxtConfig({
         iosStoreUrl: nativeAppIosStoreUrl,
         androidStoreUrl: nativeAppAndroidStoreUrl,
       },
+      googleMaps: {
+        mapId: process.env.NUXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "",
+      },
       scripts: {
         googleMaps: {
           apiKey: process.env.NUXT_PUBLIC_SCRIPTS_GOOGLE_MAPS_API_KEY || "",
-          mapId: process.env.NUXT_PUBLIC_SCRIPTS_GOOGLE_MAPS_MAP_ID || "",
         },
       },
     },

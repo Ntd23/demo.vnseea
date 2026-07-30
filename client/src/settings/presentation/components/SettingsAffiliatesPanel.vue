@@ -1,8 +1,10 @@
+<!-- English description: Renders affiliate progress, referrals, and help dialogs with shared theme tokens. -->
+
 <template>
   <section class="settings-affiliates" aria-labelledby="settings-affiliates-title">
     <div class="settings-affiliates__summary">
       <div class="settings-affiliates__summary-main">
-        <span class="settings-affiliates__icon text-[var(--text-primary)]" aria-hidden="true">
+        <span class="settings-affiliates__icon" aria-hidden="true">
           <Icon name="i-ph-gift-bold" class="h-6 w-6" />
         </span>
         <div>
@@ -374,10 +376,10 @@ const closeProgressHelp = () => {
 .settings-affiliates__link-panel,
 .settings-affiliates__progress-panel,
 .settings-affiliates__list-panel {
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-affiliates__summary {
@@ -403,7 +405,7 @@ const closeProgressHelp = () => {
   justify-content: center;
   border-radius: 14px;
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .settings-affiliates__eyebrow,
@@ -458,18 +460,18 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__stat-icon--green {
-  background: rgba(22, 163, 74, 0.12);
-  color: #16a34a;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--text-success);
 }
 
 .settings-affiliates__stat-icon--blue {
   background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-affiliates__stat-icon--amber {
-  background: rgba(245, 158, 11, 0.12);
-  color: #d97706;
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
 }
 
 .settings-affiliates__stat-label {
@@ -504,10 +506,10 @@ const closeProgressHelp = () => {
   width: 100%;
   min-height: 42px;
   padding: 0 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   outline: none;
-  background: #fafbfe;
+  background: var(--bg-surface);
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
@@ -523,7 +525,7 @@ const closeProgressHelp = () => {
   border: none;
   border-radius: 12px;
   background: var(--bg-brand);
-  color: #ffffff;
+  color: var(--text-inverse);
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
@@ -537,7 +539,7 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__progress-heading strong {
-  color: var(--bg-brand);
+  color: var(--text-brand);
   font-size: 20px;
   font-weight: 900;
 }
@@ -553,14 +555,14 @@ const closeProgressHelp = () => {
   height: 8px;
   overflow: hidden;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--bg-surface-active);
 }
 
 .settings-affiliates__progress span {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #16a34a;
+  background: var(--color-success);
 }
 
 .settings-affiliates__requirements {
@@ -577,7 +579,7 @@ const closeProgressHelp = () => {
   min-width: 0;
   padding: 10px;
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   color: var(--text-primary);
   font-size: 12px;
   font-weight: 800;
@@ -585,7 +587,7 @@ const closeProgressHelp = () => {
 
 .settings-affiliates__requirement .iconify {
   flex: 0 0 auto;
-  color: #16a34a;
+  color: var(--text-success);
 }
 
 .settings-affiliates__list {
@@ -600,9 +602,9 @@ const closeProgressHelp = () => {
   align-items: flex-start;
   gap: 10px;
   padding: 11px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .settings-affiliates__heading-help {
@@ -612,7 +614,7 @@ const closeProgressHelp = () => {
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dbe4ef;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-secondary);
@@ -621,9 +623,9 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__heading-help:hover {
-  border-color: rgba(22, 163, 74, 0.22);
-  background: rgba(22, 163, 74, 0.08);
-  color: #15803d;
+  border-color: color-mix(in srgb, var(--color-success) 22%, transparent);
+  background: color-mix(in srgb, var(--color-success) 8%, transparent);
+  color: var(--text-success);
 }
 
 .settings-affiliates__avatar {
@@ -639,7 +641,7 @@ const closeProgressHelp = () => {
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
   font-size: 12px;
   font-weight: 900;
 }
@@ -673,8 +675,8 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__badge--done {
-  background: rgba(22, 163, 74, 0.12);
-  color: #15803d;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--text-success);
 }
 
 .settings-affiliates__person-progress {
@@ -695,7 +697,7 @@ const closeProgressHelp = () => {
 }
 
 .settings-affiliates__person-progress-head strong {
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-affiliates__person-steps {
@@ -711,15 +713,15 @@ const closeProgressHelp = () => {
   min-height: 24px;
   padding: 0 8px;
   border-radius: 999px;
-  background: #eef2f7;
+  background: var(--bg-muted);
   color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
 }
 
 .settings-affiliates__person-step--done {
-  background: rgba(22, 163, 74, 0.12) !important;
-  color: #15803d !important;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent) !important;
+  color: var(--text-success) !important;
 }
 
 .settings-affiliates__item-side {
@@ -745,9 +747,9 @@ const closeProgressHelp = () => {
   justify-content: center;
   gap: 8px;
   margin-top: 14px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--border-strong);
   border-radius: 14px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .settings-affiliates-modal {
@@ -764,7 +766,7 @@ const closeProgressHelp = () => {
   position: absolute;
   inset: 0;
   border: none;
-  background: rgba(15, 23, 42, 0.48);
+  background: color-mix(in srgb, var(--bg-media) 48%, transparent);
   cursor: pointer;
 }
 
@@ -773,10 +775,10 @@ const closeProgressHelp = () => {
   z-index: 1;
   width: min(100%, 460px);
   padding: 18px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
-  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-xl);
 }
 
 .settings-affiliates-modal__header {
@@ -801,7 +803,7 @@ const closeProgressHelp = () => {
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-secondary);
@@ -828,7 +830,7 @@ const closeProgressHelp = () => {
   gap: 10px;
   padding: 12px;
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .settings-affiliates-modal__step-icon {
@@ -839,13 +841,13 @@ const closeProgressHelp = () => {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #eef2f7;
+  background: var(--bg-surface-active);
   color: var(--text-secondary);
 }
 
 .settings-affiliates-modal__step-icon--done {
-  background: rgba(22, 163, 74, 0.12);
-  color: #15803d;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--text-success);
 }
 
 .settings-affiliates-modal__step strong {
@@ -870,8 +872,8 @@ const closeProgressHelp = () => {
   margin-top: 14px;
   padding: 12px;
   border-radius: 12px;
-  background: rgba(22, 163, 74, 0.08);
-  color: #15803d;
+  background: color-mix(in srgb, var(--color-success) 8%, transparent);
+  color: var(--text-success);
   font-size: 13px;
   font-weight: 900;
 }

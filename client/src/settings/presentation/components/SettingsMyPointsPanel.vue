@@ -1,8 +1,10 @@
+<!-- English description: Renders point balances, transfers, QR actions, and history with shared theme tokens. -->
+
 <template>
   <section class="settings-points" aria-labelledby="settings-points-title">
     <div class="settings-points__hero">
       <div class="settings-points__hero-main">
-        <span class="settings-points__hero-icon text-[var(--text-primary)]" aria-hidden="true">
+        <span class="settings-points__hero-icon" aria-hidden="true">
           <Icon name="i-ph-star-bold" class="h-6 w-6" />
         </span>
         <div>
@@ -483,10 +485,10 @@ const {
 .settings-points__hero,
 .settings-points__stat,
 .settings-points__history {
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-points__hero {
@@ -513,7 +515,7 @@ const {
   justify-content: center;
   border-radius: 14px;
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
 }
 
@@ -555,7 +557,7 @@ const {
   border: none;
   border-radius: 12px;
   background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
@@ -582,7 +584,7 @@ const {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   padding: 0 16px;
@@ -597,7 +599,7 @@ const {
 .settings-points__secondary-button:hover {
   border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
   background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-points__secondary-button > * {
@@ -649,17 +651,17 @@ const {
 
 .settings-points__stat-icon--blue {
   background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-points__stat-icon--green {
-  background: rgba(34, 197, 94, 0.1);
-  color: #16a34a;
+  background: color-mix(in srgb, var(--color-success) 10%, transparent);
+  color: var(--text-success);
 }
 
 .settings-points__stat-icon--amber {
-  background: rgba(245, 158, 11, 0.12);
-  color: #d97706;
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
 }
 
 .settings-points__stat-label,
@@ -688,10 +690,10 @@ const {
 }
 
 .settings-points__transfer {
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 5%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-points__transfer-grid,
@@ -715,11 +717,11 @@ const {
   display: grid;
   max-height: 268px;
   overflow-y: auto;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
   padding: 6px;
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow-lg);
 }
 
 .settings-points__recipient-option {
@@ -755,7 +757,7 @@ const {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #e2e8f0;
+  background: var(--bg-muted);
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
@@ -805,7 +807,7 @@ const {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   padding: 0 12px;
@@ -821,7 +823,7 @@ const {
 .settings-points__qr-update-button:hover {
   border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
   background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-points__qr-update-button > * {
@@ -838,9 +840,9 @@ const {
 .settings-points__scan {
   overflow: hidden;
   margin-top: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
-  background: #0f172a;
+  background: var(--bg-media);
 }
 
 .settings-points__scan-reader :deep(video) {
@@ -861,9 +863,9 @@ const {
   flex-direction: column;
   gap: 8px;
   margin-top: 12px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   padding: 12px;
   color: var(--text-secondary);
   font-size: 12px;
@@ -896,7 +898,7 @@ const {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #e2e8f0;
+  background: var(--bg-muted);
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
@@ -919,7 +921,7 @@ const {
   height: 34px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-secondary);
@@ -948,7 +950,7 @@ const {
   border-radius: 14px;
   background: var(--bg-surface);
   padding: 10px;
-  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .settings-points__section-heading {
@@ -980,7 +982,7 @@ const {
   margin-top: 16px;
   padding: 14px;
   border-radius: 14px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .settings-points__preview--modal {
@@ -1004,14 +1006,14 @@ const {
   height: 7px;
   overflow: hidden;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--bg-surface-active);
 }
 
 .settings-points__progress span {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--bg-brand) 0%, #0ea5e9 100%);
+  background: linear-gradient(90deg, var(--bg-brand) 0%, var(--color-success) 100%);
 }
 
 .settings-points__refresh-button,
@@ -1023,7 +1025,7 @@ const {
   height: 34px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   background: var(--bg-surface);
   color: var(--text-secondary);
@@ -1036,7 +1038,7 @@ const {
 .settings-points-modal__close:hover {
   border-color: color-mix(in srgb, var(--bg-brand) 16%, transparent);
   background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-points__history-list {
@@ -1051,9 +1053,9 @@ const {
   align-items: center;
   gap: 10px;
   padding: 11px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .settings-points__history-icon {
@@ -1065,7 +1067,7 @@ const {
   justify-content: center;
   border-radius: 10px;
   background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-points__history-copy {
@@ -1096,14 +1098,14 @@ const {
 }
 
 .settings-points__history-amount {
-  color: #16a34a;
+  color: var(--text-success);
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .settings-points__history-amount--negative {
-  color: #dc2626;
+  color: var(--text-danger);
 }
 
 .settings-points__empty {
@@ -1114,9 +1116,9 @@ const {
   justify-content: center;
   gap: 8px;
   margin-top: 14px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--border-strong);
   border-radius: 14px;
-  background: #fafbfe;
+  background: var(--bg-muted);
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
@@ -1136,7 +1138,7 @@ const {
   position: absolute;
   inset: 0;
   border: none;
-  background: rgba(15, 23, 42, 0.48);
+  background: color-mix(in srgb, var(--bg-media) 48%, transparent);
   cursor: pointer;
 }
 
@@ -1145,10 +1147,10 @@ const {
   z-index: 1;
   width: min(100%, 460px);
   padding: 18px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 6%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
-  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-xl);
 }
 
 .settings-points-modal__header,
@@ -1177,10 +1179,10 @@ const {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   outline: none;
-  background: #fafbfe;
+  background: var(--bg-surface);
   color: var(--text-primary);
   font: inherit;
   font-size: 14px;
@@ -1208,7 +1210,7 @@ const {
   min-width: 0;
   padding: 11px;
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-muted);
 }
 
 .settings-points-modal__summary strong {
@@ -1223,8 +1225,8 @@ const {
   margin: 12px 0 0;
   padding: 10px 12px;
   border-radius: 12px;
-  background: #fef2f2;
-  color: #dc2626;
+  background: color-mix(in srgb, var(--color-error) 8%, var(--bg-surface));
+  color: var(--text-danger);
   font-size: 12px;
   font-weight: 700;
 }
@@ -1239,7 +1241,7 @@ const {
   align-items: center;
   justify-content: center;
   padding: 0 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-surface);
   color: var(--text-primary);

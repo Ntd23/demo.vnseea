@@ -1,3 +1,5 @@
+<!-- English description: Renders editable profile cover and avatar previews with theme-aware controls. -->
+
 <template>
   <div class="profile-images-section">
     <!-- Cover -->
@@ -117,9 +119,9 @@ function handleFileChange(key: 'avatar' | 'cover', event: Event) {
   position: relative;
   width: 100%;
   height: 240px;
-  background-color: #f1f5f9;
+  background-color: var(--bg-muted);
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background-size: cover;
   background-position: center;
   cursor: pointer;
@@ -156,12 +158,12 @@ function handleFileChange(key: 'avatar' | 'cover', event: Event) {
   width: 128px;
   height: 128px;
   border-radius: 50%;
-  border: 4px solid #ffffff;
-  background-color: #f1f5f9;
+  border: 4px solid var(--bg-surface);
+  background-color: var(--bg-muted);
   background-size: cover;
   background-position: center;
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
   transition: filter 0.2s;
 }
 
@@ -182,9 +184,9 @@ function handleFileChange(key: 'avatar' | 'cover', event: Event) {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: color-mix(in srgb, var(--bg-surface) 95%, transparent);
   color: var(--text-primary);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-md);
   pointer-events: none; /* Let clicks pass to the container */
 }
 

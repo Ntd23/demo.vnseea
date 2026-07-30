@@ -264,8 +264,8 @@ onBeforeUnmount(revokeObjectPreview)
   justify-content: center;
   padding: 8px 16px;
   border-radius: 10px;
-  border: 1.5px solid #e2e8f0;
-  background: #fafbfe;
+  border: 1.5px solid var(--border-light);
+  background: var(--bg-surface);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -303,7 +303,7 @@ onBeforeUnmount(revokeObjectPreview)
 }
 
 .settings-field__pill--active .settings-field__pill-label {
-  color: var(--bg-brand);
+  color: var(--text-brand);
   font-weight: 600;
 }
 
@@ -320,8 +320,8 @@ onBeforeUnmount(revokeObjectPreview)
   gap: 7px;
   padding: 8px 14px;
   border-radius: 10px;
-  border: 1.5px solid #e2e8f0;
-  background: #fafbfe;
+  border: 1.5px solid var(--border-light);
+  background: var(--bg-surface);
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
@@ -343,7 +343,7 @@ onBeforeUnmount(revokeObjectPreview)
 .settings-field__verify-btn--active {
   border-color: var(--bg-brand);
   background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
-  color: var(--bg-brand);
+  color: var(--text-brand);
 }
 
 .settings-field__file {
@@ -356,10 +356,10 @@ onBeforeUnmount(revokeObjectPreview)
   overflow: hidden;
   width: min(100%, 420px);
   min-height: 150px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
-  background: #f8fafc;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  background: var(--bg-muted);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-field__preview--avatar {
@@ -395,9 +395,9 @@ onBeforeUnmount(revokeObjectPreview)
 
 .settings-field__file-input {
   width: 100%;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
-  background: #fafbfe;
+  background: var(--bg-surface);
   padding: 10px 12px;
   font-size: 13px;
   font-weight: 500;
