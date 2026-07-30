@@ -114,6 +114,14 @@ assert_push_v2_contract(
 );
 assert_push_v2_contract(
     strpos($service, 'function VNSEEA_PushDeliveryDebugLog') !== false &&
+        strpos($service, 'vnseea_push_debug.log') !== false &&
+        strpos($service, 'FILE_APPEND | LOCK_EX') !== false &&
+        strpos($service, "'push_device_register_attempt'") !== false &&
+        strpos($service, "'push_device_register_success'") !== false &&
+        strpos($service, "'push_device_register_error'") !== false &&
+        strpos($service, "'push_device_release_attempt'") !== false &&
+        strpos($service, "'push_device_release_success'") !== false &&
+        strpos($service, "'push_device_release_error'") !== false &&
         strpos($service, "'push_targets_missing'") !== false &&
         strpos($service, "'onesignal_delivery_attempt'") !== false &&
         strpos($service, "'onesignal_delivery_response'") !== false,
@@ -143,8 +151,9 @@ assert_push_v2_contract(
 );
 assert_push_v2_contract(
     strpos($service, '$no_valid_subscriptions') !== false &&
+        strpos($service, '$recipient_count') !== false &&
         strpos($service, "'invalid_token' => (bool)(\$invalid_token || \$no_valid_subscriptions)") !== false,
-    'OneSignal 2xx responses without a message id must deactivate the invalid subscription'
+    'OneSignal 2xx responses without a recipient must deactivate the invalid subscription'
 );
 assert_push_v2_contract(
     strpos($service, "array('Unregistered', 'ExpiredToken')") !== false,
@@ -266,6 +275,18 @@ assert_push_v2_contract(
 assert_push_v2_contract(
     VNSEEA_ShouldUseLegacyPushFallback(false, 1) === false,
     'active registry targets must take precedence over legacy tokens'
+);
+assert_push_v2_contract(
+    function_exists('VNSEEA_OneSignalResponseHasRecipient'),
+    'OneSignal recipient classifier is missing'
+);
+assert_push_v2_contract(
+    VNSEEA_OneSignalResponseHasRecipient(200, array('id' => 'message-id', 'recipients' => 1)) === true,
+    'OneSignal response with one recipient must be accepted'
+);
+assert_push_v2_contract(
+    VNSEEA_OneSignalResponseHasRecipient(200, array('id' => 'message-id', 'recipients' => 0)) === false,
+    'OneSignal response with zero recipients must not be marked sent'
 );
 $preview_cases = array(
     'text' => array(array('text' => 'Xin chào'), 'text'),
