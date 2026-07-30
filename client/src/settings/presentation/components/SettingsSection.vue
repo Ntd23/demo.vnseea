@@ -516,7 +516,7 @@ const sectionIcon = computed(() => {
 .settings-section__danger {
   border-radius: 16px;
   background: color-mix(in srgb, var(--color-error) 6%, var(--bg-surface));
-  border: 1px solid color-mix(in srgb, var(--color-error) 18%, transparent);
+  border: 1px solid var(--border-light);
   padding: 20px;
 }
 
@@ -561,12 +561,10 @@ const sectionIcon = computed(() => {
 }
 
 .settings-section__alert--success {
-  border-color: color-mix(in srgb, var(--color-success) 18%, transparent);
   background: color-mix(in srgb, var(--color-success) 8%, var(--bg-surface));
 }
 
 .settings-section__alert--error {
-  border-color: color-mix(in srgb, var(--color-error) 18%, transparent);
   background: color-mix(in srgb, var(--color-error) 8%, var(--bg-surface));
 }
 

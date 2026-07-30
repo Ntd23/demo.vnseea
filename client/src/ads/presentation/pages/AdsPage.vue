@@ -1,37 +1,41 @@
 <!-- English description: Displays the current user's backend-backed ads manager dashboard. -->
 <template>
-  <main class="ads-page">
+  <main class="ads-page mt-1.5">
     <section class="ads-page__hero">
       <div>
-        <p class="ads-page__eyebrow">Advertising</p>
-        <h1>Quảng cáo</h1>
-        <p>Quản lý chiến dịch, ngân sách, lượt nhấp và lượt xem từ dữ liệu backend.</p>
+        <p class="ads-page__eyebrow">{{ $t("ads.page.eyebrow") }}</p>
+        <h1>{{ $t("ads.page.title") }}</h1>
+        <p>{{ $t("ads.page.subtitle") }}</p>
       </div>
-      <NuxtLink v-if="canCreateAds" :to="appRoutes.adsCreate" class="ads-page__create">
-        <Icon name="i-ph-plus-bold" class="h-4 w-4" />
-        <span>Tạo quảng cáo</span>
-      </NuxtLink>
+      <UButton
+        v-if="canCreateAds"
+        :to="appRoutes.adsCreate"
+        color="primary"
+        icon="i-ph-plus-bold"
+        :label="$t('ads.page.createBtn')"
+        class="ads-page__create rounded-full"
+      />
     </section>
 
     <section class="ads-page__summary">
       <article class="ads-summary-card">
         <Icon name="i-ph-wallet-fill" class="ads-summary-card__icon" />
         <div>
-          <p>Số dư ví</p>
+          <p>{{ $t("ads.page.walletBalance") }}</p>
           <strong>{{ formattedBalance }}</strong>
         </div>
       </article>
       <article class="ads-summary-card">
         <Icon name="i-ph-megaphone-fill" class="ads-summary-card__icon" />
         <div>
-          <p>Chiến dịch</p>
+          <p>{{ $t("ads.page.campaignsCount") }}</p>
           <strong>{{ campaigns.length }}</strong>
         </div>
       </article>
       <article class="ads-summary-card">
         <Icon name="i-ph-chart-line-up-fill" class="ads-summary-card__icon" />
         <div>
-          <p>Tương tác</p>
+          <p>{{ $t("ads.page.interactions") }}</p>
           <strong>{{ totalInteractions }}</strong>
         </div>
       </article>
@@ -42,15 +46,15 @@
       color="warning"
       variant="soft"
       icon="i-ph-warning-circle-fill"
-      title="Không tải được quảng cáo"
+      :title="$t('ads.page.loadError')"
       :description="String(error.message || error)"
     />
 
     <section v-else class="ads-page__content">
       <div class="ads-page__section-head">
         <div>
-          <h2>Chiến dịch của tôi</h2>
-          <p>Theo dõi trạng thái và hiệu quả quảng cáo hiện tại.</p>
+          <h2>{{ $t("ads.page.myCampaigns") }}</h2>
+          <p>{{ $t("ads.page.myCampaignsDesc") }}</p>
         </div>
       </div>
 
@@ -64,7 +68,7 @@
           color="warning"
           variant="soft"
           icon="i-ph-warning-circle-fill"
-          title="Không cập nhật được quảng cáo"
+          :title="$t('ads.page.updateError')"
           :description="mutationError"
         />
 
@@ -88,15 +92,17 @@
                 <h3>{{ campaign.name || campaign.headline }}</h3>
                 <p>{{ campaign.headline || campaign.websiteUrl }}</p>
               </div>
-              <button
+              <UButton
                 type="button"
                 class="ads-status"
-                :class="`ads-status--${campaign.status}`"
+                :color="campaign.status === 'active' ? 'success' : 'error'"
+                variant="soft"
+                size="xs"
                 :disabled="mutatingId === campaign.id"
                 @click="toggleStatus(campaign.id)"
               >
-                {{ campaign.status === "active" ? "Đang chạy" : "Tạm dừng" }}
-              </button>
+                {{ campaign.status === "active" ? $t("ads.page.statusRunning") : $t("ads.page.statusPaused") }}
+              </UButton>
             </div>
 
             <div class="ads-card__meta">
@@ -118,21 +124,32 @@
           </div>
 
           <div class="ads-card__actions">
-            <NuxtLink :to="campaign.chartUrl" class="ads-card__action" aria-label="Xem thống kê">
-              <Icon name="i-ph-chart-bar-fill" />
-            </NuxtLink>
-            <NuxtLink :to="campaign.editUrl" class="ads-card__action" aria-label="Sửa quảng cáo">
-              <Icon name="i-ph-pencil-simple-fill" />
-            </NuxtLink>
-            <button
-              type="button"
+            <UButton
+              :to="campaign.chartUrl"
+              color="neutral"
+              variant="outline"
+              icon="i-ph-chart-bar-fill"
               class="ads-card__action"
-              aria-label="Xóa quảng cáo"
+              :aria-label="$t('ads.page.viewChart')"
+            />
+            <UButton
+              :to="campaign.editUrl"
+              color="neutral"
+              variant="outline"
+              icon="i-ph-pencil-simple-fill"
+              class="ads-card__action"
+              :aria-label="$t('ads.page.editAd')"
+            />
+            <UButton
+              type="button"
+              color="error"
+              variant="soft"
+              icon="i-ph-trash-fill"
+              class="ads-card__action"
+              :aria-label="$t('ads.page.deleteAd')"
               :disabled="mutatingId === campaign.id"
               @click="deleteCampaign(campaign.id)"
-            >
-              <Icon name="i-ph-trash-fill" />
-            </button>
+            />
           </div>
         </article>
 
@@ -141,7 +158,7 @@
           color="warning"
           variant="soft"
           icon="i-ph-warning-circle-fill"
-          title="Không tải thêm được"
+          :title="$t('ads.page.loadMoreError')"
           :description="loadMoreError"
         />
 
@@ -153,18 +170,23 @@
             :loading="loadingMore"
             @click="loadMore"
           >
-            Tải thêm
+            {{ $t("ads.page.loadMore") }}
           </UButton>
         </div>
       </div>
 
       <div v-else class="ads-page__empty">
         <Icon name="i-ph-megaphone-simple-slash-duotone" class="ads-page__empty-icon" />
-        <h2>Chưa có quảng cáo</h2>
-        <p>Tạo chiến dịch đầu tiên để bắt đầu hiển thị quảng cáo.</p>
-        <NuxtLink v-if="canCreateAds" :to="appRoutes.adsCreate" class="ads-page__empty-link">
-          Tạo quảng cáo
-        </NuxtLink>
+        <h2>{{ $t("ads.page.emptyTitle") }}</h2>
+        <p>{{ $t("ads.page.emptyDesc") }}</p>
+        <UButton
+          v-if="canCreateAds"
+          :to="appRoutes.adsCreate"
+          color="primary"
+          icon="i-ph-plus-bold"
+          :label="$t('ads.page.createBtn')"
+          class="ads-page__empty-link rounded-full"
+        />
       </div>
     </section>
   </main>
@@ -174,7 +196,7 @@
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useAdsPageVM } from "../../application/view-models/useAdsPageVM"
 
-const { n, locale } = useI18n()
+const { t, n, locale } = useI18n()
 const {
   balance,
   campaigns,
@@ -207,20 +229,20 @@ const formattedBalance = computed(() => {
   return `${currencySymbol.value}${formatter.format(balance.value)}${suffix}`
 })
 
-const biddingLabel = (value: string) => value === "views" ? "Theo lượt xem" : "Theo lượt nhấp"
+const biddingLabel = (value: string) => value === "views" ? t("ads.page.bidding.views") : t("ads.page.bidding.clicks")
 
 const placementLabel = (value: string) => {
   const labels: Record<string, string> = {
-    entire: "Toàn site",
-    forum: "Diễn đàn",
-    funding: "Gây quỹ",
-    jobs: "Việc làm",
-    movies: "Phim",
-    offer: "Ưu đãi",
-    post: "Bài viết",
-    sidebar: "Sidebar",
-    story: "Tin",
-    video: "Video",
+    entire: t("ads.page.placements.entire"),
+    forum: t("ads.page.placements.forum"),
+    funding: t("ads.page.placements.funding"),
+    jobs: t("ads.page.placements.jobs"),
+    movies: t("ads.page.placements.movies"),
+    offer: t("ads.page.placements.offer"),
+    post: t("ads.page.placements.post"),
+    sidebar: t("ads.page.placements.sidebar"),
+    story: t("ads.page.placements.story"),
+    video: t("ads.page.placements.video"),
   }
 
   return labels[value] ?? value
@@ -235,8 +257,6 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   width: min(100%, 1120px);
   flex-direction: column;
   gap: 18px;
-  margin: 0 auto;
-  padding: 18px 12px 40px;
 }
 
 .ads-page__hero {
@@ -244,16 +264,16 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
   padding: 22px;
-  box-shadow: 0 12px 32px rgba(15, 35, 110, 0.08);
+  box-shadow: var(--shadow-lg);
 }
 
 .ads-page__eyebrow {
   margin: 0 0 6px;
-  color: var(--bg-brand);
+  color: var(--text-brand);
   font-size: 12px;
   font-weight: 800;
 }
@@ -279,20 +299,8 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   line-height: 1.55;
 }
 
-.ads-page__create,
-.ads-page__empty-link {
-  display: inline-flex;
+.ads-page__create {
   flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border-radius: 999px;
-  background: var(--bg-brand);
-  padding: 10px 16px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
 }
 
 .ads-page__summary {
@@ -305,7 +313,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   display: flex;
   align-items: center;
   gap: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
   padding: 18px;
@@ -314,7 +322,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 .ads-summary-card__icon {
   height: 24px;
   width: 24px;
-  color: var(--bg-brand);
+  color: var(--icon-brand);
 }
 
 .ads-summary-card p {
@@ -347,11 +355,11 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   grid-template-columns: 88px minmax(0, 1fr) minmax(148px, auto) auto;
   align-items: center;
   gap: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
   padding: 14px;
-  box-shadow: 0 10px 26px rgba(15, 35, 110, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 .ads-card__media {
@@ -414,16 +422,6 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   cursor: pointer;
 }
 
-.ads-status--active {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.ads-status--inactive {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
 .ads-card__stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(64px, 1fr));
@@ -449,14 +447,9 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 }
 
 .ads-card__action {
-  display: grid;
   height: 38px;
   width: 38px;
-  place-items: center;
-  border: 1px solid #dbe4f0;
   border-radius: 999px;
-  background: var(--bg-surface);
-  color: var(--text-primary);
 }
 
 .ads-page__load-more {
@@ -466,7 +459,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
 }
 
 .ads-page__empty {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
   padding: 36px 20px;

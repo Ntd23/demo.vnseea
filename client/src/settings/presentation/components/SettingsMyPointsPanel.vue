@@ -878,7 +878,7 @@ const {
   align-items: center;
   gap: 10px;
   margin-top: 12px;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 14%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
   padding: 10px;

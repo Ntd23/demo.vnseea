@@ -1,15 +1,18 @@
 <!-- English description: Displays backend advertising analytics for one campaign with phtml-equivalent views, clicks, and spend data. -->
 <template>
-  <main class="ads-chart-page">
+  <main class="ads-chart-page mt-1.5">
     <section class="ads-chart-page__hero">
       <div>
-        <p>Advertising analytics</p>
-        <h1>{{ campaign?.name || "Thống kê quảng cáo" }}</h1>
+        <p>{{ $t("ads.chart.eyebrow") }}</p>
+        <h1>{{ campaign?.name || $t("ads.chart.pageTitle") }}</h1>
       </div>
-      <NuxtLink :to="appRoutes.ads" class="ads-chart-page__back">
-        <Icon name="i-ph-arrow-left-bold" class="h-4 w-4" />
-        <span>Quay lại quảng cáo</span>
-      </NuxtLink>
+      <UButton
+        :to="appRoutes.ads"
+        color="primary"
+        icon="i-ph-arrow-left-bold"
+        :label="$t('ads.chart.backBtn')"
+        class="ads-chart-page__back rounded-full"
+      />
     </section>
 
     <UAlert
@@ -17,7 +20,7 @@
       color="warning"
       variant="soft"
       icon="i-ph-warning-circle-fill"
-      title="Không tải được thống kê"
+      :title="$t('ads.chart.loadError')"
       :description="String(error.message || error)"
     />
 
@@ -42,8 +45,8 @@
 
       <section class="ads-chart-panel">
         <div class="ads-chart-panel__head">
-          <h2>Monthly Views/Clicks</h2>
-          <p>Last 30 Days</p>
+          <h2>{{ $t("ads.chart.monthlyHeader") }}</h2>
+          <p>{{ $t("ads.chart.last30Days") }}</p>
         </div>
 
         <div v-if="pending" class="ads-chart-panel__loading">
@@ -70,8 +73,8 @@
 
         <div v-else class="ads-chart-page__empty">
           <Icon name="i-ph-chart-line-down-duotone" />
-          <h2>Chưa có dữ liệu</h2>
-          <p>Chiến dịch này chưa có clicks, views hoặc spend trong 30 ngày gần đây.</p>
+          <h2>{{ $t("ads.chart.emptyTitle") }}</h2>
+          <p>{{ $t("ads.chart.emptyDesc") }}</p>
         </div>
       </section>
     </template>
@@ -97,14 +100,12 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
   width: min(100%, 1120px);
   flex-direction: column;
   gap: 18px;
-  margin: 0 auto;
-  padding: 18px 12px 40px;
 }
 
 .ads-chart-page__hero,
 .ads-chart-panel,
 .ads-chart-page__summary article {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
 }
@@ -115,7 +116,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
   justify-content: space-between;
   gap: 16px;
   padding: 22px;
-  box-shadow: 0 12px 32px rgba(15, 35, 110, 0.08);
+  box-shadow: var(--shadow-lg);
 }
 
 .ads-chart-page__hero p,
@@ -135,16 +136,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 }
 
 .ads-chart-page__back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 999px;
-  background: var(--bg-brand);
-  padding: 10px 16px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
+  flex-shrink: 0;
 }
 
 .ads-chart-page__summary {
@@ -160,7 +152,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 .ads-chart-page__summary svg {
   height: 24px;
   width: 24px;
-  color: var(--bg-brand);
+  color: var(--icon-brand);
 }
 
 .ads-chart-page__summary strong {
@@ -201,7 +193,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
   overflow: hidden;
   height: 12px;
   border-radius: 999px;
-  background: #eef2f7;
+  background: var(--bg-muted);
 }
 
 .ads-bars__bar {
@@ -211,15 +203,15 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 }
 
 .ads-bars__bar--views {
-  background: #4c75a3;
+  background: var(--color-success);
 }
 
 .ads-bars__bar--clicks {
-  background: #ce3d3d;
+  background: var(--bg-brand);
 }
 
 .ads-bars__bar--spend {
-  background: #f2b92b;
+  background: var(--color-warning);
 }
 
 .ads-bars strong {

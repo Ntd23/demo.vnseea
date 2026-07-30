@@ -11,11 +11,12 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
 const requestURL = useRequestURL()
 const canonicalUrl = computed(() => new URL(appRoutes.adsCreate, requestURL.origin).toString())
 
 useSeoMeta({
-  title: "Tạo quảng cáo",
+  title: () => t("ads.form.createTitle"),
   robots: "noindex, nofollow",
 })
 

@@ -11,6 +11,7 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
 const adId = computed(() => String(route.params.id ?? ""))
@@ -18,7 +19,7 @@ const campaignId = computed(() => Number(adId.value))
 const canonicalUrl = computed(() => new URL(appRoutes.adsChart(adId.value), requestURL.origin).toString())
 
 useSeoMeta({
-  title: "Thống kê quảng cáo",
+  title: () => t("ads.chart.pageTitle"),
   robots: "noindex, nofollow",
 })
 
