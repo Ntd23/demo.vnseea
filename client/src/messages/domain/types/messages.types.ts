@@ -114,6 +114,11 @@ export type MessageSharedPostCard = {
   text: string
   imageUrl?: string
   href: string
+  live?: {
+    title: string
+    state: "live" | "stale" | "offline"
+    viewerCount: number
+  }
   job?: {
     title: string
     description: string
@@ -133,6 +138,13 @@ export type MessageSharedPostCard = {
     point: number
     currency?: string
     currencySymbol?: string
+  }
+  blog?: {
+    id: number
+    title: string
+    description: string
+    imageUrl?: string
+    href: string
   }
 }
 

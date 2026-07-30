@@ -318,10 +318,18 @@
         </button>
       </div>
     </div>
+
+    <ClientOnly>
+      <NearbyAppInterstitial
+        v-model="appPromptOpen"
+        @continue="continueOnMobileWeb"
+      />
+    </ClientOnly>
   </section>
 </template>
 
 <script setup lang="ts">
+import NearbyAppInterstitial from "../components/NearbyAppInterstitial.vue"
 import NearbyResultCard from "../components/NearbyResultCard.vue"
 import NearbySearchMap from "../components/NearbySearchMap.vue"
 import { useSearchNearbyPageVM } from "../../application/view-models/useSearchNearbyPageVM"
@@ -437,6 +445,9 @@ const {
 
 const { t } = useI18n()
 const route = useRoute()
+const isMobileWebViewport = useMediaQuery("(max-width: 767px)")
+const appPromptOpen = ref(false)
+let nearbyExperienceStarted = false
 
 const searchPlaceholder = computed(() =>
   googlePlacesEnabled.value
@@ -1895,11 +1906,31 @@ watch(
   },
 )
 
-onMounted(() => {
-  void loadSearchNearbyConfig()
+function startNearbyExperience() {
+  if (nearbyExperienceStarted) {
+    return
+  }
+
+  nearbyExperienceStarted = true
   void startDeviceOrientationTracking()
   void requestLocationPermission()
   void hydrateSharedLocationCard()
+}
+
+function continueOnMobileWeb() {
+  appPromptOpen.value = false
+  startNearbyExperience()
+}
+
+onMounted(() => {
+  void loadSearchNearbyConfig()
+
+  if (isMobileWebViewport.value) {
+    appPromptOpen.value = true
+    return
+  }
+
+  startNearbyExperience()
 })
 
 onBeforeUnmount(() => {

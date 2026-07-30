@@ -392,8 +392,20 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
         if (!empty($_POST['keyword'])) {
             $array['keyword'] = $_POST['keyword'];
         }
-        if (!empty($_POST['length'])) {
-            $array['length'] = $_POST['length'];
+        if (!empty($_POST['length']) && is_numeric($_POST['length']) && (float) $_POST['length'] > 0) {
+            $array['length'] = min(300, max(1, round((float) $_POST['length'])));
+        }
+        if (
+            isset($_POST['latitude'], $_POST['longitude'])
+            && is_numeric($_POST['latitude'])
+            && is_numeric($_POST['longitude'])
+            && (float) $_POST['latitude'] >= -90
+            && (float) $_POST['latitude'] <= 90
+            && (float) $_POST['longitude'] >= -180
+            && (float) $_POST['longitude'] <= 180
+        ) {
+            $array['latitude'] = (float) $_POST['latitude'];
+            $array['longitude'] = (float) $_POST['longitude'];
         }
         if (!empty($_POST['job_type'])) {
             $array['type'] = $_POST['job_type'];

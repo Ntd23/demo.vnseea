@@ -28,6 +28,16 @@
       </h3>
 
       <div class="job-card__meta">
+        <div v-if="job.location" class="job-card__location-row">
+          <span class="job-card__meta-item job-card__location">
+            <Icon name="i-ph-map-pin-duotone" class="job-card__meta-icon job-card__meta-icon--location" />
+            <span class="job-card__location-text" :title="job.location">{{ job.location }}</span>
+          </span>
+          <span v-if="distanceLabel" class="job-card__distance">
+            <Icon name="i-ph-navigation-arrow-duotone" class="job-card__distance-icon" />
+            {{ distanceLabel }}
+          </span>
+        </div>
         <span class="job-card__meta-item">
           <Icon name="i-ph-money-duotone" class="job-card__meta-icon job-card__meta-icon--salary" />
           {{ salaryRangeLabel || $t("pages.jobsPage.salaryUnknown") }}
@@ -87,6 +97,8 @@ const props = defineProps<{
   deleting?: boolean
 }>()
 
+const { locale } = useI18n()
+
 const jobHref = computed(() =>
   props.job.postId
     ? appRoutes.postDetail(props.job.postId)
@@ -99,6 +111,18 @@ const salaryRangeLabel = computed(() =>
     .map(value => `${props.job.currencySymbol}${value}`)
     .join(" - "),
 )
+
+const distanceLabel = computed(() => {
+  if (props.job.distanceKm === null || props.job.distanceKm < 0) {
+    return ""
+  }
+
+  const distance = props.job.distanceKm < 10
+    ? Math.round(props.job.distanceKm * 10) / 10
+    : Math.round(props.job.distanceKm)
+
+  return `${new Intl.NumberFormat(locale.value).format(distance)} km`
+})
 
 const categoryHref = computed(() => ({
   path: appRoutes.jobs,
@@ -200,6 +224,45 @@ const emit = defineEmits<{
   font-weight: 500;
 }
 
+.job-card__location-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.job-card__location {
+  flex: 1 1 auto;
+}
+
+.job-card__location-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.job-card__distance {
+  display: inline-flex;
+  min-height: 26px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.job-card__distance-icon {
+  width: 13px;
+  height: 13px;
+}
+
 .job-card__meta-icon {
   width: 16px;
   height: 16px;
@@ -212,6 +275,10 @@ const emit = defineEmits<{
 
 .job-card__meta-icon--category {
   color: var(--color-primary-600);
+}
+
+.job-card__meta-icon--location {
+  color: var(--color-error);
 }
 
 .job-card__category-link {

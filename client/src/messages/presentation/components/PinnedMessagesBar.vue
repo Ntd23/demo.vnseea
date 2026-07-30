@@ -149,6 +149,16 @@ function previewFor(message: MessagePinnedItem): PinnedMessagePreview {
     }
   }
 
+  if (sharedPost?.blog) {
+    return {
+      kind: locale.value === "vi" ? "Bài viết blog" : "Blog article",
+      title: sharedPost.blog.title,
+      description: sharedPost.blog.description,
+      imageUrl: sharedPost.blog.imageUrl || sharedPost.imageUrl || "",
+      icon: "i-ph-article-medium-fill",
+    }
+  }
+
   if (sharedPost) {
     return {
       kind: t("navigation.chatWidget.pinnedPost"),

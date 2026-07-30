@@ -12,10 +12,12 @@ import type {
 } from "../../../search/domain/types/search.types"
 import type { FeedShareRepository } from "../../domain/repositories/FeedShareRepository"
 import type {
+  FeedShareBlogCard,
   FeedShareDestination,
   FeedShareSearchTargets,
   FeedShareTarget,
 } from "../../domain/types/feed-share.types"
+import { serializeMessageSharedBlog } from "../../../messages/domain/message-shared-blog"
 
 const createInitials = (value: string, fallback = "VN") => {
   const initials = value
@@ -135,7 +137,9 @@ export function createApiFeedShareRepository(): FeedShareRepository {
     async sendMessageShare(input) {
       await client.post(apiRoutes.messages.multi, {
         recipientIds: input.recipientIds,
-        text: input.text,
+        text: input.blog
+          ? serializeMessageSharedBlog(input.blog, input.text)
+          : input.text,
       })
     },
   }

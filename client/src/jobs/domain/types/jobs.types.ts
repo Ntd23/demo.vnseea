@@ -39,6 +39,7 @@ export interface JobRecord {
   location: string
   lat: number | null
   lng: number | null
+  distanceKm: number | null
   category: string
   categoryLabel: string
   jobType: JobTypeValue | string
@@ -131,6 +132,8 @@ export interface JobCatalogQuery {
   category?: string
   type?: string
   distance?: number
+  originLat?: number
+  originLng?: number
   afterId?: number
   limit?: number
 }

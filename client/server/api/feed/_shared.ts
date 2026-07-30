@@ -457,11 +457,8 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
 
-const firstDisplayNamePart = (value: string) =>
-  value.trim().split(/\s+/).filter(Boolean)[0] || value.trim()
-
 const normalizeDisplayMention = (value: string) =>
-  firstDisplayNamePart(value).replace(/^@/, "").replace(/\s+/g, "_")
+  value.trim().replace(/^@/, "").replace(/\s+/g, " ")
 
 const extractMentions = (entity: BackendEntity): FeedPostMention[] => {
   const rawMentions = entity.mentions_users
@@ -1122,9 +1119,14 @@ export const mapPostRecord = (
   const liveHeartbeatAge = liveTime > 0 ? Math.max(0, Math.floor(Date.now() / 1000) - liveTime) : 0
   // Keep the live type after completion so the feed renders the dedicated
   // ended-broadcast card rather than degrading it into an empty text post.
-  const isLive = firstString(entity, ["postType", "post_type", "type"]) === "live"
+  // Legacy share rows may contain copied live fields from their source post.
+  // Only the embedded source is a joinable live post; the wrapper is a share.
+  const isSharedPost = sharedPostId > 0 || Boolean(sharedPost)
+  const isLive = !isSharedPost && (
+    firstString(entity, ["postType", "post_type", "type"]) === "live"
     || Boolean(liveStreamName)
     || liveEnded
+  )
   const canShare = !audienceSelection.isAnonymous
     && audienceSelection.audience !== "only_me"
     && (
