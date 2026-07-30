@@ -44,6 +44,7 @@
         :class="{ 'messages-page__main--mobile-hidden': mobileListOpen }"
       >
         <MessagesChatWindow
+          ref="chatWindowRef"
           :active-tab="activeTab"
           :contact="selectedContact"
           :empty-description="chatEmptyDescription"
@@ -96,7 +97,20 @@
           :deleting-conversation="isDeletingConversation"
           :empty-description="infoEmptyDescription"
           :empty-title="infoEmptyTitle"
+          :notifications-muted="notificationsMuted"
+          :notifications-pending="notificationsPending"
+          :search-query="conversationSearchQuery"
+          :search-results="conversationSearchResults"
+          :search-pending="conversationSearchPending"
+          :search-failed="conversationSearchFailed"
+          :shared-content="sharedContent"
+          :shared-content-pending="sharedContentPending"
+          :shared-content-failed="sharedContentFailed"
           @delete-conversation="deleteSelectedConversation"
+          @toggle-notifications="toggleConversationNotifications"
+          @update:search-query="conversationSearchQuery = $event"
+          @select-message="handleSelectConversationMessage"
+          @reload-shared-content="loadSharedContent"
         />
       </aside>
     </div>
@@ -118,7 +132,20 @@
             :deleting-conversation="isDeletingConversation"
             :empty-description="infoEmptyDescription"
             :empty-title="infoEmptyTitle"
+            :notifications-muted="notificationsMuted"
+            :notifications-pending="notificationsPending"
+            :search-query="conversationSearchQuery"
+            :search-results="conversationSearchResults"
+            :search-pending="conversationSearchPending"
+            :search-failed="conversationSearchFailed"
+            :shared-content="sharedContent"
+            :shared-content-pending="sharedContentPending"
+            :shared-content-failed="sharedContentFailed"
             @delete-conversation="deleteSelectedConversation"
+            @toggle-notifications="toggleConversationNotifications"
+            @update:search-query="conversationSearchQuery = $event"
+            @select-message="handleSelectConversationMessage"
+            @reload-shared-content="loadSharedContent"
           />
           <MessagesMessageSidePanel
             v-else
@@ -185,6 +212,7 @@ import MessagesUserDetailPanel from "../components/UserDetailPanel.vue"
 import { useMessageCalls } from "../../application/composables/useMessageCalls"
 import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
 import { useMessagesProductContext } from "../../application/composables/useMessagesProductContext"
+import { useUserConversationInfo } from "../../application/composables/useUserConversationInfo"
 import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact } from "../../domain/types/messages.types"
 
@@ -193,6 +221,7 @@ const infoPanelOpen = ref(false)
 const tagModalOpen = ref(false)
 const tagModalContact = ref<MessageContact | null>(null)
 const mobileListOpen = ref(true)
+const chatWindowRef = ref<{ scrollToMessage: (messageId: number) => void } | null>(null)
 const {
   isCallActionPending,
   joinGroupCall,
@@ -281,6 +310,20 @@ const {
   toggleAllVisibleRecipients,
   toggleReactionPicker,
 } = useMessagesPageVM()
+
+const {
+  loadSharedContent,
+  notificationsMuted,
+  notificationsPending,
+  searchFailed: conversationSearchFailed,
+  searchPending: conversationSearchPending,
+  searchQuery: conversationSearchQuery,
+  searchResults: conversationSearchResults,
+  sharedContent,
+  sharedContentFailed,
+  sharedContentPending,
+  toggleNotifications: toggleConversationNotifications,
+} = useUserConversationInfo(selectedContact)
 
 const {
   decorateProductMessage,
@@ -475,6 +518,11 @@ async function updateContactTagSelection(nextValue: number[] | undefined) {
   }
 
   await updateContactTags(contact, Array.isArray(nextValue) ? nextValue : [])
+}
+
+function handleSelectConversationMessage(messageId: number) {
+  infoPanelOpen.value = false
+  nextTick(() => chatWindowRef.value?.scrollToMessage(messageId))
 }
 
 </script>

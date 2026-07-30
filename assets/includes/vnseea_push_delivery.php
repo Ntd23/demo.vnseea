@@ -633,6 +633,9 @@ if (!function_exists('VNSEEA_MessagePushDescriptor')) {
         if ($type_two === 'message_pin_event') {
             return array('type' => 'pin', 'text' => $is_vi ? 'Đã ghim một tin nhắn' : 'Pinned a message');
         }
+        if ($type_two === 'message_unpin_event') {
+            return array('type' => 'unpin', 'text' => $is_vi ? 'Đã bỏ ghim một tin nhắn' : 'Unpinned a message');
+        }
         if ($type_two === 'story_reply' || !empty($message['story_id'])) {
             return array('type' => 'story', 'text' => $is_vi ? 'Đã trả lời tin của bạn' : 'Replied to your story');
         }

@@ -18,10 +18,13 @@
 
       <template v-for="msg in messages" :key="msg.id">
         <div
-          v-if="msg.systemEvent?.type === 'message_pinned'"
+          v-if="msg.systemEvent"
           class="mx-auto inline-flex max-w-full items-center gap-1.5 rounded-full px-3 py-1.5 text-center text-xs font-medium text-[var(--text-secondary)]"
         >
-          <UIcon name="i-lucide-pin" class="h-3.5 w-3.5 shrink-0" />
+          <UIcon
+            :name="msg.systemEvent.type === 'message_unpinned' ? 'i-ph-push-pin-slash-bold' : 'i-ph-push-pin-fill'"
+            class="h-3.5 w-3.5 shrink-0"
+          />
           <span class="truncate">{{ getPinnedEventLabel(msg) }}</span>
         </div>
 
@@ -319,11 +322,12 @@ function scrollToReplyTarget(messageId: number) {
 
 function getPinnedEventLabel(message: MessageItem) {
   if (!message.systemEvent) return ""
-  return message.systemEvent.actorId === message.senderId && message.isMine
-    ? t("navigation.chatWidget.youPinnedMessage")
-    : t("navigation.chatWidget.userPinnedMessage", {
-        name: message.systemEvent.actorName,
-      })
+  const translationKey = message.systemEvent.type === "message_unpinned"
+    ? "navigation.chatWidget.userUnpinnedMessage"
+    : "navigation.chatWidget.userPinnedMessage"
+  return t(translationKey, {
+    name: message.systemEvent.actorName || message.authorName || t("navigation.chatWidget.pinnedUserFallback"),
+  })
 }
 
 function getMessageAuthorName(message: MessageItem) {

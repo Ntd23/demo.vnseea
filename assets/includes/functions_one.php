@@ -4450,12 +4450,16 @@ function VNSEEA_GetMessagePinFlag($message_id)
 
 function VNSEEA_AttachMessageSystemEvent($message)
 {
-    if (empty($message) || empty($message['type_two']) || $message['type_two'] !== 'message_pin_event') {
+    if (
+        empty($message) ||
+        empty($message['type_two']) ||
+        !in_array($message['type_two'], array('message_pin_event', 'message_unpin_event'), true)
+    ) {
         return $message;
     }
     $actor = Wo_UserData((int)$message['from_id']);
     $message['system_event'] = array(
-        'type' => 'message_pinned',
+        'type' => $message['type_two'] === 'message_unpin_event' ? 'message_unpinned' : 'message_pinned',
         'actor_id' => (string)$message['from_id'],
         'actor_name' => !empty($actor['name']) ? $actor['name'] : (!empty($actor['username']) ? $actor['username'] : 'Người dùng'),
         'target_message_id' => (string)$message['reply_id']

@@ -49,7 +49,10 @@ if ($chat_type === 'page') {
 }
 
 $message = $db->where('id', $message_id)->getOne(T_MESSAGES);
-if (empty($message) || (!empty($message->type_two) && $message->type_two === 'message_pin_event')) {
+if (
+    empty($message) ||
+    (!empty($message->type_two) && in_array($message->type_two, array('message_pin_event', 'message_unpin_event'), true))
+) {
     $error_code = 4;
     $error_message = 'message can not be pinned';
     return;
@@ -79,19 +82,59 @@ if ($pin_action === 'no') {
         $error_message = 'you are not allowed to unpin this message';
         return;
     }
+    $unpinned_at = time();
+    $other_user_id = (int)$message->from_id === $current_user_id ? (int)$message->to_id : (int)$message->from_id;
+    $event_data = array(
+        'from_id' => $current_user_id,
+        'to_id' => $chat_type === 'user' ? $other_user_id : 0,
+        'group_id' => $chat_type === 'group' ? $chat_id : 0,
+        'text' => 'message_unpinned',
+        'time' => $unpinned_at,
+        'type_two' => 'message_unpin_event',
+        'reply_id' => $message_id,
+        'seen' => 0
+    );
+
     $db->startTransaction();
     try {
         if (!$db->where('message_id', $message_id)->delete(T_MESSAGE_PINS)) {
             throw new Exception('could not remove shared message pin');
         }
+        $event_id = $db->insert(T_MESSAGES, $event_data);
+        if (empty($event_id)) {
+            throw new Exception('could not create message unpin event');
+        }
         $db->commit();
-        VNSEEA_PublishRealtimeMessageChange($message_id, $message);
-        $response_data = array('api_status' => 200, 'message' => 'message unpinned');
     } catch (Exception $exception) {
         $db->rollback();
         $error_code = 5;
         $error_message = 'could not update pinned message';
+        return;
     }
+
+    if ($chat_type === 'user') {
+        try {
+            Wo_CreateUserChat($other_user_id, $current_user_id);
+        } catch (Throwable $exception) {
+            error_log('VNSEEA message unpin chat refresh failed: ' . $exception->getMessage());
+        }
+    }
+    try {
+        VNSEEA_EnqueueMessagePush($event_id);
+    } catch (Throwable $exception) {
+        error_log('VNSEEA message unpin push failed: ' . $exception->getMessage());
+    }
+    try {
+        VNSEEA_PublishRealtimeMessageChange($event_id);
+    } catch (Throwable $exception) {
+        error_log('VNSEEA message unpin realtime publish failed: ' . $exception->getMessage());
+    }
+
+    $response_data = array(
+        'api_status' => 200,
+        'message' => 'message unpinned',
+        'event_message_id' => (string)$event_id
+    );
     return;
 }
 
@@ -123,18 +166,6 @@ try {
         throw new Exception('could not create message pin event');
     }
     $db->commit();
-    if ($chat_type === 'user') {
-        Wo_CreateUserChat($other_user_id, $current_user_id);
-    }
-    VNSEEA_EnqueueMessagePush($event_id);
-    VNSEEA_PublishRealtimeMessageChange($event_id);
-    $response_data = array(
-        'api_status' => 200,
-        'message' => 'message pinned',
-        'event_message_id' => (string)$event_id,
-        'pinned_by_user_id' => (string)$current_user_id,
-        'can_unpin' => true
-    );
 } catch (Exception $exception) {
     $db->rollback();
     $concurrent_pin = VNSEEA_GetSharedMessagePin($message_id);
@@ -150,4 +181,31 @@ try {
         $error_code = 5;
         $error_message = 'could not update pinned message';
     }
+    return;
 }
+
+if ($chat_type === 'user') {
+    try {
+        Wo_CreateUserChat($other_user_id, $current_user_id);
+    } catch (Throwable $exception) {
+        error_log('VNSEEA message pin chat refresh failed: ' . $exception->getMessage());
+    }
+}
+try {
+    VNSEEA_EnqueueMessagePush($event_id);
+} catch (Throwable $exception) {
+    error_log('VNSEEA message pin push failed: ' . $exception->getMessage());
+}
+try {
+    VNSEEA_PublishRealtimeMessageChange($event_id);
+} catch (Throwable $exception) {
+    error_log('VNSEEA message pin realtime publish failed: ' . $exception->getMessage());
+}
+
+$response_data = array(
+    'api_status' => 200,
+    'message' => 'message pinned',
+    'event_message_id' => (string)$event_id,
+    'pinned_by_user_id' => (string)$current_user_id,
+    'can_unpin' => true
+);

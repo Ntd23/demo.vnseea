@@ -24,32 +24,45 @@
     </button>
 
     <div v-if="expanded" class="pinned-messages__list">
-      <button
+      <div
         v-for="message in pinnedMessages"
         :key="message.id"
-        type="button"
         class="pinned-messages__item"
-        @click="emit('select', message.id)"
       >
-        <span class="pinned-messages__item-media">
-          <NuxtImg
-            v-if="previewFor(message).imageUrl"
-            :src="previewFor(message).imageUrl"
-            :alt="previewFor(message).title"
-            loading="lazy"
-          />
-          <Icon v-else :name="previewFor(message).icon" />
-        </span>
+        <button
+          type="button"
+          class="pinned-messages__item-main"
+          @click="emit('select', message.id)"
+        >
+          <span class="pinned-messages__item-media">
+            <NuxtImg
+              v-if="previewFor(message).imageUrl"
+              :src="previewFor(message).imageUrl"
+              :alt="previewFor(message).title"
+              loading="lazy"
+            />
+            <Icon v-else :name="previewFor(message).icon" />
+          </span>
 
-        <span class="pinned-messages__item-copy">
-          <span class="pinned-messages__item-kind">{{ previewFor(message).kind }}</span>
-          <strong>{{ previewFor(message).title }}</strong>
-          <small v-if="previewFor(message).description">{{ previewFor(message).description }}</small>
-          <em>{{ t("navigation.chatWidget.pinnedBy", { name: message.pinnedByName }) }}</em>
-        </span>
+          <span class="pinned-messages__item-copy">
+            <span class="pinned-messages__item-kind">{{ previewFor(message).kind }}</span>
+            <strong>{{ previewFor(message).title }}</strong>
+            <small v-if="previewFor(message).description">{{ previewFor(message).description }}</small>
+            <em>{{ t("navigation.chatWidget.pinnedBy", { name: message.pinnedByName }) }}</em>
+          </span>
+        </button>
 
-        <Icon name="i-ph-arrow-right-bold" class="pinned-messages__item-arrow" />
-      </button>
+        <button
+          v-if="message.canUnpin"
+          type="button"
+          class="pinned-messages__item-unpin"
+          :title="t('navigation.chatWidget.unpinMessage')"
+          :aria-label="t('navigation.chatWidget.unpinMessage')"
+          @click.stop="emit('unpin', message)"
+        >
+          <Icon name="i-ph-push-pin-slash-bold" />
+        </button>
+      </div>
     </div>
   </section>
 </template>
@@ -81,6 +94,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   select: [messageId: number]
+  unpin: [message: MessagePinnedItem]
 }>()
 
 const { locale, t } = useI18n()
@@ -325,14 +339,13 @@ watch(() => props.pinnedMessages.map(message => message.id).join(","), (next, pr
 
 .pinned-messages__item {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) 16px;
-  gap: 11px;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  gap: 5px;
   margin-bottom: 7px;
   border: 1px solid var(--border-light);
   border-radius: 14px;
   background: var(--bg-surface);
-  padding: 9px;
-  cursor: pointer;
+  padding: 5px;
   box-shadow: var(--shadow-sm);
 }
 
@@ -343,6 +356,26 @@ watch(() => props.pinnedMessages.map(message => message.id).join(","), (next, pr
 .pinned-messages__item:hover {
   border-color: color-mix(in srgb, var(--color-primary) 28%, var(--border-light));
   background: var(--bg-surface-hover);
+}
+
+.pinned-messages__item-main {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  padding: 4px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pinned-messages__item-main:focus-visible,
+.pinned-messages__item-unpin:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+  outline-offset: 1px;
 }
 
 .pinned-messages__item-media {
@@ -401,11 +434,27 @@ watch(() => props.pinnedMessages.map(message => message.id).join(","), (next, pr
   color: var(--text-tertiary);
 }
 
-.pinned-messages__item-arrow {
-  width: 14px;
-  height: 14px;
+.pinned-messages__item-unpin {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
   align-self: center;
-  color: var(--text-tertiary);
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-primary) 9%, var(--bg-surface));
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.pinned-messages__item-unpin:hover {
+  background: color-mix(in srgb, var(--color-primary) 16%, var(--bg-surface));
+}
+
+.pinned-messages__item-unpin svg {
+  width: 17px;
+  height: 17px;
 }
 
 .pinned-messages--compact .pinned-messages__list {
@@ -414,14 +463,24 @@ watch(() => props.pinnedMessages.map(message => message.id).join(","), (next, pr
 }
 
 .pinned-messages--compact .pinned-messages__item {
-  grid-template-columns: 38px minmax(0, 1fr) 14px;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 30px;
+  gap: 4px;
   border-radius: 11px;
   padding: 7px;
+}
+
+.pinned-messages--compact .pinned-messages__item-main {
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 8px;
 }
 
 .pinned-messages--compact .pinned-messages__item-media {
   width: 38px;
   height: 38px;
+}
+
+.pinned-messages--compact .pinned-messages__item-unpin {
+  width: 28px;
+  height: 28px;
 }
 </style>

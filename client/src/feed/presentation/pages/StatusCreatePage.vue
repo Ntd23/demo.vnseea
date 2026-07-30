@@ -884,6 +884,8 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   background: var(--bg-media);
 }
 
+.story-create__preview--landscape .story-create__media,
+.story-create__preview--square .story-create__media,
 .story-create__preview--video .story-create__media {
   object-fit: contain;
 }
