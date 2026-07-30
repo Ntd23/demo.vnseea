@@ -1,40 +1,40 @@
 <!-- English description: Renders the backend-backed ads create and edit form with phtml-equivalent campaign fields. -->
 <template>
-  <main class="ads-form-page">
+  <main class="ads-form-page mt-1.5">
     <aside class="ads-form-page__sidebar">
       <section class="ads-form-wallet">
-        <p>Số dư ví</p>
+        <p>{{ $t("ads.page.walletBalance") }}</p>
         <strong>{{ balanceLabel }}</strong>
       </section>
 
       <nav class="ads-form-nav" aria-label="Ads navigation">
         <NuxtLink :to="appRoutes.ads" class="ads-form-nav__item">
           <Icon name="i-ph-megaphone-fill" />
-          <span>Chiến dịch của tôi</span>
+          <span>{{ $t("ads.form.myCampaigns") }}</span>
         </NuxtLink>
         <NuxtLink :to="appRoutes.wallet" class="ads-form-nav__item">
           <Icon name="i-ph-wallet-fill" />
-          <span>Ví của tôi</span>
+          <span>{{ $t("ads.form.myWallet") }}</span>
         </NuxtLink>
         <NuxtLink :to="appRoutes.adsCreate" class="ads-form-nav__item ads-form-nav__item--active">
           <Icon name="i-ph-plus-circle-fill" />
-          <span>Tạo quảng cáo</span>
+          <span>{{ $t("ads.form.createTitle") }}</span>
         </NuxtLink>
       </nav>
 
       <section class="ads-preview">
-        <p class="ads-preview__label">Ad preview</p>
+        <p class="ads-preview__label">{{ $t("ads.form.adPreview") }}</p>
         <div class="ads-preview__head">
           <div class="ads-preview__avatar">
             <Icon name="i-ph-buildings-fill" />
           </div>
           <div>
-            <strong>{{ draft.name || "Company" }}</strong>
-            <span>{{ draft.location || "Location" }}</span>
+            <strong>{{ draft.name || $t("ads.form.previewCompany") }}</strong>
+            <span>{{ draft.location || $t("ads.form.previewLocation") }}</span>
           </div>
         </div>
-        <h2>{{ draft.headline || "Title" }}</h2>
-        <p>{{ draft.description || "Description" }}</p>
+        <h2>{{ draft.headline || $t("ads.form.previewTitle") }}</h2>
+        <p>{{ draft.description || $t("ads.form.previewDescription") }}</p>
         <div class="ads-preview__media">
           <img v-if="isImageMedia(mediaPreviewUrl)" :src="mediaPreviewUrl" alt="Ad preview" />
           <Icon v-else :name="mediaPreviewUrl ? 'i-ph-video-duotone' : 'i-ph-image-square-duotone'" />
@@ -45,13 +45,37 @@
     <section class="ads-form-panel">
       <div class="ads-form-panel__head">
         <div>
-          <p>Advertising</p>
-          <h1>{{ mode === "create" ? "Tạo quảng cáo" : "Sửa quảng cáo" }}</h1>
+          <p>{{ $t("ads.form.eyebrow") }}</p>
+          <h1>{{ mode === "create" ? $t("ads.form.createTitle") : $t("ads.form.editTitle") }}</h1>
         </div>
         <div v-if="mode === 'create'" class="ads-steps">
-          <button type="button" :class="{ active: step === 'media' }" @click="step = 'media'">1</button>
-          <button type="button" :class="{ active: step === 'details' }" @click="goToDetails">2</button>
-          <button type="button" :class="{ active: step === 'targeting' }" @click="goToTargeting">3</button>
+          <UButton
+            type="button"
+            size="sm"
+            :color="step === 'media' ? 'primary' : 'neutral'"
+            :variant="step === 'media' ? 'solid' : 'outline'"
+            label="1"
+            class="ads-steps__button"
+            @click="step = 'media'"
+          />
+          <UButton
+            type="button"
+            size="sm"
+            :color="step === 'details' ? 'primary' : 'neutral'"
+            :variant="step === 'details' ? 'solid' : 'outline'"
+            label="2"
+            class="ads-steps__button"
+            @click="goToDetails"
+          />
+          <UButton
+            type="button"
+            size="sm"
+            :color="step === 'targeting' ? 'primary' : 'neutral'"
+            :variant="step === 'targeting' ? 'solid' : 'outline'"
+            label="3"
+            class="ads-steps__button"
+            @click="goToTargeting"
+          />
         </div>
       </div>
 
@@ -60,124 +84,277 @@
         color="warning"
         variant="soft"
         icon="i-ph-warning-circle-fill"
-        title="Không tải được dữ liệu quảng cáo"
+        :title="$t('ads.form.loadError')"
         :description="String(error.message || error)"
       />
 
-      <form v-else class="ads-form" @submit.prevent="submit">
+      <UForm v-else :state="draft" class="ads-form" @submit="submit">
         <div v-if="pending" class="ads-form__loading">
           <USkeleton v-for="item in 8" :key="item" class="h-12 rounded-[14px]" />
         </div>
 
         <template v-else>
           <section v-show="mode === 'edit' || step === 'media'" class="ads-form-section">
-            <h2>Media</h2>
-            <label class="ads-field">
-              <span>Tên công ty</span>
-              <input v-model.trim="draft.name" name="name" type="text" maxlength="100" required>
-            </label>
+            <h2>{{ $t("ads.form.mediaSection") }}</h2>
+            <UFormField name="name" :label="$t('ads.form.companyName')" required class="ads-field">
+              <UInput
+                v-model="draft.name"
+                name="name"
+                type="text"
+                maxlength="100"
+                required
+                size="lg"
+                icon="i-ph-buildings-bold"
+                class="w-full"
+              />
+            </UFormField>
 
-            <label class="ads-field">
-              <span>Hình ảnh hoặc video</span>
-              <input class="sr-only" name="media" type="file" accept="image/*,video/*" @change="onMediaChange">
-              <button class="ads-upload" type="button" @click="openFilePicker">
-                <Icon name="i-ph-upload-simple-bold" />
-                <span>{{ mediaPreviewUrl ? "Đổi media" : "Chọn media" }}</span>
-              </button>
-            </label>
+            <UFormField
+              name="media"
+              :label="$t('ads.form.mediaLabel')"
+              :required="mode === 'create'"
+              class="ads-field"
+            >
+              <UFileUpload
+                v-model="mediaFileModel"
+                name="media"
+                accept="image/*,video/*"
+                :required="mode === 'create'"
+                highlight
+                layout="list"
+                icon="i-ph-upload-simple-bold"
+                :label="mediaPreviewUrl ? $t('ads.form.mediaChange') : $t('ads.form.mediaSelect')"
+                :description="$t('ads.form.mediaDescription')"
+                class="w-full"
+              />
+            </UFormField>
 
             <div v-if="mode === 'create'" class="ads-form__footer">
               <UButton type="button" color="primary" icon="i-ph-arrow-right-bold" :disabled="!draft.name || !draft.mediaFile" @click="goToDetails">
-                Tiếp
+                {{ $t("ads.form.next") }}
               </UButton>
             </div>
           </section>
 
           <section v-show="mode === 'edit' || step === 'details'" class="ads-form-section">
-            <h2>Chi tiết</h2>
-            <label class="ads-field">
-              <span>Tiêu đề chiến dịch</span>
-              <input v-model.trim="draft.headline" name="headline" type="text" maxlength="200" required>
-            </label>
-            <label class="ads-field">
-              <span>Mô tả</span>
-              <textarea v-model.trim="draft.description" name="description" rows="4" required></textarea>
-              <small>Mô tả ngắn nội dung quảng cáo.</small>
-            </label>
+            <h2>{{ $t("ads.form.details") }}</h2>
+            <UFormField name="headline" :label="$t('ads.form.campaignHeadline')" required class="ads-field">
+              <UInput
+                v-model="draft.headline"
+                name="headline"
+                type="text"
+                maxlength="200"
+                required
+                size="lg"
+                icon="i-ph-text-aa-bold"
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField
+              name="description"
+              :label="$t('ads.form.description')"
+              :help="$t('ads.form.descriptionHelp')"
+              required
+              class="ads-field"
+            >
+              <UTextarea
+                v-model="draft.description"
+                name="description"
+                :rows="4"
+                required
+                autoresize
+                size="lg"
+                class="w-full"
+              />
+            </UFormField>
             <div class="ads-form-grid">
-              <label class="ads-field">
-                <span>Ngày bắt đầu</span>
-                <input v-model="draft.startDate" name="start" type="date" required>
-              </label>
-              <label class="ads-field">
-                <span>Ngày kết thúc</span>
-                <input v-model="draft.endDate" name="end" type="date" required>
-              </label>
+              <UFormField name="start" :label="$t('ads.form.startDate')" required class="ads-field">
+                <UInputDate
+                  ref="startDateInput"
+                  v-model="startDateValue"
+                  name="start"
+                  required
+                  size="lg"
+                  class="w-full"
+                >
+                  <template #trailing>
+                    <UPopover :reference="startDateInput?.inputsRef[3]?.$el">
+                      <UButton
+                        type="button"
+                        color="neutral"
+                        variant="link"
+                        size="sm"
+                        icon="i-ph-calendar-blank-bold"
+                        :aria-label="$t('ads.form.selectStartDate')"
+                        class="px-0"
+                      />
+                      <template #content>
+                        <UCalendar v-model="startDateValue" class="p-2" />
+                      </template>
+                    </UPopover>
+                  </template>
+                </UInputDate>
+              </UFormField>
+              <UFormField name="end" :label="$t('ads.form.endDate')" required class="ads-field">
+                <UInputDate
+                  ref="endDateInput"
+                  v-model="endDateValue"
+                  name="end"
+                  :min-value="startDateValue"
+                  required
+                  size="lg"
+                  class="w-full"
+                >
+                  <template #trailing>
+                    <UPopover :reference="endDateInput?.inputsRef[3]?.$el">
+                      <UButton
+                        type="button"
+                        color="neutral"
+                        variant="link"
+                        size="sm"
+                        icon="i-ph-calendar-blank-bold"
+                        :aria-label="$t('ads.form.selectEndDate')"
+                        class="px-0"
+                      />
+                      <template #content>
+                        <UCalendar
+                          v-model="endDateValue"
+                          :min-value="startDateValue"
+                          class="p-2"
+                        />
+                      </template>
+                    </UPopover>
+                  </template>
+                </UInputDate>
+              </UFormField>
             </div>
-            <label class="ads-field">
-              <span>Website URL</span>
-              <input v-model.trim="draft.websiteUrl" name="website" type="url" required>
-              <small>Chọn page hoặc nhập link website hợp lệ.</small>
-            </label>
-            <label v-if="options?.pages.length" class="ads-field">
-              <span>Trang của tôi</span>
-              <select :value="draft.page" name="page" @change="onPageChange">
-                <option value="">Chọn trang</option>
-                <option v-for="page in options.pages" :key="page.id" :value="page.slug">{{ page.name }}</option>
-              </select>
-            </label>
+            <UFormField
+              name="website"
+              label="Website URL"
+              :help="$t('ads.form.websiteHelp')"
+              required
+              class="ads-field"
+            >
+              <UInput
+                v-model="draft.websiteUrl"
+                name="website"
+                type="url"
+                required
+                size="lg"
+                icon="i-ph-link-bold"
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField
+              v-if="pageItems.length > 1"
+              name="page"
+              :label="$t('ads.form.myPage')"
+              class="ads-field"
+            >
+              <USelect
+                v-model="pageModel"
+                :items="pageItems"
+                value-key="value"
+                label-key="label"
+                name="page"
+                :placeholder="$t('ads.form.selectPage')"
+                size="lg"
+                icon="i-ph-flag-bold"
+                class="w-full"
+              />
+            </UFormField>
 
             <div v-if="mode === 'create'" class="ads-form__footer">
               <UButton type="button" color="neutral" variant="soft" icon="i-ph-arrow-left-bold" @click="step = 'media'">
-                Quay lại
+                {{ $t("ads.form.back") }}
               </UButton>
               <UButton type="button" color="primary" icon="i-ph-arrow-right-bold" :disabled="!draft.headline || !draft.description || !draft.startDate || !draft.endDate || !draft.websiteUrl" @click="goToTargeting">
-                Tiếp
+                {{ $t("ads.form.next") }}
               </UButton>
             </div>
           </section>
 
           <section v-show="mode === 'edit' || step === 'targeting'" class="ads-form-section">
-            <h2>Targeting</h2>
-            <label class="ads-field">
-              <span>Vị trí</span>
-              <input v-model.trim="draft.location" name="location" type="text">
-            </label>
-            <label class="ads-field">
-              <span>Audience</span>
-              <select v-model="draft.audienceIds" name="audience-list" multiple>
-                <option v-for="item in options?.audience ?? []" :key="item.value" :value="item.value">{{ item.label }}</option>
-              </select>
-            </label>
+            <h2>{{ $t("ads.form.targeting") }}</h2>
+            <UFormField name="location" :label="$t('ads.form.location')" class="ads-field">
+              <UInput
+                v-model="draft.location"
+                name="location"
+                type="text"
+                size="lg"
+                icon="i-ph-map-pin-bold"
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField name="audience-list" label="Audience" class="ads-field">
+              <USelectMenu
+                v-model="draft.audienceIds"
+                :items="audienceItems"
+                value-key="value"
+                label-key="label"
+                multiple
+                name="audience-list"
+                size="lg"
+                icon="i-ph-users-three-bold"
+                :search-input="{ placeholder: t('ads.form.searchRegion') }"
+                class="w-full"
+              />
+            </UFormField>
             <div class="ads-form-grid">
-              <label class="ads-field">
-                <span>Giới tính</span>
-                <select v-model="draft.gender" name="gender">
-                  <option v-for="item in options?.genders ?? []" :key="item.value" :value="item.value">{{ item.label }}</option>
-                </select>
-              </label>
-              <label class="ads-field">
-                <span>Vị trí hiển thị</span>
-                <select v-model="draft.placement" name="appears">
-                  <option v-for="item in options?.placements ?? []" :key="item.value" :value="item.value">
-                    {{ item.label }} (image)
-                  </option>
-                </select>
-              </label>
+              <UFormField name="gender" :label="$t('ads.form.gender')" class="ads-field">
+                <USelect
+                  v-model="draft.gender"
+                  :items="genderItems"
+                  value-key="value"
+                  label-key="label"
+                  name="gender"
+                  size="lg"
+                  icon="i-ph-gender-intersex-bold"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField name="appears" :label="$t('ads.form.displayPlacement')" class="ads-field">
+                <USelect
+                  v-model="draft.placement"
+                  :items="placementItems"
+                  value-key="value"
+                  label-key="label"
+                  name="appears"
+                  size="lg"
+                  icon="i-ph-layout-bold"
+                  class="w-full"
+                />
+              </UFormField>
             </div>
             <div class="ads-form-grid">
-              <label class="ads-field">
-                <span>Ngân sách</span>
-                <input v-model.number="draft.budget" name="budget" type="number" min="0" step="0.01">
-                <small>Để trống hoặc 0 nếu không giới hạn.</small>
-              </label>
-              <label class="ads-field">
-                <span>Bidding</span>
-                <select v-model="draft.bidding" name="bidding">
-                  <option value="clicks">Trả theo lượt nhấp - {{ currentBidPrice }}</option>
-                  <option value="views">Trả theo lượt xem - {{ currentBidPrice }}</option>
-                </select>
-              </label>
+              <UFormField
+                name="budget"
+                :label="$t('ads.form.budget')"
+                :help="$t('ads.form.budgetHelp')"
+                class="ads-field"
+              >
+                <UInputNumber
+                  v-model="draft.budget"
+                  name="budget"
+                  :min="0"
+                  :step="0.01"
+                  orientation="vertical"
+                  size="lg"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField name="bidding" label="Bidding" class="ads-field">
+                <USelect
+                  v-model="draft.bidding"
+                  :items="biddingItems"
+                  value-key="value"
+                  label-key="label"
+                  name="bidding"
+                  size="lg"
+                  icon="i-ph-currency-circle-dollar-bold"
+                  class="w-full"
+                />
+              </UFormField>
             </div>
 
             <UAlert
@@ -185,26 +362,27 @@
               color="warning"
               variant="soft"
               icon="i-ph-warning-circle-fill"
-              title="Không lưu được quảng cáo"
+              :title="$t('ads.form.saveError')"
               :description="submitError"
             />
 
             <div class="ads-form__footer">
               <UButton v-if="mode === 'create'" type="button" color="neutral" variant="soft" icon="i-ph-arrow-left-bold" @click="step = 'details'">
-                Quay lại
+                {{ $t("ads.form.back") }}
               </UButton>
               <UButton type="submit" color="primary" icon="i-ph-check-bold" :loading="submitting" :disabled="!canSubmit">
-                {{ mode === "create" ? "Publish" : "Save" }}
+                {{ mode === "create" ? $t("ads.form.publish") : $t("ads.form.save") }}
               </UButton>
             </div>
           </section>
         </template>
-      </form>
+      </UForm>
     </section>
   </main>
 </template>
 
 <script setup lang="ts">
+import { CalendarDate } from "@internationalized/date"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useAdsFormPageVM } from "../../application/view-models/useAdsFormPageVM"
 
@@ -213,6 +391,7 @@ const props = defineProps<{
   campaignId?: number
 }>()
 
+const { t } = useI18n()
 const {
   balance,
   canSubmit,
@@ -232,20 +411,69 @@ const {
   submitting,
 } = useAdsFormPageVM(props.mode, props.campaignId)
 
+const startDateInput = useTemplateRef("startDateInput")
+const endDateInput = useTemplateRef("endDateInput")
 const balanceLabel = computed(() => `VND${Number(balance?.value ?? 0).toLocaleString("vi-VN")}`)
+const mediaFileModel = computed<File | null>({
+  get: () => draft.mediaFile,
+  set: file => setMediaFile(file),
+})
+const pageModel = computed<string | undefined>({
+  get: () => draft.page || undefined,
+  set: value => selectPage(value ?? ""),
+})
+const pageItems = computed(() =>
+  (options.value?.pages ?? []).map(page => ({
+    label: page.name,
+    value: page.slug,
+  })).filter(item => item.value.length > 0),
+)
+const audienceItems = computed(() =>
+  (options.value?.audience ?? []).filter(item => item.value.length > 0),
+)
+const genderItems = computed(() =>
+  (options.value?.genders ?? []).filter(item => item.value.length > 0),
+)
+const placementItems = computed(() =>
+  (options.value?.placements ?? [])
+    .filter(item => item.value.length > 0)
+    .map(item => ({
+      ...item,
+      label: `${item.label} (image)`,
+    })),
+)
+const biddingItems = computed(() => [
+  {
+    label: t("ads.form.payPerClick", { price: currentBidPrice.value }),
+    value: "clicks",
+  },
+  {
+    label: t("ads.form.payPerView", { price: currentBidPrice.value }),
+    value: "views",
+  },
+])
+const startDateValue = computed<CalendarDate | undefined>({
+  get: () => parseCalendarDate(draft.startDate),
+  set: value => {
+    draft.startDate = value?.toString() ?? ""
 
-function onMediaChange(event: Event) {
-  const input = event.target as HTMLInputElement
-  setMediaFile(input.files?.[0] ?? null)
-}
+    if (value && endDateValue.value && endDateValue.value.compare(value) < 0) {
+      draft.endDate = value.toString()
+    }
+  },
+})
+const endDateValue = computed<CalendarDate | undefined>({
+  get: () => parseCalendarDate(draft.endDate),
+  set: value => {
+    draft.endDate = value?.toString() ?? ""
+  },
+})
 
-function onPageChange(event: Event) {
-  selectPage((event.target as HTMLSelectElement).value)
-}
+function parseCalendarDate(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) return undefined
 
-function openFilePicker(event: MouseEvent) {
-  const input = (event.currentTarget as HTMLElement).closest(".ads-field")?.querySelector("input[type=file]") as HTMLInputElement | null
-  input?.click()
+  return new CalendarDate(Number(match[1]), Number(match[2]), Number(match[3]))
 }
 
 const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|$)/i.test(value) || value.startsWith("blob:")
@@ -257,8 +485,6 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   width: min(100%, 1120px);
   grid-template-columns: 320px minmax(0, 1fr);
   gap: 18px;
-  margin: 0 auto;
-  padding: 18px 12px 40px;
 }
 
 .ads-form-page__sidebar,
@@ -266,7 +492,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 .ads-preview,
 .ads-form-wallet,
 .ads-form-nav {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   background: var(--bg-surface);
 }
@@ -316,8 +542,8 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 }
 
 .ads-form-nav__item--active {
-  background: #eef2ff;
-  color: var(--bg-brand);
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
 }
 
 .ads-preview__head {
@@ -333,8 +559,8 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   width: 42px;
   place-items: center;
   border-radius: 999px;
-  background: #eef2ff;
-  color: var(--bg-brand);
+  background: var(--bg-surface-active);
+  color: var(--icon-brand);
 }
 
 .ads-preview__head strong,
@@ -395,20 +621,11 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   gap: 8px;
 }
 
-.ads-steps button {
+.ads-steps__button {
   height: 34px;
   width: 34px;
-  border: 1px solid #dbe4f0;
   border-radius: 999px;
-  background: var(--bg-surface);
-  color: var(--text-secondary);
   font-weight: 800;
-}
-
-.ads-steps button.active {
-  border-color: var(--bg-brand);
-  background: var(--bg-brand);
-  color: #fff;
 }
 
 .ads-form,
@@ -426,47 +643,17 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
 }
 
 .ads-field {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
 
-.ads-field input,
-.ads-field select,
-.ads-field textarea {
+.ads-field :deep([data-slot="root"]),
+.ads-field :deep([data-slot="base"]) {
   width: 100%;
-  border: 1px solid #dbe4f0;
-  border-radius: 14px;
-  background: var(--bg-surface);
-  padding: 11px 12px;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.ads-field select[multiple] {
-  min-height: 160px;
-}
-
-.ads-field small {
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.ads-upload {
-  display: inline-flex;
-  width: max-content;
-  align-items: center;
-  gap: 8px;
-  border: 1px dashed var(--color-primary-300);
-  border-radius: 14px;
-  background: var(--color-primary-50);
-  padding: 12px 16px;
-  color: var(--bg-brand);
-  font-weight: 800;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .ads-form__footer {

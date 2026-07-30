@@ -83,9 +83,11 @@ export function useAdsPageVM() {
     }
   }
 
+  const { t } = useI18n()
+
   async function deleteCampaign(id: number) {
     if (mutatingId.value) return
-    if (import.meta.client && !window.confirm("Xóa quảng cáo này?")) return
+    if (import.meta.client && !window.confirm(t("ads.page.confirmDelete"))) return
 
     mutatingId.value = id
     mutationError.value = ""

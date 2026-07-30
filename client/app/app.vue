@@ -1,7 +1,6 @@
 <!-- English description: Hosts the root Nuxt app shell, global route loading, error boundary, and toaster. -->
 <template>
   <NuxtLoadingIndicator color="var(--bg-brand)" :height="3" :duration="2500" :throttle="0" />
-  <AppRouteLogoLoader />
 
   <component :is="appShellComponent" class="min-h-screen">
     <NuxtRouteAnnouncer />
@@ -74,7 +73,6 @@
 
 <script setup lang="ts">
 import { defineAsyncComponent } from "vue"
-import AppRouteLogoLoader from "../src/shared-kernel/presentation/components/AppRouteLogoLoader.vue"
 import { useSiteBrandingHead } from "../src/site-branding/application/composables/useSiteBrandingHead"
 import { useSiteBrandingStore } from "../src/site-branding/application/stores/useSiteBrandingStore"
 
