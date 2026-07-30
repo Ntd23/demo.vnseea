@@ -19,6 +19,7 @@ function assert_push_v2_contract($condition, $message)
 $migration = push_v2_source($root, 'database/migrations/20260729_push_delivery_v2.sql');
 $tables = push_v2_source($root, 'assets/includes/tabels.php');
 $service = push_v2_source($root, 'assets/includes/vnseea_push_delivery.php');
+$legacy_service = push_v2_source($root, 'assets/includes/onesignal_config.php');
 $endpoint = push_v2_source($root, 'api/v2/endpoints/push-devices.php');
 $router = push_v2_source($root, 'api-v2.php');
 $logout = push_v2_source($root, 'api/v2/endpoints/delete-access-token.php');
@@ -148,6 +149,18 @@ assert_push_v2_contract(
     strpos($service, 'CURLOPT_SSL_VERIFYPEER, true') !== false &&
         strpos($service, 'CURLOPT_SSL_VERIFYHOST, 2') !== false,
     'provider requests must verify TLS'
+);
+assert_push_v2_contract(
+    strpos($service, "\$request['ios_sound'] = 'default';") !== false &&
+        strpos($legacy_service, "\$final_request_data['ios_sound'] = 'default';") !== false &&
+        strpos($service, 'app_notification_sound.mp3') === false &&
+        strpos($legacy_service, "\$default_mobile_notification_sound . '.mp3'") === false,
+    'iOS push must use the bundled system sound instead of a missing custom file'
+);
+assert_push_v2_contract(
+    strpos($service, 'push_debug_file_write_failed') !== false &&
+        strpos($legacy_service, 'push_debug_file_write_failed') !== false,
+    'push diagnostics must fall back to PHP error logging when the dedicated file is not writable'
 );
 assert_push_v2_contract(
     strpos($service, '$no_valid_subscriptions') !== false &&
