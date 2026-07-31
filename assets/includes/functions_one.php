@@ -4361,18 +4361,36 @@ function Wo_GetMessagesUsersAPP2($fetch_array = array())
         $query_one .= " LIMIT {$limit}";
     }
     $sql_query_one = mysqli_query($sqlConnect, $query_one);
-    if (mysqli_num_rows($sql_query_one) > 0) {
+    $chat_rows = array();
+    $conversation_user_ids = array();
+    if ($sql_query_one && mysqli_num_rows($sql_query_one) > 0) {
         while ($sql_fetch_one = mysqli_fetch_assoc($sql_query_one)) {
-            $new_data = Wo_UserData($sql_fetch_one['conversation_user_id']);
-            if (!empty($new_data) && !empty($new_data['username'])) {
-                //$new_data['chat_time'] = $sql_fetch_one['time'];
-                if (!empty($sql_fetch_one['time'])) {
-                    $new_data['chat_time'] = $sql_fetch_one['time'];
-                }
-                $new_data['chat_id'] = $sql_fetch_one['id'];
-                $data[] = $new_data;
+            $conversation_user_id = !empty($sql_fetch_one['conversation_user_id'])
+                ? (int)$sql_fetch_one['conversation_user_id']
+                : 0;
+            if ($conversation_user_id < 1) {
+                continue;
             }
+            $chat_rows[] = $sql_fetch_one;
+            $conversation_user_ids[$conversation_user_id] = $conversation_user_id;
         }
+    }
+    $users_by_id = function_exists('VNSEEA_GetChatUsersBatch')
+        ? VNSEEA_GetChatUsersBatch($conversation_user_ids)
+        : array();
+    foreach ($chat_rows as $chat_row) {
+        $conversation_user_id = (int)$chat_row['conversation_user_id'];
+        $new_data = !empty($users_by_id[$conversation_user_id])
+            ? $users_by_id[$conversation_user_id]
+            : array();
+        if (empty($new_data) || empty($new_data['username'])) {
+            continue;
+        }
+        if (!empty($chat_row['time'])) {
+            $new_data['chat_time'] = $chat_row['time'];
+        }
+        $new_data['chat_id'] = !empty($chat_row['id']) ? (int)$chat_row['id'] : 0;
+        $data[] = $new_data;
     }
     return $data;
 }
@@ -4457,7 +4475,10 @@ function VNSEEA_AttachMessageSystemEvent($message)
     ) {
         return $message;
     }
-    $actor = Wo_UserData((int)$message['from_id']);
+    $actor_id = (int)$message['from_id'];
+    $actor = function_exists('VNSEEA_GetMessageContextUser')
+        ? VNSEEA_GetMessageContextUser($actor_id)
+        : Wo_UserData($actor_id);
     $message['system_event'] = array(
         'type' => $message['type_two'] === 'message_unpin_event' ? 'message_unpinned' : 'message_pinned',
         'actor_id' => (string)$message['from_id'],
@@ -4504,7 +4525,9 @@ function VNSEEA_AttachMarketplaceMessageContext($message)
     if (!empty($message['product_id'])) {
         $product = !empty($message['product'])
             ? $message['product']
-            : Wo_GetProduct((int)$message['product_id']);
+            : (function_exists('VNSEEA_GetMessageContextProduct')
+                ? VNSEEA_GetMessageContextProduct((int)$message['product_id'])
+                : Wo_GetProduct((int)$message['product_id']));
         if (!empty($product)) {
             $message['product'] = $product;
             $product_price = !empty($product['price_format'])
@@ -4538,6 +4561,19 @@ function VNSEEA_AttachMarketplaceMessageContext($message)
     $hash_id = (string)$message['market_order_hash'];
     $viewer_id = !empty($wo['user']['user_id']) ? (int)$wo['user']['user_id'] : 0;
     $cache_key = $viewer_id . ':' . $hash_id;
+    if (
+        function_exists('VNSEEA_MessageBatchContextLoaded') &&
+        VNSEEA_MessageBatchContextLoaded('orders', $hash_id)
+    ) {
+        $batch_context = function_exists('VNSEEA_GetMessageContextOrder')
+            ? VNSEEA_GetMessageContextOrder($hash_id)
+            : array();
+        if (!empty($batch_context)) {
+            $message['market_order'] = $batch_context;
+            $message['marketplace_context'] = $batch_context;
+        }
+        return $message;
+    }
     if (array_key_exists($cache_key, $order_cache)) {
         if (!empty($order_cache[$cache_key])) {
             $message['market_order'] = $order_cache[$cache_key];
@@ -4720,8 +4756,17 @@ function VNSEEA_AttachMessageStoryContext($message)
         return $message;
     }
 
-    $viewer_id = !empty($wo['user']['user_id']) ? (int)$wo['user']['user_id'] : 0;
-    $snapshot = VNSEEA_GetMessageStorySnapshot($story_id, $viewer_id);
+    if (
+        function_exists('VNSEEA_MessageBatchContextLoaded') &&
+        VNSEEA_MessageBatchContextLoaded('stories', $story_id)
+    ) {
+        $snapshot = function_exists('VNSEEA_GetMessageContextStory')
+            ? VNSEEA_GetMessageContextStory($story_id)
+            : array();
+    } else {
+        $viewer_id = !empty($wo['user']['user_id']) ? (int)$wo['user']['user_id'] : 0;
+        $snapshot = VNSEEA_GetMessageStorySnapshot($story_id, $viewer_id);
+    }
     $message['story_available'] = !empty($snapshot);
     $message['story'] = !empty($snapshot) ? $snapshot : array();
     return $message;
@@ -5198,11 +5243,15 @@ function VNSEEA_GetMessagesHeaderBatch($user_ids = array(), $user_data_by_id = a
         $sqlConnect,
         "SELECT message.* FROM " . T_MESSAGES . " message " .
         "INNER JOIN (" .
-            "SELECT MAX(candidate.`id`) AS `id` FROM " . T_MESSAGES . " candidate " .
-            "WHERE candidate.`page_id` = 0 AND (" .
-                "(candidate.`from_id` = {$logged_user_id} AND candidate.`to_id` IN ({$peer_ids_sql}) AND candidate.`deleted_one` = '0') OR " .
-                "(candidate.`to_id` = {$logged_user_id} AND candidate.`from_id` IN ({$peer_ids_sql}) AND candidate.`deleted_two` = '0')" .
-            ") GROUP BY CASE WHEN candidate.`from_id` = {$logged_user_id} THEN candidate.`to_id` ELSE candidate.`from_id` END" .
+            "SELECT directional.`peer_id`, MAX(directional.`id`) AS `id` FROM (" .
+                "SELECT outgoing.`to_id` AS `peer_id`, MAX(outgoing.`id`) AS `id` FROM " . T_MESSAGES . " outgoing " .
+                "WHERE outgoing.`page_id` = 0 AND outgoing.`from_id` = {$logged_user_id} " .
+                "AND outgoing.`to_id` IN ({$peer_ids_sql}) AND outgoing.`deleted_one` = '0' GROUP BY outgoing.`to_id` " .
+                "UNION ALL " .
+                "SELECT incoming.`from_id` AS `peer_id`, MAX(incoming.`id`) AS `id` FROM " . T_MESSAGES . " incoming " .
+                "WHERE incoming.`page_id` = 0 AND incoming.`to_id` = {$logged_user_id} " .
+                "AND incoming.`from_id` IN ({$peer_ids_sql}) AND incoming.`deleted_two` = '0' GROUP BY incoming.`from_id`" .
+            ") directional GROUP BY directional.`peer_id`" .
         ") latest ON latest.`id` = message.`id`"
     );
     if (!$query) {
@@ -5222,6 +5271,19 @@ function VNSEEA_GetMessagesHeaderBatch($user_ids = array(), $user_data_by_id = a
         $message_ids[] = (int)$message['id'];
     }
 
+    $sender_ids = array();
+    foreach ($messages as $message) {
+        $sender_id = (int)$message['from_id'];
+        if ($sender_id > 0 && !isset($user_data_by_id[$sender_id])) {
+            $sender_ids[$sender_id] = $sender_id;
+        }
+    }
+    if (!empty($sender_ids) && function_exists('VNSEEA_GetChatUsersBatch')) {
+        $user_data_by_id += VNSEEA_GetChatUsersBatch($sender_ids);
+    }
+    if (function_exists('VNSEEA_PrimeCanonicalMessageContextsBatch')) {
+        VNSEEA_PrimeCanonicalMessageContextsBatch($messages);
+    }
     $reaction_summaries = VNSEEA_GetMessageReactionSummariesBatch($message_ids);
     foreach ($messages as $peer_id => $message) {
         $sender_id = (int)$message['from_id'];
@@ -5230,13 +5292,16 @@ function VNSEEA_GetMessagesHeaderBatch($user_ids = array(), $user_data_by_id = a
         } else if ($sender_id === $logged_user_id) {
             $message['messageUser'] = $wo['user'];
         } else {
-            $message['messageUser'] = Wo_UserData($sender_id);
+            $message['messageUser'] = array();
         }
         $message['onwer'] = $sender_id === $logged_user_id ? 1 : 0;
         $message['or_text'] = $message['text'];
         if (!empty($message['text'])) {
             $message['text'] = Wo_EditMarkup($message['text']);
         }
+        $message['reply'] = !empty($message['reply_id']) && function_exists('VNSEEA_GetMessageContextReply')
+            ? VNSEEA_GetMessageContextReply($message['reply_id'])
+            : array();
         $message_id = (int)$message['id'];
         $message['reaction'] = isset($reaction_summaries[$message_id])
             ? $reaction_summaries[$message_id]
@@ -5419,9 +5484,11 @@ function VNSEEA_GetPageMessageHeadersBatch($page_chats = array())
         $sender_ids[(int)$message['from_id']] = (int)$message['from_id'];
     }
 
-    $users = array();
-    foreach ($sender_ids as $sender_id) {
-        $users[$sender_id] = Wo_UserData($sender_id);
+    $users = function_exists('VNSEEA_GetChatUsersBatch')
+        ? VNSEEA_GetChatUsersBatch($sender_ids)
+        : array();
+    if (function_exists('VNSEEA_PrimeCanonicalMessageContextsBatch')) {
+        VNSEEA_PrimeCanonicalMessageContextsBatch($messages);
     }
     $reaction_summaries = VNSEEA_GetMessageReactionSummariesBatch($message_ids);
     $message_flags = array();
@@ -5454,7 +5521,9 @@ function VNSEEA_GetPageMessageHeadersBatch($page_chats = array())
         $message['onwer'] = $sender_id === (int)$wo['user']['user_id'] ? 1 : 0;
         $message['reply'] = array();
         if (!empty($message['reply_id'])) {
-            $message['reply'] = GetMessageById($message['reply_id']);
+            $message['reply'] = function_exists('VNSEEA_GetMessageContextReply')
+                ? VNSEEA_GetMessageContextReply($message['reply_id'])
+                : GetMessageById($message['reply_id']);
         }
         $message_id = (int)$message['id'];
         $message['reaction'] = isset($reaction_summaries[$message_id])
@@ -6196,7 +6265,9 @@ function Wo_MarkupAPI($text = '', $link = true, $hashtag = true, $mention = true
             if (preg_match_all($mention_regex, $text, $matches)) {
                 foreach ($matches[1] as $match) {
                     $match = Wo_Secure($match);
-                    $match_user = Wo_UserData($match);
+                    $match_user = function_exists('VNSEEA_PostBatchMarkupUser')
+                        ? VNSEEA_PostBatchMarkupUser($match)
+                        : Wo_UserData($match);
                     $match_search = '@[' . $match . ']';
                     if (isset($match_user['user_id'])) {
                         $match_replace = '<span class="hash" onclick="InjectAPI(\'{&quot;type&quot; : &quot;mention&quot;, &quot;user_id&quot;:&quot;' . $match_user['user_id'] . '&quot;}\');">' . $match_user['name'] . '</span>';
@@ -6205,7 +6276,7 @@ function Wo_MarkupAPI($text = '', $link = true, $hashtag = true, $mention = true
                         $match_replace = '';
                         $Orginaltext = str_replace($match_search, $match_replace, $Orginaltext);
                         $text = str_replace($match_search, $match_replace, $text);
-                        if (!empty($post_id)) {
+                        if (!empty($post_id) && (!function_exists('VNSEEA_IsPostQueryFreeHydration') || !VNSEEA_IsPostQueryFreeHydration())) {
                             mysqli_query($sqlConnect, "UPDATE " . T_POSTS . " SET `postText` = '" . $Orginaltext . "' WHERE `id` = {$post_id}");
                         }
                     }
@@ -6237,7 +6308,9 @@ function Wo_MarkupAPI($text = '', $link = true, $hashtag = true, $mention = true
             foreach ($matches[1] as $match) {
                 $hashtag = $matches[1][$match_i];
                 $hashkey = $matches[2][$match_i];
-                $hashdata = Wo_GetHashtag($hashkey);
+                $hashdata = function_exists('VNSEEA_PostBatchHashtag')
+                    ? VNSEEA_PostBatchHashtag($hashkey)
+                    : Wo_GetHashtag($hashkey);
                 if (is_array($hashdata)) {
                     $hashlink = '<span class="hash" onclick="InjectAPI(\'{&quot;type&quot; : &quot;hashtag&quot;, &quot;tag&quot;:&quot;' . $hashdata['tag'] . '&quot;}\');">#' . $hashdata['tag'] . '</span>';
                     $text = str_replace($hashtag, $hashlink, $text);
@@ -6259,7 +6332,9 @@ function Wo_Markup($text, $link = true, $hashtag = true, $mention = true, $post_
             if (preg_match_all($mention_regex, $text, $matches)) {
                 foreach ($matches[1] as $match) {
                     $match = Wo_Secure($match);
-                    $match_user = Wo_UserData($match);
+                    $match_user = function_exists('VNSEEA_PostBatchMarkupUser')
+                        ? VNSEEA_PostBatchMarkupUser($match)
+                        : Wo_UserData($match);
                     $match_search = '@[' . $match . ']';
                     if (isset($match_user['user_id'])) {
                         $match_replace = '<span class="user-popover" data-id="' . $match_user['id'] . '" data-type="' . $match_user['type'] . '"><a href="' . Wo_SeoLink('index.php?link1=timeline&u=' . $match_user['username']) . '" class="hash" data-ajax="?link1=timeline&u=' . $match_user['username'] . '">' . $match_user['name'] . '</a></span>';
@@ -6268,7 +6343,7 @@ function Wo_Markup($text, $link = true, $hashtag = true, $mention = true, $post_
                         $match_replace = '';
                         $Orginaltext = str_replace($match_search, $match_replace, $Orginaltext);
                         $text = str_replace($match_search, $match_replace, $text);
-                        if (!empty($post_id)) {
+                        if (!empty($post_id) && (!function_exists('VNSEEA_IsPostQueryFreeHydration') || !VNSEEA_IsPostQueryFreeHydration())) {
                             mysqli_query($sqlConnect, "UPDATE " . T_POSTS . " SET `postText` = '" . $Orginaltext . "' WHERE `id` = {$post_id}");
                         } elseif (!empty($comment_id)) {
                             mysqli_query($sqlConnect, "UPDATE " . T_COMMENTS . " SET `text` = '" . $Orginaltext . "' WHERE `id` = {$comment_id}");
@@ -6304,7 +6379,9 @@ function Wo_Markup($text, $link = true, $hashtag = true, $mention = true, $post_
             foreach ($matches[1] as $match) {
                 $hashtag = $matches[1][$match_i];
                 $hashkey = $matches[2][$match_i];
-                $hashdata = Wo_GetHashtag($hashkey);
+                $hashdata = function_exists('VNSEEA_PostBatchHashtag')
+                    ? VNSEEA_PostBatchHashtag($hashkey)
+                    : Wo_GetHashtag($hashkey);
                 if (is_array($hashdata)) {
                     $hashlink = '<a href="' . Wo_SeoLink('index.php?link1=hashtag&hash=' . $hashdata['tag']) . '" class="hash">#' . $hashdata['tag'] . '</a>';
                     $text = str_replace($hashtag, $hashlink, $text);
@@ -6327,7 +6404,9 @@ function Wo_EditMarkup($text, $link = true, $hashtag = true, $mention = true, $p
             if (preg_match_all($mention_regex, $text, $matches)) {
                 foreach ($matches[1] as $match) {
                     $match = Wo_Secure($match);
-                    $match_user = Wo_UserData($match);
+                    $match_user = function_exists('VNSEEA_PostBatchMarkupUser')
+                        ? VNSEEA_PostBatchMarkupUser($match)
+                        : Wo_UserData($match);
                     $match_search = '@[' . $match . ']';
                     if (isset($match_user['user_id'])) {
                         $match_replace = '@' . $match_user['name'];
@@ -6336,7 +6415,7 @@ function Wo_EditMarkup($text, $link = true, $hashtag = true, $mention = true, $p
                         $match_replace = '';
                         $Orginaltext = str_replace($match_search, $match_replace, $Orginaltext);
                         $text = str_replace($match_search, $match_replace, $text);
-                        if (!empty($post_id)) {
+                        if (!empty($post_id) && (!function_exists('VNSEEA_IsPostQueryFreeHydration') || !VNSEEA_IsPostQueryFreeHydration())) {
                             mysqli_query($sqlConnect, "UPDATE " . T_POSTS . " SET `postText` = '" . $Orginaltext . "' WHERE `id` = {$post_id}");
                         } elseif (!empty($comment_id)) {
                             mysqli_query($sqlConnect, "UPDATE " . T_COMMENTS . " SET `text` = '" . $Orginaltext . "' WHERE `id` = {$comment_id}");
@@ -6367,7 +6446,9 @@ function Wo_EditMarkup($text, $link = true, $hashtag = true, $mention = true, $p
             foreach ($matches[1] as $match) {
                 $hashtag = $matches[1][$match_i];
                 $hashkey = $matches[2][$match_i];
-                $hashdata = Wo_GetHashtag($hashkey);
+                $hashdata = function_exists('VNSEEA_PostBatchHashtag')
+                    ? VNSEEA_PostBatchHashtag($hashkey)
+                    : Wo_GetHashtag($hashkey);
                 if (is_array($hashdata)) {
                     $hashlink = '#' . $hashdata['tag'];
                     $text = str_replace($hashtag, $hashlink, $text);
@@ -7396,7 +7477,7 @@ function VNSEEA_BuildFeedSummaryPagePublisher($page)
     );
 }
 
-function VNSEEA_PrimeFeedSummaryPublishers($rows)
+function VNSEEA_PrimeFeedSummaryPublishers($rows, $access = array())
 {
     global $wo, $sqlConnect;
 
@@ -7423,9 +7504,9 @@ function VNSEEA_PrimeFeedSummaryPublishers($rows)
         }
     }
 
-    $following = array();
+    $following = !empty($access['viewer_follows']) ? $access['viewer_follows'] : array();
     $viewer_id = !empty($wo['user']['user_id']) ? (int)$wo['user']['user_id'] : 0;
-    if ($viewer_id > 0 && !empty($user_ids)) {
+    if ($viewer_id > 0 && !empty($user_ids) && empty($access)) {
         $following_query = mysqli_query(
             $sqlConnect,
             'SELECT `following_id` FROM ' . T_FOLLOWERS .
@@ -7454,7 +7535,13 @@ function VNSEEA_PrimeFeedSummaryPublishers($rows)
     }
 
     $pages = array();
-    if (!empty($page_ids)) {
+    if (!empty($page_ids) && !empty($access['pages'])) {
+        foreach ($page_ids as $page_id) {
+            if (!empty($access['pages'][$page_id])) {
+                $pages[$page_id] = VNSEEA_BuildFeedSummaryPagePublisher($access['pages'][$page_id]);
+            }
+        }
+    } else if (!empty($page_ids)) {
         $page_query = mysqli_query(
             $sqlConnect,
             'SELECT `page_id`, `user_id`, `page_name`, `page_title`, `page_description`, `avatar`, `cover`, `verified` ' .
@@ -7605,33 +7692,16 @@ function VNSEEA_PrimePostDataBatch($post_ids = array(), $options = array())
         return array();
     }
 
-    $rows = array();
-    $query = mysqli_query(
-        $sqlConnect,
-        "SELECT * FROM " . T_POSTS . " WHERE `id` IN (" . implode(',', $ids) . ')'
-    );
-    if ($query) {
-        while ($row = mysqli_fetch_assoc($query)) {
-            $rows[(int)$row['id']] = $row;
-        }
-    }
-
-    $related_ids = array();
-    foreach ($rows as $row) {
-        foreach (array('post_id', 'parent_id') as $column) {
-            $related_id = !empty($row[$column]) ? (int)$row[$column] : 0;
-            if ($related_id > 0 && !isset($rows[$related_id])) {
-                $related_ids[$related_id] = $related_id;
-            }
-        }
-    }
-    if (!empty($related_ids)) {
-        $related_query = mysqli_query(
+    $rows = function_exists('VNSEEA_LoadPostTreeRowsBatch')
+        ? VNSEEA_LoadPostTreeRowsBatch($ids)
+        : array();
+    if (empty($rows)) {
+        $query = mysqli_query(
             $sqlConnect,
-            "SELECT * FROM " . T_POSTS . " WHERE `id` IN (" . implode(',', $related_ids) . ')'
+            "SELECT * FROM " . T_POSTS . " WHERE `id` IN (" . implode(',', $ids) . ')'
         );
-        if ($related_query) {
-            while ($row = mysqli_fetch_assoc($related_query)) {
+        if ($query) {
+            while ($row = mysqli_fetch_assoc($query)) {
                 $rows[(int)$row['id']] = $row;
             }
         }
@@ -7719,6 +7789,14 @@ function VNSEEA_PrimePostDataBatch($post_ids = array(), $options = array())
     $tagged_users = function_exists('VNSEEA_GetPostTaggedUsersBatch')
         ? VNSEEA_GetPostTaggedUsersBatch($all_ids)
         : array();
+    foreach ($all_ids as $post_id) {
+        if (!array_key_exists($post_id, $tagged_users)) {
+            $tagged_users[$post_id] = array();
+        }
+    }
+    $access = $profile === 'feed_summary' && function_exists('VNSEEA_PrimePostAccessBatch')
+        ? VNSEEA_PrimePostAccessBatch($rows, VNSEEA_CurrentViewerId())
+        : array();
     $album_media = $profile === 'feed_summary'
         ? VNSEEA_PrimePostAlbumMediaBatch($rows)
         : array();
@@ -7726,9 +7804,17 @@ function VNSEEA_PrimePostDataBatch($post_ids = array(), $options = array())
         ? VNSEEA_PrimePostPollBatch($rows)
         : array('options' => array(), 'voted_ids' => array());
     $publishers = $profile === 'feed_summary'
-        ? VNSEEA_PrimeFeedSummaryPublishers($rows)
+        ? VNSEEA_PrimeFeedSummaryPublishers($rows, $access)
         : array('users' => array(), 'pages' => array());
+    $typed = $profile === 'feed_summary' && function_exists('VNSEEA_PrimePostTypedDataBatch')
+        ? VNSEEA_PrimePostTypedDataBatch($rows, $publishers)
+        : array();
+    $hashtags = $profile === 'feed_summary' && function_exists('VNSEEA_GetPostHashtagsBatch')
+        ? VNSEEA_GetPostHashtagsBatch($rows)
+        : array();
     $GLOBALS['vnseea_post_batch_context'] = array(
+        'active' => true,
+        'query_free' => $profile === 'feed_summary',
         'profile' => $profile,
         'summary_post_ids' => $profile === 'feed_summary' ? array_fill_keys($all_ids, true) : array(),
         'rows' => $rows,
@@ -7740,6 +7826,9 @@ function VNSEEA_PrimePostDataBatch($post_ids = array(), $options = array())
         'poll_voted_ids' => $polls['voted_ids'],
         'users' => $publishers['users'],
         'pages' => $publishers['pages'],
+        'access' => $access,
+        'typed' => $typed,
+        'hashtags' => $hashtags,
         'requires_active' => $wo['config']['post_approval'] == 1 && !Wo_IsAdmin(),
     );
     return $rows;
@@ -7752,7 +7841,7 @@ function VNSEEA_PostBatchUserData($user_id)
         return Wo_UserData($user_id);
     }
     if (!isset($GLOBALS['vnseea_post_batch_context']['users'][$user_id])) {
-        $GLOBALS['vnseea_post_batch_context']['users'][$user_id] = Wo_UserData($user_id);
+        return !empty($GLOBALS['vnseea_post_batch_context']['query_free']) ? array() : Wo_UserData($user_id);
     }
     return $GLOBALS['vnseea_post_batch_context']['users'][$user_id];
 }
@@ -7764,7 +7853,7 @@ function VNSEEA_PostBatchPageData($page_id)
         return Wo_PageData($page_id);
     }
     if (!isset($GLOBALS['vnseea_post_batch_context']['pages'][$page_id])) {
-        $GLOBALS['vnseea_post_batch_context']['pages'][$page_id] = Wo_PageData($page_id);
+        return !empty($GLOBALS['vnseea_post_batch_context']['query_free']) ? array() : Wo_PageData($page_id);
     }
     return $GLOBALS['vnseea_post_batch_context']['pages'][$page_id];
 }
@@ -7781,13 +7870,25 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
     $batch_context = !empty($GLOBALS['vnseea_post_batch_context'])
         ? $GLOBALS['vnseea_post_batch_context']
         : array();
+    $is_query_free_batch = !empty($batch_context['query_free']);
+    $access_context = !empty($batch_context['access']) ? $batch_context['access'] : array();
+    $typed_context = !empty($batch_context['typed']) ? $batch_context['typed'] : array();
+    if ($is_query_free_batch && !isset($batch_context['rows'][$batch_post_id])) {
+        $previous_context = $GLOBALS['vnseea_post_batch_context'];
+        unset($GLOBALS['vnseea_post_batch_context']);
+        try {
+            return Wo_PostData($post_id, $placement, $limited, $comments_limit);
+        } finally {
+            $GLOBALS['vnseea_post_batch_context'] = $previous_context;
+        }
+    }
     $hashed_post_Id = md5($post_id);
     if (isset($batch_context['rows'][$batch_post_id])) {
         $fetched_data = $batch_context['rows'][$batch_post_id];
         if (!empty($batch_context['requires_active']) && (int)$fetched_data['active'] !== 1) {
             return false;
         }
-    } else {
+    } else if (!$is_query_free_batch) {
         $query_one = "SELECT * FROM " . T_POSTS . " WHERE `id` = {$post_id}";
         if ($wo['config']['post_approval'] == 1 && !Wo_IsAdmin()) {
             $query_one .= " AND `active` = '1' ";
@@ -7824,7 +7925,7 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
             } else {
                 $story['publisher'] = VNSEEA_PostBatchUserData($story['user_id']);
             }
-        } else {
+        } else if (!$is_query_free_batch) {
             $query_two = "SELECT * FROM " . T_POSTS . " WHERE `id` = " . $fetched_data['post_id'];
             $sql_query_two = mysqli_query($sqlConnect, $query_two);
             if (!$sql_query_two || mysqli_num_rows($sql_query_two) != 1) {
@@ -7837,14 +7938,22 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
             } else {
                 $story['publisher'] = VNSEEA_PostBatchUserData($story['user_id']);
             }
+        } else {
+            return false;
         }
     }
     $viewer_id = VNSEEA_CurrentViewerId();
     if ($placement != 'admin') {
-        if (!VNSEEA_CanViewPost($story, $viewer_id)) {
+        $can_view_post = $is_query_free_batch && function_exists('VNSEEA_PostAccessCanView')
+            ? VNSEEA_PostAccessCanView($story, $access_context)
+            : VNSEEA_CanViewPost($story, $viewer_id);
+        if (!$can_view_post) {
             return false;
         }
-        if (!empty($story['parent_id']) && !VNSEEA_CanSharePostTree($story, $viewer_id)) {
+        $can_share_tree = $is_query_free_batch && function_exists('VNSEEA_PostAccessCanShareTree')
+            ? VNSEEA_PostAccessCanShareTree($story, $access_context)
+            : VNSEEA_CanSharePostTree($story, $viewer_id);
+        if (!empty($story['parent_id']) && !$can_share_tree) {
             return false;
         }
     }
@@ -7867,12 +7976,18 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
                 return false;
             }
             $story['group_recipient_exists'] = true;
-            $story['group_recipient'] = Wo_GroupData($story['group_id']);
-            if ($story['group_recipient']['privacy'] == 2) {
+            $group_id = (int)$story['group_id'];
+            $story['group_recipient'] = $is_query_free_batch
+                ? (!empty($access_context['groups'][$group_id]) ? $access_context['groups'][$group_id] : array())
+                : Wo_GroupData($group_id);
+            if (empty($story['group_recipient'])) {
+                return false;
+            }
+            if (!$is_query_free_batch && $story['group_recipient']['privacy'] == 2) {
                 if ($wo['loggedin'] == true) {
                     if ($story['publisher']['user_id'] != $wo['user']['user_id']) {
-                        if (Wo_IsGroupOnwer($story['group_id']) === false) {
-                            if (Wo_IsGroupJoined($story['group_id']) === false && (!Wo_IsAdmin() || Wo_IsModerator())) {
+                        if (Wo_IsGroupOnwer($group_id) === false) {
+                            if (Wo_IsGroupJoined($group_id) === false && (!Wo_IsAdmin() || Wo_IsModerator())) {
                                 return false;
                             }
                         }
@@ -7881,7 +7996,10 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
                     return false;
                 }
             }
-            if (Wo_IsGroupOnwer($story['group_id']) === false) {
+            $is_group_owner = $is_query_free_batch
+                ? (!empty($story['group_recipient']['user_id']) && (int)$story['group_recipient']['user_id'] === $viewer_id)
+                : Wo_IsGroupOnwer($group_id);
+            if ($is_group_owner === false) {
                 $story['is_group_post'] = true;
             } else {
                 $story['group_admin'] = true;
@@ -7945,12 +8063,20 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
     $story['admin'] = false;
     if ($wo['loggedin'] == true) {
         if (!empty($story['page_id'])) {
-            if (Wo_IsPageOnwer($story['page_id'])) {
+            $page_id = (int)$story['page_id'];
+            $page = !empty($access_context['pages'][$page_id]) ? $access_context['pages'][$page_id] : array();
+            $is_page_admin = $is_query_free_batch
+                ? ((!empty($page['user_id']) && (int)$page['user_id'] === $viewer_id) || !empty($access_context['admin_pages'][$page_id]))
+                : Wo_IsPageOnwer($page_id);
+            if ($is_page_admin) {
                 $story['admin'] = true;
             }
         } else {
             if (!empty($story['job_id'])) {
-                $is_job_owner = $db->where('id', $story['job_id'])->where('user_id', $wo['user']['user_id'])->getValue(T_JOB, 'COUNT(*)');
+                $job = !empty($typed_context['jobs'][(int)$story['job_id']]) ? $typed_context['jobs'][(int)$story['job_id']] : array();
+                $is_job_owner = $is_query_free_batch
+                    ? (!empty($job['user_id']) && (int)$job['user_id'] === $viewer_id ? 1 : 0)
+                    : $db->where('id', $story['job_id'])->where('user_id', $wo['user']['user_id'])->getValue(T_JOB, 'COUNT(*)');
                 if ($is_job_owner > 0) {
                     $story['admin'] = true;
                 }
@@ -8013,13 +8139,19 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
             : Wo_GetAlbumPhotos($parent_id);
     }
     if ($story['product_id'] > 0) {
-        $story['product'] = Wo_GetProduct($story['product_id']);
+        $story['product'] = $is_query_free_batch
+            ? (!empty($typed_context['products'][(int)$story['product_id']]) ? $typed_context['products'][(int)$story['product_id']] : array())
+            : Wo_GetProduct($story['product_id']);
     }
     if ($story['page_event_id'] > 0) {
-        $story['event'] = Wo_EventData($story['page_event_id']);
+        $story['event'] = $is_query_free_batch
+            ? (!empty($typed_context['events'][(int)$story['page_event_id']]) ? $typed_context['events'][(int)$story['page_event_id']] : array())
+            : Wo_EventData($story['page_event_id']);
     }
     if ($story['event_id'] > 0) {
-        $story['event'] = Wo_EventData($story['event_id']);
+        $story['event'] = $is_query_free_batch
+            ? (!empty($typed_context['events'][(int)$story['event_id']]) ? $typed_context['events'][(int)$story['event_id']] : array())
+            : Wo_EventData($story['event_id']);
     }
     $story['options'] = array();
     $story['voted_id'] = 0;
@@ -8032,7 +8164,7 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
         }
         if (array_key_exists($story_id, isset($batch_context['poll_voted_ids']) ? $batch_context['poll_voted_ids'] : array())) {
             $story['voted_id'] = (int)$batch_context['poll_voted_ids'][$story_id];
-        } else if ($wo['loggedin']) {
+        } else if ($wo['loggedin'] && !$is_query_free_batch) {
             $option = $db->where('post_id', $post_id)->where('user_id', $wo['user']['id'])->getOne(T_VOTES, 'option_id');
             if (!empty($option)) {
                 $story['voted_id'] = $option->option_id;
@@ -8061,9 +8193,16 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
             $story['is_post_saved'] = (Wo_IsPostSaved($story['id'], $wo['user']['user_id']) === true) ? true : false;
             $story['is_post_reported'] = (Wo_IsPostRepotred($story['id'], $wo['user']['user_id']) === true) ? true : false;
         }
-        $story['can_delete'] = Wo_CanDeletePost($story, $wo['user']['user_id']);
-        $story['can_share'] = VNSEEA_CanSharePostTree($story, $wo['user']['user_id']);
-        if (Wo_IsBlocked($story['user_id']) || Wo_IsBlocked($story['recipient_id'])) {
+        $story['can_delete'] = $is_query_free_batch && function_exists('VNSEEA_PostAccessCanDelete')
+            ? VNSEEA_PostAccessCanDelete($story, $access_context)
+            : Wo_CanDeletePost($story, $wo['user']['user_id']);
+        $story['can_share'] = $is_query_free_batch && function_exists('VNSEEA_PostAccessCanShareTree')
+            ? VNSEEA_PostAccessCanShareTree($story, $access_context)
+            : VNSEEA_CanSharePostTree($story, $wo['user']['user_id']);
+        $is_blocked_post = $is_query_free_batch && function_exists('VNSEEA_PostAccessIsBlocked')
+            ? VNSEEA_PostAccessIsBlocked($story, $access_context)
+            : (Wo_IsBlocked($story['user_id']) || Wo_IsBlocked($story['recipient_id']));
+        if ($is_blocked_post) {
             if (empty($story['group_id'])) {
                 return false;
             }
@@ -8071,7 +8210,9 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
     }
     else {
         $story['can_delete'] = false;
-        $story['can_share'] = VNSEEA_CanSharePostTree($story, 0);
+        $story['can_share'] = $is_query_free_batch && function_exists('VNSEEA_PostAccessCanShareTree')
+            ? VNSEEA_PostAccessCanShareTree($story, $access_context)
+            : VNSEEA_CanSharePostTree($story, 0);
     }
     $story['postFile_full'] = '';
     $story['shared_from'] = ($story['shared_from'] > 0) ? VNSEEA_PostBatchUserData($story['shared_from']) : false;
@@ -8082,7 +8223,9 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
         $story['postPhoto'] = Wo_GetMedia($story['postPhoto']);
     }
     if (!empty($story['blog_id'])) {
-        $story['blog'] = Wo_GetArticle($story['blog_id']);
+        $story['blog'] = $is_query_free_batch
+            ? (!empty($typed_context['blogs'][(int)$story['blog_id']]) ? $typed_context['blogs'][(int)$story['blog_id']] : array())
+            : Wo_GetArticle($story['blog_id']);
     }
     if ($wo['config']['second_post_button'] == 'reaction') {
         $story['reaction'] = isset($batch_context['reactions'][$story_id])
@@ -8091,73 +8234,100 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
     }
     $story['job'] = array();
     if (!empty($story['job_id'])) {
-        $story['job'] = Wo_GetJobById($story['job_id']);
+        $story['job'] = $is_query_free_batch
+            ? (!empty($typed_context['jobs'][(int)$story['job_id']]) ? $typed_context['jobs'][(int)$story['job_id']] : array())
+            : Wo_GetJobById($story['job_id']);
     }
     $story['offer'] = array();
     if (!empty($story['offer_id'])) {
-        $story['offer'] = Wo_GetOfferById($story['offer_id']);
+        $story['offer'] = $is_query_free_batch
+            ? (!empty($typed_context['offers'][(int)$story['offer_id']]) ? $typed_context['offers'][(int)$story['offer_id']] : array())
+            : Wo_GetOfferById($story['offer_id']);
     }
     $story['fund'] = array();
     if (!empty($story['fund_raise_id'])) {
-        $story['fund'] = GetFundByRaiseId($story['fund_raise_id'], $story['user_id']);
+        $story['fund'] = $is_query_free_batch
+            ? (!empty($typed_context['raises'][(int)$story['fund_raise_id']]) ? $typed_context['raises'][(int)$story['fund_raise_id']] : array())
+            : GetFundByRaiseId($story['fund_raise_id'], $story['user_id']);
         unset($story['fund']['user_data']);
     }
     $story['fund_data'] = array();
     if (!empty($story['fund_id'])) {
-        $story['fund_data'] = GetFundingById($story['fund_id']);
+        $story['fund_data'] = $is_query_free_batch
+            ? (!empty($typed_context['funds'][(int)$story['fund_id']]) ? $typed_context['funds'][(int)$story['fund_id']] : array())
+            : GetFundingById($story['fund_id']);
         unset($story['fund_data']['user_data']);
     }
     $story['forum'] = array();
     if (!empty($story['forum_id'])) {
-        $forum = Wo_GetForumInfo($story['forum_id']);
-        if (!empty($forum) && !empty($forum['forum'])) {
-            if (strlen($forum['forum']['description']) > 200) {
-                $forum['forum']['description'] = substr($forum['forum']['description'], 0, 200) . '...';
+        if ($is_query_free_batch) {
+            $story['forum'] = !empty($typed_context['forums'][(int)$story['forum_id']]) ? $typed_context['forums'][(int)$story['forum_id']] : array();
+        } else {
+            $forum = Wo_GetForumInfo($story['forum_id']);
+            if (!empty($forum) && !empty($forum['forum'])) {
+                if (strlen($forum['forum']['description']) > 200) {
+                    $forum['forum']['description'] = substr($forum['forum']['description'], 0, 200) . '...';
+                }
+                $story['forum'] = $forum['forum'];
             }
-            $story['forum'] = $forum['forum'];
         }
     }
     $story['thread'] = array();
     if (!empty($story['thread_id'])) {
-        $thread = Wo_GetForumThreads(array(
-            "id" => $story['thread_id'],
-            "preview" => true
-        ));
-        if (!empty($thread) && !empty($thread[0])) {
-            if (strlen($thread[0]['orginal_headline']) > 200) {
-                $thread[0]['orginal_headline'] = substr($thread[0]['orginal_headline'], 0, 200) . '...';
+        if ($is_query_free_batch) {
+            $story['thread'] = !empty($typed_context['threads'][(int)$story['thread_id']]) ? $typed_context['threads'][(int)$story['thread_id']] : array();
+        } else {
+            $thread = Wo_GetForumThreads(array(
+                "id" => $story['thread_id'],
+                "preview" => true
+            ));
+            if (!empty($thread) && !empty($thread[0])) {
+                if (strlen($thread[0]['orginal_headline']) > 200) {
+                    $thread[0]['orginal_headline'] = substr($thread[0]['orginal_headline'], 0, 200) . '...';
+                }
+                $story['thread'] = $thread[0];
             }
-            $story['thread'] = $thread[0];
         }
     }
     $story['is_still_live'] = false;
     $story['live_sub_users'] = 0;
     if (!empty($story['stream_name']) && !empty($story['live_time']) && $story['live_ended'] == 0) {
         $story['is_still_live'] = true;
-        $story['live_sub_users'] = $db->where('post_id', $story['id'])->where('time', time() - 6, '>=')->getValue(T_LIVE_SUB, 'COUNT(*)');
+        $story['live_sub_users'] = $is_query_free_batch
+            ? (!empty($typed_context['live_counts'][$story_id]) ? (int)$typed_context['live_counts'][$story_id] : 0)
+            : $db->where('post_id', $story['id'])->where('time', time() - 6, '>=')->getValue(T_LIVE_SUB, 'COUNT(*)');
     }
 
     $story['have_next_image'] = true;
     $story['have_pre_image'] = true;
-
-
-    $after_post_id = Wo_Secure($story['id']);
-
-    $row = mysqli_query($sqlConnect, "SELECT * FROM " . T_ALBUMS_MEDIA . " WHERE `post_id` = '{$after_post_id}' && `parent_id` != '0'");
-    if (mysqli_num_rows($row)) {
-        $fetched_data = mysqli_fetch_assoc($row);
-        $query_check_hash = mysqli_query($sqlConnect, "SELECT COUNT(id) as count FROM " . T_ALBUMS_MEDIA . " WHERE `post_id` < '" . $fetched_data['post_id'] . "' AND `parent_id` = '" . $fetched_data['parent_id'] . "'");
-        if (mysqli_num_rows($query_check_hash)) {
-            $query_get_hash = mysqli_fetch_assoc($query_check_hash);
-            if ($query_get_hash['count'] == 0) {
-                $story['have_next_image'] = false;
-            }
+    if ($is_query_free_batch) {
+        $album_navigation = !empty($typed_context['album_navigation'][$story_id])
+            ? $typed_context['album_navigation'][$story_id]
+            : array();
+        if (array_key_exists('have_next_image', $album_navigation)) {
+            $story['have_next_image'] = (bool)$album_navigation['have_next_image'];
         }
-        $query_check_hash = mysqli_query($sqlConnect, "SELECT COUNT(id) as count FROM " . T_ALBUMS_MEDIA . " WHERE `post_id` > '" . $fetched_data['post_id'] . "' AND `parent_id` = '" . $fetched_data['parent_id'] . "'");
-        if (mysqli_num_rows($query_check_hash)) {
-            $query_get_hash = mysqli_fetch_assoc($query_check_hash);
-            if ($query_get_hash['count'] == 0) {
-                $story['have_pre_image'] = false;
+        if (array_key_exists('have_pre_image', $album_navigation)) {
+            $story['have_pre_image'] = (bool)$album_navigation['have_pre_image'];
+        }
+    } else {
+        $after_post_id = Wo_Secure($story['id']);
+        $row = mysqli_query($sqlConnect, "SELECT * FROM " . T_ALBUMS_MEDIA . " WHERE `post_id` = '{$after_post_id}' && `parent_id` != '0'");
+        if (mysqli_num_rows($row)) {
+            $fetched_data = mysqli_fetch_assoc($row);
+            $query_check_hash = mysqli_query($sqlConnect, "SELECT COUNT(id) as count FROM " . T_ALBUMS_MEDIA . " WHERE `post_id` < '" . $fetched_data['post_id'] . "' AND `parent_id` = '" . $fetched_data['parent_id'] . "'");
+            if (mysqli_num_rows($query_check_hash)) {
+                $query_get_hash = mysqli_fetch_assoc($query_check_hash);
+                if ($query_get_hash['count'] == 0) {
+                    $story['have_next_image'] = false;
+                }
+            }
+            $query_check_hash = mysqli_query($sqlConnect, "SELECT COUNT(id) as count FROM " . T_ALBUMS_MEDIA . " WHERE `post_id` > '" . $fetched_data['post_id'] . "' AND `parent_id` = '" . $fetched_data['parent_id'] . "'");
+            if (mysqli_num_rows($query_check_hash)) {
+                $query_get_hash = mysqli_fetch_assoc($query_check_hash);
+                if ($query_get_hash['count'] == 0) {
+                    $story['have_pre_image'] = false;
+                }
             }
         }
     }
@@ -8166,7 +8336,10 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
     if ($story['postPrivacy'] == "6") {
         $story['is_monetized_post'] = true;
         $can_see = false;
-        if (Wo_IsSubscriptionPaidForPublisher($story['publisher']['user_id'])) {
+        $has_paid_subscription = $is_query_free_batch
+            ? !empty($typed_context['paid_publishers'][(int)$story['publisher']['user_id']])
+            : Wo_IsSubscriptionPaidForPublisher($story['publisher']['user_id']);
+        if ($has_paid_subscription) {
             $can_see = true;
         }
 
@@ -11075,9 +11248,11 @@ function Wo_GetGroupsListAPP($fetch_array = array())
         }
     }
 
-    $users_by_id = array();
-    foreach ($user_ids as $user_id) {
-        $users_by_id[$user_id] = Wo_UserData($user_id);
+    $users_by_id = function_exists('VNSEEA_GetChatUsersBatch')
+        ? VNSEEA_GetChatUsersBatch($user_ids)
+        : array();
+    if (function_exists('VNSEEA_PrimeCanonicalMessageContextsBatch')) {
+        VNSEEA_PrimeCanonicalMessageContextsBatch($last_messages);
     }
     $reaction_summaries = VNSEEA_GetMessageReactionSummariesBatch($message_ids);
     $unread_group_ids = array();
@@ -11088,7 +11263,10 @@ function Wo_GetGroupsListAPP($fetch_array = array())
         $message['reaction'] = isset($reaction_summaries[$message_id])
             ? $reaction_summaries[$message_id]
             : VNSEEA_EmptyMessageReactionSummary();
-        $last_messages[$group_id] = VNSEEA_AttachMessageSystemEvent($message);
+        $message['reply'] = !empty($message['reply_id']) && function_exists('VNSEEA_GetMessageContextReply')
+            ? VNSEEA_GetMessageContextReply($message['reply_id'])
+            : array();
+        $last_messages[$group_id] = VNSEEA_AttachCanonicalMessageContext($message);
         $last_seen = isset($current_user_last_seen[$group_id]) ? $current_user_last_seen[$group_id] : 0;
         if ($sender_id !== (int)$user && (int)$message['time'] > $last_seen) {
             $unread_group_ids[] = $group_id;
@@ -11117,22 +11295,6 @@ function Wo_GetGroupsListAPP($fetch_array = array())
         $data[] = $group;
     }
     return $data;
-    // else {
-    //        $query_one = "SELECT * FROM " . T_U_CHATS . " WHERE `user_id` = '$user_id' AND (`conversation_user_id` NOT IN (SELECT `blocked` FROM " . T_BLOCKS . " WHERE `blocker` = '{$user_id}') AND `conversation_user_id` NOT IN (SELECT `blocker` FROM " . T_BLOCKS . " WHERE `blocked` = '{$user_id}')) {$offset_query}  ORDER BY `time` DESC";
-    //    }
-    //    if (!empty($fetch_array['limit'])) {
-    //        $limit = Wo_Secure($fetch_array['limit']);
-    //        $query_one .= " LIMIT {$limit}";
-    //    }
-    //    $sql_query_one = mysqli_query($sqlConnect, $query_one);
-    //    if (mysqli_num_rows($sql_query_one) > 0) {
-    //        while ($sql_fetch_one = mysqli_fetch_assoc($sql_query_one)) {
-    //            $new_data = Wo_UserData($sql_fetch_one['conversation_user_id']);
-    //            $new_data['chat_time'] = $sql_fetch_one['time'];
-    //            $data[] = $new_data;
-    //        }
-    //    }
-    //    return $data;
 }
 
 function Wo_GetPostCommentsSort($post_id = 0, $limit = 5, $type = 'latest')

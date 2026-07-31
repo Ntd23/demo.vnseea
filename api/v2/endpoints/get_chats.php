@@ -95,8 +95,34 @@ $latest_user_messages = VNSEEA_GetMessagesHeaderBatch($message_peer_ids, $messag
 $unread_user_counts = VNSEEA_GetUnreadMessageCountsBatch($message_peer_ids);
 $chat_colors = VNSEEA_GetChatColorsBatch($message_peer_ids, $wo['user']['id']);
 $latest_page_messages = VNSEEA_GetPageMessageHeadersBatch($pages);
-$page_data_cache = array();
-$page_user_cache = array();
+$page_ids = array();
+$page_user_ids = array();
+foreach ($pages as $page_chat) {
+    $page_message = !empty($page_chat['message']) && is_array($page_chat['message'])
+        ? $page_chat['message']
+        : array();
+    if (!empty($page_message['page_id'])) {
+        $page_ids[(int)$page_message['page_id']] = (int)$page_message['page_id'];
+    }
+    foreach (array('user_id', 'conversation_user_id', 'from_id', 'to_id') as $field) {
+        if (!empty($page_message[$field])) {
+            $page_user_ids[(int)$page_message[$field]] = (int)$page_message[$field];
+        }
+    }
+}
+foreach ($latest_page_messages as $page_message) {
+    foreach (array('from_id', 'to_id') as $field) {
+        if (!empty($page_message[$field])) {
+            $page_user_ids[(int)$page_message[$field]] = (int)$page_message[$field];
+        }
+    }
+}
+$page_data_cache = function_exists('VNSEEA_GetChatPagesBatch')
+    ? VNSEEA_GetChatPagesBatch($page_ids)
+    : array();
+$page_user_cache = function_exists('VNSEEA_GetChatUsersBatch')
+    ? VNSEEA_GetChatUsersBatch($page_user_ids)
+    : array();
 $follow_relationships = array();
 if (!empty($messages)) {
     $message_user_ids = array();
@@ -211,7 +237,7 @@ if (!empty($messages)) {
             }
           
         }
-        $message = $value['last_message'];
+        $message = VNSEEA_AttachCanonicalMessageContext($value['last_message']);
         $message['text'] = openssl_encrypt($message['text'], "AES-128-ECB", $message['time']);
         if (empty($message['stickers'])) {
             $message['stickers'] = '';
@@ -234,10 +260,12 @@ if (!empty($messages)) {
             $message['type']   = 'map';
         }
         $message['type']     = $message_po . '_' . $message['type'];
-        $message['product']     = null;
+        $message['product'] = !empty($message['product']) ? $message['product'] : null;
         if (!empty($message['product_id'])) {
             $message['type']     = $message_po . '_product';
-            $message['product'] = Wo_GetProduct($message['product_id']);
+            if (empty($message['product']) && function_exists('VNSEEA_GetMessageContextProduct')) {
+                $message['product'] = VNSEEA_GetMessageContextProduct((int)$message['product_id']);
+            }
         }
         $message['file_size'] = 0;
         if (!empty($message['media'])) {
@@ -304,7 +332,7 @@ if (!empty($groups)) {
                 }
             }
 
-            $message = $value['last_message'];
+            $message = VNSEEA_AttachCanonicalMessageContext($value['last_message']);
             $message['text'] = openssl_encrypt($message['text'], "AES-128-ECB", $message['time']);
             if (empty($message['stickers'])) {
                 $message['stickers'] = '';
@@ -327,10 +355,12 @@ if (!empty($groups)) {
                 $message['type']   = 'map';
             }
             $message['type']     = $message_po . '_' . $message['type'];
-            $message['product']     = null;
+            $message['product'] = !empty($message['product']) ? $message['product'] : null;
             if (!empty($message['product_id'])) {
                 $message['type']     = $message_po . '_product';
-                $message['product'] = Wo_GetProduct($message['product_id']);
+                if (empty($message['product']) && function_exists('VNSEEA_GetMessageContextProduct')) {
+                    $message['product'] = VNSEEA_GetMessageContextProduct((int)$message['product_id']);
+                }
             }
             $message['file_size'] = 0;
             if (!empty($message['media'])) {
@@ -366,10 +396,10 @@ if (!empty($pages)) {
         if ($page_id < 1) {
             continue;
         }
-        if (!array_key_exists($page_id, $page_data_cache)) {
-            $page_data_cache[$page_id] = Wo_PageData($page_id);
+        $page = !empty($page_data_cache[$page_id]) ? $page_data_cache[$page_id] : array();
+        if (empty($page)) {
+            continue;
         }
-        $page = $page_data_cache[$page_id];
         $page['chat_id'] = $value['chat_id'];
         $page['mute'] = array('notify' => 'yes',
                                'call_chat' => 'yes',
@@ -399,7 +429,7 @@ if (!empty($pages)) {
             if (!empty($message) && !empty($message['time'])) {
                 $page['last_message'] = $message;
 
-                $message = $page['last_message'];
+                $message = VNSEEA_AttachCanonicalMessageContext($page['last_message']);
                 $message['text'] = openssl_encrypt($message['text'], "AES-128-ECB", $message['time']);
                 if (empty($message['stickers'])) {
                     $message['stickers'] = '';
@@ -422,10 +452,12 @@ if (!empty($pages)) {
                     $message['type']   = 'map';
                 }
                 $message['type']     = $message_po . '_' . $message['type'];
-                $message['product']     = null;
+                $message['product'] = !empty($message['product']) ? $message['product'] : null;
                 if (!empty($message['product_id'])) {
                     $message['type']     = $message_po . '_product';
-                    $message['product'] = Wo_GetProduct($message['product_id']);
+                    if (empty($message['product']) && function_exists('VNSEEA_GetMessageContextProduct')) {
+                        $message['product'] = VNSEEA_GetMessageContextProduct((int)$message['product_id']);
+                    }
                 }
                 $message['file_size'] = 0;
                 if (!empty($message['media'])) {
@@ -445,15 +477,13 @@ if (!empty($pages)) {
                         $message['time_text'] = $time->format('H:i');
                     }
                 }
-                $info_id = $message['to_id'];
-                if ($message['from_id'] != $message['user_data']['user_id']) {
-                    $info_id = $message['from_id'];
-                }
+                $info_id = (int)$message['from_id'] === (int)$user_id
+                    ? (int)$message['to_id']
+                    : (int)$message['from_id'];
                 $info_id = (int)$info_id;
-                if (!array_key_exists($info_id, $page_user_cache)) {
-                    $page_user_cache[$info_id] = Wo_UserData($info_id);
-                }
-                $message['to_data'] = $page_user_cache[$info_id];
+                $message['to_data'] = !empty($page_user_cache[$info_id])
+                    ? $page_user_cache[$info_id]
+                    : array();
 
                 $page['last_message'] = $message;
                 $page['chat_type'] = 'page';
@@ -477,34 +507,49 @@ array_multisort(array_column($array, "chat_time"), SORT_DESC, $array);
 
 
 $check_calles     = Wo_CheckFroInCalls();
+$check_audio_calles = Wo_CheckFroInCalls('audio');
+$check_agora_calls = Wo_CheckFroInCallsAgora();
+$call_user_ids = array();
+foreach (array($check_calles, $check_audio_calles, $check_agora_calls) as $call_state) {
+    if ($call_state !== false && is_array($call_state) && !empty($call_state['from_id'])) {
+        $call_user_ids[(int)$call_state['from_id']] = (int)$call_state['from_id'];
+    }
+}
+$call_users = function_exists('VNSEEA_GetChatUsersBatch')
+    ? VNSEEA_GetChatUsersBatch($call_user_ids)
+    : array();
 if ($check_calles !== false && is_array($check_calles)) {
     $video_call = true;
-    $wo['video_call_user'] = Wo_UserData($check_calles['from_id']);
+    $wo['video_call_user'] = !empty($call_users[(int)$check_calles['from_id']])
+        ? $call_users[(int)$check_calles['from_id']]
+        : array();
     $video_call_user['data'] = $check_calles;
-    $video_call_user['user_id'] = $wo['video_call_user']['user_id'];
-    $video_call_user['avatar'] = $wo['video_call_user']['avatar'];
-    $video_call_user['name'] = $wo['video_call_user']['name'];
+    $video_call_user['user_id'] = !empty($wo['video_call_user']['user_id']) ? $wo['video_call_user']['user_id'] : 0;
+    $video_call_user['avatar'] = !empty($wo['video_call_user']['avatar']) ? $wo['video_call_user']['avatar'] : '';
+    $video_call_user['name'] = !empty($wo['video_call_user']['name']) ? $wo['video_call_user']['name'] : '';
 }
 
-$check_audio_calles     = Wo_CheckFroInCalls('audio');
 if ($check_audio_calles !== false && is_array($check_audio_calles)) {
     $audio_call = true;
-    $wo['audio_call_user'] = Wo_UserData($check_audio_calles['from_id']);
+    $wo['audio_call_user'] = !empty($call_users[(int)$check_audio_calles['from_id']])
+        ? $call_users[(int)$check_audio_calles['from_id']]
+        : array();
     $audio_call_user['data'] = $check_audio_calles;
-    $audio_call_user['user_id'] = $wo['audio_call_user']['user_id'];
-    $audio_call_user['avatar'] = $wo['audio_call_user']['avatar'];
-    $audio_call_user['name'] = $wo['audio_call_user']['name'];
+    $audio_call_user['user_id'] = !empty($wo['audio_call_user']['user_id']) ? $wo['audio_call_user']['user_id'] : 0;
+    $audio_call_user['avatar'] = !empty($wo['audio_call_user']['avatar']) ? $wo['audio_call_user']['avatar'] : '';
+    $audio_call_user['name'] = !empty($wo['audio_call_user']['name']) ? $wo['audio_call_user']['name'] : '';
 }
 $agora_call = false;
 $agora_call_data = array();
-$check_agora_calls     = Wo_CheckFroInCallsAgora();
 if ($check_agora_calls !== false && is_array($check_agora_calls)) {
     $agora_call = true;
-    $wo['agora_call_data'] = Wo_UserData($check_agora_calls['from_id']);
+    $wo['agora_call_data'] = !empty($call_users[(int)$check_agora_calls['from_id']])
+        ? $call_users[(int)$check_agora_calls['from_id']]
+        : array();
     $agora_call_data['data'] = $check_agora_calls;
-    $agora_call_data['user_id'] = $wo['agora_call_data']['user_id'];
-    $agora_call_data['avatar'] = $wo['agora_call_data']['avatar'];
-    $agora_call_data['name'] = $wo['agora_call_data']['name'];
+    $agora_call_data['user_id'] = !empty($wo['agora_call_data']['user_id']) ? $wo['agora_call_data']['user_id'] : 0;
+    $agora_call_data['avatar'] = !empty($wo['agora_call_data']['avatar']) ? $wo['agora_call_data']['avatar'] : '';
+    $agora_call_data['name'] = !empty($wo['agora_call_data']['name']) ? $wo['agora_call_data']['name'] : '';
 }
 
 if (!empty($_POST['SetOnline']) && $_POST['SetOnline'] == 1) {
