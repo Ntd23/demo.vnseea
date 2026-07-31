@@ -6,11 +6,13 @@ export type FeedMentionSegment = {
   key: string
   text: string
   isMention: boolean
+  mentionUsername?: string
   isHashtag: boolean
   hashtag: string
 }
 
-const feedTextTokenPattern = /(@[\p{L}\p{N}_][\p{L}\p{N}_.-]*|#[\p{L}\p{N}_][\p{L}\p{N}_-]*)/gu
+const feedInlineMentionPattern = "@[\\p{L}\\p{N}_][\\p{L}\\p{N}_.-]*"
+const feedHashtagPattern = "#[\\p{L}\\p{N}_][\\p{L}\\p{N}_-]*"
 
 export function normalizeFeedMentionSearchText(value: string) {
   return value
@@ -32,9 +34,41 @@ export function createMentionSegments(
     ? knownMentionLabels
     : new Set(Object.keys(knownMentionLabels).map(label => label.toLowerCase()))
   const highlightUnknownMentions = options.highlightUnknownMentions ?? true
+  const knownLabelPattern = [...labelSet]
+    .sort((left, right) => right.length - left.length)
+    .map(escapeMentionRegExp)
+    .join("|")
+  const tokenPattern = new RegExp(
+    [
+      knownLabelPattern
+        ? `(?:${knownLabelPattern})(?=$|[\\s\\p{P}\\p{S}])`
+        : "",
+      feedInlineMentionPattern,
+      feedHashtagPattern,
+    ].filter(Boolean).join("|"),
+    "giu",
+  )
+  const rawSegments: string[] = []
+  let cursor = 0
 
-  return text
-    .split(feedTextTokenPattern)
+  for (const match of text.matchAll(tokenPattern)) {
+    const index = match.index ?? 0
+    const token = match[0] ?? ""
+
+    if (index > cursor) {
+      rawSegments.push(text.slice(cursor, index))
+    }
+    if (token) {
+      rawSegments.push(token)
+    }
+    cursor = index + token.length
+  }
+
+  if (cursor < text.length) {
+    rawSegments.push(text.slice(cursor))
+  }
+
+  return rawSegments
     .filter(segment => segment.length > 0)
     .map<FeedMentionSegment>((segment, index) => {
       const isHashtag = segment.startsWith("#")
@@ -51,7 +85,7 @@ export function createMentionSegments(
 }
 
 export function getFeedMentionDisplayName(mention: FeedPostMention) {
-  return mention.displayName || mention.name.split(/\s+/).filter(Boolean)[0] || mention.username
+  return mention.displayName || mention.name.trim() || mention.username
 }
 
 export function createFeedMentionLabelSet(mentions: FeedPostMention[] = []) {
@@ -62,7 +96,7 @@ export function createFeedMentionLabelSet(mentions: FeedPostMention[] = []) {
     const rawLabels = [
       displayName,
       mention.username,
-      mention.name.split(/\s+/).filter(Boolean)[0],
+      mention.name,
     ]
 
     for (const label of rawLabels) {
@@ -93,7 +127,7 @@ export function normalizePostTextMentions(text: string, mentions: FeedPostMentio
       }
 
       return currentText.replace(
-        new RegExp(`(^|\\s)@${escapeMentionRegExp(normalized)}(?=\\s|$)`, "g"),
+        new RegExp(`(^|\\s)@${escapeMentionRegExp(normalized)}(?=$|[\\s\\p{P}\\p{S}])`, "gu"),
         `$1@${displayName}`,
       )
     }, nextText)
@@ -101,8 +135,25 @@ export function normalizePostTextMentions(text: string, mentions: FeedPostMentio
 }
 
 export function createPostTextMentionSegments(text: string, mentions: FeedPostMention[] = []) {
+  const usernameByLabel = new Map<string, string>()
+
+  for (const mention of mentions) {
+    for (const label of [getFeedMentionDisplayName(mention), mention.name, mention.username]) {
+      const normalized = label?.replace(/^@/, "").trim()
+
+      if (normalized) {
+        usernameByLabel.set(`@${normalized}`.toLowerCase(), mention.username.replace(/^@/, ""))
+      }
+    }
+  }
+
   return createMentionSegments(
     normalizePostTextMentions(text, mentions),
     createFeedMentionLabelSet(mentions),
-  )
+  ).map(segment => ({
+    ...segment,
+    mentionUsername: segment.isMention
+      ? usernameByLabel.get(segment.text.toLowerCase())
+      : undefined,
+  }))
 }

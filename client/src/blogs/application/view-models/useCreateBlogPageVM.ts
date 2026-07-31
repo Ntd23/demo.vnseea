@@ -18,6 +18,7 @@ type BlogCategoryValue =
   | "other"
 
 type CreateBlogSubmitState = "idle" | "saving" | "publishing" | "draft" | "published" | "pending" | "warning" | "error"
+type BlogValidationField = "title" | "content" | "category" | "tags" | "thumbnail"
 
 const decodeHtmlEntities = (value: string) =>
   value
@@ -54,6 +55,7 @@ export function useCreateBlogPageVM(
   const thumbnailIndex = ref(0)
   const submitMessage = ref("")
   const submitState = ref<CreateBlogSubmitState>("idle")
+  const validationAttempted = ref(false)
   const isLoadingArticle = ref(Boolean(editBlogId))
   const isEditing = computed(() => Boolean(editBlogId && editBlogId > 0))
 
@@ -149,6 +151,47 @@ export function useCreateBlogPageVM(
   const isSubmitting = computed(() =>
     submitState.value === "saving" || submitState.value === "publishing",
   )
+
+  const validationErrors = computed<Record<BlogValidationField, string>>(() => {
+    if (!validationAttempted.value) {
+      return {
+        title: "",
+        content: "",
+        category: "",
+        tags: "",
+        thumbnail: "",
+      }
+    }
+
+    return {
+      title: title.value.trim().length >= 12
+        ? ""
+        : t("pages.createBlogPage.titleValidation", { count: title.value.trim().length }),
+      content: plainContent.value.length >= 80
+        ? ""
+        : t("pages.createBlogPage.contentValidation", { count: plainContent.value.length }),
+      category: category.value
+        ? ""
+        : t("pages.createBlogPage.categoryValidation"),
+      tags: tagList.value.length > 0
+        ? ""
+        : t("pages.createBlogPage.tagsValidation"),
+      thumbnail: hasUploadableThumbnail.value
+        ? ""
+        : t("pages.createBlogPage.thumbnailValidation"),
+    }
+  })
+
+  const invalidValidationFields = computed(() =>
+    (Object.entries(validationErrors.value) as Array<[BlogValidationField, string]>)
+      .filter(([, message]) => Boolean(message)),
+  )
+
+  const submitAlertColor = computed(() => {
+    if (submitState.value === "error") return "error" as const
+    if (submitState.value === "warning") return "warning" as const
+    return "success" as const
+  })
 
   const submitStatusIcon = computed(() => {
     if (submitState.value === "published") return "i-ph-check-circle-fill"
@@ -291,6 +334,8 @@ export function useCreateBlogPageVM(
   const publishBlog = async () => {
     if (isSubmitting.value) return
 
+    validationAttempted.value = true
+
     if (completionCount.value >= 5) {
       submitMessage.value = isEditing.value
         ? t("pages.createBlogPage.updating")
@@ -313,6 +358,7 @@ export function useCreateBlogPageVM(
             : t("pages.createBlogPage.publishComplete")
           submitState.value = "published"
         }
+        validationAttempted.value = false
 
         toast.add({
           title: result.status === "pending"
@@ -344,8 +390,20 @@ export function useCreateBlogPageVM(
       return
     }
 
-    submitMessage.value = t("pages.createBlogPage.publishMissing")
+    submitMessage.value = invalidValidationFields.value
+      .map(([, message]) => message)
+      .join(" ")
     submitState.value = "warning"
+
+    if (import.meta.client) {
+      await nextTick()
+      const firstField = invalidValidationFields.value[0]?.[0]
+      const field = firstField
+        ? document.querySelector<HTMLElement>(`[data-blog-field="${firstField}"]`)
+        : null
+      field?.scrollIntoView({ behavior: "smooth", block: "center" })
+      field?.querySelector<HTMLElement>("input, textarea, button, [contenteditable='true']")?.focus()
+    }
   }
 
   const quickFillDemo = () => {
@@ -361,7 +419,15 @@ export function useCreateBlogPageVM(
     thumbnailIndex.value = 2
     submitMessage.value = ""
     submitState.value = "idle"
+    validationAttempted.value = false
   }
+
+  watch(completionCount, (count) => {
+    if (count === 5 && submitState.value === "warning") {
+      submitMessage.value = ""
+      submitState.value = "idle"
+    }
+  })
 
   onBeforeUnmount(clearThumbnailObjectUrl)
 
@@ -378,6 +444,8 @@ export function useCreateBlogPageVM(
     submitState,
     isSubmitting,
     submitStatusIcon,
+    submitAlertColor,
+    validationErrors,
     isEditing,
     isLoadingArticle,
     categoryOptions,

@@ -4,6 +4,12 @@ import { createError, getHeader, readBody, readMultipartFormData } from "h3"
 import { createJob } from "./_shared"
 import type { JobCreateDraft, JobCreateQuestionDraft, JobQuestionType } from "../../../src/jobs/domain/types/jobs.types"
 
+const toNullableNumber = (value: unknown) => {
+  if (value === null || value === undefined || value === "") return null
+  const normalized = Number(value)
+  return Number.isFinite(normalized) ? normalized : null
+}
+
 const toQuestionDraft = (
   prompt: string,
   type: string,
@@ -25,8 +31,8 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     pageId: Number(body.pageId ?? 0) || 0,
     title: typeof body.title === "string" ? body.title.trim() : "",
     location: typeof body.location === "string" ? body.location.trim() : "",
-    lat: typeof body.lat === "number" ? body.lat : Number(body.lat ?? 0) || null,
-    lng: typeof body.lng === "number" ? body.lng : Number(body.lng ?? 0) || null,
+    lat: toNullableNumber(body.lat),
+    lng: toNullableNumber(body.lng),
     minimum: typeof body.minimum === "number" ? body.minimum : Number(body.minimum ?? 0) || null,
     maximum: typeof body.maximum === "number" ? body.maximum : Number(body.maximum ?? 0) || null,
     currency: typeof body.currency === "string" ? body.currency.trim() : "",
@@ -85,8 +91,8 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     pageId: Number(values.pageId) || 0,
     title: values.title || "",
     location: values.location || "",
-    lat: Number(values.lat) || null,
-    lng: Number(values.lng) || null,
+    lat: toNullableNumber(values.lat),
+    lng: toNullableNumber(values.lng),
     minimum: Number(values.minimum) || null,
     maximum: Number(values.maximum) || null,
     currency: values.currency || "",
@@ -114,6 +120,20 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 400,
       statusMessage: "Job creation fields are required.",
+    })
+  }
+
+  if (
+    payload.lat === null
+    || payload.lng === null
+    || payload.lat < -90
+    || payload.lat > 90
+    || payload.lng < -180
+    || payload.lng > 180
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Select a valid Google address for the job.",
     })
   }
 

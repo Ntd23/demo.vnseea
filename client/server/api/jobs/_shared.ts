@@ -118,6 +118,12 @@ const asNullableNumber = (value: unknown) => {
   return Number.isFinite(normalized) && normalized !== 0 ? normalized : null
 }
 
+const asNullableFiniteNumber = (value: unknown) => {
+  if (value === null || value === undefined || value === "") return null
+  const normalized = Number(value)
+  return Number.isFinite(normalized) ? normalized : null
+}
+
 const asBoolean = (value: unknown) =>
   value === true
   || value === 1
@@ -293,6 +299,7 @@ const mapJobRecord = (
     location: asString(entity.location),
     lat: asNullableNumber(entity.lat),
     lng: asNullableNumber(entity.lng),
+    distanceKm: asNullableFiniteNumber(entity.distance),
     category,
     categoryLabel: options.categoryLabels[category] || category,
     jobType,
@@ -351,6 +358,8 @@ export async function fetchJobsCatalog(
       c_id: input.category,
       job_type: input.type,
       length: input.distance,
+      latitude: input.originLat,
+      longitude: input.originLng,
       offset: input.afterId,
       limit: input.limit ?? 10,
     }),

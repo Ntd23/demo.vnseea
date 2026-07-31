@@ -6,6 +6,8 @@
     :class="{
       'message-shared-post--product': post.product,
       'message-shared-post--job': post.job,
+      'message-shared-post--live': post.live,
+      'message-shared-post--blog': post.blog,
     }"
     @click.stop
   >
@@ -13,19 +15,41 @@
       <NuxtImg
         v-if="post.imageUrl && !imageFailed"
         :src="post.imageUrl"
-        :alt="post.job?.title || post.author || unavailableLabel"
+        :alt="post.blog?.title || post.job?.title || post.author || unavailableLabel"
         loading="lazy"
         class="message-shared-post__image"
         @error="imageFailed = true"
       />
       <Icon
         v-else
-        :name="post.job ? 'i-ph-briefcase-duotone' : 'i-ph-article-duotone'"
+        :name="post.live ? 'i-ph-broadcast-duotone' : post.job ? 'i-ph-briefcase-duotone' : post.blog ? 'i-ph-article-medium-duotone' : 'i-ph-article-duotone'"
         class="message-shared-post__fallback-icon"
       />
+      <span
+        v-if="post.live"
+        class="message-shared-post__live-badge"
+        :class="{ 'message-shared-post__live-badge--ended': post.live.state === 'offline' }"
+      >
+        <Icon :name="post.live.state === 'offline' ? 'i-ph-video-camera-slash-fill' : 'i-ph-broadcast-fill'" />
+        {{ liveStateLabel }}
+      </span>
+      <span v-if="post.live" class="message-shared-post__live-viewers">
+        <Icon name="i-ph-eye-fill" />
+        {{ $t("pages.messagesPage.sharedLiveViewers", { count: post.live.viewerCount }) }}
+      </span>
     </span>
 
     <span class="message-shared-post__body">
+      <span v-if="post.available && post.live" class="message-shared-post__live">
+        <span class="message-shared-post__kind">
+          <Icon name="i-ph-broadcast-bold" />
+          {{ $t("pages.messagesPage.sharedLiveLabel") }}
+        </span>
+        <strong class="message-shared-post__live-title">
+          {{ post.live.title || $t("pages.messagesPage.sharedLiveFallback") }}
+        </strong>
+      </span>
+
       <span v-if="post.available && post.job" class="message-shared-post__job">
         <span class="message-shared-post__kind">
           <Icon name="i-ph-briefcase-bold" />
@@ -78,6 +102,19 @@
         </span>
       </span>
 
+      <span v-if="post.available && post.blog" class="message-shared-post__blog">
+        <span class="message-shared-post__kind">
+          <Icon name="i-ph-article-medium-bold" />
+          {{ blogLabel }}
+        </span>
+        <strong class="message-shared-post__blog-title">
+          {{ post.blog.title }}
+        </strong>
+        <span v-if="post.blog.description" class="message-shared-post__description">
+          {{ post.blog.description }}
+        </span>
+      </span>
+
       <span class="message-shared-post__author-row">
         <img
           v-if="post.authorAvatarUrl && post.available"
@@ -90,7 +127,7 @@
         </span>
         <strong>{{ post.available ? post.author : unavailableLabel }}</strong>
       </span>
-      <span v-if="post.available && !post.product && !post.job && post.text" class="message-shared-post__text">
+      <span v-if="post.available && !post.product && !post.job && !post.live && !post.blog && post.text" class="message-shared-post__text">
         {{ post.text }}
       </span>
     </span>
@@ -107,8 +144,14 @@ const props = defineProps<{
 
 const { locale } = useI18n()
 const imageFailed = ref(false)
-const cardHref = computed(() => props.post.job?.href || props.post.product?.href || props.post.href)
+const cardHref = computed(() => props.post.job?.href || props.post.product?.href || props.post.blog?.href || props.post.href)
 const productLabel = computed(() => locale.value === "vi" ? "Sản phẩm" : "Product")
+const blogLabel = computed(() => locale.value === "vi" ? "Bài viết blog" : "Blog article")
+const liveStateLabel = computed(() =>
+  props.post.live?.state === "offline"
+    ? (locale.value === "vi" ? "Đã kết thúc" : "Ended")
+    : "LIVE",
+)
 const productPrice = computed(() => props.post.product
   ? formatProductPrice(props.post.product, locale.value)
   : "",
@@ -149,6 +192,7 @@ watch(() => props.post.imageUrl, () => {
 }
 
 .message-shared-post__media {
+  position: relative;
   display: flex;
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -156,6 +200,43 @@ watch(() => props.post.imageUrl, () => {
   justify-content: center;
   overflow: hidden;
   background: var(--bg-muted);
+}
+
+.message-shared-post__live-badge,
+.message-shared-post__live-viewers {
+  position: absolute;
+  top: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+}
+
+.message-shared-post__live-badge {
+  left: 9px;
+  padding: 6px 8px;
+  background: #e11d48;
+}
+
+.message-shared-post__live-badge--ended {
+  background: rgba(15, 23, 42, 0.78);
+}
+
+.message-shared-post__live-viewers {
+  right: 9px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.message-shared-post__live-badge :deep(svg),
+.message-shared-post__live-viewers :deep(svg) {
+  width: 12px;
+  height: 12px;
 }
 
 .message-shared-post__image {
@@ -186,14 +267,18 @@ watch(() => props.post.imageUrl, () => {
 }
 
 .message-shared-post--job .message-shared-post__author-row,
-.message-shared-post--product .message-shared-post__author-row {
+.message-shared-post--product .message-shared-post__author-row,
+.message-shared-post--blog .message-shared-post__author-row,
+.message-shared-post--live .message-shared-post__author-row {
   margin-top: 2px;
   padding-top: 9px;
   border-top: 1px solid var(--border-light);
 }
 
 .message-shared-post__job,
-.message-shared-post__product {
+.message-shared-post__product,
+.message-shared-post__blog,
+.message-shared-post__live {
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -229,7 +314,9 @@ watch(() => props.post.imageUrl, () => {
 }
 
 .message-shared-post__job-title,
-.message-shared-post__product-title {
+.message-shared-post__product-title,
+.message-shared-post__blog-title,
+.message-shared-post__live-title {
   display: -webkit-box;
   min-width: 0;
   overflow: hidden;

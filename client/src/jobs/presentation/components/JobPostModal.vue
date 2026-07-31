@@ -65,7 +65,13 @@
         </UFormField>
 
         <UFormField :label="$t('pages.jobsPage.location')" required :error="errors.location || undefined">
-          <UInput v-model="form.location" class="w-full" size="xl" :disabled="submitting" />
+          <GooglePlaceField
+            v-model="locationModel"
+            :placeholder="$t('pages.jobsPage.jobLocationPlaceholder')"
+            :helper-text="$t('pages.jobsPage.jobLocationHelper')"
+            :disabled="submitting"
+            require-coordinates
+          />
         </UFormField>
 
         <UFormField :label="$t('pages.jobsPage.currency')" required :error="errors.currency || undefined">
@@ -228,6 +234,8 @@
 </template>
 
 <script setup lang="ts">
+import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
+import type { LocationSelection } from "../../../location/domain/types/location.types"
 import FoundationModalShell from "../../../foundation/presentation/components/ModalShell.vue"
 import type {
   JobCreateDraft,
@@ -401,6 +409,21 @@ const maximumModel = computed({
   },
 })
 
+const locationModel = computed<LocationSelection>({
+  get: () => ({
+    address: form.location,
+    lat: form.lat,
+    lng: form.lng,
+    placeId: "",
+  }),
+  set: (value) => {
+    form.location = value.address
+    form.lat = value.lat
+    form.lng = value.lng
+    errors.location = ""
+  },
+})
+
 function revokeThumbnailPreview() {
   if (thumbnailPreviewUrl.value) {
     URL.revokeObjectURL(thumbnailPreviewUrl.value)
@@ -476,7 +499,12 @@ function submit() {
   clearErrors()
 
   if (!form.title.trim()) errors.title = t("pages.jobsPage.roleTitleError")
-  if (!form.location.trim()) errors.location = t("pages.jobsPage.locationError")
+  if (!form.location.trim()) {
+    errors.location = t("pages.jobsPage.locationError")
+  }
+  else if (form.lat === null || form.lng === null) {
+    errors.location = t("pages.jobsPage.jobLocationSelectionError")
+  }
   if (!form.currency.trim()) errors.currency = t("pages.jobsPage.currencyRequired")
   if (!form.category.trim()) errors.category = t("pages.jobsPage.categoryRequired")
   if (!form.jobType.trim()) errors.jobType = t("pages.jobsPage.typeRequired")

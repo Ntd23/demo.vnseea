@@ -1,4 +1,4 @@
-<!-- English description: Renders a jobs filter bar with search, select controls, and a stepped Nuxt UI distance slider. -->
+<!-- English description: Renders a jobs filter bar with search, select controls, and a continuous per-kilometre distance slider. -->
 <template>
   <section class="jobs-tabs-bar">
     <div class="jobs-tabs-bar__search">
@@ -19,7 +19,10 @@
       </button>
     </div>
 
-    <div class="jobs-tabs-bar__filters">
+    <div
+      class="jobs-tabs-bar__filters"
+      :class="{ 'jobs-tabs-bar__filters--with-reset': hasActiveFilters }"
+    >
       <USelect
         v-model="typeModel"
         :items="typeOptions"
@@ -46,7 +49,21 @@
       >
         <div class="jobs-tabs-bar__distance-header">
           <span>{{ $t("pages.jobsPage.distance") }}</span>
-          <strong>{{ distanceSliderLabel }}</strong>
+          <div class="jobs-tabs-bar__distance-heading-actions">
+            <strong>{{ distanceSliderLabel }}</strong>
+            <button
+              type="button"
+              class="jobs-tabs-bar__locate"
+              :disabled="locationPending"
+              :aria-label="$t('pages.jobsPage.refreshCurrentLocation')"
+              @click="emit('requestLocation')"
+            >
+              <Icon
+                :name="locationPending ? 'i-ph-spinner-gap-bold' : 'i-ph-crosshair-bold'"
+                :class="{ 'jobs-tabs-bar__locate-icon--spin': locationPending }"
+              />
+            </button>
+          </div>
         </div>
         <USlider
           v-model="distanceSliderModel"
@@ -59,6 +76,11 @@
           :aria-label="$t('pages.jobsPage.distance')"
           class="jobs-tabs-bar__distance-slider"
         />
+        <div class="jobs-tabs-bar__distance-scale" aria-hidden="true">
+          <span>0 km</span>
+          <span>{{ distanceSliderMax }} km</span>
+        </div>
+        <span class="jobs-tabs-bar__distance-status">{{ distanceStatus }}</span>
       </div>
 
       <button
@@ -94,6 +116,7 @@ import type { JobsSelectOption } from "../../domain/types/jobs.types"
 const ALL_CATEGORY_VALUE = "__all_categories__"
 const ALL_TYPE_VALUE = "__all_types__"
 const ALL_DISTANCE_VALUE = "__all_distances__"
+const DEFAULT_MAX_DISTANCE_KM = 300
 
 const props = defineProps<{
   search: string
@@ -104,6 +127,8 @@ const props = defineProps<{
   categories: JobsSelectOption[]
   distanceOptions: JobsSelectOption[]
   distanceEnabled: boolean
+  locationPending: boolean
+  distanceStatus: string
   canCreate: boolean
   createDisabledReason: string
   hasActiveFilters: boolean
@@ -115,6 +140,7 @@ const emit = defineEmits<{
   "update:selectedCategory": [value: string]
   "update:selectedDistance": [value: string]
   openCreate: []
+  requestLocation: []
   reset: []
 }>()
 
@@ -123,16 +149,15 @@ const localSearch = ref(props.search)
 
 const typeOptions = computed(() => Array.isArray(props.types) ? props.types : [])
 const categoryOptions = computed(() => Array.isArray(props.categories) ? props.categories : [])
-const distanceSliderOptions = computed(() => {
-  const options = Array.isArray(props.distanceOptions) ? props.distanceOptions : []
-  const allOption = options.find(option => option.value === ALL_DISTANCE_VALUE) ?? {
-    value: ALL_DISTANCE_VALUE,
-    label: t("pages.jobsPage.allDistances"),
-  }
+const distanceSliderMax = computed(() => {
+  const configuredMaximum = (Array.isArray(props.distanceOptions) ? props.distanceOptions : [])
+    .filter(option => option.value !== ALL_DISTANCE_VALUE)
+    .map(option => Number(option.value))
+    .filter(value => Number.isFinite(value) && value > 0)
+    .reduce((maximum, value) => Math.max(maximum, value), 0)
 
-  return [allOption, ...options.filter(option => option.value !== ALL_DISTANCE_VALUE)]
+  return configuredMaximum || DEFAULT_MAX_DISTANCE_KM
 })
-const distanceSliderMax = computed(() => Math.max(distanceSliderOptions.value.length - 1, 0))
 
 const typeModel = computed({
   get: () => props.selectedType || ALL_TYPE_VALUE,
@@ -146,24 +171,24 @@ const categoryModel = computed({
 
 const distanceSliderModel = computed<number>({
   get: () => {
-    const selectedValue = props.selectedDistance || ALL_DISTANCE_VALUE
-    const selectedIndex = distanceSliderOptions.value.findIndex(option => option.value === selectedValue)
-    return selectedIndex >= 0 ? selectedIndex : 0
+    const selectedValue = Number(props.selectedDistance)
+    return Number.isFinite(selectedValue)
+      ? Math.min(Math.max(Math.round(selectedValue), 0), distanceSliderMax.value)
+      : 0
   },
   set: (value) => {
-    const selectedIndex = Math.min(Math.max(Math.round(Number(value)), 0), distanceSliderMax.value)
-    const selectedOption = distanceSliderOptions.value[selectedIndex]
-    emit("update:selectedDistance", !selectedOption || selectedOption.value === ALL_DISTANCE_VALUE ? "" : selectedOption.value)
+    const distance = Math.min(Math.max(Math.round(Number(value)), 0), distanceSliderMax.value)
+    emit("update:selectedDistance", distance > 0 ? String(distance) : "")
   },
 })
 
-const distanceSliderLabel = computed(() => distanceSliderOptions.value[distanceSliderModel.value]?.label ?? t("pages.jobsPage.allDistances"))
+const distanceSliderLabel = computed(() =>
+  distanceSliderModel.value > 0
+    ? `${distanceSliderModel.value} km`
+    : t("pages.jobsPage.allDistances"),
+)
 
 const statusLabel = computed(() => {
-  if (!props.distanceEnabled) {
-    return t("pages.jobsPage.distanceDisabled")
-  }
-
   if (!props.canCreate || props.createDisabledReason) {
     return props.createDisabledReason || t("pages.jobsPage.noOwnedPagesDescription")
   }
@@ -213,11 +238,12 @@ watchDebounced(
   border: 0;
   border-radius: 12px;
   background: var(--bg-brand);
-  padding: 0 18px;
+  padding: 0 12px;
   color: var(--text-inverse);
   cursor: pointer;
   font-size: 14px;
   font-weight: 700;
+  white-space: nowrap;
   box-shadow: var(--shadow-brand);
   transition: transform var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
 }
@@ -333,8 +359,67 @@ watchDebounced(
   white-space: nowrap;
 }
 
+.jobs-tabs-bar__distance-heading-actions {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.jobs-tabs-bar__locate {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--bg-muted);
+  color: var(--text-brand);
+  transition: background 0.16s ease, transform 0.16s ease;
+}
+
+.jobs-tabs-bar__locate:hover:not(:disabled) {
+  background: var(--bg-surface-active);
+  transform: scale(1.05);
+}
+
+.jobs-tabs-bar__locate:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.jobs-tabs-bar__locate :deep(svg) {
+  width: 14px;
+  height: 14px;
+}
+
+.jobs-tabs-bar__locate-icon--spin {
+  animation: jobs-filter-spin 0.8s linear infinite;
+}
+
 .jobs-tabs-bar__distance-slider {
   width: 100%;
+}
+
+.jobs-tabs-bar__distance-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -4px;
+  color: var(--text-tertiary);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.jobs-tabs-bar__distance-status {
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .jobs-tabs-bar__reset {
@@ -357,7 +442,17 @@ watchDebounced(
 @media (min-width: 768px) {
   .jobs-tabs-bar__filters {
     align-items: center;
-    grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) auto;
+    grid-template-columns: minmax(150px, 0.8fr) minmax(150px, 0.8fr) minmax(280px, 1.6fr) auto;
+  }
+
+  .jobs-tabs-bar__filters--with-reset {
+    grid-template-columns: minmax(150px, 0.8fr) minmax(150px, 0.8fr) minmax(280px, 1.6fr) auto auto;
+  }
+}
+
+@keyframes jobs-filter-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

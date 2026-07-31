@@ -11,6 +11,7 @@ import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application
 import { fetchFeedPostById } from "../feed/_shared"
 import { fetchJobDetailByPostId } from "../jobs/_shared"
 import { parseMessageSharedPostReference } from "../../../src/messages/domain/message-shared-post"
+import { parseMessageSharedBlog } from "../../../src/messages/domain/message-shared-blog"
 import type { JobRecord } from "../../../src/jobs/domain/types/jobs.types"
 import { getMessageUserPresenceState } from "./_presence"
 import {
@@ -614,33 +615,41 @@ const buildSharedPostCard = (
     }
   }
 
-  const image = post.mediaItems.find(item => item.type === "image")
-  const video = post.mediaItems.find(item => item.type === "video")
-  const productAttachment = post.attachmentCard?.type === "product"
-    ? post.attachmentCard
+  const contentPost = post.sharedPost?.isLive ? post.sharedPost : post
+  const image = contentPost.mediaItems.find(item => item.type === "image")
+  const video = contentPost.mediaItems.find(item => item.type === "video")
+  const productAttachment = contentPost.attachmentCard?.type === "product"
+    ? contentPost.attachmentCard
     : null
   const product = productAttachment?.product
 
   return {
-    postId,
+    postId: contentPost.id,
     available: true,
-    author: post.author,
-    authorAvatarUrl: post.authorAvatarUrl || undefined,
-    text: post.text,
+    author: contentPost.author,
+    authorAvatarUrl: contentPost.authorAvatarUrl || undefined,
+    text: contentPost.videoTitle || contentPost.text,
     imageUrl: job?.imageUrl
       || productAttachment?.imageUrl
       || product?.images[0]?.src
       || image?.src
       || video?.thumb
-      || post.attachmentCard?.imageUrl
+      || contentPost.attachmentCard?.imageUrl
       || undefined,
-    href: appRoutes.postDetail(post.id),
+    href: appRoutes.postDetail(contentPost.id),
+    live: contentPost.isLive
+      ? {
+          title: contentPost.videoTitle || contentPost.text,
+          state: contentPost.liveState || "offline",
+          viewerCount: contentPost.liveViewerCount ?? 0,
+        }
+      : undefined,
     job: job
       ? {
           title: job.title,
           description: job.description,
           imageUrl: job.imageUrl || undefined,
-          href: appRoutes.postDetail(post.id),
+          href: appRoutes.postDetail(contentPost.id),
           location: job.location,
           categoryLabel: job.categoryLabel,
           typeLabel: job.typeLabel,
@@ -689,6 +698,53 @@ const fetchCanonicalProductPoint = async (
   return Number.isFinite(point) ? Math.max(0, Math.trunc(point)) : null
 }
 
+const fetchLegacySharedBlogCard = async (
+  event: H3Event,
+  blogId: number,
+): Promise<MessageSharedPostCard | null> => {
+  const response = await createBackendApiClient(event).post<{
+    api_status?: number | string
+    data?: BackendEntity
+  }, Record<string, unknown>>(
+    "get-blog-by-id",
+    { blog_id: blogId },
+  )
+
+  if (Number(response.api_status) !== 200) {
+    return null
+  }
+
+  const blog = asRecord(response.data)
+  const id = asNumber(blog.id) || asNumber(blog.blog_id) || blogId
+  const title = firstString(blog, ["title"])
+
+  if (id <= 0 || !title) {
+    return null
+  }
+
+  const author = asRecord(blog.author)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const imageUrl = resolveMediaUrl(firstString(blog, ["thumbnail", "image"])) || undefined
+  const href = appRoutes.readBlog(String(id))
+
+  return {
+    postId: id,
+    available: true,
+    author: buildDisplayName(author) || "VNSEEA",
+    authorAvatarUrl: resolveMediaUrl(firstString(author, ["avatar_full", "avatar"])) || undefined,
+    text: title,
+    imageUrl,
+    href,
+    blog: {
+      id,
+      title,
+      description: stripHtml(firstString(blog, ["description", "content"])).slice(0, 220),
+      imageUrl,
+      href,
+    },
+  }
+}
+
 const enrichSharedPostMessages = async (
   event: H3Event,
   messages: MessageItem[],
@@ -697,8 +753,12 @@ const enrichSharedPostMessages = async (
     .map(message => parseMessageSharedPostReference(message.text))
     .filter(Boolean) as Array<{ postId: number; body: string }>
   const postIds = [...new Set(references.map(reference => reference.postId))]
+  const blogReferences = messages
+    .map(message => parseMessageSharedBlog(message.text))
+    .filter(Boolean)
+  const hasBlogReferences = blogReferences.length > 0
 
-  if (postIds.length === 0) {
+  if (postIds.length === 0 && !hasBlogReferences) {
     return messages
   }
 
@@ -727,7 +787,63 @@ const enrichSharedPostMessages = async (
     cards.set(postId, card)
   }))
 
+  const legacyBlogCards = new Map<number, MessageSharedPostCard>()
+  const legacyBlogIds = [...new Set(
+    blogReferences
+      .filter(reference => !reference?.payload.title)
+      .map(reference => reference?.payload.id ?? 0)
+      .filter(id => id > 0),
+  )]
+  await Promise.all(legacyBlogIds.map(async (blogId) => {
+    const card = await fetchLegacySharedBlogCard(event, blogId).catch(() => null)
+    if (card) legacyBlogCards.set(blogId, card)
+  }))
+
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
+
   return messages.map((message) => {
+    const blogReference = parseMessageSharedBlog(message.text)
+
+    if (blogReference) {
+      const blog = blogReference.payload
+      const legacyCard = legacyBlogCards.get(blog.id)
+
+      if (!blog.title && legacyCard) {
+        return {
+          ...message,
+          text: removeDuplicatedSharedPostText(blogReference.body, legacyCard.text),
+          sharedPost: legacyCard,
+        }
+      }
+
+      if (!blog.title) {
+        return message
+      }
+
+      const imageUrl = resolveMediaUrl(blog.imageUrl) || undefined
+
+      return {
+        ...message,
+        text: blogReference.body,
+        sharedPost: {
+          postId: blog.id,
+          available: true,
+          author: blog.author || "VNSEEA",
+          authorAvatarUrl: resolveMediaUrl(blog.authorAvatarUrl) || undefined,
+          text: blog.title,
+          imageUrl,
+          href: appRoutes.readBlog(String(blog.id)),
+          blog: {
+            id: blog.id,
+            title: blog.title,
+            description: blog.description,
+            imageUrl,
+            href: appRoutes.readBlog(String(blog.id)),
+          },
+        } satisfies MessageSharedPostCard,
+      }
+    }
+
     const reference = parseMessageSharedPostReference(message.text)
 
     if (!reference) {
@@ -895,6 +1011,7 @@ const buildContactPreview = (
   const replyMeta = parseReplyMessagePreview(normalizedText)
   const productMeta = parseProductMessagePreview(normalizedText)
   const sharedPostReference = parseMessageSharedPostReference(normalizedText)
+  const sharedBlogReference = parseMessageSharedBlog(normalizedText)
 
   if (isLocationMessage(normalizedText)) {
     return `${senderName} đã chia sẻ một vị trí`
@@ -902,6 +1019,10 @@ const buildContactPreview = (
 
   if (productMeta) {
     return productMeta.body || productMeta.title
+  }
+
+  if (sharedBlogReference) {
+    return `${senderName} đã chia sẻ một bài viết blog`
   }
 
   if (sharedPostReference) {

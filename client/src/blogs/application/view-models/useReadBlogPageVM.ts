@@ -157,6 +157,7 @@ export function useReadBlogPageVM(
     refresh,
     currentUserName: computed(() => currentAuthUserStore.user?.name || ""),
     currentUserAvatarUrl: computed(() => currentAuthUserStore.user?.avatarUrl || ""),
+    canShare: computed(() => Boolean(currentAuthUserStore.user)),
     commentActionRepository,
   }
 }

@@ -647,6 +647,7 @@ const {
   closeMentionSuggestions,
   selectMention,
   clearSelectedMentions,
+  createBackendMentionText,
 } = useFeedMentionSearch({
   text: draftText,
   textarea: textareaEl,
@@ -654,7 +655,9 @@ const {
 })
 
 async function publish() {
-  await publishPost()
+  await publishPost({
+    text: createBackendMentionText(),
+  })
 
   if (!draft.value?.text) {
     clearSelectedMentions()

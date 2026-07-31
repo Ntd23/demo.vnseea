@@ -8001,8 +8001,11 @@ function Wo_SharePostOn($id = false, $type_id = 0, $type = '')
 		$post_data['postText']        = '';
 		$post_data['postType']        = '';
 		$post_data['comments_status'] = 1;
-		// $post_data['stream_name']    = '';
-		// $post_data['live_time']    = 0;
+		// A share is only a reference to the original live post. Copying the
+		// room identity makes clients try to join with the new share post ID.
+		$post_data['stream_name']      = '';
+		$post_data['live_time']        = 0;
+		$post_data['live_ended']       = 0;
 		$fields                       = '`' . implode('`, `', array_keys($post_data)) . '`';
 		$data                         = '\'' . implode('\', \'', $post_data) . '\'';
 		$sql                          = "INSERT INTO " . T_POSTS . " ({$fields}) VALUES ({$data})";
@@ -8224,8 +8227,15 @@ function Wo_GetAllJobs($filter_data = array())
 	//     $query_one .= " AND `price` <= '{$price}'";
 	// }
 	if (!empty($filter_data['length'])) {
-		$user_lat  = $wo['user']['lat'];
-		$user_lng  = $wo['user']['lng'];
+		$has_request_coordinates = isset($filter_data['latitude'], $filter_data['longitude'])
+			&& is_numeric($filter_data['latitude'])
+			&& is_numeric($filter_data['longitude'])
+			&& (float) $filter_data['latitude'] >= -90
+			&& (float) $filter_data['latitude'] <= 90
+			&& (float) $filter_data['longitude'] >= -180
+			&& (float) $filter_data['longitude'] <= 180;
+		$user_lat  = $has_request_coordinates ? (float) $filter_data['latitude'] : (float) $wo['user']['lat'];
+		$user_lng  = $has_request_coordinates ? (float) $filter_data['longitude'] : (float) $wo['user']['lng'];
 		$unit      = 6371;
 		$query_one = " AND status = '1'";
 		$distance  = Wo_Secure($filter_data['length']);
@@ -8251,9 +8261,10 @@ function Wo_GetAllJobs($filter_data = array())
 			$type = Wo_Secure($filter_data['type']);
 			$query_one .= " AND `job_type` = '{$type}'";
 		}
-		$query_one = "SELECT `id`, `user_id`, ( {$unit} * acos(cos(radians('$user_lat'))  *
-        cos(radians(lat)) * cos(radians(lng) - radians('$user_lng')) +
-        sin(radians('$user_lat')) * sin(radians(lat ))) ) AS distance
+		$query_one = "SELECT `id`, `user_id`, ( {$unit} * acos(LEAST(1, GREATEST(-1,
+        cos(radians('$user_lat')) * cos(radians(lat)) * cos(radians(lng) - radians('$user_lng')) +
+        sin(radians('$user_lat')) * sin(radians(lat))
+        ))) ) AS distance
         FROM " . T_JOB . " WHERE `lat` <> 0 AND `lng` <> 0 $query_one
         HAVING distance < '$distance'";
 	}
@@ -8276,6 +8287,9 @@ function Wo_GetAllJobs($filter_data = array())
 	if (mysqli_num_rows($sql)) {
 		while ($fetched_data = mysqli_fetch_assoc($sql)) {
 			$job    = Wo_GetJobById($fetched_data['id']);
+			if (isset($fetched_data['distance']) && is_numeric($fetched_data['distance'])) {
+				$job['distance'] = (float) $fetched_data['distance'];
+			}
 			//$products['seller'] = Wo_UserData($fetched_data['user_id']);
 			$data[] = $job;
 		}
