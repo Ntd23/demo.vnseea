@@ -63,6 +63,40 @@ if (empty($wo['user']['timezone'])) {
 $timezone = new DateTimeZone($wo['user']['timezone']);
 
 $array = array();
+$chat_refs = array();
+$message_peer_ids = array();
+$message_user_data = array();
+foreach ($messages as $message_user) {
+    $peer_id = !empty($message_user['user_id']) ? (int)$message_user['user_id'] : 0;
+    $chat_id = !empty($message_user['chat_id']) ? (int)$message_user['chat_id'] : 0;
+    if ($peer_id > 0) {
+        $message_peer_ids[$peer_id] = $peer_id;
+        $message_user_data[$peer_id] = $message_user;
+    }
+    if ($chat_id > 0) {
+        $chat_refs[] = array('type' => 'user', 'chat_id' => $chat_id);
+    }
+}
+foreach ($groups as $group_chat) {
+    $chat_id = !empty($group_chat['chat_id']) ? (int)$group_chat['chat_id'] : 0;
+    if ($chat_id > 0) {
+        $chat_refs[] = array('type' => 'group', 'chat_id' => $chat_id);
+    }
+}
+foreach ($pages as $page_chat) {
+    $chat_id = !empty($page_chat['chat_id']) ? (int)$page_chat['chat_id'] : 0;
+    if ($chat_id > 0) {
+        $chat_refs[] = array('type' => 'page', 'chat_id' => $chat_id);
+    }
+}
+$message_user_data[(int)$wo['user']['id']] = $wo['user'];
+$conversation_mutes = VNSEEA_GetConversationMutesBatch($chat_refs, $wo['user']['id']);
+$latest_user_messages = VNSEEA_GetMessagesHeaderBatch($message_peer_ids, $message_user_data);
+$unread_user_counts = VNSEEA_GetUnreadMessageCountsBatch($message_peer_ids);
+$chat_colors = VNSEEA_GetChatColorsBatch($message_peer_ids, $wo['user']['id']);
+$latest_page_messages = VNSEEA_GetPageMessageHeadersBatch($pages);
+$page_data_cache = array();
+$page_user_cache = array();
 $follow_relationships = array();
 if (!empty($messages)) {
     $message_user_ids = array();
@@ -153,15 +187,24 @@ if (!empty($messages)) {
                                'archive' => 'no',
                                'fav' => 'no',
                                'pin' => 'no');
-        $mute = $db->where('user_id',$wo['user']['id'])->where('chat_id',$value['chat_id'])->where('type','user')->getOne(T_MUTE);
+        $mute_key = 'user:' . (int)$value['chat_id'];
+        $mute = isset($conversation_mutes[$mute_key]) ? $conversation_mutes[$mute_key] : array();
         if (!empty($mute)) {
-            $value['mute']['notify'] = $mute->notify;
-            $value['mute']['call_chat'] = $mute->call_chat;
-            $value['mute']['archive'] = $mute->archive;
-            $value['mute']['fav'] = $mute->fav;
-            $value['mute']['pin'] = $mute->pin;
+            $value['mute']['notify'] = $mute['notify'];
+            $value['mute']['call_chat'] = $mute['call_chat'];
+            $value['mute']['archive'] = $mute['archive'];
+            $value['mute']['fav'] = $mute['fav'];
+            $value['mute']['pin'] = $mute['pin'];
         }
-        $value['last_message'] = Wo_GetMessagesHeader(array('user_id' => $value['user_id']), 'user');
+        $peer_id = (int)$value['user_id'];
+        $value['last_message'] = isset($latest_user_messages[$peer_id])
+            ? $latest_user_messages[$peer_id]
+            : false;
+        if (empty($value['last_message'])) {
+            $value['message_count'] = isset($unread_user_counts[$peer_id]) ? $unread_user_counts[$peer_id] : 0;
+            $array[] = $value;
+            continue;
+        }
         foreach ($non_allowed as $key5 => $value5) {
             if (!empty($value['last_message']['messageUser'])) {
                 unset($value['last_message']['messageUser'][$value5]);
@@ -214,9 +257,9 @@ if (!empty($messages)) {
                 $message['time_text'] = $time->format('H:i');
             }
         }
-        $message['chat_color'] = Wo_GetChatColor($wo['user']['user_id'], $value['user_id']);
+        $message['chat_color'] = isset($chat_colors[$peer_id]) ? $chat_colors[$peer_id] : false;
         $value['last_message'] = $message;
-        $value['message_count'] = Wo_CountMessages(array('new' => true,'user_id' => $value['user_id']),'user');
+        $value['message_count'] = isset($unread_user_counts[$peer_id]) ? $unread_user_counts[$peer_id] : 0;
         $array[] = $value;
     }
 }
@@ -227,13 +270,14 @@ if (!empty($groups)) {
                                'archive' => 'no',
                                'fav' => 'no',
                                'pin' => 'no');
-        $mute = $db->where('user_id',$wo['user']['id'])->where('chat_id',$value['chat_id'])->where('type','group')->getOne(T_MUTE);
+        $mute_key = 'group:' . (int)$value['chat_id'];
+        $mute = isset($conversation_mutes[$mute_key]) ? $conversation_mutes[$mute_key] : array();
         if (!empty($mute)) {
-            $value['mute']['notify'] = $mute->notify;
-            $value['mute']['call_chat'] = $mute->call_chat;
-            $value['mute']['archive'] = $mute->archive;
-            $value['mute']['fav'] = $mute->fav;
-            $value['mute']['pin'] = $mute->pin;
+            $value['mute']['notify'] = $mute['notify'];
+            $value['mute']['call_chat'] = $mute['call_chat'];
+            $value['mute']['archive'] = $mute['archive'];
+            $value['mute']['fav'] = $mute['fav'];
+            $value['mute']['pin'] = $mute['pin'];
         }
     	if (!empty($value['user_data'])) {
             foreach ($non_allowed as $key4 => $value4) {
@@ -318,33 +362,42 @@ if (!empty($groups)) {
 }
 if (!empty($pages)) {
     foreach ($pages as $key => $value) {
-    	$page = Wo_PageData($value['message']['page_id']);
+        $page_id = !empty($value['message']['page_id']) ? (int)$value['message']['page_id'] : 0;
+        if ($page_id < 1) {
+            continue;
+        }
+        if (!array_key_exists($page_id, $page_data_cache)) {
+            $page_data_cache[$page_id] = Wo_PageData($page_id);
+        }
+        $page = $page_data_cache[$page_id];
         $page['chat_id'] = $value['chat_id'];
         $page['mute'] = array('notify' => 'yes',
                                'call_chat' => 'yes',
                                'archive' => 'no',
                                'fav' => 'no',
                                'pin' => 'no');
-        $mute = $db->where('user_id',$wo['user']['id'])->where('chat_id',$value['chat_id'])->where('type','page')->getOne(T_MUTE);
+        $mute_key = 'page:' . (int)$value['chat_id'];
+        $mute = isset($conversation_mutes[$mute_key]) ? $conversation_mutes[$mute_key] : array();
         if (!empty($mute)) {
-            $page['mute']['notify'] = $mute->notify;
-            $page['mute']['call_chat'] = $mute->call_chat;
-            $page['mute']['archive'] = $mute->archive;
-            $page['mute']['fav'] = $mute->fav;
-            $page['mute']['pin'] = $mute->pin;
+            $page['mute']['notify'] = $mute['notify'];
+            $page['mute']['call_chat'] = $mute['call_chat'];
+            $page['mute']['archive'] = $mute['archive'];
+            $page['mute']['fav'] = $mute['fav'];
+            $page['mute']['pin'] = $mute['pin'];
         }
         if (!empty($page) && !empty($value['message']) && !empty($value['message']['page_id']) && !empty($value['message']['user_id']) && !empty($value['message']['conversation_user_id'])) {
             $user_id = $wo['user']['id'];
             $timezone = new DateTimeZone($wo['user']['timezone']);
-            $message = Wo_GetPageMessages(array(
-                                        'page_id' => $value['message']['page_id'],
-                                        'from_id' => $value['message']['user_id'],
-                                        'to_id'   => $value['message']['conversation_user_id'],
-                                        'limit' => 1,
-                                        'limit_type' => 1
-                                    ));
-            if (!empty($message) && !empty($message[0]) && !empty($message[0]['time'])) {
-                $page['last_message'] = $message[0];
+            $page_message_key = VNSEEA_PageConversationKey(
+                $value['message']['page_id'],
+                $value['message']['user_id'],
+                $value['message']['conversation_user_id']
+            );
+            $message = isset($latest_page_messages[$page_message_key])
+                ? $latest_page_messages[$page_message_key]
+                : array();
+            if (!empty($message) && !empty($message['time'])) {
+                $page['last_message'] = $message;
 
                 $message = $page['last_message'];
                 $message['text'] = openssl_encrypt($message['text'], "AES-128-ECB", $message['time']);
@@ -396,7 +449,11 @@ if (!empty($pages)) {
                 if ($message['from_id'] != $message['user_data']['user_id']) {
                     $info_id = $message['from_id'];
                 }
-                $message['to_data'] = Wo_UserData($info_id);
+                $info_id = (int)$info_id;
+                if (!array_key_exists($info_id, $page_user_cache)) {
+                    $page_user_cache[$info_id] = Wo_UserData($info_id);
+                }
+                $message['to_data'] = $page_user_cache[$info_id];
 
                 $page['last_message'] = $message;
                 $page['chat_type'] = 'page';

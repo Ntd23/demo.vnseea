@@ -28,6 +28,8 @@ $get_messages = push_v2_source($root, 'api/v2/endpoints/get_user_messages.php');
 $group_messages = push_v2_source($root, 'api/v2/endpoints/group_chat.php');
 $mute = push_v2_source($root, 'api/v2/endpoints/mute.php');
 $cron = push_v2_source($root, 'cron-job.php');
+$worker = push_v2_source($root, 'workers/push-delivery-worker.php');
+$worker_service = push_v2_source($root, 'deploy/systemd/vnseea-push-worker.service');
 $message_runtime = push_v2_source($root, 'assets/includes/functions_one.php');
 $legacy_push_runtime = push_v2_source($root, 'assets/includes/functions_three.php');
 
@@ -247,18 +249,31 @@ assert_push_v2_contract(
 );
 foreach (array('Wo_NotificationWebPushNotifier', 'Wo_MessagesPushNotifier') as $legacy_notifier) {
     $notifier_start = strpos($legacy_push_runtime, "function {$legacy_notifier}()");
-    $notifier_queue = strpos(
-        $legacy_push_runtime,
-        'return VNSEEA_ProcessPushDeliveryQueue(50);',
-        $notifier_start
-    );
+    $notifier_end = strpos($legacy_push_runtime, "\n}", $notifier_start);
+    $notifier_source = substr($legacy_push_runtime, $notifier_start, $notifier_end - $notifier_start);
     assert_push_v2_contract(
         $notifier_start !== false &&
-        $notifier_queue !== false &&
-        $notifier_queue - $notifier_start < 300,
-        "{$legacy_notifier} must only drain deliveries already in the queue"
+        strpos($notifier_source, 'VNSEEA_ProcessPushDeliveryQueue') === false,
+        "{$legacy_notifier} must leave delivery processing to the CLI worker"
     );
 }
+assert_push_v2_contract(
+    strpos($service, 'register_shutdown_function') === false &&
+        strpos($service, 'dedicated CLI worker') !== false,
+    'web requests must never drain push delivery from a shutdown callback'
+);
+assert_push_v2_contract(
+    strpos($worker, "PHP_SAPI !== 'cli'") !== false &&
+        strpos($worker, 'VNSEEA_ProcessPushDeliveryQueue($batch_size)') !== false &&
+        strpos($worker, "pcntl_signal(SIGTERM") !== false,
+    'dedicated push worker must drain the queue and stop gracefully'
+);
+assert_push_v2_contract(
+    strpos($worker_service, 'User=vnseea') !== false &&
+        strpos($worker_service, 'Restart=always') !== false &&
+        strpos($worker_service, 'push-delivery-worker.php') !== false,
+    'systemd service must run the push worker as the site owner and restart it'
+);
 assert_push_v2_contract(
     strpos($mute, "\$chat_id = (int)\$_POST['chat_id']") !== false &&
         strpos($mute, "\$chat_type = (string)\$_POST['type']") !== false &&
