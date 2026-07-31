@@ -425,7 +425,7 @@
 
       <!-- ── TIMELINE TAB ───────────────────────────────── -->
       <template v-if="activeTab === 'timeline'">
-        <div class="profile-page__body">
+        <div ref="profileTimelineBodyRef" class="profile-page__body">
           <!-- RIGHT: feed -->
           <main class="profile-page__feed">
             <!-- Publisher -->
@@ -505,7 +505,7 @@
           </main>
 
           <!-- LEFT: sidebar (intro / friends / photos) -->
-          <aside class="profile-page__sidebar">
+          <aside ref="profileSidebarRef" class="profile-page__sidebar">
             <!-- Intro -->
             <section v-if="profile.intro.length" class="profile-card">
               <div class="profile-card__head">
@@ -894,14 +894,18 @@
                 {{ profile.counts.followers }} {{ copy.friendsTitle }}
               </h2>
             </div>
-            <UButton variant="soft" class="text-link">
-              {{ copy.friendsAction }}
-            </UButton>
+            <UInput
+              v-model="friendSearchQuery"
+              icon="i-ph-magnifying-glass-duotone"
+              :placeholder="copy.friendsAction"
+              clearable
+              class="profile-page__friend-search"
+            />
           </div>
         </div>
-        <div v-if="friends.length" class="profile-page__friends-grid">
+        <div v-if="filteredFriends.length" class="profile-page__friends-grid">
           <NuxtLink
-            v-for="friend in friends"
+            v-for="friend in filteredFriends"
             :key="friend.id"
             :to="`/@${friend.username}`"
             class="profile-page__friend-card"
@@ -1199,6 +1203,9 @@ const avatarTriggerRef = ref<HTMLElement | null>(null);
 const avatarMenuRef = ref<HTMLElement | null>(null);
 const avatarMenuStyle = ref<Record<string, string>>({});
 const profileLoadMoreSentinel = ref<HTMLElement | null>(null);
+const profileTimelineBodyRef = ref<HTMLElement | null>(null);
+const profileSidebarRef = ref<HTMLElement | null>(null);
+const friendSearchQuery = ref("");
 const profileAvatarInput = ref<HTMLInputElement | null>(null);
 const profileMediaUploading = ref<"avatar" | "cover" | null>(null);
 const profileMediaViewer = ref<{ src: string; alt: string } | null>(null);
@@ -1209,6 +1216,15 @@ let profileImageDetailRequestId = 0;
 const toast = useToast();
 const { t } = useI18n();
 const feedRepository = createApiFeedRepository();
+const filteredFriends = computed(() => {
+  const query = friendSearchQuery.value.trim().toLocaleLowerCase();
+  if (!query) return friends.value;
+
+  return friends.value.filter((friend) =>
+    [friend.name, friend.username]
+      .some(value => String(value || "").toLocaleLowerCase().includes(query)),
+  );
+});
 const {
   currentAuthUserStore: profileLightboxAuthStore,
   showShare: profileLightboxShareOpen,
@@ -1306,6 +1322,52 @@ useIntersectionObserver(
   },
 );
 
+let profileSidebarSyncFrame = 0;
+
+function syncProfileSidebarScroll() {
+  if (!import.meta.client) return;
+
+  cancelAnimationFrame(profileSidebarSyncFrame);
+  profileSidebarSyncFrame = requestAnimationFrame(() => {
+    const body = profileTimelineBodyRef.value;
+    const sidebar = profileSidebarRef.value;
+
+    if (
+      !body ||
+      !sidebar ||
+      activeTab.value !== "timeline" ||
+      window.innerWidth < 1024
+    ) {
+      if (sidebar) sidebar.scrollTop = 0;
+      return;
+    }
+
+    const maxSidebarScroll = Math.max(
+      0,
+      sidebar.scrollHeight - sidebar.clientHeight,
+    );
+    if (!maxSidebarScroll) return;
+
+    const stickyTop = 68;
+    const bodyRect = body.getBoundingClientRect();
+    const bodyScrollRange = Math.max(
+      1,
+      body.offsetHeight - window.innerHeight + stickyTop,
+    );
+    const bodyScrolled = Math.min(
+      bodyScrollRange,
+      Math.max(0, stickyTop - bodyRect.top),
+    );
+    const revealRange = Math.max(
+      1,
+      Math.min(bodyScrollRange * 0.55, window.innerHeight * 2.5),
+    );
+    const revealProgress = Math.min(1, bodyScrolled / revealRange);
+
+    sidebar.scrollTop = Math.round(maxSidebarScroll * revealProgress);
+  });
+}
+
 function toggleMore() {
   if (!moreOpen.value && moreTriggerRef.value) {
     const rect = moreTriggerRef.value.getBoundingClientRect();
@@ -1340,13 +1402,25 @@ function closeFloatingMenus() {
 onMounted(() => {
   document.addEventListener("click", closeMore, true);
   window.addEventListener("scroll", closeFloatingMenus, { passive: true });
+  window.addEventListener("scroll", syncProfileSidebarScroll, { passive: true });
   window.addEventListener("resize", closeFloatingMenus, { passive: true });
+  window.addEventListener("resize", syncProfileSidebarScroll, { passive: true });
+  void nextTick(syncProfileSidebarScroll);
 });
 onBeforeUnmount(() => {
   document.removeEventListener("click", closeMore, true);
   window.removeEventListener("scroll", closeFloatingMenus);
+  window.removeEventListener("scroll", syncProfileSidebarScroll);
   window.removeEventListener("resize", closeFloatingMenus);
+  window.removeEventListener("resize", syncProfileSidebarScroll);
+  cancelAnimationFrame(profileSidebarSyncFrame);
 });
+
+watch(
+  [activeTab, displayedTimelinePosts, profile],
+  () => void nextTick(syncProfileSidebarScroll),
+  { flush: "post" },
+);
 
 function openAvatarMenu() {
   const currentProfile = profile.value;
@@ -2214,6 +2288,15 @@ function handleMoreAction(action: string) {
     order: 1;
     position: sticky;
     top: 68px;
+    align-self: start;
+    max-height: calc(100dvh - 80px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .profile-page__sidebar::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -2592,6 +2675,21 @@ function handleMoreAction(action: string) {
 .profile-page__friends-header .profile-card__head {
   margin-bottom: 0;
   align-items: center;
+}
+
+.profile-page__friend-search {
+  width: min(320px, 100%);
+}
+
+@media (max-width: 639px) {
+  .profile-page__friends-header .profile-card__head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profile-page__friend-search {
+    width: 100%;
+  }
 }
 
 .profile-page__friends-grid {
