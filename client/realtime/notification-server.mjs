@@ -1,4 +1,4 @@
-// English description: Socket.IO relay for notifications, typing, and per-post invalidation rooms.
+// English description: Socket.IO relay for notifications, message presence, typing, and per-post invalidation rooms.
 
 import { createServer } from "node:http"
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto"
@@ -45,6 +45,13 @@ const realtimeEventNames = {
 const postMutations = new Set(["reaction", "comment", "share", "deleted"])
 
 const normalizePostIds = (values, limit = 50) =>
+  Array.from(new Set(
+    (Array.isArray(values) ? values : [])
+      .map(value => String(value).trim())
+      .filter(value => /^[1-9][0-9]*$/.test(value)),
+  )).slice(0, limit)
+
+const normalizePresenceUserIds = (values, limit = 200) =>
   Array.from(new Set(
     (Array.isArray(values) ? values : [])
       .map(value => String(value).trim())
@@ -111,6 +118,7 @@ export function createRealtimeRelay({
       && (
         request.url === "/internal/notifications/publish"
         || request.url === "/internal/posts/publish"
+        || request.url === "/internal/messages/presence/publish"
       )
     if (!internalRoute) {
       send(encodeJson(404, { ok: false }))
@@ -137,6 +145,26 @@ export function createRealtimeRelay({
           occurredAt: Number(payload.occurredAt) || Date.now(),
         }
         io.to(`post:${postId}`).emit("post:changed", eventPayload)
+        send(encodeJson(200, { ok: true, eventId: eventPayload.eventId }))
+        return
+      }
+
+      if (request.url === "/internal/messages/presence/publish") {
+        const userId = String(payload.userId || "").trim()
+        const online = payload.online
+
+        if (!/^[1-9][0-9]*$/.test(userId) || typeof online !== "boolean") {
+          send(encodeJson(400, { ok: false, message: "Invalid presence change" }))
+          return
+        }
+
+        const eventPayload = {
+          eventId: String(payload.eventId || randomUUID()),
+          userId: Number(userId),
+          online,
+          occurredAt: Number(payload.occurredAt) || Date.now(),
+        }
+        io.to(`presence:${userId}`).emit("message:presence", eventPayload)
         send(encodeJson(200, { ok: true, eventId: eventPayload.eventId }))
         return
       }
@@ -187,6 +215,7 @@ export function createRealtimeRelay({
     }
 
     const watchedPostIds = new Set()
+    const watchedPresenceUserIds = new Set()
     socket.join(`user:${userId}`)
     socket.emit("notification:ready", { userId })
 
@@ -210,6 +239,32 @@ export function createRealtimeRelay({
       })
       if (typeof acknowledge === "function") {
         acknowledge({ watched: watchedPostIds.size })
+      }
+    })
+
+    socket.on("message:presence:watch", (payload = {}, acknowledge) => {
+      const userIds = normalizePresenceUserIds(payload.userIds)
+      const nextUserIds = new Set(userIds)
+
+      watchedPresenceUserIds.forEach((watchedUserId) => {
+        if (!nextUserIds.has(watchedUserId)) {
+          watchedPresenceUserIds.delete(watchedUserId)
+          socket.leave(`presence:${watchedUserId}`)
+        }
+      })
+
+      userIds.forEach((watchedUserId) => {
+        if (!watchedPresenceUserIds.has(watchedUserId)) {
+          watchedPresenceUserIds.add(watchedUserId)
+          socket.join(`presence:${watchedUserId}`)
+        }
+      })
+
+      if (typeof acknowledge === "function") {
+        acknowledge({
+          watched: watchedPresenceUserIds.size,
+          accepted: [...watchedPresenceUserIds],
+        })
       }
     })
 

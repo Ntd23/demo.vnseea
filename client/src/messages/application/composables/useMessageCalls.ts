@@ -114,27 +114,37 @@ export function useMessageCalls(
     status.value = "active"
   }
 
+  const syncOutgoingAnswer = async (id: number, type: MessageCallType) => {
+    const result = await repository.getOutgoingStatus({ id, type }).catch(() => null)
+
+    if (!result) {
+      return false
+    }
+
+    if (result.status === 200) {
+      clearOutgoingTimers()
+      await fetchPayload(id, type).catch((error) => {
+        errorMessage.value = error?.statusMessage || "Can not join call."
+        status.value = "error"
+      })
+      return true
+    }
+
+    if (result.status === 400) {
+      clearOutgoingTimers()
+      ringingCall.value = null
+      status.value = "declined"
+      return true
+    }
+
+    return false
+  }
+
   const pollOutgoingAnswer = (id: number, type: MessageCallType) => {
     clearOutgoingTimers()
-    outgoingPoll = setInterval(async () => {
-      const result = await repository.getOutgoingStatus({ id, type }).catch(() => null)
-
-      if (!result) {
-        return
-      }
-
-      if (result.status === 200) {
-        clearOutgoingTimers()
-        await fetchPayload(id, type).catch((error) => {
-          errorMessage.value = error?.statusMessage || "Can not join call."
-          status.value = "error"
-        })
-      }
-      else if (result.status === 400) {
-        clearOutgoingTimers()
-        ringingCall.value = null
-        status.value = "declined"
-      }
+    void syncOutgoingAnswer(id, type)
+    outgoingPoll = setInterval(() => {
+      void syncOutgoingAnswer(id, type)
     }, POLL_INTERVAL_MS)
 
     noAnswerTimer = setTimeout(async () => {
@@ -152,6 +162,16 @@ export function useMessageCalls(
 
     isCallActionPending.value = true
     errorMessage.value = ""
+    status.value = "ringing"
+    ringingCall.value = {
+      id: 0,
+      type,
+      direction: "outgoing",
+      peer: {
+        name: contact.name,
+        avatar: contact.avatarUrl,
+      },
+    }
 
     try {
       const result = await repository.createCall({
@@ -160,12 +180,12 @@ export function useMessageCalls(
       })
 
       if (result.busy || result.id <= 0) {
+        ringingCall.value = null
         status.value = "busy"
         errorMessage.value = result.message || "Recipient is busy."
         return
       }
 
-      status.value = "ringing"
       ringingCall.value = {
         id: result.id,
         type,
@@ -178,6 +198,7 @@ export function useMessageCalls(
       pollOutgoingAnswer(result.id, type)
     }
     catch (error: any) {
+      ringingCall.value = null
       status.value = "error"
       errorMessage.value = error?.statusMessage || "Can not start call."
     }

@@ -1,3 +1,4 @@
+// English description: Configures the production PM2 processes and their server-only environment variables.
 const path = require("node:path")
 
 const clientRoot = __dirname
@@ -29,6 +30,16 @@ module.exports = {
         NUXT_PUBLIC_REALTIME_URL: process.env.NUXT_PUBLIC_REALTIME_URL,
         REALTIME_INTERNAL_URL: process.env.REALTIME_INTERNAL_URL,
         REALTIME_SECRET: process.env.REALTIME_SECRET,
+        NUXT_REDIS_URL:
+          process.env.NUXT_REDIS_URL || process.env.REDIS_URL,
+        NUXT_REDIS_PREFIX:
+          process.env.NUXT_REDIS_PREFIX || process.env.REDIS_PREFIX,
+        NUXT_REDIS_CONNECT_TIMEOUT_MS:
+          process.env.NUXT_REDIS_CONNECT_TIMEOUT_MS ||
+          process.env.REDIS_CONNECT_TIMEOUT_MS,
+        NUXT_REDIS_COMMAND_TIMEOUT_MS:
+          process.env.NUXT_REDIS_COMMAND_TIMEOUT_MS ||
+          process.env.REDIS_COMMAND_TIMEOUT_MS,
       },
     },
     {

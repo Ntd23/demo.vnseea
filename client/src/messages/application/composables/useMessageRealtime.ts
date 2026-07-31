@@ -5,6 +5,10 @@ import type { Ref } from "vue"
 import type { Socket } from "socket.io-client"
 import type { MessagesRepository } from "../../domain/repositories/MessagesRepository"
 import type { MessageContact, MessageTabKey } from "../../domain/types/messages.types"
+import {
+  normalizeMessagePresenceEvent,
+  watchMessagePresenceUsers,
+} from "../utils/message-presence-realtime"
 
 const POLLING_INTERVAL_MS = 10000
 const TYPING_IDLE_TIMEOUT_MS = 2400
@@ -15,10 +19,12 @@ type MessageRealtimeOptions = {
   repository: MessagesRepository
   activeTab: Ref<MessageTabKey>
   selectedContact: Ref<MessageContact | null>
+  presenceUserIds: Ref<number[]>
   refreshInbox: () => Promise<unknown>
   refreshThread: () => Promise<unknown>
   setRemoteTyping: (value: boolean, userId?: number) => void
   setGroupContactTyping: (groupId: number, value: boolean) => void
+  setUserContactOnline: (userId: number, online: boolean) => void
   setUserContactTyping: (userId: number, value: boolean) => void
 }
 
@@ -256,7 +262,8 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
         connected.value = true
         pollingFallbackActive.value = false
         stopPolling()
-        
+        watchMessagePresenceUsers(realtimeSocket, options.presenceUserIds.value)
+
         const sessionHash = useCookie("user_id").value
         if (sessionHash) {
           realtimeSocket.emit("join", { user_id: sessionHash })
@@ -278,6 +285,14 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
 
       realtimeSocket.on("messages:count", () => {
         void refreshFromIncomingMessage()
+      })
+
+      realtimeSocket.on("message:presence", (payload: unknown) => {
+        const presence = normalizeMessagePresenceEvent(payload)
+
+        if (presence) {
+          options.setUserContactOnline(presence.userId, presence.online)
+        }
       })
 
       realtimeSocket.on("message:typing", (payload: TypingPayload = {}) => {
@@ -601,6 +616,12 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
       options.setRemoteTyping(false)
     },
     { immediate: true },
+  )
+
+  watch(
+    options.presenceUserIds,
+    userIds => watchMessagePresenceUsers(socket.value, userIds),
+    { deep: true },
   )
 
   return {

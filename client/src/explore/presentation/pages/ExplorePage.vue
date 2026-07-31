@@ -1,22 +1,12 @@
+<!-- English description: Renders the media discovery grid with theme-aware loading, empty, and error states. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-16 sm:px-5 lg:px-6">
-    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
-      <div class="space-y-1.5">
-        <p class="text-label-secondary">
-          {{ t("pages.explorePage.heroEyebrow") }}
-        </p>
-        <h1 class="text-heading text-[var(--text-primary)]">
-          {{ t("pages.explorePage.heroTitle") }}
-        </h1>
-      </div>
-    </section>
-
+  <div class="mt-1.5 max-w-[1120px] space-y-4">
     <UAlert
       v-if="errorMessage"
       color="warning"
       variant="subtle"
       icon="i-ph-warning-circle-fill"
-      class="rounded-[22px]"
+      class="rounded-[var(--radius-lg)]"
       :description="errorMessage"
     />
 
@@ -26,7 +16,7 @@
         :key="item"
         class="explore-skeleton-tile"
       >
-        <USkeleton class="aspect-square w-full rounded-t-[14px]" />
+        <USkeleton class="aspect-square w-full rounded-t-[var(--radius-md)]" />
         <div class="space-y-2 p-3">
           <USkeleton class="h-4 w-[60%] rounded-lg" />
           <USkeleton class="h-3 w-[40%] rounded-lg" />
@@ -36,7 +26,7 @@
 
     <section
       v-else-if="mediaPosts.length === 0"
-      class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
+      class="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
     >
       <FoundationEmptyState
         icon="i-ph-compass-duotone"
@@ -54,13 +44,20 @@
       >
         <div class="explore-tile__media">
           <NuxtImg
-            v-if="post.mediaItems[0]?.type === 'image' && post.mediaItems[0]?.src"
+            v-if="post.mediaItems[0]?.type === 'image' && post.mediaItems[0]?.src && !hasImageError(post.id)"
             :src="post.mediaItems[0].src"
             :alt="post.mediaItems[0].alt || post.author"
             class="explore-tile__image"
             loading="lazy"
-            @error="handleImageError"
+            @error="handleImageError(post.id)"
           />
+          <div
+            v-else-if="post.mediaItems[0]?.type === 'image'"
+            class="explore-tile__fallback"
+            aria-hidden="true"
+          >
+            <Icon name="i-ph-image-broken-duotone" class="icon-xl icon-secondary" />
+          </div>
           <div
             v-else
             class="explore-tile__video"
@@ -69,7 +66,7 @@
               : undefined"
           >
             <div class="explore-tile__play-overlay">
-              <Icon name="i-ph-play-fill" class="h-8 w-8 text-white" />
+              <Icon name="i-ph-play-fill" class="h-8 w-8 text-[var(--text-media)]" />
             </div>
           </div>
         </div>
@@ -84,12 +81,22 @@
 </template>
 
 <script setup lang="ts">
-import { useTimeAgo } from "@vueuse/core"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
+import { formatUnixDateTime } from "../../../shared-kernel/application/utils/format-unix-date-time"
 import { useExplorePageVM } from "../../application/view-models/useExplorePageVM"
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { loading, errorMessage, mediaPosts } = useExplorePageVM()
+const failedImageIds = ref<Set<number>>(new Set())
+
+const formatDisplayTime = (value: string | number | null | undefined) =>
+  formatUnixDateTime(value, locale.value)
+
+const hasImageError = (postId: number) => failedImageIds.value.has(postId)
+
+const handleImageError = (postId: number) => {
+  failedImageIds.value = new Set(failedImageIds.value).add(postId)
+}
 </script>
 
 <style scoped>
@@ -97,7 +104,7 @@ const { loading, errorMessage, mediaPosts } = useExplorePageVM()
 .explore-skeleton-tile {
   display: block;
   overflow: hidden;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   box-shadow: var(--shadow-sm);
@@ -117,15 +124,13 @@ const { loading, errorMessage, mediaPosts } = useExplorePageVM()
   overflow: hidden;
 }
 
-.explore-tile__media--error::after {
-  content: "";
-  position: absolute;
-  inset: 0;
+.explore-tile__fallback {
   display: flex;
+  height: 100%;
+  width: 100%;
   align-items: center;
   justify-content: center;
-  background: var(--bg-surface-hover) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpolyline points='21 15 16 10 5 21'/%3E%3C/svg%3E") no-repeat center;
-  opacity: 0.5;
+  background: var(--bg-surface-hover);
 }
 
 .explore-tile__image,
@@ -140,7 +145,7 @@ const { loading, errorMessage, mediaPosts } = useExplorePageVM()
 }
 
 .explore-tile__video {
-  background-color: var(--text-primary);
+  background-color: var(--bg-media);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -152,13 +157,13 @@ const { loading, errorMessage, mediaPosts } = useExplorePageVM()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 23, 42, 0.2);
+  background: color-mix(in srgb, var(--bg-media) 20%, transparent);
   backdrop-filter: blur(2px);
   transition: background var(--duration-fast) var(--ease-default);
 }
 
 .explore-tile:hover .explore-tile__play-overlay {
-  background: rgba(15, 23, 42, 0.4);
+  background: color-mix(in srgb, var(--bg-media) 40%, transparent);
 }
 
 .explore-tile__meta {

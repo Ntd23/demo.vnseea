@@ -21,10 +21,12 @@ export function useMessagesPageVM() {
     repository,
     activeTab: inbox.activeTab,
     selectedContact: inbox.selectedContact,
+    presenceUserIds: inbox.presenceUserIds,
     refreshInbox: async () => await inbox.refreshInbox(),
     refreshThread: async () => await inbox.refreshThread(),
     setRemoteTyping: inbox.setRemoteTyping,
     setGroupContactTyping: inbox.setGroupContactTyping,
+    setUserContactOnline: inbox.setUserContactOnline,
     setUserContactTyping: inbox.setUserContactTyping,
   })
   const groupCandidateQuery = ref("")

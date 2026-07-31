@@ -1,3 +1,4 @@
+<!-- English description: Renders themed blog search, related articles, and category navigation. -->
 <template>
   <aside class="read-blog-sidebar">
     <section class="read-blog-sidebar__card read-blog-sidebar__search-card" aria-labelledby="read-blog-search-title">
@@ -43,8 +44,8 @@
           role="listitem"
         >
           <span class="read-blog-sidebar__thumb">
-            <span class="read-blog-sidebar__thumb-fallback" :style="{ background: item.imageFallback ?? 'linear-gradient(135deg,var(--color-primary-900),#38bdf8)' }" />
-            <img
+            <span class="read-blog-sidebar__thumb-fallback" :style="{ background: item.imageFallback ?? 'linear-gradient(135deg,var(--bg-brand-hover),var(--bg-brand))' }" />
+            <NuxtImg
               v-if="item.image"
               :src="item.image"
               :alt="item.title"
@@ -167,10 +168,10 @@ const openBlogCategory = (category: string) => navigateTo({
 
 .read-blog-sidebar__card {
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .read-blog-sidebar__author-band {
@@ -191,7 +192,7 @@ const openBlogCategory = (category: string) => navigateTo({
   justify-content: center;
   margin-top: -29px;
   border: 4px solid var(--bg-surface);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--bg-muted);
   color: var(--text-secondary);
 }
@@ -222,7 +223,7 @@ const openBlogCategory = (category: string) => navigateTo({
 .read-blog-sidebar__category {
   display: inline-flex;
   margin-top: 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   color: var(--bg-brand);
   font-size: 12px;
@@ -252,7 +253,7 @@ const openBlogCategory = (category: string) => navigateTo({
   width: 32px;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--bg-muted);
   color: var(--text-secondary);
 }
@@ -305,17 +306,20 @@ const openBlogCategory = (category: string) => navigateTo({
 .read-blog-sidebar__search input {
   width: 100%;
   min-height: 44px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
   color: var(--text-primary);
   outline: none;
   padding: 11px 42px;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default),
+    background var(--duration-fast) var(--ease-default);
 }
 
 .read-blog-sidebar__search input::placeholder {
@@ -329,7 +333,7 @@ const openBlogCategory = (category: string) => navigateTo({
 .read-blog-sidebar__search input:focus {
   border-color: color-mix(in srgb, var(--bg-brand) 28%, transparent);
   background: var(--bg-surface);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent), 0 10px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 7%, transparent), var(--shadow-md);
 }
 
 .read-blog-sidebar__search button {
@@ -342,7 +346,7 @@ const openBlogCategory = (category: string) => navigateTo({
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--bg-muted);
   color: var(--text-secondary);
   cursor: pointer;
@@ -390,7 +394,7 @@ const openBlogCategory = (category: string) => navigateTo({
   justify-content: center;
   width: 100%;
   border: 1px solid var(--border-light);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--bg-muted);
   color: var(--text-primary);
   gap: 5px;
@@ -400,7 +404,7 @@ const openBlogCategory = (category: string) => navigateTo({
   font-weight: 750;
   cursor: pointer;
   text-align: center;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
 .read-blog-sidebar__category-icon {
@@ -422,7 +426,7 @@ const openBlogCategory = (category: string) => navigateTo({
   padding: 12px 14px;
   color: inherit;
   text-decoration: none;
-  transition: background 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-default);
 }
 
 .read-blog-sidebar__related:first-child {
@@ -438,7 +442,7 @@ const openBlogCategory = (category: string) => navigateTo({
   display: block;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--bg-muted);
 }
 
@@ -462,7 +466,7 @@ const openBlogCategory = (category: string) => navigateTo({
   display: inline-flex;
   max-width: 100%;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--bg-muted);
   color: var(--text-secondary);
   font-size: 11px;

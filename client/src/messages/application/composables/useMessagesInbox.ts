@@ -306,6 +306,15 @@ export function useMessagesInbox(
     return nextContacts
   })
 
+  const presenceUserIds = computed(() =>
+    Array.from(new Set(
+      inboxContacts.value
+        .filter(contact => contact.type === "user")
+        .map(contact => contact.userId ?? 0)
+        .filter(userId => userId > 0),
+    )),
+  )
+
   const taggedRecipientSource = computed(() => {
     const contactsByUserId = new Map<number, MessageContact>()
 
@@ -1213,6 +1222,28 @@ export function useMessagesInbox(
     setTypingContact(buildUserContactId(userId), value)
   }
 
+  function setUserContactOnline(userId: number, online: boolean) {
+    if (userId <= 0) {
+      return
+    }
+
+    const updateContacts = (contacts: MessageContact[]) =>
+      contacts.map(contact =>
+        contact.type === "user" && contact.userId === userId
+          ? { ...contact, isOnline: online }
+          : contact,
+      )
+
+    inbox.value = updateContacts(inbox.value ?? [])
+
+    if (messageTags.value) {
+      messageTags.value = {
+        ...messageTags.value,
+        contacts: updateContacts(messageTags.value.contacts ?? []),
+      }
+    }
+  }
+
   function setGroupContactTyping(groupId: number, value: boolean) {
     if (groupId <= 0) {
       return
@@ -1293,6 +1324,7 @@ export function useMessagesInbox(
     messages,
     pinnedMessages,
     messageTagLabels,
+    presenceUserIds,
     multiFeedbackMessage,
     multiFeedbackTone,
     multiFile,
@@ -1311,6 +1343,7 @@ export function useMessagesInbox(
     isContactTyping,
     clearReplyTarget,
     setRemoteTyping,
+    setUserContactOnline,
     setUserContactTyping,
     setGroupContactTyping,
     clearRemoteTyping,

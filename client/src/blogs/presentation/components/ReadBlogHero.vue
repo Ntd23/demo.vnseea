@@ -1,3 +1,4 @@
+<!-- English description: Displays a theme-aware blog article hero with cover, author, and engagement metadata. -->
 <template>
   <header class="read-blog-hero">
     <div class="read-blog-hero__media">
@@ -96,10 +97,10 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 <style scoped>
 .read-blog-hero {
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .read-blog-hero__media {
@@ -144,7 +145,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 .read-blog-hero__chip,
 .read-blog-hero__stats > span {
   gap: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-size: 12px;
   font-weight: 700;
 }
@@ -194,7 +195,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
   justify-content: space-between;
   gap: 14px;
   margin-top: 18px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
   padding-top: 16px;
 }
 
@@ -211,7 +212,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
   flex: 0 0 42px;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--bg-muted);
   color: var(--text-secondary);
 }

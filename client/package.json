@@ -35,6 +35,7 @@
     "@vueuse/nuxt": "14.2.1",
     "cropperjs": "1.6.2",
     "echarts": "^6.1.0",
+    "ioredis": "^5.11.1",
     "livekit-client": "^2.19.0",
     "nuxt": "4.2.2",
     "nuxt-tiptap-editor": "3.3.0",

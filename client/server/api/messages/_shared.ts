@@ -13,7 +13,10 @@ import { fetchJobDetailByPostId } from "../jobs/_shared"
 import { parseMessageSharedPostReference } from "../../../src/messages/domain/message-shared-post"
 import { parseMessageSharedBlog } from "../../../src/messages/domain/message-shared-blog"
 import type { JobRecord } from "../../../src/jobs/domain/types/jobs.types"
-import { getMessageUserPresenceState } from "./_presence"
+import {
+  getMessageUsersPresenceState,
+  type MessagePresenceStateMap,
+} from "./_presence"
 import {
   feedStoryReactionByBackendId,
   feedStoryReactionBackendIds,
@@ -1176,6 +1179,53 @@ const getGroupParts = (entity: BackendEntity) =>
       ? asArray(entity.members)
       : asArray(entity.users)
 
+const getGroupMemberUserId = (part: BackendEntity) => {
+  const member = { ...asRecord(part.user_data), ...part }
+  return asNumber(member.user_id) || asNumber(member.id)
+}
+
+const collectGroupMemberUserIds = (entity: BackendEntity) =>
+  getGroupParts(entity)
+    .map(getGroupMemberUserId)
+    .filter(userId => userId > 0)
+
+const collectInboxPresenceUserIds = (entities: BackendEntity[]) => {
+  const userIds = new Set<number>()
+
+  for (const entity of entities) {
+    const type = asString(entity.chat_type) as MessageThreadType
+
+    if (type === "user") {
+      const userId = asNumber(entity.user_id)
+      if (userId > 0) userIds.add(userId)
+    }
+
+    if (type === "group") {
+      collectGroupMemberUserIds(entity).forEach(userId => userIds.add(userId))
+    }
+  }
+
+  return userIds
+}
+
+const collectMessageSenderUserIds = (entities: BackendEntity[]) => {
+  const userIds = new Set<number>()
+
+  for (const entity of entities) {
+    const userData = asRecord(entity.user_data)
+    const messageUser = asRecord(entity.messageUser)
+    const userId = asNumber(entity.from_id)
+      || asNumber(userData.user_id)
+      || asNumber(messageUser.user_id)
+
+    if (userId > 0) {
+      userIds.add(userId)
+    }
+  }
+
+  return userIds
+}
+
 const buildContactMembers = (entity: BackendEntity) =>
   getGroupParts(entity)
     .map((part) => {
@@ -1184,14 +1234,18 @@ const buildContactMembers = (entity: BackendEntity) =>
     })
     .filter(Boolean)
 
-const buildGroupOnlineState = (entity: BackendEntity, currentUserId: number) =>
+const buildGroupOnlineState = (
+  entity: BackendEntity,
+  currentUserId: number,
+  presenceStates: MessagePresenceStateMap,
+) =>
   getGroupParts(entity).some((part) => {
     const member = { ...asRecord(part.user_data), ...part }
     const userId = asNumber(member.user_id) || asNumber(member.id)
 
     return userId > 0
       && userId !== currentUserId
-      && buildUserOnlineState(member, buildLastSeenAt(member))
+      && buildUserOnlineState(member, buildLastSeenAt(member), presenceStates)
   })
 
 const buildMemberProfileUrl = (entity: BackendEntity) => {
@@ -1222,9 +1276,13 @@ const buildUserStatus = (entity: BackendEntity) => {
   return ""
 }
 
-const buildUserOnlineState = (entity: BackendEntity, lastSeenAt: number) => {
+const buildUserOnlineState = (
+  entity: BackendEntity,
+  lastSeenAt: number,
+  presenceStates: MessagePresenceStateMap,
+) => {
   const userId = asNumber(entity.user_id) || asNumber(entity.id)
-  const bridgedPresence = getMessageUserPresenceState(userId)
+  const bridgedPresence = presenceStates.get(userId)
 
   if (bridgedPresence !== undefined) {
     return bridgedPresence
@@ -1264,6 +1322,7 @@ const mapMessageContact = (
   currentUserId: number,
   currentUserName: string,
   resolveMediaUrl: (value: unknown) => string,
+  presenceStates: MessagePresenceStateMap,
 ): MessageContact | null => {
   const type = asString(entity.chat_type) as MessageThreadType
   const lastMessage = asRecord(entity.last_message)
@@ -1288,7 +1347,7 @@ const mapMessageContact = (
       name,
       profileUrl: buildProfileUrl(entity, "user"),
       status: buildUserStatus(entity),
-      isOnline: buildUserOnlineState(entity, lastSeenAt),
+      isOnline: buildUserOnlineState(entity, lastSeenAt, presenceStates),
       lastSeenAt: lastSeenAt || undefined,
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "user",
@@ -1336,7 +1395,7 @@ const mapMessageContact = (
       id: buildContactId("group", groupId),
       name,
       status: buildGroupStatus(entity),
-      isOnline: buildGroupOnlineState(entity, currentUserId),
+      isOnline: buildGroupOnlineState(entity, currentUserId, presenceStates),
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "group",
       preview: buildContactPreview(lastMessage, currentUserId, currentUserName, name),
@@ -1394,6 +1453,7 @@ const mapThreadMessage = (
   resolveMediaUrl: (value: unknown) => string,
   threadType: MessageThreadType,
   activeGroupCall?: BackendEntity,
+  presenceStates: MessagePresenceStateMap = new Map(),
 ): MessageItem => {
   const timestamp = asNumber(entity.time)
   const rawText = decryptMessageText(entity.text, timestamp)
@@ -1425,7 +1485,11 @@ const mapThreadMessage = (
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
       || firstString(messageUser, ["avatar", "avatar_full"])),
     senderIsOnline: senderId !== currentUserId
-      ? buildUserOnlineState(senderProfile, buildLastSeenAt(senderProfile))
+      ? buildUserOnlineState(
+          senderProfile,
+          buildLastSeenAt(senderProfile),
+          presenceStates,
+        )
       : false,
     timestamp,
     selectedReaction: parseMessageReaction(entity.reaction),
@@ -1485,9 +1549,21 @@ const fetchPinnedThreadMessages = async (
     "Unable to load pinned messages.",
   )
 
-  const pinnedMessages = extractCollectionMessages(response)
+  const pinnedEntities = extractCollectionMessages(response)
+  const presenceStates = await getMessageUsersPresenceState(
+    event,
+    collectMessageSenderUserIds(pinnedEntities),
+  )
+  const pinnedMessages = pinnedEntities
     .map((entity) => {
-      const message = mapThreadMessage(entity, currentUserId, resolveMediaUrl, input.type)
+      const message = mapThreadMessage(
+        entity,
+        currentUserId,
+        resolveMediaUrl,
+        input.type,
+        undefined,
+        presenceStates,
+      )
 
       return {
         ...message,
@@ -1507,6 +1583,7 @@ const mapGroupMember = (
   ownerId: number,
   currentUserId: number,
   resolveMediaUrl: (value: unknown) => string,
+  presenceStates: MessagePresenceStateMap,
 ): MessageGroupMember | null => {
   const member = { ...asRecord(entity.user_data), ...entity }
   const userId = asNumber(member.user_id) || asNumber(member.id)
@@ -1522,7 +1599,11 @@ const mapGroupMember = (
     username: firstString(member, ["username"]),
     avatarUrl: resolveMediaUrl(firstString(member, ["avatar", "avatar_full"])),
     profileUrl: buildMemberProfileUrl(member),
-    isOnline: buildUserOnlineState(member, buildLastSeenAt(member)),
+    isOnline: buildUserOnlineState(
+      member,
+      buildLastSeenAt(member),
+      presenceStates,
+    ),
     isOwner: userId === ownerId,
     isSelf: userId === currentUserId,
   }
@@ -1532,6 +1613,7 @@ const mapGroupDetails = (
   entity: BackendEntity,
   currentUserId: number,
   resolveMediaUrl: (value: unknown) => string,
+  presenceStates: MessagePresenceStateMap,
 ): MessageGroupDetails | null => {
   const groupId = asNumber(entity.group_id)
   const name = firstString(entity, ["group_name", "name"])
@@ -1542,7 +1624,13 @@ const mapGroupDetails = (
   }
 
   const members = getGroupParts(entity)
-    .map(member => mapGroupMember(member, ownerId, currentUserId, resolveMediaUrl))
+    .map(member => mapGroupMember(
+      member,
+      ownerId,
+      currentUserId,
+      resolveMediaUrl,
+      presenceStates,
+    ))
     .filter(Boolean) as MessageGroupMember[]
 
   members.sort((left, right) => {
@@ -1661,10 +1749,6 @@ export async function fetchInboxContacts(event: H3Event) {
       ).catch(() => null),
     ])
 
-    const contacts = (response.data ?? [])
-      .map(entity => mapMessageContact(entity, currentUserId, currentUserName, resolveMediaUrl))
-      .filter(Boolean) as MessageContact[]
-
     const relationships = new Map<number, {
       entity: BackendEntity
       isFollowing: boolean
@@ -1701,6 +1785,27 @@ export async function fetchInboxContacts(event: H3Event) {
     for (const entity of connectionsResponse?.data?.followers ?? []) {
       registerRelationship(entity, "follower")
     }
+
+    const inboxEntities = response.data ?? []
+    const presenceUserIds = collectInboxPresenceUserIds(inboxEntities)
+
+    for (const userId of relationships.keys()) {
+      presenceUserIds.add(userId)
+    }
+
+    const presenceStates = await getMessageUsersPresenceState(
+      event,
+      presenceUserIds,
+    )
+    const contacts = inboxEntities
+      .map(entity => mapMessageContact(
+        entity,
+        currentUserId,
+        currentUserName,
+        resolveMediaUrl,
+        presenceStates,
+      ))
+      .filter(Boolean) as MessageContact[]
 
     const userContactIds = new Set<number>()
     const enrichedContacts = contacts.map((contact) => {
@@ -1748,6 +1853,7 @@ export async function fetchInboxContacts(event: H3Event) {
         currentUserId,
         currentUserName,
         resolveMediaUrl,
+        presenceStates,
       )
 
       if (contact) {
@@ -1820,8 +1926,20 @@ export async function fetchMessageThread(
       "Unable to load user messages.",
     )
 
-    const messages = (response.messages ?? []).map(message =>
-      mapThreadMessage(message, currentUserId, resolveMediaUrl, "user"),
+    const messageEntities = response.messages ?? []
+    const presenceStates = await getMessageUsersPresenceState(
+      event,
+      collectMessageSenderUserIds(messageEntities),
+    )
+    const messages = messageEntities.map(message =>
+      mapThreadMessage(
+        message,
+        currentUserId,
+        resolveMediaUrl,
+        "user",
+        undefined,
+        presenceStates,
+      ),
     )
 
     return {
@@ -1858,8 +1976,20 @@ export async function fetchMessageThread(
     const responseData = asRecord(response.data)
     const activeGroupCall = asRecord(responseData.active_call)
 
-    const messages = extractCollectionMessages(response).map(message =>
-      mapThreadMessage(message, currentUserId, resolveMediaUrl, "group", activeGroupCall),
+    const messageEntities = extractCollectionMessages(response)
+    const presenceStates = await getMessageUsersPresenceState(
+      event,
+      collectMessageSenderUserIds(messageEntities),
+    )
+    const messages = messageEntities.map(message =>
+      mapThreadMessage(
+        message,
+        currentUserId,
+        resolveMediaUrl,
+        "group",
+        activeGroupCall,
+        presenceStates,
+      ),
     )
 
     return {
@@ -1893,8 +2023,20 @@ export async function fetchMessageThread(
     "Unable to load page messages.",
   )
 
-  const messages = extractCollectionMessages(response).map(message =>
-    mapThreadMessage(message, currentUserId, resolveMediaUrl, "page"),
+  const messageEntities = extractCollectionMessages(response)
+  const presenceStates = await getMessageUsersPresenceState(
+    event,
+    collectMessageSenderUserIds(messageEntities),
+  )
+  const messages = messageEntities.map(message =>
+    mapThreadMessage(
+      message,
+      currentUserId,
+      resolveMediaUrl,
+      "page",
+      undefined,
+      presenceStates,
+    ),
   )
 
   return {
@@ -3011,8 +3153,19 @@ export async function fetchMessageGroupDetails(
       "Unable to load group details.",
     )
 
-    groupDetails = asEntityList(response.data)
-      .map(entity => mapGroupDetails(entity, currentUserId, resolveMediaUrl))
+    const groupEntities = asEntityList(response.data)
+    const presenceStates = await getMessageUsersPresenceState(
+      event,
+      groupEntities.flatMap(collectGroupMemberUserIds),
+    )
+
+    groupDetails = groupEntities
+      .map(entity => mapGroupDetails(
+        entity,
+        currentUserId,
+        resolveMediaUrl,
+        presenceStates,
+      ))
       .find(Boolean)
   }
   catch {
@@ -3034,7 +3187,17 @@ export async function fetchMessageGroupDetails(
     )
 
     if (asNumber(legacyResponse.status) === 200) {
-      groupDetails = mapGroupDetails(asRecord(legacyResponse.group), currentUserId, resolveMediaUrl)
+      const groupEntity = asRecord(legacyResponse.group)
+      const presenceStates = await getMessageUsersPresenceState(
+        event,
+        collectGroupMemberUserIds(groupEntity),
+      )
+      groupDetails = mapGroupDetails(
+        groupEntity,
+        currentUserId,
+        resolveMediaUrl,
+        presenceStates,
+      )
     }
   }
 
