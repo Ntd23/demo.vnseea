@@ -64,8 +64,8 @@
     </NuxtLayout>
     <ClientOnly>
       <MessagesMessageCallGlobalHost
-        v-if="shouldMountMessageCallHost"
-        :poll-incoming="true"
+        v-if="shouldUseNuxtUiProvider"
+        :poll-incoming="shouldPollMessageCalls"
       />
     </ClientOnly>
   </component>
@@ -94,7 +94,7 @@ const backendUserSession = useCookie<string | null>("user_id", {
 })
 const lastSafeRoute = useState("last-safe-route", () => "/home")
 const runtimeBoundaryNonce = ref(0)
-const shouldMountMessageCallHost = computed(() => Boolean(backendUserSession.value))
+const shouldPollMessageCalls = computed(() => Boolean(backendUserSession.value))
 const shouldUseNuxtUiProvider = computed(() => route.path !== "/welcome")
 const appShellComponent = computed(() => shouldUseNuxtUiProvider.value ? NuxtUiProvider : "div")
 

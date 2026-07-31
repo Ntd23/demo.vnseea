@@ -1,3 +1,5 @@
+// English description: Verifies message invalidation, typing, and scoped presence events in the Socket.IO relay.
+
 import assert from "node:assert/strict"
 import { createHmac } from "node:crypto"
 import test from "node:test"
@@ -36,6 +38,23 @@ function connect(url, userId) {
     })
     socket.once("connect", () => resolve(socket))
     socket.once("connect_error", reject)
+  })
+}
+
+function watchPresence(socket, userIds) {
+  return new Promise((resolve) => {
+    socket.emit("message:presence:watch", { userIds }, resolve)
+  })
+}
+
+async function publishPresence(url, payload, requestSecret = secret) {
+  return await fetch(`${url}/internal/messages/presence/publish`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-realtime-secret": requestSecret,
+    },
+    body: JSON.stringify(payload),
   })
 }
 
@@ -90,4 +109,79 @@ test("message invalidation and typing only reach the intended user", async (t) =
 
   await new Promise(resolve => setTimeout(resolve, 20))
   assert.equal(leaked, false)
+})
+
+test("presence changes only reach subscribed contact rooms", async (t) => {
+  const { relay, url } = await startRelay()
+  const watcher = await connect(url, "10")
+  const other = await connect(url, "11")
+  t.after(async () => {
+    watcher.disconnect()
+    other.disconnect()
+    await relay.close()
+  })
+
+  assert.deepEqual(await watchPresence(watcher, ["2", "2", "invalid"]), {
+    watched: 1,
+    accepted: ["2"],
+  })
+  assert.deepEqual(await watchPresence(other, ["3"]), {
+    watched: 1,
+    accepted: ["3"],
+  })
+
+  let leaked = false
+  other.on("message:presence", () => {
+    leaked = true
+  })
+  const received = new Promise(resolve => watcher.once("message:presence", resolve))
+  const response = await publishPresence(url, {
+    userId: 2,
+    online: true,
+    eventId: "presence-test",
+    occurredAt: 123,
+  })
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(await received, {
+    eventId: "presence-test",
+    userId: 2,
+    online: true,
+    occurredAt: 123,
+  })
+  await new Promise(resolve => setTimeout(resolve, 20))
+  assert.equal(leaked, false)
+
+  assert.deepEqual(await watchPresence(watcher, ["4"]), {
+    watched: 1,
+    accepted: ["4"],
+  })
+
+  let receivedAfterReplacement = false
+  watcher.once("message:presence", () => {
+    receivedAfterReplacement = true
+  })
+  assert.equal((await publishPresence(url, {
+    userId: 2,
+    online: false,
+  })).status, 200)
+  await new Promise(resolve => setTimeout(resolve, 20))
+  assert.equal(receivedAfterReplacement, false)
+})
+
+test("presence publisher rejects unauthorized and invalid changes", async (t) => {
+  const { relay, url } = await startRelay()
+  t.after(async () => {
+    await relay.close()
+  })
+
+  assert.equal((await publishPresence(url, {
+    userId: 2,
+    online: true,
+  }, "wrong-secret")).status, 401)
+
+  assert.equal((await publishPresence(url, {
+    userId: 0,
+    online: "yes",
+  })).status, 400)
 })

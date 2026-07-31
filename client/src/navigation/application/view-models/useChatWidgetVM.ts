@@ -11,6 +11,11 @@ import { getMessageLocationMeta } from "../../../messages/application/utils/mess
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
 import { sortUserInboxContacts } from "../../../messages/application/utils/message-contact-order"
 import {
+  getMessagePresenceUserIds,
+  normalizeMessagePresenceEvent,
+  watchMessagePresenceUsers,
+} from "../../../messages/application/utils/message-presence-realtime"
+import {
   validateMessageAttachment,
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation"
@@ -439,6 +444,13 @@ export function useChatWidgetVM(
     return [...contacts.values()]
   })
 
+  const presenceUserIds = computed(() =>
+    getMessagePresenceUserIds([
+      ...allContacts.value,
+      ...(messageTags.value?.contacts ?? []),
+    ]),
+  )
+
   const userContacts = computed(() => {
     const taggedByUserId = new Map(
       (messageTags.value?.contacts ?? [])
@@ -728,6 +740,29 @@ export function useChatWidgetVM(
           description: t("navigation.chatWidget.inboxErrorDescription"),
           color: "error",
         })
+      }
+    }
+  }
+
+  function setUserContactOnline(userId: number, online: boolean) {
+    if (userId <= 0) {
+      return
+    }
+
+    const updateContacts = (contacts: MessageContact[]) =>
+      contacts.map(contact =>
+        contact.type === "user" && contact.userId === userId
+          ? { ...contact, isOnline: online }
+          : contact,
+      )
+
+    inbox.value = updateContacts(inbox.value ?? [])
+    launchedContacts.value = updateContacts(launchedContacts.value)
+
+    if (messageTags.value) {
+      messageTags.value = {
+        ...messageTags.value,
+        contacts: updateContacts(messageTags.value.contacts ?? []),
       }
     }
   }
@@ -1628,6 +1663,8 @@ export function useChatWidgetVM(
           return
         }
 
+        watchMessagePresenceUsers(realtimeSocket, presenceUserIds.value)
+
         const sessionHash = useCookie("user_id").value
         if (sessionHash) {
           realtimeSocket.emit("join", { user_id: sessionHash })
@@ -1637,6 +1674,18 @@ export function useChatWidgetVM(
       realtimeSocket.on("messages:count", () => {
         if (ownerId === currentOwnerId.value) {
           void refreshFromIncomingMessage()
+        }
+      })
+
+      realtimeSocket.on("message:presence", (payload: unknown) => {
+        if (ownerId !== currentOwnerId.value) {
+          return
+        }
+
+        const presence = normalizeMessagePresenceEvent(payload)
+
+        if (presence) {
+          setUserContactOnline(presence.userId, presence.online)
         }
       })
 
@@ -1725,6 +1774,12 @@ export function useChatWidgetVM(
       [...unreadSnapshot.value.entries()].filter(([contactId]) => contactIds.has(contactId)),
     )
   })
+
+  watch(
+    presenceUserIds,
+    userIds => watchMessagePresenceUsers(socket.value, userIds),
+    { deep: true },
+  )
 
   watch([activeSendTagFilter, sendCandidates], async ([tagFilter]) => {
     if (!tagFilter) {

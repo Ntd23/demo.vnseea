@@ -158,12 +158,14 @@ const {
   declineIncomingCall,
   finishActiveCall,
   finishGroupCall,
+  errorMessage,
   isCallActionPending,
   ringingGroupCall,
   ringingCall,
 } = useMessageCalls(undefined, { pollIncoming: computed(() => props.pollIncoming) })
 
 const { t } = useI18n()
+const toast = useToast()
 
 const ringingModalOpen = computed({
   get: () => Boolean(ringingCall.value),
@@ -361,6 +363,19 @@ watch(activeGroupCall, (session) => {
   if (session) {
     stopCallSound()
   }
+})
+
+watch(errorMessage, (message) => {
+  if (!message) {
+    return
+  }
+
+  toast.add({
+    title: t("pages.messagesPage.call"),
+    description: message,
+    color: "error",
+  })
+  errorMessage.value = ""
 })
 
 onMounted(() => {

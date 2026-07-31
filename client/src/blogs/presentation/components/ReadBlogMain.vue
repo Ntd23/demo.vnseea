@@ -1,3 +1,4 @@
+<!-- English description: Renders themed blog content, actions, sharing, and the article comment workflow. -->
 <template>
   <section class="read-blog-main">
     <div class="read-blog-main__toolbar">
@@ -135,10 +136,10 @@ defineEmits<{
 .read-blog-main__article,
 .read-blog-main__comments,
 .read-blog-main__share {
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .read-blog-main__toolbar {
@@ -163,8 +164,8 @@ defineEmits<{
   justify-content: center;
   gap: 7px;
   min-height: 38px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
   background: var(--bg-surface);
   color: var(--text-primary);
   cursor: pointer;
@@ -173,7 +174,7 @@ defineEmits<{
   padding: 0 13px;
   pointer-events: auto;
   user-select: none;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
 .read-blog-main__action > * {
@@ -194,7 +195,7 @@ defineEmits<{
 }
 
 .read-blog-main__tag {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   color: var(--bg-brand);
   font-size: 12px;
@@ -216,7 +217,7 @@ defineEmits<{
 
 .read-blog-main__share-url {
   overflow-wrap: anywhere;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--bg-muted);
   color: var(--text-secondary);
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
@@ -270,7 +271,7 @@ defineEmits<{
 .read-blog-main__comments-header {
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   padding: 14px 16px;
 }
 
@@ -280,7 +281,7 @@ defineEmits<{
   width: 34px;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--bg-brand) 6%, transparent);
   color: var(--bg-brand);
 }
@@ -321,7 +322,7 @@ defineEmits<{
 }
 
 .read-blog-main__composer {
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
   padding: 16px;
 }
 
@@ -335,7 +336,7 @@ defineEmits<{
 
 .read-blog-main__comment-list :deep(.comment-list__sort) {
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--bg-muted);
   padding: 3px;
 }
@@ -351,7 +352,7 @@ defineEmits<{
 
 .read-blog-main__comment-list :deep(.comment-item__bubble) {
   max-width: min(100%, 680px);
-  border: 1px solid #eef2f7;
+  border: 1px solid var(--border-light);
   background: var(--bg-muted);
 }
 
@@ -368,7 +369,7 @@ defineEmits<{
 }
 
 .read-blog-main__comment-list :deep(.comment-item__footer-action) {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 3px 7px;
 }
 
@@ -389,7 +390,7 @@ defineEmits<{
 }
 
 .read-blog-main__comment-list :deep(.comment-item__replies .comment-composer__input-wrap) {
-  border-color: #dbe3ef;
+  border-color: var(--border-light);
   background: var(--bg-muted);
 }
 

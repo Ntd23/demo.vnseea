@@ -41,6 +41,17 @@ const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL");
 const realtimeInternalUrl = process.env.REALTIME_INTERNAL_URL?.trim() || "";
 const realtimeSecret = process.env.REALTIME_SECRET?.trim() || "";
 const publicRealtimeUrl = process.env.NUXT_PUBLIC_REALTIME_URL?.trim() || "";
+const redisUrl = process.env.REDIS_URL?.trim() || "";
+const redisEnvironment =
+  process.env.NODE_ENV === "production" ? "prod" : "local";
+const redisPrefix =
+  process.env.REDIS_PREFIX?.trim() || `vnseea:${redisEnvironment}:`;
+const redisConnectTimeoutMs = Number(
+  process.env.REDIS_CONNECT_TIMEOUT_MS || 300,
+);
+const redisCommandTimeoutMs = Number(
+  process.env.REDIS_COMMAND_TIMEOUT_MS || 500,
+);
 const sourceMapsEnabled = process.env.NUXT_SOURCE_MAPS === "true";
 const nativeAppStoryDeepLink = process.env.NUXT_PUBLIC_NATIVE_APP_STORY_DEEP_LINK?.trim() || "";
 const nativeAppIosStoreUrl = process.env.NUXT_PUBLIC_NATIVE_APP_IOS_STORE_URL?.trim() || "";
@@ -116,6 +127,12 @@ export default defineNuxtConfig({
     backendServerKey,
     realtimeInternalUrl,
     realtimeSecret,
+    redis: {
+      url: redisUrl,
+      prefix: redisPrefix,
+      connectTimeoutMs: redisConnectTimeoutMs,
+      commandTimeoutMs: redisCommandTimeoutMs,
+    },
     public: {
       apiBase: publicApiBase,
       backendWebBase,

@@ -1,3 +1,4 @@
+<!-- English description: Composes the themed blog-reading experience with article, comments, and related content. -->
 <template>
   <div class="read-blog-page mt-2">
     <div
@@ -101,16 +102,16 @@ const {
   top: 0;
   z-index: 50;
   height: 3px;
-  background: linear-gradient(90deg, var(--bg-brand), #0ea5e9);
-  transition: width 0.1s ease;
+  background: linear-gradient(90deg, var(--bg-brand-hover), var(--bg-brand));
+  transition: width var(--duration-fast) var(--ease-default);
 }
 
 .read-blog-page__state,
 .read-blog-page__alert {
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .read-blog-page__state {
@@ -127,7 +128,7 @@ const {
 .read-blog-page__state-icon {
   height: 18px;
   width: 18px;
-  animation: read-blog-spin 0.8s linear infinite;
+  animation: read-blog-spin calc(var(--duration-slow) * 3) linear infinite;
 }
 
 .read-blog-page__layout {
