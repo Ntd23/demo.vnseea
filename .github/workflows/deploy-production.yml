@@ -1,3 +1,4 @@
+# English description: Deploys the PHP backend and Nuxt frontend to the production server.
 name: Deploy production
 
 on:
@@ -52,6 +53,9 @@ jobs:
             echo "==> Pull latest main"
             git fetch origin main
             git reset --hard origin/main
+
+            echo "==> Remove stale untracked frontend source files"
+            git clean -fd -- client/app client/server client/src client/realtime client/scripts
 
             echo "==> Restart PHP-FPM"
             systemctl restart php8.3-fpm
