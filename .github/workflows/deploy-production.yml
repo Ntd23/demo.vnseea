@@ -29,7 +29,7 @@ jobs:
             export PATH="/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
             PNPM="/root/.local/share/pnpm/bin/pnpm"
 
-            echo "DEBUG_WORKFLOW_VERSION=2026-05-31-1200"
+            echo "DEBUG_WORKFLOW_VERSION=2026-07-31-output-rollback"
             echo "PATH=$PATH"
             echo "node=$(node -v)"
             echo "pnpm_path=$PNPM"
@@ -54,6 +54,8 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            echo "==> Remove stale untracked frontend source files"
+            git clean -fd -- client/app client/server client/src client/realtime client/scripts
 
             echo "==> Restart PHP-FPM"
             systemctl restart php8.3-fpm
@@ -61,14 +63,29 @@ jobs:
             echo "==> Build Nuxt client"
             cd "$DEPLOY_PATH/client"
 
-            rm -rf .output .nuxt node_modules/.vite
-
             "$PNPM" install --frozen-lockfile
 
             export NODE_OPTIONS="--max-old-space-size=4096"
-            "$PNPM" build
 
-            test -f .output/server/index.mjs
+            echo "==> Stop Nuxt before replacing its runtime chunks"
+            pm2 stop vnseea-client || pm2 stop 2 || true
+
+            rm -rf .output.previous .nuxt node_modules/.vite
+            if [ -d .output ]; then
+              mv .output .output.previous
+            fi
+
+            if ! "$PNPM" build || [ ! -f .output/server/index.mjs ]; then
+              echo "ERROR: Nuxt build failed, restoring previous output"
+              rm -rf .output
+              if [ -d .output.previous ]; then
+                mv .output.previous .output
+                pm2 restart vnseea-client --update-env || pm2 restart 2 --update-env || true
+              fi
+              exit 1
+            fi
+
+            rm -rf .output.previous
 
             echo "==> Restart PM2"
             pm2 restart vnseea-client --update-env || pm2 restart 2 --update-env
