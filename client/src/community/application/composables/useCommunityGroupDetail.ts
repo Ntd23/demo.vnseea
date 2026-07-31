@@ -30,9 +30,12 @@ export function useCommunityGroupDetail(
     t(`pages.groupDetailPage.privacyDescription.${group.value?.privacy || "public"}`),
   )
 
-  const categoryLabel = computed(() =>
-    t(`pages.groupDetailPage.categories.${group.value?.category || "auto"}`),
-  )
+  const categoryLabel = computed(() => {
+    const backendLabel = String(group.value?.categoryLabel || "").trim()
+    if (backendLabel) return backendLabel
+
+    return t(`pages.groupDetailPage.categories.${group.value?.category || "auto"}`)
+  })
 
   const memberCountLabel = computed(() =>
     t("pages.groupDetailPage.memberCount", {
@@ -45,6 +48,15 @@ export function useCommunityGroupDetail(
       count: formatCommunityCount(0, locale.value),
     }),
   )
+
+  const canViewGroupPosts = computed(() => Boolean(
+    group.value
+    && (
+      group.value.privacy === "public"
+      || group.value.joined
+      || group.value.canManage
+    ),
+  ))
 
   const { data: groupPostsResponse, status: groupPostsStatus, refresh: refreshGroupPosts } = useAsyncData(
     () => `community:group:${slug.value}:posts`,
@@ -70,6 +82,7 @@ export function useCommunityGroupDetail(
     categoryLabel,
     memberCountLabel,
     onlineCountLabel,
+    canViewGroupPosts,
     groupPosts,
     groupPostsHasMore,
     groupPostsNextOffset,

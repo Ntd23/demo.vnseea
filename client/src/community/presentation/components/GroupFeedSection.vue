@@ -17,32 +17,35 @@
         </span>
         <div>
           <h3 class="text-sm font-extrabold text-[var(--text-primary)]">
-            {{ t("pages.groupDetailPage.joinToPostTitle") }}
+            {{ accessNoticeTitle }}
           </h3>
           <p class="mt-1 text-xs font-semibold leading-5 text-[var(--text-secondary)]">
-            {{ t("pages.groupDetailPage.joinToPostDescription") }}
+            {{ accessNoticeDescription }}
           </p>
         </div>
       </div>
     </div>
-    <div v-if="posts.length === 0" class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-8 text-center shadow-sm">
-      <div class="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--bg-muted)] text-[var(--bg-brand)] mb-3">
-        <Icon name="i-ph-newspaper-clipping-duotone" class="h-7 w-7" />
-      </div>
-      <h3 class="text-base font-extrabold text-[var(--text-primary)]">
-        {{ emptyTitle || t('pages.groupDetailPage.feedEmptyTitle') }}
-      </h3>
-      <p class="mt-1 text-xs font-semibold text-[var(--text-secondary)]">
-        {{ emptyDescription || t('pages.groupDetailPage.feedEmptyDescription') }}
-      </p>
-    </div>
 
-    <template v-else>
-      <FeedPostCard
-        v-for="post in posts"
-        :key="post.id"
-        :post="post"
-      />
+    <template v-if="canViewPosts">
+      <div v-if="posts.length === 0" class="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg-surface)] p-8 text-center shadow-sm">
+        <div class="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--bg-muted)] text-[var(--bg-brand)] mb-3">
+          <Icon name="i-ph-newspaper-clipping-duotone" class="h-7 w-7" />
+        </div>
+        <h3 class="text-base font-extrabold text-[var(--text-primary)]">
+          {{ emptyTitle || t('pages.groupDetailPage.feedEmptyTitle') }}
+        </h3>
+        <p class="mt-1 text-xs font-semibold text-[var(--text-secondary)]">
+          {{ emptyDescription || t('pages.groupDetailPage.feedEmptyDescription') }}
+        </p>
+      </div>
+
+      <template v-else>
+        <FeedPostCard
+          v-for="post in posts"
+          :key="post.id"
+          :post="post"
+        />
+      </template>
     </template>
   </div>
 </template>
@@ -60,13 +63,27 @@ const translateText = useMaybeTranslatedText()
 const props = defineProps<{
   group: CommunityGroupRecord
   posts: FeedPostRecord[]
+  joined?: boolean
+  requested?: boolean
+  canViewPosts?: boolean
   emptyTitle?: string
   emptyDescription?: string
 }>()
 
 const emptyTitle = computed(() => props.emptyTitle || "")
 const emptyDescription = computed(() => props.emptyDescription || "")
-const canPublish = computed(() => Boolean(props.group.canManage || props.group.joined))
+const canPublish = computed(() => Boolean(props.group.canManage || props.joined))
+const canViewPosts = computed(() => props.canViewPosts !== false)
+const accessNoticeTitle = computed(() => {
+  if (canViewPosts.value) return t("pages.groupDetailPage.joinToPostTitle")
+  if (props.requested) return t("pages.groupDetailPage.privatePostsPendingTitle")
+  return t("pages.groupDetailPage.privatePostsLockedTitle")
+})
+const accessNoticeDescription = computed(() => {
+  if (canViewPosts.value) return t("pages.groupDetailPage.joinToPostDescription")
+  if (props.requested) return t("pages.groupDetailPage.privatePostsPendingDescription")
+  return t("pages.groupDetailPage.privatePostsLockedDescription")
+})
 
 const emit = defineEmits<{
   created: [post: FeedPostRecord | null]

@@ -58,18 +58,33 @@
       <!-- HERO -->
       <div class="page-detail__hero" :class="{ 'opacity-60 pointer-events-none': status === 'pending' }">
         <!-- Cover -->
-        <div class="page-detail__cover relative group">
+        <div
+          class="page-detail__cover relative group"
+          :class="{ 'page-detail__media-viewable': page.bannerUrl && !coverDraft }"
+          :role="page.bannerUrl && !coverDraft ? 'button' : undefined"
+          :tabindex="page.bannerUrl && !coverDraft ? 0 : undefined"
+          @click="openMediaViewer('cover')"
+          @keydown.enter="openMediaViewer('cover')"
+          @keydown.space.prevent="openMediaViewer('cover')"
+        >
           <div class="page-detail__cover-backdrop" :style="{ background: page.banner }" />
           <div class="page-detail__cover-shade" />
+          <CoverRepositionEditor
+            v-if="coverDraft"
+            :file="coverDraft"
+            :saving="bannerUploading"
+            @cancel="closeCoverEditor"
+            @confirm="uploadRepositionedCover"
+          />
           <div v-if="bannerUploading" class="absolute inset-0 flex items-center justify-center bg-black/40 z-[4]">
             <Icon name="i-ph-spinner-gap-bold" class="h-10 w-10 text-white animate-spin" />
           </div>
           <!-- Camera Button Overlay for Cover -->
           <button
-            v-if="page.canManage"
+            v-if="page.canManage && !coverDraft"
             type="button"
             class="absolute bottom-4 right-4 flex items-center gap-1.5 rounded-xl bg-slate-900/60 hover:bg-slate-900/80 text-white px-3 py-1.5 text-xs font-bold transition-all shadow-sm border border-white/20 backdrop-blur-sm cursor-pointer z-[5]"
-            @click="triggerBannerUpload"
+            @click.stop="triggerBannerUpload"
           >
             <Icon name="i-ph-camera-bold" class="h-4 w-4" />
             <span>{{ $t('community.detail.changeCover') }}</span>
@@ -86,7 +101,15 @@
         <!-- Identity bar -->
         <div class="page-detail__identity-bar">
           <!-- Avatar -->
-          <div class="page-detail__avatar-wrap relative group">
+          <div
+            class="page-detail__avatar-wrap relative group"
+            :class="{ 'page-detail__media-viewable': page.avatarUrl }"
+            :role="page.avatarUrl ? 'button' : undefined"
+            :tabindex="page.avatarUrl ? 0 : undefined"
+            @click="openMediaViewer('avatar')"
+            @keydown.enter="openMediaViewer('avatar')"
+            @keydown.space.prevent="openMediaViewer('avatar')"
+          >
             <div class="page-detail__avatar relative" :style="{ background: page.accent }">
               <img
                 v-if="page.avatarUrl"
@@ -104,7 +127,7 @@
               v-if="page.canManage"
               type="button"
               class="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--bg-surface)] hover:bg-[var(--bg-muted)] text-[var(--text-primary)] transition-all shadow-md border border-[var(--border-light)] cursor-pointer z-10"
-              @click="triggerAvatarUpload"
+              @click.stop="triggerAvatarUpload"
             >
               <Icon name="i-ph-camera-bold" class="h-4 w-4" />
             </button>
@@ -380,6 +403,24 @@
     </template>
   </div>
 
+  <ImageViewer
+    v-if="mediaViewer"
+    :open="true"
+    :src="mediaViewer.src"
+    :alt="mediaViewer.alt"
+    @close="mediaViewer = null"
+  />
+
+  <ImageCropModal
+    v-if="avatarCropFile"
+    :open="true"
+    :file="avatarCropFile"
+    kind="avatar"
+    :show-post-text="false"
+    @cancel="closeAvatarCropper"
+    @confirm="uploadCroppedAvatar"
+  />
+
   <OfferFormModal
     v-if="page"
     v-model:open="offerModalOpen"
@@ -398,6 +439,9 @@ import NavigationHeaderIconNav from "../../../navigation/presentation/components
 import OfferFormModal from "../../../offer/presentation/components/OfferFormModal.vue"
 import PageInviteModal from "../components/PageInviteModal.vue"
 import PageProductsCard from "../components/PageProductsCard.vue"
+import ImageCropModal from "../../../shared-kernel/presentation/components/ImageCropModal.vue"
+import CoverRepositionEditor from "../../../shared-kernel/presentation/components/CoverRepositionEditor.vue"
+import ImageViewer from "../../../shared-kernel/presentation/components/ImageViewer.vue"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { getCommunityPagePath, getCommunityPageSettingsPath } from "../../domain/services/community-helpers.service"
 import type { Offer } from "../../../offer/domain/types/offer.types"
@@ -445,6 +489,9 @@ const createJobTo = computed(() => ({
 
 const avatarInput = ref<HTMLInputElement | null>(null)
 const bannerInput = ref<HTMLInputElement | null>(null)
+const avatarCropFile = ref<File | null>(null)
+const coverDraft = ref<File | null>(null)
+const mediaViewer = ref<{ src: string, alt: string } | null>(null)
 const avatarUploading = ref(false)
 const bannerUploading = ref(false)
 const postSearchQuery = ref("")
@@ -520,62 +567,103 @@ const pagePostCountLabel = computed(() => {
 })
 
 function triggerAvatarUpload() {
+  if (!page.value?.canManage || avatarUploading.value) return
   avatarInput.value?.click()
 }
 
 function triggerBannerUpload() {
+  if (!page.value?.canManage || bannerUploading.value) return
   bannerInput.value?.click()
 }
 
-async function onAvatarFileChange(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file || !page.value) return
+function openMediaViewer(kind: "avatar" | "cover") {
+  if (!page.value || coverDraft.value || avatarUploading.value || bannerUploading.value) return
 
-  avatarUploading.value = true
-  try {
-    const updatedPage = await repository.updatePage(page.value.slug, {
-      avatarFile: file
-    } as any)
-    page.value.avatarUrl = updatedPage.avatarUrl
-    toast.add({
-      title: t("community.detail.success"),
-      description: t("community.detail.updateAvatarSuccess"),
-      color: "success"
-    })
-  } catch (err) {
-    toast.add({
-      title: t("community.detail.error"),
-      description: err instanceof Error ? err.message : t("community.detail.updateAvatarError"),
-      color: "error"
-    })
-  } finally {
-    avatarUploading.value = false
+  const src = kind === "avatar" ? page.value.avatarUrl : page.value.bannerUrl
+  if (!src) return
+
+  mediaViewer.value = {
+    src,
+    alt: pageName.value,
   }
 }
 
-async function onBannerFileChange(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file || !page.value) return
+function readSelectedImage(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0] || null
+  target.value = ""
 
-  bannerUploading.value = true
+  if (file && !file.type.startsWith("image/")) {
+    toast.add({
+      title: t("pages.profilePage.imageInvalidTitle"),
+      description: t("pages.profilePage.imageInvalidDescription"),
+      color: "error",
+    })
+    return null
+  }
+
+  return file
+}
+
+function onAvatarFileChange(event: Event) {
+  if (!page.value?.canManage) return
+  avatarCropFile.value = readSelectedImage(event)
+}
+
+function onBannerFileChange(event: Event) {
+  if (!page.value?.canManage) return
+  coverDraft.value = readSelectedImage(event)
+}
+
+function closeAvatarCropper() {
+  if (!avatarUploading.value) avatarCropFile.value = null
+}
+
+function closeCoverEditor() {
+  if (!bannerUploading.value) coverDraft.value = null
+}
+
+async function uploadCroppedAvatar(file: File) {
+  avatarCropFile.value = null
+  await uploadPageMedia("avatar", file)
+}
+
+async function uploadRepositionedCover(file: File) {
+  const updated = await uploadPageMedia("cover", file)
+  if (updated) coverDraft.value = null
+}
+
+async function uploadPageMedia(kind: "avatar" | "cover", file: File) {
+  if (!page.value?.canManage) return false
+
+  const uploading = kind === "avatar" ? avatarUploading : bannerUploading
+  uploading.value = true
   try {
-    const updatedPage = await repository.updatePage(page.value.slug, {
-      bannerFile: file
-    } as any)
-    page.value.banner = updatedPage.banner
+    const updatedPage = await repository.updatePage(page.value.slug, kind === "avatar"
+      ? { avatarFile: file }
+      : { bannerFile: file })
+    page.value = { ...page.value, ...updatedPage }
     toast.add({
       title: t("community.detail.success"),
-      description: t("community.detail.updateCoverSuccess"),
+      description: t(kind === "avatar"
+        ? "community.detail.updateAvatarSuccess"
+        : "community.detail.updateCoverSuccess"),
       color: "success"
     })
+    return true
   } catch (err) {
     toast.add({
       title: t("community.detail.error"),
-      description: err instanceof Error ? err.message : t("community.detail.updateCoverError"),
+      description: err instanceof Error
+        ? err.message
+        : t(kind === "avatar"
+          ? "community.detail.updateAvatarError"
+          : "community.detail.updateCoverError"),
       color: "error"
     })
+    return false
   } finally {
-    bannerUploading.value = false
+    uploading.value = false
   }
 }
 
@@ -627,6 +715,15 @@ async function handleOfferSaved() {
   height: 280px;
   overflow: hidden;
   background: linear-gradient(135deg, var(--color-secondary-900) 0%, var(--bg-brand-hover) 56%, var(--color-primary-200) 100%);
+}
+
+.page-detail__media-viewable {
+  cursor: zoom-in;
+}
+
+.page-detail__media-viewable:focus-visible {
+  outline: 3px solid var(--bg-brand);
+  outline-offset: 3px;
 }
 
 @media (min-width: 640px) { .page-detail__cover { height: 350px; } }

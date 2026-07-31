@@ -47,6 +47,7 @@
         :requested="requested"
         @join="handleJoinGroup"
         @invite="handleInviteMembers"
+        @media-updated="handleGroupMediaUpdated"
       />
 
       <!-- Grid Body (Sidebar on left, Feed on right) -->
@@ -123,6 +124,9 @@
             v-if="group"
             :group="group"
             :posts="filteredGroupPosts"
+            :joined="joined"
+            :requested="requested"
+            :can-view-posts="canViewGroupPosts"
             :empty-title="postSearchQuery.trim() ? $t('community.detail.emptyPostsTitle') : undefined"
             :empty-description="postSearchQuery.trim() ? $t('community.detail.emptyPostsDesc') : undefined"
             @created="handlePostCreated"
@@ -161,6 +165,7 @@ import FoundationEmptyState from "../../../foundation/presentation/components/Em
 import CommunityGroupFeedSection from "../components/GroupFeedSection.vue"
 import CommunityGroupHeroBanner from "../components/GroupHeroBanner.vue"
 import { useCommunityGroupDetailPageVM } from "../../application/view-models/useCommunityGroupDetailPageVM"
+import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 const { t } = useI18n()
 const translateText = useMaybeTranslatedText()
@@ -175,6 +180,7 @@ const {
   categoryLabel,
   memberCountLabel,
   onlineCountLabel,
+  canViewGroupPosts,
   groupPosts,
   refreshGroupPosts,
   handleJoinGroup,
@@ -217,6 +223,10 @@ const filteredGroupPosts = computed(() => {
 
 function handlePostCreated() {
   refreshGroupPosts()
+}
+
+function handleGroupMediaUpdated(updatedGroup: CommunityGroupRecord) {
+  group.value = updatedGroup
 }
 </script>
 
