@@ -1,6 +1,7 @@
 // English description: Declares repository operations for feed share destinations and message shares.
 
 import type {
+  FeedShareBlogCard,
   FeedShareSearchTargets,
   FeedShareTarget,
 } from "../types/feed-share.types"
@@ -12,5 +13,6 @@ export interface FeedShareRepository {
   sendMessageShare(input: {
     recipientIds: number[]
     text: string
+    blog?: FeedShareBlogCard
   }): Promise<void>
 }

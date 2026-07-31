@@ -46,6 +46,14 @@
             >
               {{ segment.text }}
             </NuxtLink>
+            <NuxtLink
+              v-else-if="segment.isMention && segment.mentionUsername"
+              :to="appRoutes.profile(segment.mentionUsername)"
+              class="post-card__mention"
+              @click.stop
+            >
+              {{ segment.text }}
+            </NuxtLink>
             <span v-else :class="{ 'post-card__mention': segment.isMention }">{{ segment.text }}</span>
           </template>
         </p>
@@ -794,6 +802,11 @@ function handleMediaOpen(index: number) {
 .post-card__mention {
   color: var(--bg-brand);
   font-weight: 600;
+  text-decoration: none;
+}
+
+.post-card__mention:hover {
+  text-decoration: underline;
 }
 
 .post-card__hashtag {

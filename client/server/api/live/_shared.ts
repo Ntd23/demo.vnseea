@@ -334,15 +334,21 @@ export async function joinLiveSession(
   event: H3Event,
   postId: number,
 ): Promise<LiveViewerSession> {
+  const requestedPost = await fetchFeedPostById(event, postId).catch(() => null)
+  const livePostId = requestedPost?.sharedPost?.isLive
+    ? requestedPost.sharedPost.id
+    : requestedPost?.isLive
+      ? requestedPost.id
+      : postId
   const response = await createBackendWebClient(event).postForm<BackendLiveJoinResponse>(
     "live",
-    { post_id: postId },
+    { post_id: livePostId },
     { s: "join" },
   )
   const normalized = assertLiveWebSuccess(response, "Unable to join live session.")
 
   return {
-    postId: asNumber(normalized.post_id) || postId,
+    postId: asNumber(normalized.post_id) || livePostId,
     streamName: asString(normalized.stream_name),
     roomName: asString(normalized.room_name),
     wsUrl: asString(normalized.ws_url),

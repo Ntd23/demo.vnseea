@@ -19,7 +19,42 @@
       </div>
     </div>
 
-    <p v-if="post.text" class="shared-post-card__text">
+    <NuxtLink
+      v-if="post.isLive"
+      :to="postHref"
+      class="shared-post-card__live"
+      @click.stop
+    >
+      <span class="shared-post-card__live-stage">
+        <img
+          v-if="livePosterUrl"
+          :src="livePosterUrl"
+          :alt="liveTitle"
+          class="shared-post-card__live-poster"
+        >
+        <span class="shared-post-card__live-shade" />
+        <span
+          class="shared-post-card__live-badge"
+          :class="{ 'shared-post-card__live-badge--ended': post.liveState === 'offline' }"
+        >
+          <Icon :name="post.liveState === 'offline' ? 'i-ph-video-camera-slash-fill' : 'i-ph-broadcast-fill'" />
+          {{ liveStateLabel }}
+        </span>
+        <span class="shared-post-card__live-play">
+          <Icon name="i-ph-play-fill" />
+        </span>
+        <span class="shared-post-card__live-viewers">
+          <Icon name="i-ph-eye-fill" />
+          {{ $t("pages.livePage.viewerCountShort", { count: post.liveViewerCount || 0 }) }}
+        </span>
+      </span>
+      <span class="shared-post-card__live-copy">
+        <strong>{{ liveTitle }}</strong>
+        <span>{{ post.author }}</span>
+      </span>
+    </NuxtLink>
+
+    <p v-else-if="post.text" class="shared-post-card__text">
       <template v-for="segment in postTextSegments" :key="segment.key">
         <NuxtLink
           v-if="segment.isHashtag"
@@ -35,7 +70,7 @@
       </template>
     </p>
     <FeedPostMediaGrid
-      v-if="post.mediaItems.length"
+      v-if="!post.isLive && post.mediaItems.length"
       class="shared-post-card__media"
       :items="post.mediaItems"
       :post="post"
@@ -47,11 +82,33 @@
 import { createHashtagPath } from "../../application/composables/useHashtagData"
 import { createPostTextMentionSegments } from "../../application/utils/feed-mentions"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import FeedPostMediaGrid from "./PostMediaGrid.vue"
 
 const props = defineProps<{
   post: FeedPostRecord
 }>()
+
+const { t } = useI18n()
+const postHref = computed(() => appRoutes.postDetail(props.post.id))
+const livePosterUrl = computed(() => {
+  const video = props.post.mediaItems.find(item => item.type === "video")
+  const image = props.post.mediaItems.find(item => item.type === "image")
+
+  return video?.thumb || image?.src || ""
+})
+const liveStateLabel = computed(() =>
+  props.post.liveState === "offline"
+    ? t("pages.livePage.statusEndedUpper")
+    : t("pages.livePage.statusLiveUpper"),
+)
+const liveTitle = computed(() =>
+  props.post.videoTitle
+  || props.post.text
+  || (props.post.liveState === "offline"
+    ? t("pages.livePage.viewer.offlineTitle")
+    : t("pages.livePage.viewer.liveTitle")),
+)
 
 const postTextSegments = computed(() =>
   createPostTextMentionSegments(props.post.text, props.post.mentions ?? []),
@@ -148,5 +205,140 @@ const authorInitials = computed(() => {
 
 .shared-post-card__media {
   margin-top: 12px;
+}
+
+.shared-post-card__live {
+  display: block;
+  margin: 12px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--bg-brand) 18%, var(--border-light));
+  border-radius: 13px;
+  background: var(--bg-muted);
+  color: inherit;
+  text-decoration: none;
+}
+
+.shared-post-card__live-stage {
+  position: relative;
+  display: flex;
+  min-height: 190px;
+  aspect-ratio: 16 / 9;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(239, 68, 68, 0.28), transparent 44%),
+    #111827;
+}
+
+.shared-post-card__live-poster,
+.shared-post-card__live-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.shared-post-card__live-poster {
+  object-fit: cover;
+}
+
+.shared-post-card__live-shade {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.58));
+}
+
+.shared-post-card__live-badge,
+.shared-post-card__live-viewers {
+  position: absolute;
+  top: 12px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.shared-post-card__live-badge {
+  left: 12px;
+  padding: 6px 9px;
+  background: #e11d48;
+}
+
+.shared-post-card__live-badge--ended {
+  background: rgba(15, 23, 42, 0.78);
+}
+
+.shared-post-card__live-viewers {
+  right: 12px;
+  padding: 6px 9px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.shared-post-card__live-badge :deep(svg),
+.shared-post-card__live-viewers :deep(svg) {
+  width: 13px;
+  height: 13px;
+}
+
+.shared-post-card__live-play {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.52);
+  color: #fff;
+  backdrop-filter: blur(8px);
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.shared-post-card__live:hover .shared-post-card__live-play {
+  background: rgba(225, 29, 72, 0.88);
+  transform: scale(1.06);
+}
+
+.shared-post-card__live-play :deep(svg) {
+  width: 22px;
+  height: 22px;
+}
+
+.shared-post-card__live-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 12px 12px;
+}
+
+.shared-post-card__live-copy strong,
+.shared-post-card__live-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shared-post-card__live-copy strong {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.shared-post-card__live-copy span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+@media (max-width: 520px) {
+  .shared-post-card__live-stage {
+    min-height: 150px;
+  }
 }
 </style>

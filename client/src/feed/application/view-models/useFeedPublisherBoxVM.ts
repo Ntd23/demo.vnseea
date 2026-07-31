@@ -475,7 +475,7 @@ export function useFeedPublisherBoxVM(
     })
   }
 
-  async function publish() {
+  async function publish(input?: { text?: string }) {
     const mediaValidation = imageFiles.value.length
       ? validateFeedImages(imageFiles.value)
       : videoFile.value
@@ -501,7 +501,7 @@ export function useFeedPublisherBoxVM(
 
     try {
       const response = await repository.createPost({
-        text: draft.value?.text || "",
+        text: input?.text ?? draft.value?.text ?? "",
         audience: groupId ? undefined : draft.value?.audience || "public",
         isAnonymous: isPersonalComposer.value && draft.value?.isAnonymous,
         feeling: draft.value?.feeling || undefined,

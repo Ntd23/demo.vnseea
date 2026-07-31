@@ -2,16 +2,14 @@
   <article class="blog-card">
     <NuxtLink :to="article.href" class="blog-card__media">
       <div class="blog-card__fallback" :style="{ background: article.imageFallback }" aria-hidden="true" />
-      <NuxtImg
+      <img
         v-if="showCoverImage"
         :src="article.image"
         :alt="article.title"
-        width="1200"
-        height="750"
-        sizes="(max-width: 639px) 100vw, 50vw"
         class="blog-card__image"
         loading="lazy"
         decoding="async"
+        referrerpolicy="no-referrer"
         @error="handleImageError"
       />
 

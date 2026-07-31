@@ -15,10 +15,8 @@
 
         <button
           class="read-blog-main__action"
-          :class="{ 'read-blog-main__action--active': shareOpen }"
-          :aria-pressed="shareOpen"
           type="button"
-          @click="$emit('toggleShare')"
+          @click="$emit('openShare')"
         >
           <Icon name="i-ph-share-network-duotone" class="read-blog-main__action-icon" />
           <span>{{ $t("pages.readBlogPage.share") }}</span>
@@ -30,11 +28,6 @@
           #{{ tag }}
         </span>
       </div>
-    </div>
-
-    <div v-if="shareOpen" class="read-blog-main__share" role="status" aria-live="polite">
-      <span class="read-blog-main__share-label">{{ $t("pages.readBlogPage.shareLink") }}</span>
-      <span class="read-blog-main__share-url">{{ shareUrl }}</span>
     </div>
 
     <article class="read-blog-main__article">
@@ -85,7 +78,7 @@
           :current-user-name="currentUserName"
           :current-user-avatar-url="currentUserAvatarUrl"
           :submitting="commenting"
-          :enable-attachments="false"
+          enable-attachments
           @submit="$emit('addComment', $event)"
         />
       </div>
@@ -106,8 +99,6 @@ defineProps<{
   }
   liked: boolean
   displayedLikes: number
-  shareOpen: boolean
-  shareUrl: string
   comments: FeedCommentRecord[]
   commentsLoading: boolean
   commenting: boolean
@@ -119,7 +110,7 @@ defineProps<{
 
 defineEmits<{
   toggleLike: []
-  toggleShare: []
+  openShare: []
   addComment: [payload: FeedCommentSubmitPayload]
 }>()
 </script>
@@ -133,8 +124,7 @@ defineEmits<{
 
 .read-blog-main__toolbar,
 .read-blog-main__article,
-.read-blog-main__comments,
-.read-blog-main__share {
+.read-blog-main__comments {
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
   background: var(--bg-surface);
@@ -200,29 +190,6 @@ defineEmits<{
   font-size: 12px;
   font-weight: 600;
   padding: 5px 10px;
-}
-
-.read-blog-main__share {
-  display: grid;
-  gap: 8px;
-  padding: 12px;
-}
-
-.read-blog-main__share-label {
-  color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.read-blog-main__share-url {
-  overflow-wrap: anywhere;
-  border-radius: 12px;
-  background: var(--bg-muted);
-  color: var(--text-secondary);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  font-size: 12px;
-  line-height: 1.6;
-  padding: 10px 12px;
 }
 
 .read-blog-main__article {

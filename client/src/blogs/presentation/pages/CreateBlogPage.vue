@@ -14,7 +14,14 @@
     </div>
 
     <form v-else class="space-y-5 rounded-2xl border border-[var(--border-light)] bg-[var(--bg-surface)] p-5 sm:p-6 shadow-[var(--shadow-sm)]" @submit.prevent="publishBlog">
-      <UFormField name="title" :label="$t('pages.createBlogPage.titleLabel')" required class="w-full">
+      <UFormField
+        name="title"
+        :label="$t('pages.createBlogPage.titleLabel')"
+        :error="validationErrors.title || undefined"
+        required
+        class="w-full"
+        data-blog-field="title"
+      >
         <UInput
           v-model="title"
           type="text"
@@ -22,6 +29,7 @@
           :placeholder="$t('pages.createBlogPage.titlePlaceholder')"
           size="xl"
           class="w-full"
+          :aria-invalid="Boolean(validationErrors.title)"
         />
       </UFormField>
 
@@ -36,7 +44,14 @@
       </UFormField>
 
       <div class="grid gap-4 sm:grid-cols-2">
-        <UFormField name="category" :label="$t('pages.createBlogPage.categoryLabel')" required class="w-full">
+        <UFormField
+          name="category"
+          :label="$t('pages.createBlogPage.categoryLabel')"
+          :error="validationErrors.category || undefined"
+          required
+          class="w-full"
+          data-blog-field="category"
+        >
           <USelect
             v-model="category"
             :items="categoryOptions"
@@ -47,18 +62,32 @@
           />
         </UFormField>
 
-        <UFormField name="tags" :label="$t('pages.createBlogPage.tagsLabel')" class="w-full">
+        <UFormField
+          name="tags"
+          :label="$t('pages.createBlogPage.tagsLabel')"
+          :error="validationErrors.tags || undefined"
+          class="w-full"
+          data-blog-field="tags"
+        >
           <UInput
             v-model="tagsInput"
             type="text"
             :placeholder="$t('pages.createBlogPage.tagsPlaceholder')"
             size="xl"
             class="w-full"
+            :aria-invalid="Boolean(validationErrors.tags)"
           />
         </UFormField>
       </div>
 
-      <UFormField name="thumbnail" :label="$t('pages.createBlogPage.thumbnailLabel')" :hint="thumbnailName || $t('pages.createBlogPage.thumbnailFormats')" class="w-full">
+      <UFormField
+        name="thumbnail"
+        :label="$t('pages.createBlogPage.thumbnailLabel')"
+        :hint="thumbnailName || $t('pages.createBlogPage.thumbnailFormats')"
+        :error="validationErrors.thumbnail || undefined"
+        class="w-full"
+        data-blog-field="thumbnail"
+      >
         <div v-if="thumbnailPreviewUrl" class="mb-3 relative block w-full max-w-[520px] aspect-video overflow-hidden rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)]">
           <img
             :src="thumbnailPreviewUrl"
@@ -75,18 +104,26 @@
         />
       </UFormField>
 
-      <UFormField name="content" :label="$t('pages.createBlogPage.contentLabel')" required class="w-full">
+      <UFormField
+        name="content"
+        :label="$t('pages.createBlogPage.contentLabel')"
+        :error="validationErrors.content || undefined"
+        required
+        class="w-full"
+        data-blog-field="content"
+      >
         <UTextarea
           v-model="content"
           :rows="12"
           :placeholder="$t('pages.createBlogPage.contentPlaceholder')"
           class="w-full"
+          :aria-invalid="Boolean(validationErrors.content)"
         />
       </UFormField>
 
       <UAlert
         v-if="submitMessage"
-        :color="submitState === 'error' ? 'error' : 'success'"
+        :color="submitAlertColor"
         variant="soft"
         :icon="submitStatusIcon"
         :description="submitMessage"
@@ -145,6 +182,8 @@ const {
   submitState,
   isSubmitting,
   submitStatusIcon,
+  submitAlertColor,
+  validationErrors,
   isEditing,
   isLoadingArticle,
   categoryOptions,

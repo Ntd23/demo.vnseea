@@ -614,6 +614,7 @@
                 :show-tools="!message.isDeleted"
                 :reaction-picker-open="activeMiniReactionPickerId === message.id"
                 teleport-reaction-picker
+                teleport-message-tools
                 :reaction-options="miniBubbleReactionOptions"
                 :can-delete="message.isMine"
                 can-pin

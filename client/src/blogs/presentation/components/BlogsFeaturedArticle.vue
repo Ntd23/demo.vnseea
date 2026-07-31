@@ -2,16 +2,14 @@
   <article class="blogs-featured">
     <NuxtLink :to="article.href" class="blogs-featured__media group">
       <div class="blogs-featured__fallback" :style="{ background: article.imageFallback }" />
-      <NuxtImg
+      <img
         v-if="showCoverImage"
         :src="article.image"
         :alt="article.title"
-        width="1400"
-        height="820"
-        sizes="(max-width: 767px) 100vw, (max-width: 1279px) 70vw, 760px"
         class="blogs-featured__image"
         loading="lazy"
         decoding="async"
+        referrerpolicy="no-referrer"
         @error="handleImageError"
       />
       <span class="blogs-featured__read">
