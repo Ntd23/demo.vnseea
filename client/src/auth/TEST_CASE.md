@@ -149,6 +149,15 @@ Ket luan:
 | `AUTH-GUARD-001` | `[ ]` | Browser URL bar, guest routes | Da login vao guest routes | Khi co cookie `user_id`, vao `/welcome`, `/register`, `/forgot-password`, `/confirm-login`, `/confirm-account`, `/confirm-reset-sms`, `/reset-password` | SSR/client deu dua ve `/home`, khong loe guest page. |
 | `AUTH-GUARD-002` | `[ ]` | Browser URL bar, protected routes | Chua login vao protected routes | Xoa cookie `user_id`, vao `/`, `/home`, `/messages` | Bi dua ve `/welcome`. |
 
+## Session Resilience
+
+| ID | Status | Man hinh | Case | Cach test | Ky vong |
+| --- | --- | --- | --- | --- | --- |
+| `AUTH-SESSION-001` | `[ ]` | Prod/staging, route `/home` | PHP upstream tam thoi khong phan hoi | Login, ghi lai cookie `user_id`, tam dung PHP upstream hoac tro `backendWebBase` den cong khong lang nghe, cho presence heartbeat chay it nhat 30 giay | Request xac thuc tra `502`; cookie `user_id` van con; user khong bi redirect sang `/welcome`. |
+| `AUTH-SESSION-002` | `[ ]` | Prod/staging, route `/messages` | PHP tra loi tam thoi | Login, tao mot response PHP `500` hoac timeout cho `get-current-user`, sau do doi route | Store giu user da hydrate; khong xoa cookie; khi PHP phuc hoi thi API hoat dong lai ma khong can login. |
+| `AUTH-SESSION-003` | `[ ]` | Prod/staging, route `/home` | Token bi backend tu choi that | Xoa session token dang dung khoi `Wo_AppsSessions`, sau do reload hoac doi route | `/_api/auth/me` tra `401`, cookie `user_id` bi xoa va user duoc dua ve `/welcome`. |
+| `AUTH-SESSION-004` | `[ ]` | Prod/staging, route `/home` | Presence heartbeat khong duoc phep ket thuc phien do loi ha tang | Login, mo Network, cho `POST /_api/messages/presence` chay; gay timeout PHP trong mot heartbeat | Presence co the loi `502` nhung khong tao `Set-Cookie` xoa `user_id`; feed/messages khong chuyen sang chuoi `401`. |
+
 ## Lenh kiem tra
 
 ```powershell

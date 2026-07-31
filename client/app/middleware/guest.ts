@@ -1,3 +1,5 @@
+// English description: Redirects authenticated users away from guest routes while retaining sessions through temporary backend failures.
+
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useCurrentAuthUserStore } from "../../src/auth/application/stores/useCurrentAuthUserStore"
 
@@ -16,7 +18,9 @@ export default defineNuxtRouteMiddleware(async () => {
       return navigateTo(appRoutes.feed, { replace: true })
     }
 
-    backendUserSession.value = null
-    currentUserStore.clear()
+    if (currentUserStore.sessionRejected) {
+      backendUserSession.value = null
+      currentUserStore.clear()
+    }
   }
 })
