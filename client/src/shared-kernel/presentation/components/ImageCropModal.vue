@@ -1,4 +1,4 @@
-<!-- Description: Provides a movable and resizable crop frame before profile media upload. -->
+<!-- Description: Provides a reusable movable and resizable crop frame before media upload. -->
 <template>
   <Teleport to="body">
     <Transition
@@ -42,7 +42,7 @@
               </div>
             </div>
 
-            <label class="profile-crop__post-text">
+            <label v-if="showPostText !== false" class="profile-crop__post-text">
               <span>{{ $t("pages.profilePage.cropPostTextLabel") }}</span>
               <UTextarea
                 v-model="postText"
@@ -87,6 +87,7 @@ const props = defineProps<{
   open: boolean
   file: File | null
   kind: ProfileMediaKind
+  showPostText?: boolean
 }>()
 
 const emit = defineEmits<{

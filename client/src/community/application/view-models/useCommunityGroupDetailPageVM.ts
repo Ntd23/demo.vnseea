@@ -25,9 +25,9 @@ export function useCommunityGroupDetailPageVM(
     categoryLabel,
     memberCountLabel,
     onlineCountLabel,
+    canViewGroupPosts,
     groupPosts,
     refreshGroupPosts,
-    refresh,
     slug,
     status,
   } = useCommunityGroupDetail(computed(() => String(route.params.name || "")))
@@ -60,11 +60,15 @@ export function useCommunityGroupDetailPageVM(
     try {
       const wasJoined = joined.value || requested.value
       const updatedGroup = await repository.joinGroup(group.value.slug)
-      await refresh()
 
       joinState.value = "success"
+      group.value = updatedGroup
       joined.value = Boolean(updatedGroup.joined)
       requested.value = Boolean(updatedGroup.requested)
+
+      if (updatedGroup.joined) {
+        await refreshGroupPosts().catch(() => undefined)
+      }
 
       toast.add({
         title: wasJoined ? t("pages.groupDetailPage.leaveSuccessTitle") : t("pages.groupDetailPage.joinSuccessTitle"),
@@ -124,6 +128,7 @@ export function useCommunityGroupDetailPageVM(
     categoryLabel,
     memberCountLabel,
     onlineCountLabel,
+    canViewGroupPosts,
     groupPosts,
     refreshGroupPosts,
     handleJoinGroup,

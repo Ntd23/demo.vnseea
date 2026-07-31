@@ -136,7 +136,9 @@ export default defineEventHandler(async (event) => {
   formData.append("page_title", String(body.name || page.name).trim())
   formData.append("page_description", String(body.summary || page.summary).trim())
   formData.append("page_category", mapPageCategoryToBackendId(body.category || page.category))
-  formData.append("address", String(body.locationLabel || body.location?.address || "").trim())
+  if (body.locationLabel !== undefined || body.location?.address !== undefined) {
+    formData.append("address", String(body.locationLabel ?? body.location?.address ?? "").trim())
+  }
   if (numberText(body.lat || body.location?.lat)) {
     formData.append("lat", numberText(body.lat || body.location?.lat))
   }
@@ -146,10 +148,18 @@ export default defineEventHandler(async (event) => {
   if (String(body.placeId || body.place_id || body.location?.placeId || "").trim()) {
     formData.append("page_place_id", String(body.placeId || body.place_id || body.location?.placeId || "").trim())
   }
-  formData.append("map_pin_requested", body.mapPinRequested === "1" || body.mapPinRequested === true ? "1" : "0")
-  formData.append("company", String(body.ownerLabel || "").trim())
-  appendOptionalUrl(formData, "website", body.website)
-  formData.append("call_action_type", mapPageCtaInputToBackendId(body.ctaLabel) || "0")
+  if (body.mapPinRequested !== undefined) {
+    formData.append("map_pin_requested", body.mapPinRequested === "1" || body.mapPinRequested === true ? "1" : "0")
+  }
+  if (body.ownerLabel !== undefined) {
+    formData.append("company", String(body.ownerLabel).trim())
+  }
+  if (body.website !== undefined) {
+    appendOptionalUrl(formData, "website", body.website)
+  }
+  if (body.ctaLabel !== undefined) {
+    formData.append("call_action_type", mapPageCtaInputToBackendId(body.ctaLabel) || "0")
+  }
 
   const ctaUrl = normalizeExternalUrl(body.responseLabel)
   if (ctaUrl && isValidExternalUrl(ctaUrl)) {

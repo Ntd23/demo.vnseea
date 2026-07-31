@@ -33,5 +33,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return await resolveGroupRecordBySlug(event, slug)
+  const wasMember = Boolean(group.joined || group.requested)
+  const requiresApproval = !wasMember && Boolean(group.joinApproval)
+
+  return {
+    ...group,
+    joined: !wasMember && !requiresApproval,
+    requested: !wasMember && requiresApproval,
+    members: Math.max(0, group.members + (wasMember ? -1 : 1)),
+  }
 })

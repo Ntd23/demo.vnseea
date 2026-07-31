@@ -34,6 +34,7 @@ export interface CommunityPageRecord {
   category: string
   categoryLabel?: string
   banner: string
+  bannerUrl?: string
   avatarUrl?: string
   accent: string
   followers: number

@@ -31,7 +31,7 @@ export function createApiCommunityRepository(): CommunityRepository {
     async createGroup(input: CommunityDraft) {
       return await client.post<CommunityGroupRecord, CommunityDraft>(apiRoutes.community.groups, input)
     },
-    async updateGroup(slug: string, input: CommunityGroupSettingsDraft) {
+    async updateGroup(slug: string, input: Partial<CommunityGroupSettingsDraft>) {
       if (input.avatarFile || input.bannerFile) {
         const formData = new FormData()
 
@@ -53,7 +53,7 @@ export function createApiCommunityRepository(): CommunityRepository {
         )
       }
 
-      return await client.put<CommunityGroupRecord, CommunityGroupSettingsDraft>(
+      return await client.put<CommunityGroupRecord, Partial<CommunityGroupSettingsDraft>>(
         apiRoutes.community.groupBySlug(slug),
         input,
       )
@@ -94,7 +94,7 @@ export function createApiCommunityRepository(): CommunityRepository {
     async createPage(input: CommunityDraft) {
       return await client.post<CommunityPageRecord, CommunityDraft>(apiRoutes.community.pages, input)
     },
-    async updatePage(slug: string, input: CommunityPageSettingsDraft) {
+    async updatePage(slug: string, input: Partial<CommunityPageSettingsDraft>) {
       const formData = new FormData()
       const fields: Array<keyof CommunityPageSettingsDraft> = [
         "name",
@@ -141,7 +141,7 @@ export function createApiCommunityRepository(): CommunityRepository {
       if (input.avatarFile) formData.append("avatar", input.avatarFile)
       if (input.bannerFile) formData.append("banner", input.bannerFile)
 
-      return await client.put<CommunityPageRecord, CommunityPageSettingsDraft>(
+      return await client.put<CommunityPageRecord, Partial<CommunityPageSettingsDraft>>(
         apiRoutes.community.pageBySlug(slug),
         formData as any,
       )
