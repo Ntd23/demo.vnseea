@@ -16,9 +16,12 @@ const asNumber = (value: unknown) => {
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<PresenceInput>(event).catch(() => ({}))
+  const body = await readBody<PresenceInput>(event).catch((): PresenceInput => ({}))
   const action = body.action === "offline" ? "offline" : "online"
-  const currentUser = await getBackendCurrentUser(event)
+  const currentUser = await getBackendCurrentUser(event, {
+    // Presence is best-effort and must never invalidate the browser session.
+    clearCookieOnRejectedSession: false,
+  })
   const currentUserId = asNumber(currentUser.user_id)
 
   if (action === "offline") {
