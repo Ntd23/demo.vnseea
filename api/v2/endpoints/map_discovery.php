@@ -9,6 +9,8 @@ $action = !empty($_POST['type']) ? Wo_Secure($_POST['type']) : '';
 $valid_actions = array('page_suggestions', 'place_autocomplete', 'address_autocomplete', 'address_geocode', 'address_details', 'place_details', 'route');
 define('WO_API_MAP_DISCOVERY_RADIUS_METERS', 3000);
 define('WO_API_MAP_DISCOVERY_MAX_RADIUS_METERS', 50000);
+define('WO_API_MAP_DISCOVERY_TIMEOUT_MS', 4500);
+define('WO_API_MAP_DISCOVERY_CONNECT_TIMEOUT_MS', 1500);
 
 function Wo_ApiMapDiscoveryError($error_id, $error_text, $api_status = 400) {
     return array(
@@ -98,9 +100,150 @@ function Wo_ApiMapDiscoveryGoogleKey() {
     return !empty($wo['config']['google_map_api']) ? trim($wo['config']['google_map_api']) : '';
 }
 
-function Wo_ApiMapDiscoveryGoogleGet($path, array $query, $timeout_ms = 20000, $connect_timeout_ms = 10000) {
+function Wo_ApiMapDiscoveryRuntimeDirectory($kind) {
+    $base = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'vnseea-map-discovery';
+    $directory = $base . DIRECTORY_SEPARATOR . preg_replace('/[^a-z0-9_-]/i', '', (string) $kind);
+    if (!is_dir($directory)) {
+        @mkdir($directory, 0700, true);
+    }
+    return is_dir($directory) && is_writable($directory) ? $directory : '';
+}
+
+function Wo_ApiMapDiscoveryCacheKey($path, array $query) {
+    global $wo;
+    ksort($query);
+    $site = !empty($wo['config']['site_url']) ? (string) $wo['config']['site_url'] : 'vnseea';
+    return hash('sha256', $site . '|' . $path . '|' . json_encode($query, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+}
+
+function Wo_ApiMapDiscoveryCacheRead($key) {
+    $directory = Wo_ApiMapDiscoveryRuntimeDirectory('cache');
+    if ($directory === '') {
+        return null;
+    }
+    $path = $directory . DIRECTORY_SEPARATOR . $key . '.json';
+    $handle = @fopen($path, 'rb');
+    if (!$handle) {
+        return null;
+    }
+    $payload = null;
+    if (flock($handle, LOCK_SH)) {
+        $contents = stream_get_contents($handle, 2097153);
+        flock($handle, LOCK_UN);
+        if (is_string($contents) && strlen($contents) <= 2097152) {
+            $payload = json_decode($contents, true);
+        }
+    }
+    fclose($handle);
+    if (!is_array($payload) || empty($payload['expires_at']) || (int) $payload['expires_at'] <= time() || !isset($payload['data']) || !is_array($payload['data'])) {
+        @unlink($path);
+        return null;
+    }
+    return $payload['data'];
+}
+
+function Wo_ApiMapDiscoveryCacheWrite($key, array $data, $ttl_seconds) {
+    $directory = Wo_ApiMapDiscoveryRuntimeDirectory('cache');
+    $ttl_seconds = max(1, min(86400, (int) $ttl_seconds));
+    if ($directory === '') {
+        return false;
+    }
+    $encoded = json_encode(array(
+        'expires_at' => time() + $ttl_seconds,
+        'data' => $data
+    ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if (!is_string($encoded) || strlen($encoded) > 2097152) {
+        return false;
+    }
+    $path = $directory . DIRECTORY_SEPARATOR . $key . '.json';
+    $handle = @fopen($path, 'c+b');
+    if (!$handle) {
+        return false;
+    }
+    $written = false;
+    if (flock($handle, LOCK_EX)) {
+        ftruncate($handle, 0);
+        rewind($handle);
+        $written = fwrite($handle, $encoded) === strlen($encoded);
+        fflush($handle);
+        flock($handle, LOCK_UN);
+    }
+    fclose($handle);
+    return $written;
+}
+
+function Wo_ApiMapDiscoveryConsumeRateBucket($identity, $bucket, $limit) {
+    $directory = Wo_ApiMapDiscoveryRuntimeDirectory('rate');
+    if ($directory === '') {
+        return array('allowed' => true, 'retry_after' => 0);
+    }
+    $path = $directory . DIRECTORY_SEPARATOR . hash('sha256', $identity . '|' . $bucket) . '.json';
+    $handle = @fopen($path, 'c+b');
+    if (!$handle) {
+        return array('allowed' => true, 'retry_after' => 0);
+    }
+    $now = time();
+    $window_seconds = 60;
+    $allowed = true;
+    $retry_after = 0;
+    if (flock($handle, LOCK_EX)) {
+        $contents = stream_get_contents($handle);
+        $state = json_decode((string) $contents, true);
+        if (!is_array($state) || empty($state['window_started_at']) || $now - (int) $state['window_started_at'] >= $window_seconds) {
+            $state = array('window_started_at' => $now, 'count' => 0);
+        }
+        $state['count'] = (int) $state['count'] + 1;
+        if ($state['count'] > $limit) {
+            $allowed = false;
+            $retry_after = max(1, $window_seconds - ($now - (int) $state['window_started_at']));
+        }
+        ftruncate($handle, 0);
+        rewind($handle);
+        fwrite($handle, json_encode($state));
+        fflush($handle);
+        flock($handle, LOCK_UN);
+    }
+    fclose($handle);
+    return array('allowed' => $allowed, 'retry_after' => $retry_after);
+}
+
+function Wo_ApiMapDiscoveryRateLimit($action) {
+    global $wo;
+    if (!empty($GLOBALS['wo_api_map_discovery_google_get_mock'])) {
+        return array('allowed' => true, 'retry_after' => 0);
+    }
+    $limits = array(
+        'page_suggestions' => 120,
+        'place_autocomplete' => 45,
+        'address_autocomplete' => 60,
+        'address_geocode' => 20,
+        'address_details' => 30,
+        'place_details' => 30,
+        'route' => 30,
+    );
+    $limit = isset($limits[$action]) ? $limits[$action] : 30;
+    $identity = !empty($wo['user']['user_id'])
+        ? 'user:' . (int) $wo['user']['user_id']
+        : 'ip:' . (!empty($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : 'unknown');
+    $global = Wo_ApiMapDiscoveryConsumeRateBucket($identity, 'all', 120);
+    if (empty($global['allowed'])) {
+        return $global;
+    }
+    return Wo_ApiMapDiscoveryConsumeRateBucket($identity, 'action:' . $action, $limit);
+}
+
+function Wo_ApiMapDiscoveryGoogleGet($path, array $query, $timeout_ms = WO_API_MAP_DISCOVERY_TIMEOUT_MS, $connect_timeout_ms = WO_API_MAP_DISCOVERY_CONNECT_TIMEOUT_MS, $cache_ttl = 0) {
     if (!empty($GLOBALS['wo_api_map_discovery_google_get_mock']) && is_callable($GLOBALS['wo_api_map_discovery_google_get_mock'])) {
         return call_user_func($GLOBALS['wo_api_map_discovery_google_get_mock'], $path, $query);
+    }
+
+    $cache_key = '';
+    if ((int) $cache_ttl > 0) {
+        $cache_key = Wo_ApiMapDiscoveryCacheKey($path, $query);
+        $cached = Wo_ApiMapDiscoveryCacheRead($cache_key);
+        if (is_array($cached)) {
+            return $cached;
+        }
     }
 
     $google_key = Wo_ApiMapDiscoveryGoogleKey();
@@ -119,6 +262,8 @@ function Wo_ApiMapDiscoveryGoogleGet($path, array $query, $timeout_ms = 20000, $
     curl_setopt($curl, CURLOPT_NOSIGNAL, true);
     curl_setopt($curl, CURLOPT_ENCODING, '');
     curl_setopt($curl, CURLOPT_HTTPHEADER, array('Accept: application/json'));
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
 
     $body = curl_exec($curl);
     $curl_error = curl_error($curl);
@@ -137,6 +282,10 @@ function Wo_ApiMapDiscoveryGoogleGet($path, array $query, $timeout_ms = 20000, $
         return Wo_ApiMapDiscoveryError('google_invalid_response', 'Google Maps response is invalid.', 502);
     }
 
+    $status = !empty($decoded['status']) ? (string) $decoded['status'] : '';
+    if ($cache_key !== '' && in_array($status, array('OK', 'ZERO_RESULTS'), true)) {
+        Wo_ApiMapDiscoveryCacheWrite($cache_key, $decoded, $cache_ttl);
+    }
     return $decoded;
 }
 
@@ -539,8 +688,8 @@ function Wo_ApiMapDiscoveryAutocomplete() {
     $country = Wo_ApiMapDiscoveryCountry();
     $fast = Wo_ApiMapDiscoveryFastRequest();
     $global_search = !empty($_POST['global_search']) && (string) $_POST['global_search'] !== '0';
-    $google_timeout_ms = $fast ? 1500 : 20000;
-    $google_connect_timeout_ms = $fast ? 700 : 10000;
+    $google_timeout_ms = $fast ? 1300 : WO_API_MAP_DISCOVERY_TIMEOUT_MS;
+    $google_connect_timeout_ms = $fast ? 500 : WO_API_MAP_DISCOVERY_CONNECT_TIMEOUT_MS;
 
     $predictions = array();
     $seen_place_ids = array();
@@ -568,7 +717,8 @@ function Wo_ApiMapDiscoveryAutocomplete() {
         'place/textsearch/json',
         $text_search_query,
         $google_timeout_ms,
-        $google_connect_timeout_ms
+        $google_connect_timeout_ms,
+        120
     );
     if (
         empty($text_search['errors']) &&
@@ -601,28 +751,14 @@ function Wo_ApiMapDiscoveryAutocomplete() {
             'place/nearbysearch/json',
             $nearby_query,
             $google_timeout_ms,
-            $google_connect_timeout_ms
+            $google_connect_timeout_ms,
+            120
         );
         if (empty($nearby_search['errors']) && (($nearby_search['status'] ?? '') === 'OK' || ($nearby_search['status'] ?? '') === 'ZERO_RESULTS')) {
             Wo_ApiMapDiscoveryMergeGooglePlaceResults(
                 $places_results,
                 !empty($nearby_search['results']) ? $nearby_search['results'] : array()
             );
-            $next_page_token = !empty($nearby_search['next_page_token']) ? $nearby_search['next_page_token'] : '';
-            $page_fetch_count = 0;
-            while (!$fast && $next_page_token !== '' && $page_fetch_count < 2) {
-                $page_fetch_count++;
-                usleep(1700000);
-                $nearby_page = Wo_ApiMapDiscoveryGoogleGet('place/nearbysearch/json', array(
-                    'pagetoken' => $next_page_token,
-                    'language' => $language
-                ), $google_timeout_ms, $google_connect_timeout_ms);
-                if (!empty($nearby_page['errors']) || (($nearby_page['status'] ?? '') !== 'OK' && ($nearby_page['status'] ?? '') !== 'ZERO_RESULTS')) {
-                    break;
-                }
-                Wo_ApiMapDiscoveryMergeGooglePlaceResults($places_results, !empty($nearby_page['results']) ? $nearby_page['results'] : array());
-                $next_page_token = !empty($nearby_page['next_page_token']) ? $nearby_page['next_page_token'] : '';
-            }
             $places_results = Wo_ApiMapDiscoveryFilterGooglePlaceResultsByRadius(
                 $places_results,
                 $origin_lat,
@@ -680,7 +816,8 @@ function Wo_ApiMapDiscoveryAutocomplete() {
             'place/autocomplete/json',
             $query,
             $google_timeout_ms,
-            $google_connect_timeout_ms
+            $google_connect_timeout_ms,
+            60
         );
         if (empty($google['errors']) && (($google['status'] ?? '') === 'OK' || ($google['status'] ?? '') === 'ZERO_RESULTS')) {
             foreach (($google['predictions'] ?? array()) as $prediction) {
@@ -785,7 +922,7 @@ function Wo_ApiMapDiscoveryAddressAutocomplete() {
         'components' => 'country:vn',
         'language' => Wo_ApiMapDiscoveryLanguage(),
         'region' => 'vn'
-    ));
+    ), WO_API_MAP_DISCOVERY_TIMEOUT_MS, WO_API_MAP_DISCOVERY_CONNECT_TIMEOUT_MS, 3600);
     if (!empty($geocode['errors'])) {
         return Wo_ApiMapDiscoveryAddressGoogleError($geocode, true);
     }
@@ -822,7 +959,7 @@ function Wo_ApiMapDiscoveryAddressGeocode() {
         'components' => 'country:vn',
         'language' => Wo_ApiMapDiscoveryLanguage(),
         'region' => 'vn'
-    ));
+    ), WO_API_MAP_DISCOVERY_TIMEOUT_MS, WO_API_MAP_DISCOVERY_CONNECT_TIMEOUT_MS, 3600);
     $google_error = Wo_ApiMapDiscoveryAddressGoogleError($google, false);
     if (!empty($google_error)) {
         return $google_error;
@@ -850,7 +987,13 @@ function Wo_ApiMapDiscoveryAddressDetails() {
     if ($session_token !== '') {
         $query['sessiontoken'] = $session_token;
     }
-    $google = Wo_ApiMapDiscoveryGoogleGet('place/details/json', $query);
+    $google = Wo_ApiMapDiscoveryGoogleGet(
+        'place/details/json',
+        $query,
+        WO_API_MAP_DISCOVERY_TIMEOUT_MS,
+        WO_API_MAP_DISCOVERY_CONNECT_TIMEOUT_MS,
+        3600
+    );
     $google_error = Wo_ApiMapDiscoveryAddressGoogleError($google, false);
     if (!empty($google_error)) {
         return $google_error;
@@ -875,7 +1018,7 @@ function Wo_ApiMapDiscoveryPlaceDetails() {
         'place_id' => $place_id,
         'language' => 'vi',
         'fields' => 'place_id,name,formatted_address,geometry,url,icon,icon_background_color'
-    ));
+    ), WO_API_MAP_DISCOVERY_TIMEOUT_MS, WO_API_MAP_DISCOVERY_CONNECT_TIMEOUT_MS, 900);
     if (!empty($google['errors'])) {
         return $google;
     }
@@ -995,7 +1138,7 @@ function Wo_ApiMapDiscoveryRoute() {
         'region' => 'vn',
         'units' => 'metric',
         'alternatives' => 'true'
-    ));
+    ), WO_API_MAP_DISCOVERY_TIMEOUT_MS, WO_API_MAP_DISCOVERY_CONNECT_TIMEOUT_MS, 30);
     if (!empty($google['errors'])) {
         return $google;
     }
@@ -1036,8 +1179,16 @@ function Wo_ApiMapDiscoveryRoute() {
     );
 }
 
+$rate_limit = (!empty($action) && in_array($action, $valid_actions, true))
+    ? Wo_ApiMapDiscoveryRateLimit($action)
+    : array('allowed' => true, 'retry_after' => 0);
+
 if (empty($action) || !in_array($action, $valid_actions)) {
     $response_data = Wo_ApiMapDiscoveryError('type_missing', 'type can not be empty.');
+}
+else if (empty($rate_limit['allowed'])) {
+    $response_data = Wo_ApiMapDiscoveryError('rate_limited', 'Too many map requests. Please try again shortly.', 429);
+    $response_data['retry_after'] = (int) $rate_limit['retry_after'];
 }
 else if ($action == 'page_suggestions') {
     $response_data = Wo_ApiMapDiscoveryPageSuggestions();
