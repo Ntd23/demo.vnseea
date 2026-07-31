@@ -1,13 +1,41 @@
+// English description: Stores the current authenticated user while preserving valid sessions during transient backend failures.
+
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 import { useCookie } from "#app"
 import type { CurrentAuthUser } from "../../domain/types/auth.types"
 import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAuthRepository"
 
+type RequestErrorLike = {
+  status?: unknown
+  statusCode?: unknown
+  response?: {
+    status?: unknown
+  }
+}
+
+const getRequestStatusCode = (error: unknown) => {
+  if (!error || typeof error !== "object") {
+    return 0
+  }
+
+  const requestError = error as RequestErrorLike
+  const statusCode = Number(
+    requestError.statusCode
+      ?? requestError.status
+      ?? requestError.response?.status
+      ?? 0,
+  )
+
+  return Number.isFinite(statusCode) ? statusCode : 0
+}
+
 export const useCurrentAuthUserStore = defineStore("current-auth-user", () => {
   const user = ref<CurrentAuthUser | null>(null)
   const loading = ref(false)
   const hydrated = ref(false)
+  const sessionRejected = ref(false)
+  const lastHydrationStatus = ref<number | null>(null)
 
   async function hydrate(force = false) {
     if (loading.value) {
@@ -30,19 +58,42 @@ export const useCurrentAuthUserStore = defineStore("current-auth-user", () => {
       if (!backendSession.value) {
         user.value = null
         hydrated.value = true
+        sessionRejected.value = true
+        lastHydrationStatus.value = 401
         return null
       }
 
       const repository = createApiAuthRepository()
-      user.value = await repository.getCurrentUser()
+      const currentUser = await repository.getCurrentUser()
+
+      if (!currentUser) {
+        user.value = null
+        hydrated.value = true
+        sessionRejected.value = true
+        lastHydrationStatus.value = 401
+        return null
+      }
+
+      user.value = currentUser
       hydrated.value = true
+      sessionRejected.value = false
+      lastHydrationStatus.value = null
 
       return user.value
     }
-    catch {
-      user.value = null
-      hydrated.value = true
-      return null
+    catch (error) {
+      const statusCode = getRequestStatusCode(error)
+      const isRejected = statusCode === 401
+
+      sessionRejected.value = isRejected
+      lastHydrationStatus.value = statusCode || null
+      hydrated.value = isRejected
+
+      if (isRejected) {
+        user.value = null
+      }
+
+      return user.value
     }
     finally {
       loading.value = false
@@ -53,6 +104,8 @@ export const useCurrentAuthUserStore = defineStore("current-auth-user", () => {
     user.value = null
     hydrated.value = false
     loading.value = false
+    sessionRejected.value = false
+    lastHydrationStatus.value = null
   }
 
   const isAdmin = computed(() => user.value?.isAdmin === true)
@@ -62,6 +115,8 @@ export const useCurrentAuthUserStore = defineStore("current-auth-user", () => {
     user,
     loading,
     hydrated,
+    sessionRejected,
+    lastHydrationStatus,
     isAdmin,
     isModerator,
     hydrate,

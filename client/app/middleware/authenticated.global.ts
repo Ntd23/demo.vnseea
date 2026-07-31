@@ -1,3 +1,5 @@
+// English description: Protects authenticated routes without discarding valid sessions during transient backend failures.
+
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { isProtectedPath } from "../../src/auth/application/constants/route-policy"
 import { useCurrentAuthUserStore } from "../../src/auth/application/stores/useCurrentAuthUserStore"
@@ -17,11 +19,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo(appRoutes.welcome, { replace: true })
   }
 
- const pinia = usePinia()
-const currentUserStore = useCurrentAuthUserStore(pinia)
+  const pinia = usePinia()
+  const currentUserStore = useCurrentAuthUserStore(pinia)
   const currentUser = await currentUserStore.hydrate(true)
 
-  if (!currentUser) {
+  if (!currentUser && currentUserStore.sessionRejected) {
     backendUserSession.value = null
     currentUserStore.clear()
 
