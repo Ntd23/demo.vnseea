@@ -1,0 +1,8 @@
+{
+    "sql_db_host": "localhost",
+    "sql_db_user": "root",
+    "sql_db_pass": "vnseea_2026@!!@",
+    "sql_db_name": "v2.vnseea",
+    "site_url": "https://v2.vnseea.vn",
+    "purchase_code": ""
+}
