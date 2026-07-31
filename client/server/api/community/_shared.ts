@@ -252,8 +252,8 @@ export const mapCommunityGroupRecord = (
   const members = firstNumber(entity, ["members", "members_count"])
   const postCount = firstNumber(entity, ["post_count", "posts_count"])
   const ownerId = firstNumber(entity, ["user_id"])
-  const cover = firstString(entity, ["cover", "cover_full"])
-  const avatar = firstString(entity, ["avatar", "avatar_full"])
+  const cover = firstString(entity, ["cover_full", "cover"])
+  const avatar = firstString(entity, ["avatar_full", "avatar"])
   const rawCategory = firstString(entity, ["category"])
   const categoryId = firstString(entity, ["category_id"])
     || (/^\d+$/.test(rawCategory) ? rawCategory : "")
@@ -310,8 +310,10 @@ export const mapCommunityPageRecord = (
   const slug = firstString(entity, ["page_name", "slug", "name"]) || `page-${id || "community"}`
   const name = firstString(entity, ["page_title", "title", "name", "page_name"]) || slug
   const ownerId = firstNumber(entity, ["user_id"])
-  const cover = firstString(entity, ["cover", "cover_full", "avatar", "avatar_full"])
-  const avatar = firstString(entity, ["avatar", "avatar_full"])
+  const cover = firstString(entity, ["cover_full", "cover", "avatar_full", "avatar"])
+  const avatar = firstString(entity, ["avatar_full", "avatar"])
+  const rawCategoryLabel = firstString(entity, ["category_name", "category"])
+  const categoryLabel = /^\d+$/.test(rawCategoryLabel) ? "" : rawCategoryLabel
 
   const record: CommunityPageRecord = {
     id,
@@ -320,8 +322,9 @@ export const mapCommunityPageRecord = (
     slug,
     summary: firstString(entity, ["page_description", "about", "description"]),
     category: normalizePageCategory(entity.page_category || entity.category),
-    categoryLabel: firstString(entity, ["category_name", "category"]),
+    categoryLabel,
     banner: createBannerBackground(normalizeImagePath(cover, options.baseUrl || ""), id),
+    bannerUrl: normalizeImagePath(cover, options.baseUrl || ""),
     avatarUrl: normalizeImagePath(avatar, options.baseUrl || ""),
     accent: createAccent(id),
     followers: firstNumber(entity, ["followers", "followers_count", "likes_count", "likes"]),

@@ -83,6 +83,9 @@
 <script setup lang="ts">
 import { createApiCommunityRepository } from "../../../community/infrastructure/repositories/ApiCommunityRepository"
 import type { CommunityPageRecord } from "../../../community/domain/types/community.types"
+import { communityPageCategoryOptions } from "../../../community/domain/constants/community-options"
+import { getCommunityOptionLabel } from "../../../community/domain/services/community-helpers.service"
+import { useCommunityPageCategories } from "../../../community/application/composables/useCommunityPageCategories"
 import { createApiProfileRepository } from "../../../profile/infrastructure/repositories/ApiProfileRepository"
 import type { ProfileApiResponse } from "../../../profile/domain/types/profile.types"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
@@ -99,6 +102,7 @@ const { t, locale } = useI18n()
 const toast = useToast()
 const profileRepository = createApiProfileRepository()
 const communityRepository = createApiCommunityRepository()
+const { categoryOptions: pageCategoryOptions, loadCategories: loadPageCategories } = useCommunityPageCategories()
 const visible = ref(false)
 const loading = ref(false)
 const loadAttempted = ref(false)
@@ -125,12 +129,18 @@ const displayAvatar = computed(() => profile.value?.avatarUrl || page.value?.ava
 const pageCategoryLabel = computed(() => {
   if (!page.value) return ""
 
-  const key = `pages.pageDetailPage.categories.${page.value.category}`
-  const translated = t(key)
+  const backendLabel = String(page.value.categoryLabel || "").trim()
+  if (backendLabel && !/^\d+$/.test(backendLabel)) return backendLabel
 
-  return translated === key
-    ? page.value.ownerLabel || page.value.category
-    : translated
+  const categoryId = String(page.value.category || backendLabel).trim()
+  const persistedCategory = pageCategoryOptions.value.find(option => option.value === categoryId)
+  if (persistedCategory?.label) return persistedCategory.label
+
+  const staticLabelKey = getCommunityOptionLabel(communityPageCategoryOptions, categoryId, "")
+  if (staticLabelKey) return t(staticLabelKey)
+
+  const ownerLabel = String(page.value.ownerLabel || "").trim()
+  return /^\d+$/.test(ownerLabel) ? "" : ownerLabel
 })
 const displayRole = computed(() => profile.value?.headline || pageCategoryLabel.value || props.role || "")
 const description = computed(() => profile.value?.bio || page.value?.summary || "")
@@ -166,8 +176,16 @@ const loadDetails = async () => {
   loadAttempted.value = true
   loading.value = true
   try {
-    if (identityType.value === "user") profile.value = await profileRepository.getProfileByUsername(identityKey.value)
-    else page.value = await communityRepository.getPageBySlug(identityKey.value)
+    if (identityType.value === "user") {
+      profile.value = await profileRepository.getProfileByUsername(identityKey.value)
+    }
+    else {
+      const [pageDetails] = await Promise.all([
+        communityRepository.getPageBySlug(identityKey.value),
+        loadPageCategories(),
+      ])
+      page.value = pageDetails
+    }
   }
   catch {
     toast.add({

@@ -4270,8 +4270,8 @@ function Wo_RegisterCommentReply($data = array()) {
             $match         = Wo_Secure($match);
             $match_user    = Wo_UserData(Wo_UserIdFromUsername($match));
             $match_search  = "@" . $match;
-            $match_replace = "@[" . $match_user["user_id"] . "]";
             if (isset($match_user["user_id"])) {
+                $match_replace = "@[" . $match_user["user_id"] . "]";
                 $data["text"] = str_replace($match_search, $match_replace, $data["text"]);
                 $mentions[]   = $match_user["user_id"];
             }

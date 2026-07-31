@@ -15,14 +15,27 @@ function shared_post_source($root, $relative)
 $privacy = shared_post_source($root, 'assets/includes/vnseea_privacy.php');
 $posts = shared_post_source($root, 'api/v2/endpoints/posts.php');
 $detail = shared_post_source($root, 'api/v2/endpoints/get-post-data.php');
+$functions = shared_post_source($root, 'assets/includes/functions_three.php');
+$share_function_start = strpos($functions, 'function Wo_SharePostOn');
+$share_function_end = strpos($functions, '// manage packages', $share_function_start);
+$share_function = ($share_function_start !== false && $share_function_end !== false)
+    ? substr($functions, $share_function_start, $share_function_end - $share_function_start)
+    : '';
 
 $assertions = array(
     array(strpos($privacy, 'function VNSEEA_AttachSharedPostInfo') !== false, 'missing canonical shared_info helper'),
     array(strpos($privacy, 'VNSEEA_MAX_SHARED_POST_DEPTH') !== false, 'shared source traversal must be bounded'),
     array(strpos($privacy, 'get_post_comments') !== false, 'shared source payload must strip comments'),
     array(strpos($posts, 'VNSEEA_AttachSharedPostInfo') !== false, 'posts endpoint must use canonical shared_info helper'),
-    array(substr_count($posts, 'VNSEEA_AttachSharedPostInfo($new_post') >= 3, 'all three share responses must attach shared_info'),
+    array(substr_count($posts, '$complete_shared_post(') === 3, 'all three share destinations must use one validated completion path'),
     array(strpos($detail, 'VNSEEA_AttachSharedPostInfo') !== false, 'get-post-data must attach shared_info'),
+    array(strpos($privacy, 'function VNSEEA_PrepareSharedPostCloneData') !== false, 'shared posts need one canonical clone-data helper'),
+    array(strpos($share_function, '$db->insert(T_POSTS, $post_data)') !== false, 'shared posts must use a prepared insert that preserves SQL NULL'),
+    array(strpos($share_function, "implode('\\', \\'', \$post_data)") === false, 'shared posts must not flatten NULL values into empty strings'),
+    array(strpos($share_function, '$db->startTransaction()') !== false, 'shared post clone and media must be transactional'),
+    array(strpos($share_function, '$db->commit()') !== false, 'shared post transaction must commit explicitly'),
+    array(strpos($share_function, '$db->rollback()') !== false, 'shared post transaction must roll back on dependency failure'),
+    array(strpos($posts, "\$user_id = \$page['user_id'];") === false, 'group sharing must not read an undefined page'),
 );
 
 foreach ($assertions as $assertion) {
@@ -55,6 +68,40 @@ function Wo_PostData($post_id)
 
 $wo = array('loggedin' => false);
 require_once $root . '/assets/includes/vnseea_privacy.php';
+
+$clone = VNSEEA_PrepareSharedPostCloneData(
+    array(
+        'id' => '80',
+        'post_id' => '80',
+        'user_id' => '10',
+        'page_id' => '11',
+        'group_id' => '12',
+        'event_id' => '13',
+        'recipient_id' => '14',
+        'postMapLat' => null,
+        'postMapLng' => null,
+        'postText' => 'source',
+        'postType' => 'photo',
+    ),
+    99,
+    77,
+    'group',
+    80,
+    'https://demo.vnseea.vn/post/80',
+    123456
+);
+if (
+    array_key_exists('id', $clone)
+    || $clone['postMapLat'] !== null
+    || $clone['postMapLng'] !== null
+    || (int) $clone['group_id'] !== 77
+    || (int) $clone['page_id'] !== 0
+    || (int) $clone['event_id'] !== 0
+    || (int) $clone['recipient_id'] !== 0
+) {
+    fwrite(STDERR, "FAIL: shared clone data must preserve SQL NULL and reset source ownership\n");
+    exit(1);
+}
 
 $flattened = VNSEEA_AttachSharedPostInfo(
     array('id' => 50, 'parent_id' => 20),

@@ -10,10 +10,13 @@
       :categories="vm.categories.value"
       :distance-options="vm.distanceOptions.value"
       :distance-enabled="vm.distanceEnabled.value"
+      :location-pending="vm.locationPending.value"
+      :distance-status="vm.distanceStatus.value"
       :can-create="vm.canCreate.value"
       :create-disabled-reason="vm.createDisabledReason.value"
       :has-active-filters="vm.hasActiveFilters.value"
       @open-create="vm.openCreate"
+      @request-location="vm.requestCurrentLocation"
       @reset="vm.resetFilters"
     />
 
@@ -40,32 +43,43 @@
       </div>
     </div>
 
-    <template v-else>
-      <div v-if="vm.items.value.length > 0" class="grid gap-4 lg:grid-cols-2">
-        <JobCard
-          v-for="job in vm.items.value"
-          :key="job.id"
-          :job="job"
-          :deleting="vm.deleteSubmitting.value && vm.deleteModalJob.value?.id === job.id"
-          @apply="vm.openApply"
-          @delete="vm.openDelete"
-        />
+    <div v-else class="jobs-results" :class="{ 'jobs-results--refreshing': vm.refreshing.value }">
+      <div
+        v-if="vm.refreshing.value"
+        class="jobs-results__loading"
+        role="status"
+        :aria-label="$t('pages.jobsPage.loadingJobs')"
+      >
+        <Icon name="i-ph-spinner-gap-bold" class="jobs-results__spinner" />
       </div>
+
+      <template v-if="vm.items.value.length > 0">
+        <div class="grid gap-4 lg:grid-cols-2">
+          <JobCard
+            v-for="job in vm.items.value"
+            :key="job.id"
+            :job="job"
+            :deleting="vm.deleteSubmitting.value && vm.deleteModalJob.value?.id === job.id"
+            @apply="vm.openApply"
+            @delete="vm.openDelete"
+          />
+        </div>
+
+        <div v-if="vm.hasMore.value" class="flex justify-center pt-2">
+          <UButton
+            color="neutral"
+            variant="outline"
+            class="rounded-full px-6"
+            :loading="vm.loadingMore.value"
+            @click="vm.loadMore"
+          >
+            {{ $t("navigation.leftSidebar.showMore") }}
+          </UButton>
+        </div>
+      </template>
 
       <JobsEmptyState v-else @reset="vm.resetFilters" />
-
-      <div v-if="vm.hasMore.value" class="flex justify-center pt-2">
-        <UButton
-          color="neutral"
-          variant="outline"
-          class="rounded-full px-6"
-          :loading="vm.loadingMore.value"
-          @click="vm.loadMore"
-        >
-          {{ $t("navigation.leftSidebar.showMore") }}
-        </UButton>
-      </div>
-    </template>
+    </div>
 
     <JobApplyModal
       :open="Boolean(vm.applyModalJob.value)"
@@ -176,5 +190,43 @@ const vm = useJobsPageVM()
   display: grid;
   gap: 9px;
   padding: 14px;
+}
+
+.jobs-results {
+  position: relative;
+  min-height: 180px;
+}
+
+.jobs-results--refreshing {
+  pointer-events: none;
+}
+
+.jobs-results__loading {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--bg-surface);
+  color: var(--text-brand);
+  box-shadow: var(--shadow-sm);
+}
+
+.jobs-results__spinner {
+  width: 18px;
+  height: 18px;
+  animation: jobs-results-spin 0.75s linear infinite;
+}
+
+@keyframes jobs-results-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

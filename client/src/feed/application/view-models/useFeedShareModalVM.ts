@@ -3,6 +3,7 @@
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import type {
+  FeedShareBlogCard,
   FeedShareDestination,
   FeedShareSearchTargets,
   FeedShareTarget,
@@ -212,6 +213,7 @@ export function useFeedShareModalVM(
     postText?: string
     postId?: number
     shareUrl?: string
+    blog?: FeedShareBlogCard
   }) {
     const target = selectedTarget.value
     const canonicalPostUrl = input.postId
@@ -237,6 +239,7 @@ export function useFeedShareModalVM(
       await feedShareRepository.sendMessageShare({
         recipientIds: [recipientId],
         text,
+        blog: input.blog,
       })
 
       return {

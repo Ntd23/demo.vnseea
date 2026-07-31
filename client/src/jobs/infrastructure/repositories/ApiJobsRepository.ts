@@ -18,6 +18,15 @@ const normalizeNumber = (value?: number | null) =>
     ? Math.floor(value)
     : undefined
 
+const normalizeCoordinate = (
+  value: number | null | undefined,
+  min: number,
+  max: number,
+) =>
+  typeof value === "number" && Number.isFinite(value) && value >= min && value <= max
+    ? value
+    : undefined
+
 export function createApiJobsRepository(): JobsRepository {
   const client = useNuxtApiClient()
 
@@ -28,6 +37,8 @@ export function createApiJobsRepository(): JobsRepository {
         category: input?.category,
         type: input?.type,
         distance: normalizeNumber(input?.distance),
+        originLat: normalizeCoordinate(input?.originLat, -90, 90),
+        originLng: normalizeCoordinate(input?.originLng, -180, 180),
         afterId: normalizeNumber(input?.afterId),
         limit: normalizeNumber(input?.limit),
       })

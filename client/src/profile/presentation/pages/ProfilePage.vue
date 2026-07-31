@@ -122,8 +122,20 @@
             @keydown.enter="handleAvatarClick"
             @keydown.space.prevent="handleAvatarClick"
           >
-            <UAvatar
+            <NuxtImg
+              v-if="profile.avatarUrl"
               :src="profile.avatarUrl"
+              :alt="profile.displayName"
+              width="168"
+              height="168"
+              sizes="120px md:168px"
+              densities="1x 2x"
+              format="webp"
+              quality="90"
+              class="profile-page__avatar"
+            />
+            <UAvatar
+              v-else
               :text="profile.avatarText"
               class="profile-page__avatar"
               :ui="{
@@ -1028,7 +1040,7 @@
       accept="image/*"
       @change="event => handleProfileMediaChange('avatar', event)"
     />
-    <ProfileImageCropModal
+    <ImageCropModal
       v-if="profileCropDraft"
       :open="true"
       :file="profileCropDraft.file"
@@ -1122,8 +1134,8 @@ import type { FeedPostRecord } from "../../../feed/domain/types/feed.types";
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions";
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue";
 import { useProfileVM } from "../../application/composables/useProfileVM";
-import ProfileImageCropModal from "../components/ProfileImageCropModal.vue";
-import ProfileCoverRepositionEditor from "../components/ProfileCoverRepositionEditor.vue";
+import ImageCropModal from "../../../shared-kernel/presentation/components/ImageCropModal.vue";
+import ProfileCoverRepositionEditor from "../../../shared-kernel/presentation/components/CoverRepositionEditor.vue";
 
 const route = useRoute();
 
@@ -1935,9 +1947,11 @@ function handleMoreAction(action: string) {
 .profile-page__avatar {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
   border: 4px solid var(--bg-surface);
   box-shadow: var(--shadow-md);
   display: block;
+  object-fit: cover;
 }
 
 /* Name + meta */

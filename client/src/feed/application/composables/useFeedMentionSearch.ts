@@ -39,6 +39,8 @@ type UseFeedMentionSearchOptions = {
   followingOnly?: boolean
 }
 
+const selectedMentionBoundaryPattern = "(?=$|[\\s\\p{P}\\p{S}])"
+
 function getMentionUsername(user: BackendMentionSearchResult) {
   const fromUsername = user.username?.trim()
   if (fromUsername) {
@@ -58,16 +60,13 @@ function getMentionUsername(user: BackendMentionSearchResult) {
 }
 
 function getMentionDisplayLabel(user: BackendMentionSearchResult, fallback: string) {
-  const value = (user.firstName || user.title || fallback)
+  const value = (user.title || user.firstName || fallback)
     .trim()
     .replace(/^@/, "")
-    .split(/\s+/)
-    .filter(Boolean)[0]
 
   return (value || fallback)
     .replace(/^@/, "")
-    .replace(/[^\p{L}\p{N}_.-]+/gu, "_")
-    .replace(/^_+|_+$/g, "")
+    .replace(/\s+/g, " ")
 }
 
 function normalizeMentionUsers(users: BackendMentionSearchResult[]) {
@@ -141,7 +140,7 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
   watch(options.text, (text) => {
     const nextSelectedMentionUsernames = Object.fromEntries(
       Object.entries(selectedMentionUsernames.value).filter(([displayMention]) =>
-        new RegExp(`(^|\\s)${escapeMentionRegExp(displayMention)}(?=\\s|$)`).test(text),
+        new RegExp(`(^|\\s)${escapeMentionRegExp(displayMention)}${selectedMentionBoundaryPattern}`, "u").test(text),
       ),
     )
 
@@ -171,7 +170,7 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
       }
 
       return nextText.replace(
-        new RegExp(`(^|\\s)${escapeMentionRegExp(displayMention)}(?=\\s|$)`, "g"),
+        new RegExp(`(^|\\s)${escapeMentionRegExp(displayMention)}${selectedMentionBoundaryPattern}`, "gu"),
         `$1${backendMention}`,
       )
     }, text)
@@ -234,7 +233,7 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
     }
 
     const beforeCaret = text.slice(0, caret)
-    const match = beforeCaret.match(/(^|\s)@([^\s@]{0,40})$/)
+    const match = beforeCaret.match(/(^|\s)@([^@\n]{0,80})$/)
 
     if (!match) {
       closeMentionSuggestions()

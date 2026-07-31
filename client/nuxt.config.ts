@@ -54,6 +54,7 @@ const redisCommandTimeoutMs = Number(
 );
 const sourceMapsEnabled = process.env.NUXT_SOURCE_MAPS === "true";
 const nativeAppStoryDeepLink = process.env.NUXT_PUBLIC_NATIVE_APP_STORY_DEEP_LINK?.trim() || "";
+const nativeAppNearbyDeepLink = process.env.NUXT_PUBLIC_NATIVE_APP_NEARBY_DEEP_LINK?.trim() || "";
 const nativeAppIosStoreUrl = process.env.NUXT_PUBLIC_NATIVE_APP_IOS_STORE_URL?.trim() || "";
 const nativeAppAndroidStoreUrl = process.env.NUXT_PUBLIC_NATIVE_APP_ANDROID_STORE_URL?.trim() || "";
 const backendWebBase = normalizeBackendWebBase(
@@ -140,6 +141,7 @@ export default defineNuxtConfig({
       realtimeUrl: publicRealtimeUrl,
       nativeApp: {
         storyDeepLink: nativeAppStoryDeepLink,
+        nearbyDeepLink: nativeAppNearbyDeepLink,
         iosStoreUrl: nativeAppIosStoreUrl,
         androidStoreUrl: nativeAppAndroidStoreUrl,
       },

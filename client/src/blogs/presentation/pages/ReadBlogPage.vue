@@ -38,8 +38,6 @@
           :article="article"
           :liked="liked"
           :displayed-likes="displayedLikes"
-          :share-open="shareOpen"
-          :share-url="shareUrl"
           :comments="comments"
           :comments-loading="commentsLoading"
           :commenting="commenting"
@@ -48,7 +46,7 @@
           :comment-action-repository="commentActionRepository"
           :format-compact="formatCompact"
           @toggle-like="liked = !liked"
-          @toggle-share="shareOpen = !shareOpen"
+          @open-share="shareOpen = true"
           @add-comment="addComment"
         />
 
@@ -58,6 +56,29 @@
           :popular-articles="popularArticles"
         />
       </div>
+
+      <ClientOnly>
+        <FeedShareModal
+          :open="shareOpen"
+          :can-share="canShare"
+          :share-url="shareUrl"
+          :blog="{
+            id: article.id,
+            title: article.title,
+            description: article.excerpt,
+            imageUrl: article.image,
+            href: shareUrl,
+            author: article.author,
+            authorAvatarUrl: article.authorAvatarUrl,
+          }"
+          :post="{
+            author: article.author,
+            text: article.title,
+            authorAvatar: article.authorAvatarUrl,
+          }"
+          @close="shareOpen = false"
+        />
+      </ClientOnly>
     </template>
   </div>
 </template>
@@ -66,6 +87,7 @@
 import BlogsReadBlogHero from "../components/ReadBlogHero.vue"
 import BlogsReadBlogMain from "../components/ReadBlogMain.vue"
 import BlogsReadBlogSidebar from "../components/ReadBlogSidebar.vue"
+import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
 import { useReadBlogPageVM } from "../../application/view-models/useReadBlogPageVM"
 
 const {
@@ -85,6 +107,7 @@ const {
   isLoading,
   currentUserName,
   currentUserAvatarUrl,
+  canShare,
   commentActionRepository,
 } = useReadBlogPageVM()
 </script>

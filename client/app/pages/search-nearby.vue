@@ -8,6 +8,7 @@ import SearchNearbyPresentationSearchNearbyPage from "../../src/search-nearby/pr
 
 definePageMeta({
   layout: "search-nearby",
+  middleware: "nearby-app-handoff",
 })
 
 useHead({

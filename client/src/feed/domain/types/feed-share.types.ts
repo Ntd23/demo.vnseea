@@ -19,3 +19,13 @@ export type FeedShareSearchTargets = {
   pages: FeedShareTarget[]
   groups: FeedShareTarget[]
 }
+
+export type FeedShareBlogCard = {
+  id: number
+  title: string
+  description: string
+  imageUrl: string
+  href: string
+  author: string
+  authorAvatarUrl: string
+}

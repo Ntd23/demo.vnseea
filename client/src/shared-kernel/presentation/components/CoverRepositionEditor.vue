@@ -1,4 +1,4 @@
-<!-- Description: Lets profile owners drag and save a newly selected cover directly inside the visible profile cover frame. -->
+<!-- Description: Reusable editor for dragging and saving a cover inside its visible frame. -->
 <template>
   <div class="cover-reposition" @click.stop>
     <div class="cover-reposition__crop">

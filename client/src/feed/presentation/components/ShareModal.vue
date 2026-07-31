@@ -271,6 +271,7 @@
 <script setup lang="ts">
 import { useFeedShareModalVM } from "../../application/view-models/useFeedShareModalVM";
 import type {
+  FeedShareBlogCard,
   FeedShareDestination,
   FeedShareTarget,
 } from "../../domain/types/feed-share.types";
@@ -293,12 +294,14 @@ const props = withDefaults(
       authorAvatar?: string;
       authorVerified?: boolean;
     } | null;
+    blog?: FeedShareBlogCard | null;
   }>(),
   {
     open: false,
     canShare: false,
     shareUrl: "",
     post: null,
+    blog: null,
   },
 );
 
@@ -635,6 +638,7 @@ async function onShare() {
       postText: props.post?.text,
       postId: props.post?.id,
       shareUrl: pageUrl.value,
+      blog: props.blog ?? undefined,
     });
 
     shared.value = true;

@@ -36,14 +36,20 @@
       </div>
 
       <div
+        ref="messageWrapperRef"
         class="group relative w-fit max-w-[80%] lg:max-w-[42rem] chat-bubble__wrapper"
         :class="{
           'chat-bubble__wrapper--product': productCard,
           'chat-bubble__wrapper--shared-post': sharedPost,
           'chat-bubble__wrapper--location': location && !isDeleted,
           'chat-bubble__wrapper--story': storyContext && !isDeleted,
+          'chat-bubble__wrapper--with-tools': showTools && !teleportMessageTools,
         }"
         :title="timelineTitle"
+        @mouseenter="openMessageTools"
+        @mouseleave="scheduleCloseMessageTools"
+        @focusin="openMessageTools"
+        @focusout="scheduleCloseMessageTools"
       >
         <button
           v-if="replyTitle || replyQuote"
@@ -229,7 +235,22 @@
           >
         </span>
 
-        <div v-if="showTools" class="chat-bubble__message-tools">
+        <Teleport to="body" :disabled="!teleportMessageTools">
+        <div
+          v-if="showTools"
+          ref="messageToolsRef"
+          class="chat-bubble__message-tools"
+          :class="{
+            'chat-bubble__message-tools--mine': isMine,
+            'chat-bubble__message-tools--teleported': teleportMessageTools,
+            'chat-bubble__message-tools--visible': teleportMessageTools && messageToolsOpen,
+          }"
+          :style="teleportMessageTools ? messageToolsPosition : undefined"
+          @mouseenter="openMessageTools"
+          @mouseleave="scheduleCloseMessageTools"
+          @focusin="openMessageTools"
+          @focusout="scheduleCloseMessageTools"
+        >
           <span v-if="!location" ref="reactionToolRef" class="chat-bubble__message-tool-wrap">
             <button
               type="button"
@@ -271,7 +292,12 @@
           >
             <Icon name="i-ph-arrow-bend-up-left-bold" class="h-3.5 w-3.5" />
           </button>
-          <UPopover v-if="canPin || canDelete" :content="{ side: 'top', align: isMine ? 'end' : 'start', sideOffset: 6 }">
+          <UPopover
+            v-if="canPin || canDelete"
+            v-model:open="messageActionMenuOpen"
+            :content="{ side: 'top', align: isMine ? 'end' : 'start', sideOffset: 6, collisionPadding: 10 }"
+            :ui="{ content: 'z-[10020]' }"
+          >
             <button
               type="button"
               class="chat-bubble__message-tool"
@@ -305,6 +331,7 @@
             </template>
           </UPopover>
         </div>
+        </Teleport>
       </div>
     </div>
 
@@ -360,6 +387,7 @@ const props = defineProps<{
   showTools?: boolean
   reactionPickerOpen?: boolean
   teleportReactionPicker?: boolean
+  teleportMessageTools?: boolean
   reactionOptions?: ChatBubbleReactionOption[]
   reactTitle?: string
   replyTitleLabel?: string
@@ -542,8 +570,94 @@ const callButtonLabel = computed(() =>
 )
 
 const reactionOptions = computed(() => props.reactionOptions ?? [])
+const messageWrapperRef = ref<HTMLElement | null>(null)
+const messageToolsRef = ref<HTMLElement | null>(null)
+const messageToolsOpen = ref(false)
+const messageActionMenuOpen = ref(false)
+const messageToolsPosition = ref<Record<string, string>>({})
 const reactionToolRef = ref<HTMLElement | null>(null)
 const reactionPickerPosition = ref<Record<string, string>>({})
+let messageToolsCloseTimer: ReturnType<typeof setTimeout> | undefined
+
+function clearMessageToolsCloseTimer() {
+  if (messageToolsCloseTimer) {
+    clearTimeout(messageToolsCloseTimer)
+    messageToolsCloseTimer = undefined
+  }
+}
+
+function updateMessageToolsPosition() {
+  if (!import.meta.client || !props.teleportMessageTools || !messageWrapperRef.value) {
+    return
+  }
+
+  const messageRect = messageWrapperRef.value.getBoundingClientRect()
+  const toolsWidth = messageToolsRef.value?.offsetWidth || 94
+  const toolsHeight = messageToolsRef.value?.offsetHeight || 34
+  const gutter = 8
+  const gap = 6
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+  const beforeMessage = messageRect.left - toolsWidth - gap
+  const afterMessage = messageRect.right + gap
+  const preferredPositions = props.isMine
+    ? [beforeMessage, afterMessage]
+    : [afterMessage, beforeMessage]
+  const fittingPosition = preferredPositions.find(
+    left => left >= gutter && left + toolsWidth <= viewportWidth - gutter,
+  )
+  const overlayPosition = props.isMine
+    ? messageRect.left + gutter
+    : messageRect.right - toolsWidth - gutter
+  const left = fittingPosition
+    ?? Math.min(
+      Math.max(gutter, overlayPosition),
+      Math.max(gutter, viewportWidth - toolsWidth - gutter),
+    )
+  const centeredTop = messageRect.top + (messageRect.height - toolsHeight) / 2
+  const top = Math.min(
+    Math.max(gutter, centeredTop),
+    Math.max(gutter, viewportHeight - toolsHeight - gutter),
+  )
+
+  messageToolsPosition.value = {
+    left: `${left}px`,
+    top: `${top}px`,
+  }
+}
+
+function openMessageTools() {
+  clearMessageToolsCloseTimer()
+
+  if (!props.teleportMessageTools) {
+    return
+  }
+
+  messageToolsOpen.value = true
+  void nextTick(updateMessageToolsPosition)
+}
+
+function scheduleCloseMessageTools() {
+  if (!props.teleportMessageTools) {
+    return
+  }
+
+  clearMessageToolsCloseTimer()
+  messageToolsCloseTimer = setTimeout(() => {
+    if (!messageActionMenuOpen.value) {
+      messageToolsOpen.value = false
+    }
+  }, 140)
+}
+
+watch(messageActionMenuOpen, (isOpen) => {
+  if (isOpen) {
+    openMessageTools()
+    return
+  }
+
+  scheduleCloseMessageTools()
+})
 
 function updateReactionPickerPosition() {
   if (!import.meta.client || !props.teleportReactionPicker || !reactionToolRef.value) {
@@ -577,8 +691,23 @@ watch(() => props.reactionPickerOpen, (isOpen) => {
   }
 }, { flush: "post" })
 
-onMounted(() => window.addEventListener("resize", updateReactionPickerPosition))
-onBeforeUnmount(() => window.removeEventListener("resize", updateReactionPickerPosition))
+function updateFloatingToolsPosition() {
+  updateReactionPickerPosition()
+
+  if (messageToolsOpen.value) {
+    updateMessageToolsPosition()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("resize", updateFloatingToolsPosition)
+  window.addEventListener("scroll", updateFloatingToolsPosition, true)
+})
+onBeforeUnmount(() => {
+  clearMessageToolsCloseTimer()
+  window.removeEventListener("resize", updateFloatingToolsPosition)
+  window.removeEventListener("scroll", updateFloatingToolsPosition, true)
+})
 
 const reactTitle = computed(() => props.reactTitle || t("navigation.chatWidget.reactToMessage"))
 const replyTitleLabel = computed(() => props.replyTitleLabel || t("navigation.chatWidget.replyMessage"))
@@ -830,9 +959,17 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   align-items: flex-start;
 }
 
+.chat-bubble__wrapper.chat-bubble__wrapper--with-tools {
+  max-width: min(calc(100% - 8.25rem), 34rem) !important;
+}
+
 .chat-bubble__wrapper.chat-bubble__wrapper--story {
   width: fit-content;
   max-width: min(92%, 40rem) !important;
+}
+
+.chat-bubble__wrapper.chat-bubble__wrapper--story.chat-bubble__wrapper--with-tools {
+  max-width: min(calc(100% - 8.25rem), 40rem) !important;
 }
 
 .chat-bubble__text {
@@ -973,19 +1110,24 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   display: inline-flex;
   position: absolute;
   top: 50%;
-  right: -90px;
+  right: auto;
+  left: calc(100% + 6px);
   z-index: 50;
   align-items: center;
   gap: 3px;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--bg-surface);
   padding: 3px;
+  box-shadow: var(--shadow-md);
   opacity: 0;
   transform: translateY(-50%) scale(0.96);
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .chat-bubble__container--mine .chat-bubble__message-tools {
-  right: auto;
-  left: -90px;
+  right: calc(100% + 6px);
+  left: auto;
 }
 
 .chat-bubble__wrapper:hover .chat-bubble__message-tools,
@@ -1023,10 +1165,40 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 }
 
 @media (hover: none) {
-  .chat-bubble__message-tools {
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
+  .chat-bubble__wrapper.chat-bubble__wrapper--with-tools {
+    max-width: min(80%, 34rem) !important;
   }
+
+  .chat-bubble__wrapper.chat-bubble__wrapper--story.chat-bubble__wrapper--with-tools {
+    max-width: min(92%, 40rem) !important;
+  }
+
+  .chat-bubble__message-tools {
+    position: static;
+    inset: auto;
+    margin-top: 5px;
+    opacity: 1;
+    transform: none;
+  }
+
+  .chat-bubble__container--mine .chat-bubble__message-tools {
+    inset: auto;
+  }
+}
+
+.chat-bubble__message-tools.chat-bubble__message-tools--teleported {
+  position: fixed;
+  right: auto;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.96);
+}
+
+.chat-bubble__message-tools.chat-bubble__message-tools--teleported.chat-bubble__message-tools--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
 }
 
 .chat-bubble__action-menu {

@@ -3,15 +3,14 @@
   <header class="read-blog-hero">
     <div class="read-blog-hero__media">
       <div class="read-blog-hero__fallback" :style="{ background: article.imageFallback }" aria-hidden="true" />
-      <NuxtImg
+      <img
         v-if="showCoverImage"
         :src="article.image"
         :alt="article.title"
         class="read-blog-hero__image"
-        width="1600"
-        height="900"
         loading="eager"
-        sizes="100vw lg:1180px"
+        decoding="async"
+        referrerpolicy="no-referrer"
         @error="imageFailed = true"
       />
     </div>

@@ -22,7 +22,7 @@ export interface CommunityRepository {
   getGroupBySlug(slug: string): Promise<CommunityGroupRecord | null>
   getGroupPosts(slug: string, input?: { limit?: number; afterPostId?: number }): Promise<FeedPostsResponse>
   createGroup(input: CommunityDraft): Promise<CommunityGroupRecord>
-  updateGroup(slug: string, input: CommunityGroupSettingsDraft): Promise<CommunityGroupRecord>
+  updateGroup(slug: string, input: Partial<CommunityGroupSettingsDraft>): Promise<CommunityGroupRecord>
   joinGroup(slug: string): Promise<CommunityGroupRecord>
   getGroupRequests(slug: string): Promise<UserRecord[]>
   respondToGroupRequest(slug: string, userId: number, action: "accept" | "decline"): Promise<void>
@@ -32,7 +32,7 @@ export interface CommunityRepository {
   getPages(mode: CommunityPageTab): Promise<CommunityPageRecord[]>
   getPageBySlug(slug: string): Promise<CommunityPageRecord | null>
   createPage(input: CommunityDraft): Promise<CommunityPageRecord>
-  updatePage(slug: string, input: CommunityPageSettingsDraft): Promise<CommunityPageRecord>
+  updatePage(slug: string, input: Partial<CommunityPageSettingsDraft>): Promise<CommunityPageRecord>
   followPage(slug: string): Promise<CommunityPageRecord>
   likePage(slug: string): Promise<CommunityPageRecord>
   getPageFollowers(slug: string): Promise<CommunityPageFollowerRecord[]>

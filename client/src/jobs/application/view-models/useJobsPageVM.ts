@@ -1,6 +1,6 @@
 // English description: Owns jobs route query sync, real catalog loading, pagination, and apply, create, and delete mutations for the jobs page.
 
-import { watchDebounced } from "@vueuse/core"
+import { refDebounced, watchDebounced } from "@vueuse/core"
 import { createApiJobsRepository } from "../../infrastructure/repositories/ApiJobsRepository"
 import type { JobsRepository } from "../../domain/repositories/JobsRepository"
 import type {
@@ -45,6 +45,32 @@ const prependOption = (label: string, value: string, options: Array<{ value: str
   ...options,
 ]
 
+type JobFilterOrigin = { lat: number, lng: number }
+type JobLocationStatus = "idle" | "locating" | "ready" | "fallback" | "unavailable"
+const MAX_DISTANCE_KM = 300
+
+const normalizeDistance = (value: unknown) => {
+  const distance = Math.round(Number(value))
+  return Number.isFinite(distance) && distance > 0
+    ? String(Math.min(distance, MAX_DISTANCE_KM))
+    : ""
+}
+
+const normalizeFilterOrigin = (
+  lat: number | null | undefined,
+  lng: number | null | undefined,
+): JobFilterOrigin | null =>
+  typeof lat === "number"
+  && Number.isFinite(lat)
+  && lat >= -90
+  && lat <= 90
+  && typeof lng === "number"
+  && Number.isFinite(lng)
+  && lng >= -180
+  && lng <= 180
+    ? { lat, lng }
+    : null
+
 export function useJobsPageVM(
   repository: JobsRepository = createApiJobsRepository(),
 ) {
@@ -57,6 +83,9 @@ export function useJobsPageVM(
   const selectedCategory = ref("")
   const selectedType = ref("")
   const selectedDistance = ref("")
+  const deviceOrigin = shallowRef<JobFilterOrigin | null>(null)
+  const savedOrigin = shallowRef<JobFilterOrigin | null>(null)
+  const locationStatus = ref<JobLocationStatus>("idle")
 
   const applyModalJob = ref<JobRecord | null>(null)
   const deleteModalJob = ref<JobRecord | null>(null)
@@ -95,7 +124,9 @@ export function useJobsPageVM(
     searchQuery.value = typeof route.query.q === "string" ? route.query.q.trim() : ""
     selectedCategory.value = typeof route.query.category === "string" ? route.query.category.trim() : ""
     selectedType.value = typeof route.query.type === "string" ? route.query.type.trim() : ""
-    selectedDistance.value = typeof route.query.distance === "string" ? route.query.distance.trim() : ""
+    selectedDistance.value = normalizeDistance(
+      typeof route.query.distance === "string" ? route.query.distance : "",
+    )
     nextTick(() => {
       syncingFromRoute.value = false
     })
@@ -114,9 +145,16 @@ export function useJobsPageVM(
         return
       }
 
-      await router.replace({
-        query: buildRouteQuery(),
-      })
+      const query = buildRouteQuery()
+
+      if (import.meta.client) {
+        const url = new URL(window.location.href)
+        url.search = new URLSearchParams(query).toString()
+        window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`)
+        return
+      }
+
+      await router.replace({ query })
     },
     {
       debounce: 240,
@@ -124,20 +162,26 @@ export function useJobsPageVM(
     },
   )
 
-  const filtersKey = computed(() => JSON.stringify({
-    q: searchQuery.value.trim(),
-    category: selectedCategory.value,
-    type: selectedType.value,
-    distance: selectedDistance.value,
-  }))
+  const filterOrigin = computed(() => deviceOrigin.value ?? savedOrigin.value)
+  const requestedCatalogFilters = computed(() => {
+    const shouldFilterDistance = Boolean(selectedDistance.value && filterOrigin.value)
+
+    return {
+      q: searchQuery.value.trim(),
+      category: selectedCategory.value,
+      type: selectedType.value,
+      distance: shouldFilterDistance ? Number(selectedDistance.value) : undefined,
+      originLat: shouldFilterDistance ? filterOrigin.value?.lat : undefined,
+      originLng: shouldFilterDistance ? filterOrigin.value?.lng : undefined,
+    }
+  })
+  const stableCatalogFilters = refDebounced(requestedCatalogFilters, 80)
+  const filtersKey = computed(() => JSON.stringify(stableCatalogFilters.value))
 
   const { data, status, error, refresh } = useAsyncData(
     "jobs:catalog",
     () => repository.getCatalog({
-      q: searchQuery.value.trim(),
-      category: selectedCategory.value,
-      type: selectedType.value,
-      distance: selectedDistance.value ? Number(selectedDistance.value) : undefined,
+      ...stableCatalogFilters.value,
       limit: 10,
     }),
     {
@@ -157,11 +201,31 @@ export function useJobsPageVM(
       items.value = catalog.items
       nextAfterId.value = catalog.nextAfterId
       hasMore.value = catalog.hasMore
+      savedOrigin.value = normalizeFilterOrigin(
+        catalog.currentUser.lat,
+        catalog.currentUser.lng,
+      )
+
+      if (
+        !deviceOrigin.value
+        && savedOrigin.value
+        && (locationStatus.value === "idle" || locationStatus.value === "unavailable")
+      ) {
+        locationStatus.value = "fallback"
+      }
     },
     { immediate: true },
   )
 
-  const loading = computed(() => status.value === "pending")
+  const catalogResolved = ref(status.value === "success")
+  watch(status, (nextStatus) => {
+    if (nextStatus === "success" || nextStatus === "error") {
+      catalogResolved.value = true
+    }
+  }, { immediate: true })
+
+  const loading = computed(() => status.value === "pending" && !catalogResolved.value)
+  const refreshing = computed(() => status.value === "pending" && catalogResolved.value)
   const errorMessage = computed(() =>
     error.value ? toErrorMessage(error.value, t("pages.jobsPage.emptyDescription")) : "",
   )
@@ -188,7 +252,23 @@ export function useJobsPageVM(
   const currentUser = computed(() => data.value.currentUser)
   const canCreate = computed(() => data.value.canCreate)
   const createDisabledReason = computed(() => data.value.createDisabledReason)
-  const distanceEnabled = computed(() => data.value.distanceEnabled)
+  const distanceEnabled = computed(() => Boolean(filterOrigin.value))
+  const locationPending = computed(() => locationStatus.value === "locating")
+  const distanceStatus = computed(() => {
+    if (locationStatus.value === "locating") {
+      return t("pages.jobsPage.distanceLocating")
+    }
+
+    if (deviceOrigin.value) {
+      return t("pages.jobsPage.distanceUsingCurrentLocation")
+    }
+
+    if (savedOrigin.value) {
+      return t("pages.jobsPage.distanceUsingSavedLocation")
+    }
+
+    return t("pages.jobsPage.distanceUnavailable")
+  })
   const hasActiveFilters = computed(() =>
     Boolean(searchQuery.value.trim() || selectedCategory.value || selectedType.value || selectedDistance.value),
   )
@@ -201,11 +281,9 @@ export function useJobsPageVM(
     loadingMore.value = true
 
     try {
+      const activeFilters = stableCatalogFilters.value
       const response = await repository.getCatalog({
-        q: searchQuery.value.trim(),
-        category: selectedCategory.value,
-        type: selectedType.value,
-        distance: selectedDistance.value ? Number(selectedDistance.value) : undefined,
+        ...activeFilters,
         afterId: nextAfterId.value,
         limit: 10,
       })
@@ -237,6 +315,41 @@ export function useJobsPageVM(
     applyErrorMessage.value = ""
     applyModalJob.value = job
   }
+
+  function requestCurrentLocation() {
+    if (!import.meta.client || !navigator.geolocation) {
+      locationStatus.value = savedOrigin.value ? "fallback" : "unavailable"
+      return
+    }
+
+    locationStatus.value = "locating"
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nextOrigin = normalizeFilterOrigin(
+          position.coords.latitude,
+          position.coords.longitude,
+        )
+
+        if (!nextOrigin) {
+          locationStatus.value = savedOrigin.value ? "fallback" : "unavailable"
+          return
+        }
+
+        deviceOrigin.value = nextOrigin
+        locationStatus.value = "ready"
+      },
+      () => {
+        locationStatus.value = savedOrigin.value ? "fallback" : "unavailable"
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 120000,
+        timeout: 10000,
+      },
+    )
+  }
+
+  onMounted(requestCurrentLocation)
 
   function closeApply() {
     applyErrorMessage.value = ""
@@ -369,6 +482,7 @@ export function useJobsPageVM(
 
   return {
     loading,
+    refreshing,
     loadingMore,
     errorMessage,
     items,
@@ -385,6 +499,8 @@ export function useJobsPageVM(
     canCreate,
     createDisabledReason,
     distanceEnabled,
+    locationPending,
+    distanceStatus,
     hasMore,
     hasActiveFilters,
     searchQuery,
@@ -401,6 +517,7 @@ export function useJobsPageVM(
     createErrorMessage,
     deleteErrorMessage,
     resetFilters,
+    requestCurrentLocation,
     loadMore,
     openApply,
     closeApply,

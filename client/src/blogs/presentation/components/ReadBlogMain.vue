@@ -16,10 +16,8 @@
 
         <button
           class="read-blog-main__action"
-          :class="{ 'read-blog-main__action--active': shareOpen }"
-          :aria-pressed="shareOpen"
           type="button"
-          @click="$emit('toggleShare')"
+          @click="$emit('openShare')"
         >
           <Icon name="i-ph-share-network-duotone" class="read-blog-main__action-icon" />
           <span>{{ $t("pages.readBlogPage.share") }}</span>
@@ -31,11 +29,6 @@
           #{{ tag }}
         </span>
       </div>
-    </div>
-
-    <div v-if="shareOpen" class="read-blog-main__share" role="status" aria-live="polite">
-      <span class="read-blog-main__share-label">{{ $t("pages.readBlogPage.shareLink") }}</span>
-      <span class="read-blog-main__share-url">{{ shareUrl }}</span>
     </div>
 
     <article class="read-blog-main__article">
@@ -86,7 +79,7 @@
           :current-user-name="currentUserName"
           :current-user-avatar-url="currentUserAvatarUrl"
           :submitting="commenting"
-          :enable-attachments="false"
+          enable-attachments
           @submit="$emit('addComment', $event)"
         />
       </div>
@@ -107,8 +100,6 @@ defineProps<{
   }
   liked: boolean
   displayedLikes: number
-  shareOpen: boolean
-  shareUrl: string
   comments: FeedCommentRecord[]
   commentsLoading: boolean
   commenting: boolean
@@ -120,7 +111,7 @@ defineProps<{
 
 defineEmits<{
   toggleLike: []
-  toggleShare: []
+  openShare: []
   addComment: [payload: FeedCommentSubmitPayload]
 }>()
 </script>

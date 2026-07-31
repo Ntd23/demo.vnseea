@@ -19,6 +19,14 @@ const resultCardSource = fs.readFileSync(
   new URL("../src/search-nearby/presentation/components/NearbyResultCard.vue", import.meta.url),
   "utf8",
 )
+const appInterstitialSource = fs.readFileSync(
+  new URL("../src/search-nearby/presentation/components/NearbyAppInterstitial.vue", import.meta.url),
+  "utf8",
+)
+const appHandoffMiddlewareSource = fs.readFileSync(
+  new URL("../app/middleware/nearby-app-handoff.ts", import.meta.url),
+  "utf8",
+)
 
 test("Google Map initialization stops when its Vue host has unmounted", () => {
   assert.match(mapSource, /let isMapComponentMounted = false/)
@@ -37,14 +45,16 @@ test("missing route coordinates cannot be interpreted as zero coordinates", () =
 
 test("shared chat locations open as one focused address result", () => {
   assert.match(viewModelSource, /const createSharedLocationItem/)
-  assert.match(viewModelSource, /readString\(route\.query\.source\) === "message"/)
+  assert.match(viewModelSource, /const initialSource = readString\(route\.query\.source\)/)
+  assert.match(viewModelSource, /const initialSharedOrigin = initialSource === "message"/)
   assert.match(viewModelSource, /const selectedSuggestionItem = shallowRef<NearbySearchItem \| null>\(initialSharedLocationItem\)/)
   assert.match(viewModelSource, /const selectedItemId = ref\(initialSharedLocationItem\?\.id \|\| ""\)/)
   assert.match(viewModelSource, /const preserveSelectedItem = Boolean\(selectedSuggestionItem\.value\)/)
   assert.match(viewModelSource, /markerKind: "avatar"/)
   assert.match(pageSource, /async function hydrateSharedLocationCard\(\)/)
   assert.match(pageSource, /new window\.google\.maps\.Geocoder\(\)/)
-  assert.match(pageSource, /selectSuggestion\(\{[\s\S]*locationLabel: address/)
+  assert.match(pageSource, /const hydratedItem = place \? googlePlaceToNearbyItem\(place, 0, false\) : null/)
+  assert.match(pageSource, /if \(hydratedItem\) \{\s*selectSuggestion\(hydratedItem\)/)
   assert.match(pageSource, /const sharedLocationSelection = computed/)
   assert.match(pageSource, /sharedLocationSelection\.value[\s\S]*\[sharedLocationSelection\.value\]/)
   assert.match(pageSource, /!sharedLocationSelection\.value && displayLoading\.value/)
@@ -54,16 +64,31 @@ test("shared chat locations open as one focused address result", () => {
   assert.match(mapSource, /image\.src = item\.avatarUrl/)
 })
 
-test("nearby search always starts realtime device geolocation", () => {
+test("nearby search defers geolocation until the mobile app prompt is skipped", () => {
   assert.match(
     pageSource,
-    /onMounted\(\(\) => \{\s*void loadSearchNearbyConfig\(\)\s*void startDeviceOrientationTracking\(\)\s*void requestLocationPermission\(\)/,
+    /function startNearbyExperience\(\)[\s\S]*void startDeviceOrientationTracking\(\)[\s\S]*void requestLocationPermission\(\)/,
   )
+  assert.match(pageSource, /if \(isMobileWebViewport\.value\) \{\s*appPromptOpen\.value = true\s*return/)
+  assert.match(pageSource, /function continueOnMobileWeb\(\)[\s\S]*startNearbyExperience\(\)/)
+  assert.match(pageSource, /<NearbyAppInterstitial[\s\S]*@continue="continueOnMobileWeb"/)
   assert.match(viewModelSource, /const needsLocation = computed\(\(\) => !hasOrigin\.value\)/)
   assert.match(
     viewModelSource,
     /if \(requestQuery\.originLat === null \|\| requestQuery\.originLng === null\) \{\s*response\.value = emptyResponse\(\)/,
   )
+})
+
+test("mobile app prompt offers native handoff and an explicit web fallback", () => {
+  assert.match(appInterstitialSource, /:dismissible="false"/)
+  assert.match(appInterstitialSource, /pages\.searchNearby\.openApp/)
+  assert.match(appInterstitialSource, /pages\.searchNearby\.continueOnWeb/)
+  assert.match(appInterstitialSource, /@click="openNativeApp"/)
+  assert.match(appInterstitialSource, /@click="continueOnWeb"/)
+  assert.match(appInterstitialSource, /const displayLogoUrl = "\/themes\/wowonder\/img\/icon\.png"/)
+  assert.match(appInterstitialSource, /native_app_fallback/)
+  assert.match(appHandoffMiddlewareSource, /fallbackValue !== "ios" && fallbackValue !== "android"/)
+  assert.match(appHandoffMiddlewareSource, /navigateTo\(storeUrl/)
 })
 
 test("selecting a pointer or Google POI only opens its result", () => {

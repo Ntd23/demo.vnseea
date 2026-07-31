@@ -50,10 +50,9 @@
               :src="item.image"
               :alt="item.title"
               class="read-blog-sidebar__thumb-image"
-              width="180"
-              height="120"
-              sizes="90px"
               loading="lazy"
+              decoding="async"
+              referrerpolicy="no-referrer"
             />
           </span>
 
