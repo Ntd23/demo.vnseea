@@ -29,6 +29,7 @@ export interface NearbySearchItem {
   locationLabel: string
   avatarUrl: string
   href: string
+  placeId?: string
   lat: number | null
   lng: number | null
   distanceMeters: number | null

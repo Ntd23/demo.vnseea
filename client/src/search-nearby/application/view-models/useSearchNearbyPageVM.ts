@@ -53,6 +53,7 @@ const createSharedLocationItem = (input: {
   title: string
   address: string
   avatarUrl: string
+  placeId?: string
 }): NearbySearchItem => {
   const coordinateLabel = `${input.latitude}, ${input.longitude}`
   const title = input.title || input.address || coordinateLabel
@@ -68,6 +69,7 @@ const createSharedLocationItem = (input: {
     locationLabel: address,
     avatarUrl: input.avatarUrl,
     href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coordinateLabel)}`,
+    placeId: input.placeId || undefined,
     lat: input.latitude,
     lng: input.longitude,
     distanceMeters: 0,
@@ -81,6 +83,7 @@ export function useSearchNearbyPageVM() {
   const repository = createApiNearbySearchRepository()
 
   const initialSource = readString(route.query.source)
+  const initialSharedPlaceId = readString(route.query.placeId).trim()
   const initialTargetLatitude = readCoordinate(route.query.lat, -90, 90)
   const initialTargetLongitude = readCoordinate(route.query.lng, -180, 180)
   const initialTargetCoordinates = initialTargetLatitude !== null && initialTargetLongitude !== null
@@ -96,6 +99,7 @@ export function useSearchNearbyPageVM() {
         title: readString(route.query.title).trim(),
         address: readString(route.query.address).trim(),
         avatarUrl: readString(route.query.avatar).trim(),
+        placeId: initialSharedPlaceId,
       })
     : null
   const sharedOriginTitle = ref(readString(route.query.title).trim())
