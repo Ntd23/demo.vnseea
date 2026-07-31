@@ -190,6 +190,45 @@ async function resolveMapConstructors() {
   return null
 }
 
+async function ensureDirectionsConstructors() {
+  if (
+    typeof directionsServiceConstructor.value === "function"
+    && typeof directionsRendererConstructor.value === "function"
+  ) {
+    return true
+  }
+
+  const mapsRuntime = window.google?.maps as GoogleMapsRuntime | undefined
+  if (!mapsRuntime) {
+    return false
+  }
+
+  let DirectionsService = mapsRuntime.DirectionsService ?? null
+  let DirectionsRenderer = mapsRuntime.DirectionsRenderer ?? null
+
+  if (
+    (typeof DirectionsService !== "function" || typeof DirectionsRenderer !== "function")
+    && typeof mapsRuntime.importLibrary === "function"
+  ) {
+    try {
+      const routesLibrary = await mapsRuntime.importLibrary("routes") as google.maps.RoutesLibrary
+      DirectionsService = routesLibrary.DirectionsService ?? DirectionsService
+      DirectionsRenderer = routesLibrary.DirectionsRenderer ?? DirectionsRenderer
+    }
+    catch {
+      return false
+    }
+  }
+
+  if (typeof DirectionsService !== "function" || typeof DirectionsRenderer !== "function") {
+    return false
+  }
+
+  directionsServiceConstructor.value = DirectionsService
+  directionsRendererConstructor.value = DirectionsRenderer
+  return true
+}
+
 function clearMarkers() {
   markerInstances.value.forEach(marker => marker.setMap(null))
   markerInstances.value = []
@@ -995,8 +1034,9 @@ function handleGooglePoiClick(event: google.maps.MapMouseEvent & { placeId?: str
       const lng = place.geometry.location.lng()
       const title = String(place.name || place.formatted_address || "Google Maps").trim()
       const address = String(place.formatted_address || title).trim()
+      const resolvedPlaceId = String(place.place_id || placeId).trim()
       const item: NearbySearchItem = {
-        id: `place-${place.place_id || placeId}`,
+        id: `place-${resolvedPlaceId}`,
         backendId: 0,
         type: "place",
         title,
@@ -1004,7 +1044,8 @@ function handleGooglePoiClick(event: google.maps.MapMouseEvent & { placeId?: str
         description: "",
         locationLabel: address,
         avatarUrl: "",
-        href: `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(String(place.place_id || placeId))}&query=${encodeURIComponent(address)}`,
+        href: `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(resolvedPlaceId)}&query=${encodeURIComponent(address)}`,
+        placeId: resolvedPlaceId,
         lat,
         lng,
         distanceMeters: calculateDistanceMeters(lat, lng),
@@ -1607,26 +1648,34 @@ function syncActiveRoutePath(result: google.maps.DirectionsResult, target: Nearb
     : null
 }
 
-function renderRoute() {
+async function renderRoute() {
   const map = mapInstance.value
   const target = props.routeTargetItem
-  const DirectionsService = directionsServiceConstructor.value
-  const DirectionsRenderer = directionsRendererConstructor.value
 
   if (!props.routeNavigationActive || !target) {
     clearRoute()
     return
   }
 
+  const originLat = Number(props.origin.lat)
+  const originLng = Number(props.origin.lng)
+  const targetLat = Number(target.lat)
+  const targetLng = Number(target.lng)
+  const targetPlaceId = target.type === "place" ? String(target.placeId || "").trim() : ""
+  const hasOriginCoordinates = props.origin.lat !== null
+    && props.origin.lng !== null
+    && Number.isFinite(originLat)
+    && Number.isFinite(originLng)
+  const hasTargetCoordinates = target.lat !== null
+    && target.lng !== null
+    && Number.isFinite(targetLat)
+    && Number.isFinite(targetLng)
+
   if (
     !map
-    || !DirectionsService
-    || !DirectionsRenderer
     || !window.google?.maps
-    || props.origin.lat === null
-    || props.origin.lng === null
-    || target.lat === null
-    || target.lng === null
+    || !hasOriginCoordinates
+    || (!targetPlaceId && !hasTargetCoordinates)
   ) {
     clearRoute()
     emit("routeError", t("pages.searchNearby.routeUnavailable"))
@@ -1634,6 +1683,24 @@ function renderRoute() {
   }
 
   const requestId = ++routeRequestSequence
+  const directionsReady = await ensureDirectionsConstructors()
+
+  if (
+    requestId !== routeRequestSequence
+    || !props.routeNavigationActive
+    || props.routeTargetItem?.id !== target.id
+  ) {
+    return
+  }
+
+  const DirectionsService = directionsServiceConstructor.value
+  const DirectionsRenderer = directionsRendererConstructor.value
+  if (!directionsReady || !DirectionsService || !DirectionsRenderer) {
+    clearRoute()
+    emit("routeError", t("pages.searchNearby.routeUnavailable"))
+    return
+  }
+
   const service = new DirectionsService()
   const mobileRouteCameraRequestKey = props.routeNavigationActive
     ? `${target.id}:${props.routeFitKey}`
@@ -1664,39 +1731,66 @@ function renderRoute() {
   renderer.setMap(map)
   directionsRenderer.value = renderer
 
-  service.route(
-    {
-      origin: { lat: props.origin.lat, lng: props.origin.lng },
-      destination: { lat: target.lat, lng: target.lng },
-      provideRouteAlternatives: true,
-      travelMode: window.google.maps.TravelMode.DRIVING,
-    },
-    (result, status) => {
-      if (
-        requestId !== routeRequestSequence
-        || !props.routeNavigationActive
-        || props.routeTargetItem?.id !== target.id
-      ) {
-        return
-      }
+  const coordinateDestination: google.maps.LatLngLiteral = {
+    lat: targetLat,
+    lng: targetLng,
+  }
+  const primaryDestination: google.maps.DirectionsRequest["destination"] = targetPlaceId
+    ? { placeId: targetPlaceId }
+    : coordinateDestination
 
-      if (status === window.google.maps.DirectionsStatus.OK && result) {
-        const shortestRouteResult = selectShortestRoute(result)
-
-        lastRenderedRouteTargetId = target.id
-        syncActiveRoutePath(shortestRouteResult, target)
-        renderer.setDirections(shortestRouteResult)
-        if (shouldFitRouteViewport) {
-          lastRouteFitKey = props.routeFitKey
-          fitRoutePreview(shortestRouteResult, target)
+  const requestRoute = (
+    destination: google.maps.DirectionsRequest["destination"],
+    allowCoordinateFallback: boolean,
+  ) => {
+    service.route(
+      {
+        origin: { lat: originLat, lng: originLng },
+        destination,
+        provideRouteAlternatives: true,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (
+          requestId !== routeRequestSequence
+          || !props.routeNavigationActive
+          || props.routeTargetItem?.id !== target.id
+        ) {
+          return
         }
-        return
-      }
 
-      clearRoute()
-      emit("routeError", t("pages.searchNearby.googleDirectionsError", { status }))
-    },
-  )
+        if (status === window.google.maps.DirectionsStatus.OK && result) {
+          const shortestRouteResult = selectShortestRoute(result)
+
+          lastRenderedRouteTargetId = target.id
+          syncActiveRoutePath(shortestRouteResult, target)
+          renderer.setDirections(shortestRouteResult)
+          if (shouldFitRouteViewport) {
+            lastRouteFitKey = props.routeFitKey
+            fitRoutePreview(shortestRouteResult, target)
+          }
+          return
+        }
+
+        const canRetryWithCoordinates = allowCoordinateFallback
+          && hasTargetCoordinates
+          && (
+            status === window.google.maps.DirectionsStatus.NOT_FOUND
+            || status === window.google.maps.DirectionsStatus.ZERO_RESULTS
+          )
+
+        if (canRetryWithCoordinates) {
+          requestRoute(coordinateDestination, false)
+          return
+        }
+
+        clearRoute()
+        emit("routeError", t("pages.searchNearby.googleDirectionsError", { status }))
+      },
+    )
+  }
+
+  requestRoute(primaryDestination, Boolean(targetPlaceId))
 }
 
 async function initializeMap() {
@@ -1765,6 +1859,7 @@ async function initializeMap() {
   markerConstructor.value = constructors.Marker
   directionsServiceConstructor.value = constructors.DirectionsService
   directionsRendererConstructor.value = constructors.DirectionsRenderer
+  void ensureDirectionsConstructors()
   const vectorRenderingType = window.google.maps.RenderingType?.VECTOR
   const vectorMapOptions = {
     ...(googleMapsMapId.value ? { mapId: googleMapsMapId.value } : {}),
@@ -1869,6 +1964,7 @@ watch(
 watch(
   () => [
     props.routeTargetItem?.id,
+    props.routeTargetItem?.placeId,
     props.routeTargetItem?.lat,
     props.routeTargetItem?.lng,
     props.routeNavigationActive,

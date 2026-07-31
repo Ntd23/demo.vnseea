@@ -638,8 +638,12 @@ function calculateDistanceMeters(lat: number, lng: number) {
   return Math.round(earthRadiusMeters * angle)
 }
 
-function createGoogleMapsHref(placeId: string, address: string) {
-  return `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(placeId)}&query=${encodeURIComponent(address)}`
+function createGoogleMapsHref(placeId: string, address: string, lat: number, lng: number) {
+  if (placeId) {
+    return `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(placeId)}&query=${encodeURIComponent(address)}`
+  }
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`
 }
 
 function googlePlaceToNearbyItem(
@@ -663,7 +667,8 @@ function googlePlaceToNearbyItem(
 
   const title = String(place.name || place.formatted_address || place.vicinity || "Google Maps").trim()
   const address = String(place.vicinity || place.formatted_address || title).trim()
-  const placeId = String(place.place_id || `${lat},${lng}`)
+  const placeId = String(place.place_id || "").trim()
+  const placeIdentity = placeId || `${lat},${lng}`
   const placeIconUrl = typeof place.icon === "string" ? place.icon : ""
   const placeMaskIconUrl = typeof place.icon_mask_base_uri === "string"
     ? `${place.icon_mask_base_uri}.svg`
@@ -673,7 +678,7 @@ function googlePlaceToNearbyItem(
     : ""
 
   return {
-    id: `place-${placeId}-${index}`,
+    id: `place-${placeIdentity}-${index}`,
     backendId: 0,
     type: "place",
     title,
@@ -683,7 +688,8 @@ function googlePlaceToNearbyItem(
     avatarUrl: placeIconUrl,
     mapIconUrl: placeMaskIconUrl,
     mapIconBackgroundColor: placeIconBackgroundColor,
-    href: createGoogleMapsHref(placeId, address),
+    href: createGoogleMapsHref(placeId, address, lat, lng),
+    placeId: placeId || undefined,
     lat,
     lng,
     distanceMeters,
@@ -1338,12 +1344,8 @@ async function handleDirectionsRequest(item: NearbySearchItem) {
   void startDeviceOrientationTracking(true)
 
   try {
-    const hasFreshLocation = Boolean(
-      hasOrigin.value
-      && lastLiveLocation
-      && Date.now() - lastLiveLocation.updatedAt < locationWatchStaleMs,
-    )
-    const canStartRoute = hasFreshLocation || await getCurrentPositionForDirections()
+    // The active watcher keeps this origin current and reroutes when a newer GPS fix arrives.
+    const canStartRoute = hasOrigin.value || await getCurrentPositionForDirections()
 
     if (!canStartRoute) {
       handleRouteError(
