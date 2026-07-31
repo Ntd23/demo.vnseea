@@ -54,8 +54,6 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            echo "==> Remove stale untracked frontend source files"
-            git clean -fd -- client/app client/server client/src client/realtime client/scripts
 
             echo "==> Restart PHP-FPM"
             systemctl restart php8.3-fpm
