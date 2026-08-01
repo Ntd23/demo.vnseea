@@ -605,11 +605,10 @@ elseif ($_POST['type'] == 'buy') {
                                            'address_id' => $wo['address']->id,
                                            'time' => time()));
             }
-            $buyer_balance_update = array('wallet' => $db->dec($total));
-            if ($total_points > 0) {
-                $buyer_balance_update['points'] = $db->dec($total_points);
-            }
-            $db->where('user_id',$wo['user']['user_id'])->update(T_USERS, $buyer_balance_update);
+            $db->where('user_id',$wo['user']['user_id'])->update(
+                T_USERS,
+                array('wallet' => $db->dec($total))
+            );
 
             cache($wo['user']['user_id'], 'users', 'delete');
             //$db->where('user_id',$key)->update(T_USERS,array('balance' => $db->inc($total_final_price)));

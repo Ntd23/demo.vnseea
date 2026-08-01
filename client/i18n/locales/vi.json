@@ -7176,7 +7176,7 @@
       "decreaseQuantityAria": "Giảm số lượng của {name}",
       "increaseQuantityAria": "Tăng số lượng của {name}",
       "quantityValue": "Số lượng hiện tại {count}",
-      "pointPrice": "Giá điểm",
+      "pointPrice": "{count} VNSEEA",
       "totalPoints": "Tổng điểm"
     },
     "shippingForm": {
