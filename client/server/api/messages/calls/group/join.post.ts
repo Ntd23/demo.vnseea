@@ -1,6 +1,6 @@
 // English description: Accepts a pending backend group call invitation and returns its join URL.
 
-import { callBackend } from "../_shared"
+import { assertBackendStatus, callBackend } from "../_shared"
 import { buildGroupCallRoute } from "./_shared"
 
 const asNumber = (value: unknown) => {
@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
   const response = await callBackend(event, "join_group_call", {
     call_id: asNumber(body.id),
   })
+  assertBackendStatus(response, "Unable to join group call.")
 
   return {
     status: asNumber(response.status),

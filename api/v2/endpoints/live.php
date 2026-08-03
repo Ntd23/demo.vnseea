@@ -30,7 +30,8 @@ else{
 			if (!empty($post_data) && !VNSEEA_CanViewPost($post_data, $wo['user']['id'])) {
 				$post_data = null;
 			}
-    		if (!empty($post_data)) {
+			if (!empty($post_data)) {
+                $is_live_host_endpoint = VNSEEA_IsLiveHostEndpoint($post_data, $wo['user']['id'], $_POST);
                 if ($post_data->live_ended == 0) {
                 	$response_data = array('api_status' => 200);
 
@@ -77,7 +78,7 @@ else{
                         $word = $wo['lang']['live'];
                         $count = $db->where('post_id',$post_id)->where('time',time()-6,'>=')->getValue(T_LIVE_SUB,'COUNT(*)');
 
-                        if ($wo['user']['id'] == $post_data->user_id) {
+                        if ($is_live_host_endpoint) {
                             $joined_users = $db->where('post_id',$post_id)->where('time',time()-6,'>=')->where('is_watching',0)->get(T_LIVE_SUB);
                             $joined_ids = array();
                             if (!empty($joined_users)) {
@@ -126,7 +127,7 @@ else{
                     //     'still_live' => $still_live
                     // ));
                     
-                    if ($wo['user']['id'] == $post_data->user_id) {
+                    if ($is_live_host_endpoint) {
                         if ($_POST['page'] == 'live') {
                             $time = time();
                             $update_array = array('live_time' => $time);
@@ -203,6 +204,14 @@ else{
             $post_id = Wo_Secure($_POST['post_id']);
             $post = $db->where('post_id',$post_id)->where('user_id',$wo['user']['id'])->getOne(T_POSTS);
             if (!empty($post)) {
+                if (!VNSEEA_IsLiveHostEndpoint($post, $wo['user']['id'], $_POST)) {
+                    $response_data = array(
+                        'api_status' => 409,
+                        'error_code' => 'live_active_on_another_device',
+                        'message' => 'Live is active on another device.'
+                    );
+                    return;
+                }
                 $db->where('post_id',$post_id)->where('user_id',$wo['user']['id'])->update(T_POSTS,array('live_ended' => 1,'live_time' => 0));
                 if ($wo['config']['agora_live_video'] == 1 && !empty($wo['config']['agora_app_id']) && !empty($wo['config']['agora_customer_id']) && !empty($wo['config']['agora_customer_certificate']) && $wo['config']['live_video_save'] == 1) {
                     try {

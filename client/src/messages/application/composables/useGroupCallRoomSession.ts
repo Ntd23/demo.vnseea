@@ -407,6 +407,8 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
       window.addEventListener("beforeunload", leaveCallKeepalive)
     }
     catch (error: any) {
+      await vm.leaveCall()
+      room?.disconnect()
       vm.setLoadError(error?.data?.statusMessage || error?.statusMessage || error?.message || "Can not open this group call.")
     }
     finally {

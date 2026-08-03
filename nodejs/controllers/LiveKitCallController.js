@@ -240,6 +240,7 @@
         ring_mode: readString(data && data.ring_mode),
         left_user_id: readString(data && data.left_user_id),
         declined_user_id: readString(data && data.declined_user_id),
+        active_user_id: readString(data && data.active_user_id),
       };
 
       if (event === 'incoming') {

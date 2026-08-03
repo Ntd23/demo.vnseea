@@ -362,6 +362,27 @@ export function useMessageCalls(
     return true
   }
 
+  const validateCurrentIncomingGroupCall = async () => {
+    const call = ringingGroupCall.value
+
+    if (!call || call.direction !== "incoming") {
+      return false
+    }
+
+    const incoming = await repository.getIncomingGroupCall().catch(() => undefined)
+    if (incoming === undefined || activeGroupCall.value) {
+      return true
+    }
+
+    if (!incoming || incoming.id !== call.id) {
+      ringingGroupCall.value = null
+      status.value = "idle"
+      return false
+    }
+
+    return true
+  }
+
   const pollIncomingTypes = async () => {
     if (incomingPollPending || activeSession.value || activeGroupCall.value || (import.meta.client && document.visibilityState === "hidden")) {
       return
@@ -370,6 +391,13 @@ export function useMessageCalls(
     incomingPollPending = true
 
     try {
+      if (ringingGroupCall.value?.direction === "incoming") {
+        const stillRinging = await validateCurrentIncomingGroupCall()
+        if (stillRinging) {
+          return
+        }
+      }
+
       if (ringingCall.value?.direction === "incoming") {
         const stillRinging = await validateCurrentIncomingCall()
         if (stillRinging) {
@@ -472,6 +500,7 @@ export function useMessageCalls(
     catch (error: any) {
       status.value = "error"
       errorMessage.value = error?.statusMessage || "Can not join group call."
+      await validateCurrentIncomingGroupCall()
     }
     finally {
       isCallActionPending.value = false

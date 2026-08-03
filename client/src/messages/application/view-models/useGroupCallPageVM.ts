@@ -30,9 +30,17 @@ export function useGroupCallPageVM(
       throw new Error("Can not join this group call.")
     }
 
-    const loaded = await repository.getGroupCallPayload({ id: callId.value })
+    let loaded: MessageGroupCallPayload
+    try {
+      loaded = await repository.getGroupCallPayload({ id: callId.value })
+    }
+    catch (error) {
+      await repository.leaveGroupCall({ id: callId.value }).catch(() => null)
+      throw error
+    }
 
     if (loaded.status !== 200 || !loaded.id) {
+      await repository.leaveGroupCall({ id: callId.value }).catch(() => null)
       throw new Error("Can not load this group call.")
     }
 

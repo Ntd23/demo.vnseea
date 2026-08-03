@@ -1,6 +1,6 @@
 // English description: Starts or reuses a backend group LiveKit call and returns its join URL.
 
-import { callBackend } from "../_shared"
+import { assertBackendStatus, callBackend } from "../_shared"
 import { buildGroupCallRoute } from "./_shared"
 
 const asNumber = (value: unknown) => {
@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
     group_id: asNumber(body.groupId),
     call_type: "video",
   })
+  assertBackendStatus(response, "Unable to start group call.")
 
   return {
     status: asNumber(response.status),
