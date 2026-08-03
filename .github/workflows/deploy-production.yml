@@ -11,93 +11,84 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  deploy-v2:
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_STAGE: v2
+      RELEASE_SHA: ${{ github.sha }}
+      V2_DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      PRIMARY_DEPLOY_PATH: ${{ secrets.PRIMARY_DEPLOY_PATH }}
+      PNPM_BIN: /root/.local/share/pnpm/bin/pnpm
 
     steps:
-      - name: Deploy to production server
+      - name: Deploy and validate v2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           port: ${{ secrets.SERVER_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DEPLOY_STAGE,RELEASE_SHA,V2_DEPLOY_PATH,PRIMARY_DEPLOY_PATH,PNPM_BIN
           script_stop: true
           script: |
-            set -e
+            set -Eeuo pipefail
 
             export PATH="/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-            PNPM="/root/.local/share/pnpm/bin/pnpm"
+            : "${V2_DEPLOY_PATH:?V2_DEPLOY_PATH is required}"
+            : "${RELEASE_SHA:?RELEASE_SHA is required}"
+            PRIMARY_DEPLOY_PATH="${PRIMARY_DEPLOY_PATH:-/home/vnseea/main}"
+            export PRIMARY_DEPLOY_PATH
 
-            echo "DEBUG_WORKFLOW_VERSION=2026-07-31-output-rollback"
-            echo "PATH=$PATH"
-            echo "node=$(node -v)"
-            echo "pnpm_path=$PNPM"
+            cd "$V2_DEPLOY_PATH"
+            PREVIOUS_V2_SHA="$(git rev-parse HEAD)"
+            export PREVIOUS_V2_SHA
+            printf '%s\n' "$PREVIOUS_V2_SHA" > /home/vnseea/last_deploy_commit.txt
 
-            if [ ! -x "$PNPM" ]; then
-              echo "ERROR: pnpm binary not found at $PNPM"
-              ls -la /root/.local/share/pnpm/bin || true
-              exit 1
-            fi
+            V2_NODE_CONFIG_BACKUP="$(mktemp /tmp/vnseea-node-config.XXXXXX)"
+            cp -p nodejs/config.json "$V2_NODE_CONFIG_BACKUP"
+            restore_v2_node_config() {
+              cp -p "$V2_NODE_CONFIG_BACKUP" "$V2_DEPLOY_PATH/nodejs/config.json" || true
+              rm -f -- "$V2_NODE_CONFIG_BACKUP"
+            }
+            trap restore_v2_node_config EXIT
 
-            echo "pnpm_version=$($PNPM -v)"
-
-            DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
-
-            echo "==> Go to project"
-            cd "$DEPLOY_PATH"
-
-            echo "==> Save current commit for rollback"
-            git rev-parse HEAD > /home/vnseea/last_deploy_commit.txt || true
-
-            echo "==> Pull latest main"
             git fetch origin main
-            git reset --hard origin/main
-
-            echo "==> Remove stale untracked frontend source files"
+            test "$(git rev-parse origin/main)" = "$RELEASE_SHA"
+            git reset --hard "$RELEASE_SHA"
+            cp -p "$V2_NODE_CONFIG_BACKUP" nodejs/config.json
             git clean -fd -- client/app client/server client/src client/realtime client/scripts
 
-            echo "==> Restart PHP-FPM"
-            systemctl restart php8.3-fpm
+            bash scripts/deploy-production.sh
 
-            echo "==> Build Nuxt client"
-            cd "$DEPLOY_PATH/client"
+  deploy-primary:
+    needs: deploy-v2
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_STAGE: primary
+      RELEASE_SHA: ${{ github.sha }}
+      V2_DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      PRIMARY_DEPLOY_PATH: ${{ secrets.PRIMARY_DEPLOY_PATH }}
+      PNPM_BIN: /root/.local/share/pnpm/bin/pnpm
 
-            "$PNPM" install --frozen-lockfile
+    steps:
+      - name: Promote validated release to vnseea.vn
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          port: ${{ secrets.SERVER_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DEPLOY_STAGE,RELEASE_SHA,V2_DEPLOY_PATH,PRIMARY_DEPLOY_PATH,PNPM_BIN
+          script_stop: true
+          script: |
+            set -Eeuo pipefail
 
-            export NODE_OPTIONS="--max-old-space-size=4096"
+            export PATH="/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+            : "${V2_DEPLOY_PATH:?V2_DEPLOY_PATH is required}"
+            : "${RELEASE_SHA:?RELEASE_SHA is required}"
+            PRIMARY_DEPLOY_PATH="${PRIMARY_DEPLOY_PATH:-/home/vnseea/main}"
+            export PRIMARY_DEPLOY_PATH
 
-            echo "==> Stop Nuxt before replacing its runtime chunks"
-            pm2 stop vnseea-client || pm2 stop 2 || true
-
-            rm -rf .output.previous .nuxt node_modules/.vite
-            if [ -d .output ]; then
-              mv .output .output.previous
-            fi
-
-            if ! "$PNPM" build || [ ! -f .output/server/index.mjs ]; then
-              echo "ERROR: Nuxt build failed, restoring previous output"
-              rm -rf .output
-              if [ -d .output.previous ]; then
-                mv .output.previous .output
-                pm2 restart vnseea-client --update-env || pm2 restart 2 --update-env || true
-              fi
-              exit 1
-            fi
-
-            rm -rf .output.previous
-
-            echo "==> Restart PM2"
-            pm2 restart vnseea-client --update-env || pm2 restart 2 --update-env
-            pm2 restart vnseea-realtime --update-env || pm2 restart 1 --update-env
-            pm2 save
-
-            echo "==> Reload Nginx"
-            nginx -t
-            systemctl reload nginx
-
-            echo "==> Smoke test"
-            curl -I http://127.0.0.1:3000/home || true
-            curl -I https://v2.vnseea.vn/home || true
-
-            echo "==> Deploy done"
+            cd "$V2_DEPLOY_PATH"
+            test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+            bash scripts/deploy-production.sh
