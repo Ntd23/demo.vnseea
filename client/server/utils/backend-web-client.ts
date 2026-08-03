@@ -4,6 +4,7 @@ import { createError, type H3Event } from "h3"
 import type { ApiQuery } from "../../src/shared-kernel/domain/types/api.types"
 import { backendRoutes } from "../../src/shared-kernel/application/constants/route-registry"
 import { getBackendBaseCandidates } from "./backend-api-client"
+import { getOrCreateClientEndpointId } from "./client-endpoint"
 
 type BackendWebFormValue = string | number | boolean | null | undefined
 type BackendWebFormBody = Record<string, BackendWebFormValue> | URLSearchParams | FormData
@@ -55,6 +56,7 @@ export function createBackendWebClient(event: H3Event) {
   const forwardedHeaders: HeadersInit = {
     "X-Requested-With": "XMLHttpRequest",
     "X-Nuxt-Bridge": "1",
+    "X-VNSEEA-Endpoint-ID": getOrCreateClientEndpointId(event),
   }
 
   const cookie = event.node.req.headers.cookie
