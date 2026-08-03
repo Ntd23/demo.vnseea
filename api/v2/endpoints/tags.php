@@ -80,6 +80,19 @@ if ($action == 'create_label') {
     return;
 }
 
+if ($action == 'update_label') {
+    $label_id = Wo_ApiTagsPostInt('label_id');
+    $name = Wo_ApiTagsPostString('label_name');
+    $color = Wo_ApiTagsPostString('label_color');
+
+    Wo_ApiTagsResponse(Wo_UpdateTagLabel(array(
+        'label_id' => $label_id,
+        'name' => $name,
+        'color' => $color
+    )));
+    return;
+}
+
 if ($action == 'delete_label') {
     $label_id = Wo_ApiTagsPostInt('label_id');
     if (empty($label_id)) {

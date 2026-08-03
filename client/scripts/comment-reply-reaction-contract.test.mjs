@@ -22,6 +22,19 @@ test("reply composer stays open and focused while a reply is submitted", async (
   assert.match(composer, /preserveFocusWhileSubmitting\?: boolean/)
 })
 
+test("watch modal reply composer uses the vertical lightbox layout", async () => {
+  const [modal, list, item] = await Promise.all([
+    readClient("src/watch/presentation/components/WatchVideoModal.vue"),
+    readClient("src/feed/presentation/components/CommentList.vue"),
+    readClient("src/feed/presentation/components/CommentItem.vue"),
+  ])
+
+  assert.match(modal, /<FeedCommentList[\s\S]*?reply-composer-variant="lightbox"/)
+  assert.match(list, /:reply-composer-variant="replyComposerVariant"/)
+  assert.match(list, /replyComposerVariant\?: "default" \| "lightbox"/)
+  assert.match(item, /<FeedCommentComposer[\s\S]*?:variant="replyComposerVariant"/)
+})
+
 test("comment mention suggestions only return users followed by the current user", async () => {
   const [composer, mentionSearch, searchBridge] = await Promise.all([
     readClient("src/feed/presentation/components/CommentComposer.vue"),

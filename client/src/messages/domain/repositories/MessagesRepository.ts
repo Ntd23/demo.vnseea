@@ -73,6 +73,7 @@ export interface MessagesRepository {
   getGroupTyping(groupId: number): Promise<MessageTypingState>
   getRealtimeToken(): Promise<MessageRealtimeToken>
   createTagLabel(input: { name: string, color: string }): Promise<MessageActionResult>
+  updateTagLabel(input: { tagId: number, name: string, color: string }): Promise<MessageActionResult>
   deleteTagLabel(input: { tagId: number }): Promise<MessageActionResult>
   attachTag(input: { userId: number, tagId: number }): Promise<MessageActionResult>
   detachTag(input: { userId: number, tagId: number }): Promise<MessageActionResult>

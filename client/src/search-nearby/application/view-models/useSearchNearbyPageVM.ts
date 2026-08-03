@@ -441,6 +441,7 @@ export function useSearchNearbyPageVM() {
   function clearSearch() {
     searchText.value = ""
     distanceKm.value = defaultNearbyDistanceKm
+    selectedItemId.value = ""
     suggestions.value = []
     clearPinnedResult()
   }

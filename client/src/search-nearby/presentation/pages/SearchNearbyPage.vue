@@ -162,9 +162,11 @@
             :item="item"
             :origin="origin"
             :active="selectedItemId === item.id || (!selectedItemId && item.id === displayCardItems[0]?.id)"
+            :navigating="routeNavigationActive && routeTargetItem?.id === item.id"
             @select="selectItem"
             @focus-origin="focusOrigin"
             @directions="handleDirectionsRequest"
+            @stop-directions="handleStopDirections"
           />
         </div>
       </div>
@@ -552,7 +554,9 @@ const displayMapItems = computed(() =>
       : mapItems.value,
 )
 const displayCardItems = computed(() =>
-  sharedLocationSelection.value
+  routeNavigationActive.value && routeTargetItem.value
+    ? [routeTargetItem.value]
+    : sharedLocationSelection.value
     ? [sharedLocationSelection.value]
     : shouldShowGoogleNearbyResults.value
       ? googleNearbyResults.value
@@ -1364,6 +1368,14 @@ async function handleDirectionsRequest(item: NearbySearchItem) {
   finally {
     directionsLocationPending.value = false
   }
+}
+
+function handleStopDirections() {
+  googlePlaceSuggestions.value = []
+  isSuggestionPanelOpen.value = false
+  clearGoogleNearbyResults()
+  clearSearch()
+  focusOrigin()
 }
 
 function zoomMapIn() {

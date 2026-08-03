@@ -42,6 +42,7 @@
         :replies-count="comment.repliesCount"
         :enable-reply="enableReply"
         :enable-reaction="enableReaction"
+        :reply-composer-variant="replyComposerVariant"
         :current-user-name="currentUserName"
         :current-user-avatar-url="currentUserAvatarUrl"
         :comment-action-repository="commentActionRepository"
@@ -71,11 +72,13 @@ const props = withDefaults(defineProps<{
   comments: FeedCommentRecord[]
   enableReply?: boolean
   enableReaction?: boolean
+  replyComposerVariant?: "default" | "lightbox"
   currentUserName?: string
   currentUserAvatarUrl?: string
   commentActionRepository?: FeedCommentActionRepository
 }>(), {
   enableReaction: true,
+  replyComposerVariant: "default",
 })
 
 const sort = ref<"top" | "newest">("top")

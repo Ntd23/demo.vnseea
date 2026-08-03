@@ -186,6 +186,7 @@
 
         <FeedCommentComposer
           ref="replyComposerRef"
+          :variant="replyComposerVariant"
           :current-user-name="currentUserName"
           :current-user-avatar-url="currentUserAvatarUrl"
           :submitting="replySubmitting"
@@ -228,12 +229,14 @@ const props = withDefaults(defineProps<{
   repliesCount?: number
   enableReply?: boolean
   enableReaction?: boolean
+  replyComposerVariant?: "default" | "lightbox"
   currentUserName?: string
   currentUserAvatarUrl?: string
   reactionTarget?: "comment" | "reply"
   commentActionRepository?: FeedCommentActionRepository
 }>(), {
   enableReaction: true,
+  replyComposerVariant: "default",
 })
 
 const {

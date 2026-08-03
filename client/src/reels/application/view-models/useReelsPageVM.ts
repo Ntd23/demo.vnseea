@@ -13,6 +13,10 @@ type ReelsPageVMOptions = {
   onExit?: () => void
 }
 
+const reelsPageSize = 12
+const reelsPrefetchThreshold = 3
+const maxEmptyReelsPagesPerLoad = 3
+
 export function useReelsPageVM(
   repository: FeedRepository = createApiFeedRepository(),
   options: ReelsPageVMOptions = {},
@@ -26,6 +30,9 @@ export function useReelsPageVM(
   const errorMessage = ref("")
   const reels = ref<FeedPostRecord[]>(initialPost ? [initialPost] : [])
   const activeIndex = ref(0)
+  const hasMoreReels = ref(true)
+  const nextReelsOffset = ref<number | null>(null)
+  const loadingMoreReels = ref(false)
   const gestureStartY = ref<number | null>(null)
   const gestureStartX = ref<number | null>(null)
   const gestureStartedFromLeftEdge = ref(false)
@@ -40,6 +47,7 @@ export function useReelsPageVM(
     () => ({}),
   )
   const communityRepository = createApiCommunityRepository()
+  let loadMoreReelsPromise: Promise<boolean> | null = null
 
   const activeReel = computed(() => reels.value[activeIndex.value] ?? null)
   const activeMedia = computed(() =>
@@ -104,13 +112,17 @@ export function useReelsPageVM(
     errorMessage.value = ""
 
     try {
-      const response = await repository.getVideos({ limit: 12 })
+      const response = await repository.getVideos({ limit: reelsPageSize })
       const fetchedReels = response.posts.filter(post =>
         post.primaryMediaType === "video" || post.mediaItems.some(item => item.type === "video"),
       )
       reels.value = initialPost
         ? [initialPost, ...fetchedReels.filter(post => post.id !== initialPost.id)]
         : fetchedReels
+      // Video batches can be shorter than the requested limit when legacy posts are skipped
+      // during mapping. Keep paging while the backend still supplies a cursor.
+      hasMoreReels.value = response.nextOffset !== null
+      nextReelsOffset.value = response.nextOffset
 
       const requestedPostId = options.postId ?? initialPost?.id ?? Number(route.query.postId ?? 0)
       if (requestedPostId > 0) {
@@ -178,21 +190,100 @@ export function useReelsPageVM(
     videoRef.value.currentTime = position * duration.value
   }
 
-  function nextReel() {
-    if (reels.value.length < 2) {
-      return
+  function appendUniqueVideoPosts(posts: FeedPostRecord[]) {
+    const existingIds = new Set(reels.value.map(post => post.id))
+    const uniqueVideos = posts.filter(post => (
+      (post.primaryMediaType === "video" || post.mediaItems.some(item => item.type === "video"))
+      && !existingIds.has(post.id)
+    ))
+
+    if (uniqueVideos.length > 0) {
+      reels.value = [...reels.value, ...uniqueVideos]
     }
 
-    activeIndex.value = (activeIndex.value + 1) % reels.value.length
+    return uniqueVideos.length
   }
 
-  function handleVideoEnded() {
-    if (reels.value.length > 1) {
-      nextReel()
-      return
+  function loadMoreReels() {
+    if (loadMoreReelsPromise) {
+      return loadMoreReelsPromise
     }
 
-    isPlaying.value = false
+    if (!hasMoreReels.value || loading.value) {
+      return Promise.resolve(false)
+    }
+
+    loadMoreReelsPromise = (async () => {
+      loadingMoreReels.value = true
+
+      try {
+        let attempts = 0
+
+        while (hasMoreReels.value && attempts < maxEmptyReelsPagesPerLoad) {
+          const requestedOffset = nextReelsOffset.value
+
+          if (!requestedOffset) {
+            hasMoreReels.value = false
+            break
+          }
+
+          const response = await repository.getVideos({
+            limit: reelsPageSize,
+            afterPostId: requestedOffset,
+          })
+          const appendedCount = appendUniqueVideoPosts(response.posts)
+          const nextOffset = response.nextOffset
+          const cursorAdvanced = nextOffset !== null && nextOffset !== requestedOffset
+
+          nextReelsOffset.value = nextOffset
+          hasMoreReels.value = response.posts.length > 0 && cursorAdvanced
+
+          if (appendedCount > 0) {
+            return true
+          }
+
+          attempts += 1
+        }
+
+        return false
+      }
+      catch {
+        return false
+      }
+      finally {
+        loadingMoreReels.value = false
+        loadMoreReelsPromise = null
+      }
+    })()
+
+    return loadMoreReelsPromise
+  }
+
+  async function nextReel() {
+    const nextIndex = activeIndex.value + 1
+
+    if (nextIndex < reels.value.length) {
+      activeIndex.value = nextIndex
+      return true
+    }
+
+    const previousLength = reels.value.length
+    const appended = await loadMoreReels()
+
+    if (appended && reels.value.length > previousLength && activeIndex.value === previousLength - 1) {
+      activeIndex.value = previousLength
+      return true
+    }
+
+    return false
+  }
+
+  async function handleVideoEnded() {
+    const movedToNextReel = await nextReel()
+
+    if (!movedToNextReel) {
+      isPlaying.value = false
+    }
   }
 
   function prevReel() {
@@ -200,7 +291,7 @@ export function useReelsPageVM(
       return
     }
 
-    activeIndex.value = (activeIndex.value - 1 + reels.value.length) % reels.value.length
+    activeIndex.value = Math.max(0, activeIndex.value - 1)
   }
 
   function exitFullscreen() {
@@ -263,7 +354,7 @@ export function useReelsPageVM(
     }
 
     if (deltaY > 0) {
-      nextReel()
+      void nextReel()
       return
     }
 
@@ -306,7 +397,7 @@ export function useReelsPageVM(
     wheelLocked.value = true
 
     if (event.deltaY > 0) {
-      nextReel()
+      void nextReel()
     }
     else {
       prevReel()
@@ -340,6 +431,12 @@ export function useReelsPageVM(
     { immediate: true },
   )
 
+  watch(activeIndex, (index) => {
+    if (index >= reels.value.length - reelsPrefetchThreshold) {
+      void loadMoreReels()
+    }
+  })
+
   if (initialPost && import.meta.client) {
     requestAnimationFrame(() => {
       void fetchReels()
@@ -354,6 +451,8 @@ export function useReelsPageVM(
     errorMessage,
     reels,
     activeIndex,
+    hasMoreReels,
+    loadingMoreReels,
     activeReel,
     activeMedia,
     videoRef,

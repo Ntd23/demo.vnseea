@@ -14257,6 +14257,54 @@ function Wo_CreateTagLabel($data = [])
 
     return ['status' => 200, 'id' => mysqli_insert_id($sqlConnect)];
 }
+function Wo_UpdateTagLabel($data = [])
+{
+    global $wo, $sqlConnect;
+
+    if (empty($wo['loggedin'])) {
+        return ['status' => 401, 'message' => 'Not logged in'];
+    }
+
+    $owner_id = (int)$wo['user']['user_id'];
+    $label_id = isset($data['label_id']) ? (int)$data['label_id'] : 0;
+    $name = isset($data['name']) ? trim($data['name']) : '';
+    $color = isset($data['color']) ? trim($data['color']) : '#999999';
+
+    if ($label_id < 1) {
+        return ['status' => 400, 'message' => 'Label id is required'];
+    }
+    if ($name === '') {
+        return ['status' => 400, 'message' => 'Name can not be empty'];
+    }
+    if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $color)) {
+        return ['status' => 400, 'message' => 'A valid label color is required'];
+    }
+
+    $label_query = mysqli_query(
+        $sqlConnect,
+        "SELECT `id` FROM " . T_USER_TAG_LABELS . " WHERE `id`={$label_id} AND `owner_id`={$owner_id} LIMIT 1"
+    );
+    if (!$label_query || mysqli_num_rows($label_query) !== 1) {
+        return ['status' => 404, 'message' => 'Label was not found'];
+    }
+
+    $name_escaped = mysqli_real_escape_string($sqlConnect, $name);
+    $color_escaped = mysqli_real_escape_string($sqlConnect, $color);
+    $updated = mysqli_query(
+        $sqlConnect,
+        "UPDATE " . T_USER_TAG_LABELS . " SET `name`='{$name_escaped}', `color`='{$color_escaped}' WHERE `id`={$label_id} AND `owner_id`={$owner_id} LIMIT 1"
+    );
+
+    if (!$updated) {
+        return [
+            'status' => 500,
+            'message' => 'SQL error',
+            'sql_error' => mysqli_error($sqlConnect)
+        ];
+    }
+
+    return ['status' => 200, 'message' => 'Label updated successfully'];
+}
 function Wo_AttachUserTag($data = [])
 {
     global $wo, $sqlConnect, $db;

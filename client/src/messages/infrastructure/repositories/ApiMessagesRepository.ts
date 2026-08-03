@@ -289,6 +289,14 @@ export function createApiMessagesRepository(): MessagesRepository {
         color: input.color,
       })
     },
+    async updateTagLabel(input) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(MESSAGES_API.tags, {
+        action: "update",
+        tagId: input.tagId,
+        name: input.name,
+        color: input.color,
+      })
+    },
     async deleteTagLabel(input) {
       return await client.post<MessageActionResult, Record<string, unknown>>(MESSAGES_API.tags, {
         action: "delete",

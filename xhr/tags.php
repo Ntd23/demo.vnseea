@@ -47,6 +47,18 @@ if ($f == 'tags') {
         }
         exit();
     }
+    if ($s == 'update_label') {
+        $label_id = isset($_POST['label_id']) ? (int)$_POST['label_id'] : 0;
+        $name = trim($_POST['label_name'] ?? $_REQUEST['label_name'] ?? '');
+        $color = trim($_POST['label_color'] ?? $_REQUEST['label_color'] ?? '');
+        $data = Wo_UpdateTagLabel([
+            'label_id' => $label_id,
+            'name' => $name,
+            'color' => $color,
+        ]);
+        echo json_encode($data);
+        exit();
+    }
 
     // if($s=='delete_label'){
     //     $id=isset($_POST['id'])  ? $_POST['id']  : '';
