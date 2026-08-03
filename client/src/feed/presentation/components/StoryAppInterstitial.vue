@@ -86,9 +86,11 @@ const displayLogoUrl = computed(() => {
   }
 
   const backendBase = String(runtimeConfig.public.backendWebBase || runtimeConfig.public.siteUrl || "").replace(/\/+$/, "")
-  return backendBase && (source.startsWith("/themes/") || source.startsWith("/upload/"))
-    ? `${backendBase}${source}`
-    : source
+  const mediaBase = String(runtimeConfig.public.mediaBaseUrl || "").replace(/\/+$/, "")
+  if (source.startsWith("/upload/") && mediaBase) {
+    return `${mediaBase}${source}`
+  }
+  return backendBase && source.startsWith("/themes/") ? `${backendBase}${source}` : source
 })
 const logoAlt = computed(() => `${brandName.value} logo`)
 const brandInitial = computed(() => brandName.value.trim().charAt(0).toUpperCase() || "V")

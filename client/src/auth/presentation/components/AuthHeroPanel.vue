@@ -250,8 +250,13 @@ const optimizedLogoUrl = computed(() => {
   }
 
   const backendBase = String(runtimeConfig.public.backendWebBase || runtimeConfig.public.siteUrl || "").replace(/\/+$/, "")
+  const mediaBase = String(runtimeConfig.public.mediaBaseUrl || "").replace(/\/+$/, "")
 
-  if (backendBase && (source.startsWith("/themes/") || source.startsWith("/upload/"))) {
+  if (source.startsWith("/upload/") && mediaBase) {
+    return `${mediaBase}${source}`
+  }
+
+  if (backendBase && source.startsWith("/themes/")) {
     return `${backendBase}${source}`
   }
 

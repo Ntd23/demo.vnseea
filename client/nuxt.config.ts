@@ -38,6 +38,7 @@ const publicApiBase = requireEnv("NUXT_PUBLIC_API_BASE");
 const backendApiBase = requireEnv("NUXT_BACKEND_API_BASE");
 const backendServerKey = requireEnv("NUXT_BACKEND_SERVER_KEY");
 const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL");
+const mediaBaseUrl = requireEnv("MEDIA_BASE_URL");
 const realtimeInternalUrl = process.env.REALTIME_INTERNAL_URL?.trim() || "";
 const realtimeSecret = process.env.REALTIME_SECRET?.trim() || "";
 const publicRealtimeUrl = process.env.NUXT_PUBLIC_REALTIME_URL?.trim() || "";
@@ -62,9 +63,11 @@ const backendWebBase = normalizeBackendWebBase(
 );
 const imageDomains = Array.from(
   new Set(
-    [extractHostname(publicSiteUrl), extractHostname(backendWebBase)].filter(
-      Boolean,
-    ),
+    [
+      extractHostname(publicSiteUrl),
+      extractHostname(backendWebBase),
+      extractHostname(mediaBaseUrl),
+    ].filter(Boolean),
   ),
 );
 const allowedHosts = requireEnv("NUXT_ALLOWED_HOSTS")
@@ -137,6 +140,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: publicApiBase,
       backendWebBase,
+      mediaBaseUrl,
       siteUrl: publicSiteUrl,
       realtimeUrl: publicRealtimeUrl,
       nativeApp: {
