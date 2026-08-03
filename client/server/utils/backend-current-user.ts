@@ -135,6 +135,7 @@ export async function getBackendCurrentUser(
         backendRoutes.session.currentUser(userSession),
         {
           baseURL,
+          cache: "no-store",
           credentials: "include",
           headers: {
             accept: "application/json",

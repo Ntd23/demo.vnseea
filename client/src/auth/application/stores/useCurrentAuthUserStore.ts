@@ -108,6 +108,29 @@ export const useCurrentAuthUserStore = defineStore("current-auth-user", () => {
     lastHydrationStatus.value = null
   }
 
+  function setPointsBalance(points: number) {
+    if (!user.value || !Number.isFinite(points)) {
+      return
+    }
+
+    user.value = {
+      ...user.value,
+      points: Math.max(Math.trunc(points), 0),
+    }
+  }
+
+  function bustAvatarCache() {
+    const avatarUrl = user.value?.avatarUrl
+    if (!avatarUrl) {
+      return
+    }
+
+    user.value = {
+      ...user.value,
+      avatarUrl: `${avatarUrl}${avatarUrl.includes("?") ? "&" : "?"}_v=${Date.now()}`,
+    }
+  }
+
   const isAdmin = computed(() => user.value?.isAdmin === true)
   const isModerator = computed(() => user.value?.isModerator === true)
 
@@ -120,6 +143,8 @@ export const useCurrentAuthUserStore = defineStore("current-auth-user", () => {
     isAdmin,
     isModerator,
     hydrate,
+    setPointsBalance,
+    bustAvatarCache,
     clear,
   }
 })

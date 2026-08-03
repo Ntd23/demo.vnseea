@@ -11,6 +11,11 @@
 // +------------------------------------------------------------------------+
 $bootstrapped_standalone = false;
 
+header('Cache-Control: private, no-store, no-cache, max-age=0, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+header('Vary: Cookie');
+
 if (!isset($wo) || !is_array($wo)) {
     $bootstrapped_standalone = true;
     header_remove('Server');
@@ -65,7 +70,29 @@ if (empty($current_user_id)) {
         ),
     );
 } else {
-    $current_user = Wo_UserData($current_user_id);
+    // Always read authenticated account balances and profile fields from the
+    // database. Wo_UserData() may serve its filesystem user cache, which is not
+    // suitable for a session snapshot immediately after a balance mutation.
+    $current_user = array();
+    $current_user_query = mysqli_query(
+        $sqlConnect,
+        "SELECT * FROM " . T_USERS . " WHERE `user_id` = " . (int) $current_user_id . " LIMIT 1"
+    );
+    if ($current_user_query && mysqli_num_rows($current_user_query) === 1) {
+        $current_user = mysqli_fetch_assoc($current_user_query);
+    }
+
+    if (empty($current_user)) {
+        $response_data = array(
+            'api_status' => '404',
+            'errors' => array(
+                'error_id' => '2',
+                'error_text' => 'Authenticated user was not found',
+            ),
+        );
+    }
+
+    if (!empty($current_user)) {
     // Keep bootstrap lightweight; profile detail refresh can fail under strict SQL mode and break session hash creation.
     $ads_currency = !empty($wo['config']['ads_currency']) ? (string) $wo['config']['ads_currency'] : (!empty($wo['config']['currency']) ? (string) $wo['config']['currency'] : 'USD');
     $currency_symbol = function_exists('Wo_GetCurrency') ? Wo_GetCurrency($ads_currency) : '$';
@@ -143,8 +170,12 @@ if (empty($current_user_id)) {
                     ? trim(($current_user['first_name'] ?? '') . ' ' . ($current_user['last_name'] ?? ''))
                     : (!empty($current_user['username']) ? $current_user['username'] : 'User')),
             'username' => !empty($current_user['username']) ? $current_user['username'] : '',
-            'avatar' => !empty($current_user['avatar']) ? $current_user['avatar'] : '',
-            'cover' => !empty($current_user['cover']) ? $current_user['cover'] : '',
+            'avatar' => !empty($current_user['avatar'])
+                ? Wo_GetMedia($current_user['avatar']) . '?cache=' . (int) ($current_user['last_avatar_mod'] ?? 0)
+                : '',
+            'cover' => !empty($current_user['cover'])
+                ? Wo_GetMedia($current_user['cover']) . '?cache=' . (int) ($current_user['last_cover_mod'] ?? 0)
+                : '',
             'admin' => isset($current_user['admin']) ? (int) $current_user['admin'] : 0,
             'email' => !empty($current_user['email']) ? $current_user['email'] : '',
             'phone_number' => !empty($current_user['phone_number']) ? $current_user['phone_number'] : '',
@@ -221,6 +252,7 @@ if (empty($current_user_id)) {
             'session_hash' => function_exists('Wo_CreateSession') ? Wo_CreateSession() : '',
         ),
     );
+    }
 }
 
 if ($bootstrapped_standalone === true) {

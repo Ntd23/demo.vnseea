@@ -65,6 +65,35 @@ test("Nuxt points UI persists the idempotency key for ambiguous retries", async 
   assert.match(source, /prefix !== "POINTS" && prefix !== "WALLET"/)
 })
 
+test("Nuxt points UI synchronizes the committed sender balance with shared auth state", async () => {
+  const settingsViewModel = await readClient("src/settings/application/view-models/useSettingsPageVM.ts")
+  const authStore = await readClient("src/auth/application/stores/useCurrentAuthUserStore.ts")
+
+  assert.match(settingsViewModel, /syncPointsBalance\(response\.senderPoints\)/)
+  assert.match(settingsViewModel, /currentAuthUserStore\.setPointsBalance\(normalizedPoints\)/)
+  assert.match(authStore, /function setPointsBalance\(points: number\)/)
+})
+
+test("authenticated user snapshots bypass stale profile and balance caches", async () => {
+  const backendCurrentUser = await readRoot("api/v2/endpoints/get-current-user.php")
+  const nuxtCurrentUser = await readClient("server/utils/backend-current-user.ts")
+  const authMe = await readClient("server/api/auth/me.get.ts")
+  const settingsMe = await readClient("server/api/settings/me.get.ts")
+  const authenticatedHtmlMiddleware = await readClient("server/middleware/authenticated-html-no-store.ts")
+  const settingsViewModel = await readClient("src/settings/application/view-models/useSettingsPageVM.ts")
+
+  assert.match(backendCurrentUser, /SELECT \* FROM .*T_USERS/)
+  assert.doesNotMatch(backendCurrentUser, /\$current_user = Wo_UserData\(\$current_user_id\)/)
+  assert.match(backendCurrentUser, /no-store/)
+  assert.match(nuxtCurrentUser, /cache: "no-store"/)
+  assert.match(authMe, /private, no-store/)
+  assert.match(settingsMe, /private, no-store/)
+  assert.match(authenticatedHtmlMiddleware, /getCookie\(event, "user_id"\)/)
+  assert.match(authenticatedHtmlMiddleware, /private, no-store/)
+  assert.match(settingsViewModel, /currentAuthUserStore\.hydrate\(true\)/)
+  assert.match(settingsViewModel, /currentAuthUserStore\.bustAvatarCache\(\)/)
+})
+
 test("legacy transfer bridges delegate to the canonical service", async () => {
   const apiWallet = await readRoot("api/v2/endpoints/wallet.php")
   const xhrWallet = await readRoot("xhr/wallet.php")

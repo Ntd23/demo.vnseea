@@ -1,5 +1,6 @@
 // English description: Returns the current authenticated backend user mapped into the shared frontend auth shape.
 
+import { setHeader } from "h3"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import type { CurrentAuthUser } from "../../../src/auth/domain/types/auth.types"
@@ -28,6 +29,11 @@ const asNonEmptyString = (value: unknown) => {
 }
 
 export default defineEventHandler(async (event): Promise<CurrentAuthUser | null> => {
+  setHeader(event, "Cache-Control", "private, no-store, no-cache, max-age=0, must-revalidate")
+  setHeader(event, "Pragma", "no-cache")
+  setHeader(event, "Expires", "0")
+  setHeader(event, "Vary", "Cookie")
+
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const user = await getBackendCurrentUser(event) as BackendCurrentUserPayload
   const adminLevel = Number(user.admin ?? 0)
