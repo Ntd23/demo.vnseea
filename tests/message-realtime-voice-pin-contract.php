@@ -12,6 +12,7 @@ $root = dirname(__DIR__);
 $functions_one = file_get_contents($root . '/assets/includes/functions_one.php');
 $send_message = file_get_contents($root . '/api/v2/endpoints/send-message.php');
 $group_chat = file_get_contents($root . '/api/v2/endpoints/group_chat.php');
+$comments = file_get_contents($root . '/api/v2/endpoints/comments.php');
 $get_pinned = file_get_contents($root . '/api/v2/endpoints/get_pin_message.php');
 $pin_message = file_get_contents($root . '/api/v2/endpoints/pin_message.php');
 $reaction = file_get_contents($root . '/api/v2/endpoints/react_message.php');
@@ -28,6 +29,12 @@ assert_message_runtime_contract(
         strpos($group_chat, "\$message_data['type_two'] = 'audio'") !== false &&
         strpos($group_chat, '$media === false') !== false,
     'group voice upload must remain an audio message and reject failed uploads'
+);
+assert_message_runtime_contract(
+    strpos($comments, "'types' => 'mp3,wav,ogg,m4a,mp4,aac'") !== false &&
+        strpos($comments, "\$fileInfo['is_sound'] = 1") !== false &&
+        strpos($comments, '$media === false') !== false,
+    'voice comments must accept iOS M4A audio and reject failed uploads'
 );
 assert_message_runtime_contract(
     strpos($get_pinned, "['pinned_at']") !== false &&
