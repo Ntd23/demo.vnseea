@@ -93,7 +93,7 @@ export default defineEventHandler(async (event) => {
     : await parseJsonPayload(event)
   const { action, postId, optionId, reaction, text } = payload
 
-  if (!["like", "reaction", "comment", "save", "report", "unsave", "delete", "hide", "votePoll"].includes(action)) {
+  if (!["like", "reaction", "comment", "save", "report", "unsave", "delete", "hide", "votePoll", "edit"].includes(action)) {
     throw createError({
       statusCode: 400,
       statusMessage: "Post action is invalid.",
@@ -121,6 +121,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (action === "edit" && !text) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Post content is required.",
+    })
+  }
+
   if (action === "reaction" && reaction && !isFeedStoryReaction(reaction)) {
     throw createError({
       statusCode: 400,
@@ -129,7 +136,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return await runPostAction(event, {
-    action: action as "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll",
+    action: action as "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll" | "edit",
     postId,
     optionId,
     reaction,

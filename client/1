@@ -1,0 +1,6 @@
+npx nuxi cleanup
+pnpm i
+pnpm build
+pm2 restart vnseea-web --update-env
+pm2 restart vnseea-web-realtime --update-env 
+pm2 restart vnseea-mobile-main-socket  --update-env

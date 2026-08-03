@@ -6,7 +6,7 @@ import type { Socket } from "socket.io-client"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
-type PostMutation = "reaction" | "comment" | "share" | "deleted"
+type PostMutation = "reaction" | "comment" | "share" | "edited" | "deleted"
 
 type PostChangedEvent = {
   eventId: string
@@ -54,6 +54,16 @@ export const usePostRealtimeStore = defineStore("post-realtime", () => {
 
   function snapshotFor(postId: number | string) {
     return snapshots.value[normalizePostId(postId)]
+  }
+
+  function applySnapshot(post: FeedPostRecord) {
+    const postId = normalizePostId(post.id)
+    if (!postId) return
+
+    const nextDeleted = { ...deletedPostIds.value }
+    delete nextDeleted[postId]
+    deletedPostIds.value = nextDeleted
+    snapshots.value = { ...snapshots.value, [postId]: post }
   }
 
   function isDeleted(postId: number | string) {
@@ -129,7 +139,7 @@ export const usePostRealtimeStore = defineStore("post-realtime", () => {
       return
     }
 
-    if (payload.mutation === "reaction" || payload.mutation === "comment" || payload.mutation === "share") {
+    if (payload.mutation === "reaction" || payload.mutation === "comment" || payload.mutation === "share" || payload.mutation === "edited") {
       if (payload.mutation === "comment") {
         commentVersions.value = {
           ...commentVersions.value,
@@ -302,6 +312,7 @@ export const usePostRealtimeStore = defineStore("post-realtime", () => {
     connected,
     watchedPostIds,
     snapshotFor,
+    applySnapshot,
     isDeleted,
     commentVersionFor,
     watchPost,

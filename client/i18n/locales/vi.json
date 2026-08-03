@@ -5663,6 +5663,8 @@
       "hoverFollowSuccess": "Bạn đang theo dõi {name}",
       "hoverUnfollowSuccess": "Đã bỏ theo dõi {name}",
       "hoverFollowRequestedSuccess": "Đã gửi yêu cầu theo dõi tới {name}",
+      "menuEditLabel": "Chỉnh sửa bài viết",
+      "menuEditDescription": "Cập nhật nội dung bài viết này.",
       "menuDeleteLabel": "Xóa bài đăng",
       "menuDeleteDescription": "Xóa hoàn toàn bài đăng này.",
       "menuSaveLabel": "Lưu bài đăng",
@@ -5676,7 +5678,16 @@
       "menuHideLabel": "Ẩn bài đăng",
       "menuHideDescription": "Tôi không muốn xem bài đăng này nữa.",
       "menuCopyLabel": "Sao chép liên kết",
-      "menuCopyDescription": "Sao chép đường dẫn bài đăng vào bộ nhớ tạm."
+      "menuCopyDescription": "Sao chép đường dẫn bài đăng vào bộ nhớ tạm.",
+      "editModalTitle": "Chỉnh sửa bài viết",
+      "editModalDescription": "Cập nhật nội dung bài viết rồi lưu thay đổi.",
+      "editContentLabel": "Nội dung bài viết",
+      "editContentPlaceholder": "Nhập nội dung bài viết...",
+      "editContentRequired": "Nội dung bài viết không được để trống.",
+      "editCancel": "Hủy",
+      "editSave": "Lưu thay đổi",
+      "editSuccess": "Đã cập nhật bài viết.",
+      "editError": "Không thể cập nhật bài viết."
     },
     "commentList": {
       "title": "Bình luận",

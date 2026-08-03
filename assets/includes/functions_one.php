@@ -3387,7 +3387,7 @@ function VNSEEA_PublishRealtimeGroupChange($group_id, $extra_recipient_ids = arr
 function Wo_PublishRealtimePostChange($post_id, $mutation)
 {
     static $realtime_config = null;
-    $allowed_mutations = array('reaction', 'comment', 'share', 'deleted');
+    $allowed_mutations = array('reaction', 'comment', 'share', 'edited', 'deleted');
     if (empty($post_id) || !is_numeric($post_id) || $post_id < 1 || !in_array($mutation, $allowed_mutations)) {
         return false;
     }

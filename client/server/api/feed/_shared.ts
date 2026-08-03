@@ -1090,6 +1090,8 @@ export const mapPostRecord = (
   const text = buildPostText(entity)
   const sharedInfo = asRecord(entity.shared_info)
   const sharedPostId = firstNumber(entity, ["parent_id", "shared_post_id"])
+  const productId = firstNumber(entity, ["product_id"])
+    || firstNumber(asRecord(entity.product), ["id", "product_id"])
   const sharedPost = depth < 1 && Object.keys(sharedInfo).length > 0
     ? mapPostRecord(sharedInfo, resolveMediaUrl, depth + 1)
     : null
@@ -1146,6 +1148,9 @@ export const mapPostRecord = (
   return {
     id: firstNumber(entity, ["post_id", "id"]),
     permissions: {
+      canEdit: (isTruthy(entity.admin) || isTruthy(entity.is_owner))
+        && productId === 0
+        && sharedPostId === 0,
       canDelete: isTruthy(entity.can_delete),
       canShare,
     },
@@ -2014,7 +2019,7 @@ export async function runPokeAction(
 export async function runPostAction(
   event: H3Event,
   input: {
-    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll"
+    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll" | "edit"
     postId: number
     optionId?: number
     reaction?: string
@@ -2201,6 +2206,22 @@ export async function runPostAction(
     ),
     "Unable to update post.",
   )
+
+  if (input.action === "edit") {
+    let post: FeedPostRecord | null = null
+
+    try {
+      post = await fetchFeedPostById(event, input.postId)
+    }
+    catch {
+      post = null
+    }
+
+    return {
+      ok: true,
+      post,
+    }
+  }
 
   return {
     ok: true,

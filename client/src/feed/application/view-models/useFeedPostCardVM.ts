@@ -50,6 +50,7 @@ export function useFeedPostCardVM(
   const commenting = ref(false)
   const pollVoting = ref(false)
   const reporting = ref(false)
+  const editing = ref(false)
   const loadingComments = ref(false)
   const reactionModalOpen = ref(false)
   const reactionUsersLoading = ref(false)
@@ -606,6 +607,60 @@ export function useFeedPostCardVM(
     showShare.value = false
   }
 
+  async function editPost(text: string) {
+    const currentPost = post.value
+    const normalizedText = text.trim()
+
+    if (!currentPost || !normalizedText || editing.value) {
+      return null
+    }
+
+    editing.value = true
+    actionState.value = "idle"
+    actionMessage.value = ""
+
+    try {
+      const response = await repository.runPostAction({
+        action: "edit",
+        postId: currentPost.id,
+        text: normalizedText,
+      })
+      const updatedPost = response.post ?? {
+        ...currentPost,
+        text: normalizedText,
+      }
+
+      actionState.value = "success"
+      actionMessage.value = t("feed.postHeader.editSuccess")
+      toast.add({
+        color: "primary",
+        icon: "i-ph-check-circle-fill",
+        title: currentPost.author,
+        description: actionMessage.value,
+      })
+
+      return updatedPost
+    }
+    catch (error) {
+      const message = error instanceof Error
+        ? error.message
+        : t("feed.postHeader.editError")
+
+      actionState.value = "error"
+      actionMessage.value = message
+      toast.add({
+        color: "warning",
+        icon: "i-ph-warning-circle-fill",
+        title: currentPost.author,
+        description: message,
+      })
+      throw error
+    }
+    finally {
+      editing.value = false
+    }
+  }
+
   async function handleMenuAction(action: string) {
     const currentPost = post.value
 
@@ -747,6 +802,7 @@ export function useFeedPostCardVM(
     actionMessage,
     commenting,
     pollVoting,
+    editing,
     loadingComments,
     reactionModalOpen,
     reactionUsersLoading,
@@ -783,6 +839,7 @@ export function useFeedPostCardVM(
     closeReactionModal,
     loadPostReactions,
     handleShared,
+    editPost,
     handleMenuAction,
     downloadMedia,
     isOwner,

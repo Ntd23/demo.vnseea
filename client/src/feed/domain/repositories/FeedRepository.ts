@@ -38,7 +38,7 @@ export interface FeedRepository {
   getPostComments(input: { postId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   getCommentReplies(input: { commentId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   runPostAction(input: {
-    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll"
+    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll" | "edit"
     postId: number
     optionId?: number
     reaction?: FeedStoryReactionType
