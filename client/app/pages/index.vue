@@ -1,15 +1,22 @@
 <!-- English description: Thin protected feed route wrapper for the root social feed surface. -->
 <template>
   <ClientOnly>
-    <FeedPresentationHomeFeedPage />
+    <Suspense>
+      <FeedPresentationHomeFeedPage />
 
-    <template v-slot:fallback>
-      <div class="min-h-screen bg-[#f5f7fb]"></div>
+      <template #fallback>
+        <FeedPresentationHomeFeedLoadingState />
+      </template>
+    </Suspense>
+
+    <template #fallback>
+      <FeedPresentationHomeFeedLoadingState />
     </template>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import FeedPresentationHomeFeedLoadingState from "../../src/feed/presentation/components/HomeFeedLoadingState.vue"
 import FeedPresentationHomeFeedPage from "../../src/feed/presentation/pages/HomeFeedPage.vue"
 const { t } = useI18n()
 const requestURL = useRequestURL()
