@@ -26,6 +26,7 @@
         :audience="post.audience"
         :is-saved="post.isSaved"
         :is-owner="isOwner"
+        :can-edit="post.permissions.canEdit"
         :can-delete="post.permissions.canDelete"
         :profile-media-update="post.profileMediaUpdate"
         @menu-action="onMenuAction"
@@ -371,6 +372,47 @@
     </div>
 
     <ClientOnly>
+      <UModal
+        v-model:open="editOpen"
+        :title="t('feed.postHeader.editModalTitle')"
+        :description="t('feed.postHeader.editModalDescription')"
+      >
+        <template #body>
+          <UForm :state="editForm" class="space-y-4" @submit="submitPostEdit">
+            <UFormField
+              name="text"
+              :label="t('feed.postHeader.editContentLabel')"
+              :error="editError || undefined"
+            >
+              <UTextarea
+                v-model="editForm.text"
+                :rows="7"
+                autoresize
+                autofocus
+                class="w-full"
+                :placeholder="t('feed.postHeader.editContentPlaceholder')"
+                :disabled="editing"
+              />
+            </UFormField>
+
+            <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="soft"
+                :disabled="editing"
+                @click="editOpen = false"
+              >
+                {{ t("feed.postHeader.editCancel") }}
+              </UButton>
+              <UButton type="submit" color="primary" icon="i-ph-floppy-disk" :loading="editing">
+                {{ t("feed.postHeader.editSave") }}
+              </UButton>
+            </div>
+          </UForm>
+        </template>
+      </UModal>
+
       <FeedShareModal
         v-if="post.permissions.canShare"
         :open="showShare"
@@ -581,6 +623,13 @@ watch(
 onBeforeUnmount(() => releaseRealtimeWatch?.())
 
 async function onMenuAction(action: string) {
+  if (action === "edit") {
+    editForm.text = post.value.text
+    editError.value = ""
+    editOpen.value = true
+    return
+  }
+
   await handleMenuAction(action)
   if (actionState.value === "success") {
     if (action === "delete") {
@@ -615,6 +664,7 @@ const {
   actionMessage,
   commenting,
   pollVoting,
+  editing,
   commentActionRepository,
   postAnchorId,
   postReactionOptions,
@@ -641,6 +691,7 @@ const {
   onOpenMedia,
   submitComment,
   handleShared,
+  editPost,
   handleMenuAction,
   downloadMedia,
   isOwner,
@@ -648,6 +699,35 @@ const {
   closeReactionModal,
   refreshComments,
 } = useFeedPostCardVM(post)
+
+const editOpen = ref(false)
+const editForm = reactive({ text: "" })
+const editError = ref("")
+
+async function submitPostEdit() {
+  const text = editForm.text.trim()
+
+  if (!text) {
+    editError.value = t("feed.postHeader.editContentRequired")
+    return
+  }
+
+  editError.value = ""
+
+  try {
+    const updatedPost = await editPost(text)
+    if (!updatedPost) return
+
+    postRealtimeStore.applySnapshot(updatedPost)
+    emit("updated", updatedPost)
+    editOpen.value = false
+  }
+  catch (error) {
+    editError.value = error instanceof Error
+      ? error.message
+      : t("feed.postHeader.editError")
+  }
+}
 
 watch(
   () => postRealtimeStore.commentVersionFor(props.post.id),

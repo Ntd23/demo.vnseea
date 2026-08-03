@@ -97,7 +97,7 @@ if (empty($error_code)) {
                 'post_id' => $_POST['post_id'],
                 'text' => $_POST['text']
             );
-            if (in_array($_POST['privacy_type'],array('0','1','2','3','4'))) {
+			if (isset($_POST['privacy_type']) && in_array($_POST['privacy_type'], array('0', '1', '2', '3', '4'), true)) {
             	Wo_UpdatePostPrivacy(array(
 	                'post_id' => Wo_Secure($_POST['post_id']),
 	                'privacy_type' => Wo_Secure($_POST['privacy_type'])
@@ -106,6 +106,7 @@ if (empty($error_code)) {
 			$updatePost = Wo_UpdatePost($update_data);
             if (!empty($updatePost)) {
             	$action = 'edited';
+				Wo_PublishRealtimePostChange($_POST['post_id'], 'edited');
             }
 		}
 	}  else if ($_POST['action'] == 'report') {

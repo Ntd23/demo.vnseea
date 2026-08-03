@@ -57,6 +57,7 @@ export type FeedCommentSubmitPayload = {
 
 export type FeedPostActionResult = {
   ok: boolean
+  post?: FeedPostRecord | null
   commentId?: number
   commentsCount?: number
   attachment?: FeedCommentAttachment
@@ -102,6 +103,7 @@ export type FeedPollOptionRecord = {
 export type FeedPostRecord = {
   id: number
   permissions: {
+    canEdit: boolean
     canDelete: boolean
     canShare: boolean
   }

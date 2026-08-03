@@ -136,6 +136,7 @@ const props = defineProps<{
   locationPlaceId?: string
   isSaved?: boolean
   isOwner?: boolean
+  canEdit?: boolean
   canDelete?: boolean
 }>()
 
@@ -232,6 +233,16 @@ const menuRef = ref<HTMLElement | null>(null)
 
 const menuItems = computed(() => {
   const items = []
+
+  if (props.canEdit === true) {
+    items.push({
+      key: "edit",
+      label: t("feed.postHeader.menuEditLabel"),
+      desc: t("feed.postHeader.menuEditDescription"),
+      icon: "i-ph-pencil-simple-line",
+      danger: false,
+    })
+  }
 
   // The backend is authoritative; the delete endpoint still rechecks this permission.
   if (props.canDelete === true) {

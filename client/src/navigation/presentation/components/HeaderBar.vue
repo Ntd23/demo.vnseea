@@ -14,14 +14,17 @@
           :aria-label="$t('navigation.headerBar.home')"
           @click="handleHomeClick"
         >
-          <img
-            v-if="faviconUrl && !faviconFailed"
-            :src="faviconUrl"
-            :alt="faviconAlt"
-            class="header-home-favicon header-home-favicon--desktop"
-            @error="faviconFailed = true"
+          <div
+            v-if="headerLogoUrl && !logoFailed"
+            class="header-home-logo header-home-logo--desktop"
           >
-          <Icon v-else name="i-ph-house-bold" class="h-5 w-5" />
+            <img
+              :src="headerLogoUrl"
+              :alt="logoAlt"
+              @error="logoFailed = true"
+            >
+          </div>
+          <span v-else class="header-home-logo-fallback">{{ brandName || "VNSEEA" }}</span>
         </NuxtLink>
 
         <!-- Search -->
@@ -165,14 +168,19 @@
             :aria-label="$t('navigation.headerBar.home')"
             @click="handleHomeClick"
           >
-            <img
-              v-if="faviconUrl && !faviconFailed"
-              :src="faviconUrl"
-              :alt="faviconAlt"
-              class="header-home-favicon header-home-favicon--mobile"
-              @error="faviconFailed = true"
+            <div
+              v-if="headerLogoUrl && !logoFailed"
+              class="header-home-logo header-home-logo--mobile"
             >
-            <Icon v-else name="i-ph-house-bold" class="h-[22px] w-[22px]" />
+              <img
+                :src="headerLogoUrl"
+                :alt="logoAlt"
+                @error="logoFailed = true"
+              >
+            </div>
+            <span v-else class="header-home-logo-fallback header-home-logo-fallback--mobile">
+              {{ brandName || "VNSEEA" }}
+            </span>
           </NuxtLink>
 
           <button
@@ -395,7 +403,7 @@ const notificationOpen = ref(false)
 const requestsOpen = ref(false)
 const createMenuOpen = ref(false)
 const isClientReady = ref(false)
-const faviconFailed = ref(false)
+const logoFailed = ref(false)
 const route = useRoute()
 const router = useRouter()
 const homeLoadingIndicator = useLoadingIndicator()
@@ -437,8 +445,8 @@ const createActions = [
   },
 ] as const
 const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
-const faviconUrl = computed(() => branding.value.faviconUrl)
-const faviconAlt = computed(() => brandName.value ? `${brandName.value} icon` : "Site icon")
+const headerLogoUrl = computed(() => branding.value.logoUrl || branding.value.nightLogoUrl || branding.value.faviconUrl)
+const logoAlt = computed(() => brandName.value ? `${brandName.value} logo` : "Site logo")
 const currentUser = computed(() => currentAuthUserStore.user)
 const navigationSummary = computed(() => navigationGeneralStore.summary)
 const requestCount = computed(() => navigationSummary.value.friendRequestCount + navigationSummary.value.groupChatRequestCount)
@@ -503,8 +511,8 @@ watch(() => route.path, () => {
   createMenuOpen.value = false
 })
 
-watch(faviconUrl, () => {
-  faviconFailed.value = false
+watch(headerLogoUrl, () => {
+  logoFailed.value = false
 })
 
 onMounted(async () => {
@@ -583,7 +591,7 @@ async function toggleCreateMenu() {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   padding: 0.45rem 0.9rem;
   font-size: 0.78rem;
   font-weight: 800;
@@ -608,27 +616,80 @@ async function toggleCreateMenu() {
 .mobile-home-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-shrink: 0;
   color: inherit;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: opacity var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default);
 }
 
-.header-home-link {
-  width: 34px;
-  height: 34px;
+.header-home-link:hover,
+.mobile-home-link:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
-.mobile-home-link {
-  width: 40px;
+.header-home-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-brand);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
+  transition: background-color var(--duration-fast) var(--ease-default);
+}
+
+.header-home-logo--desktop {
+  height: 38px;
+  padding: 0 14px;
+}
+
+.header-home-logo--mobile {
   height: 40px;
+  padding: 0 12px;
 }
 
-.header-home-favicon {
+.header-home-link:hover .header-home-logo,
+.mobile-home-link:hover .header-home-logo {
+  background: var(--bg-brand-hover);
+}
+
+.header-home-logo img {
   display: block;
-  flex-shrink: 0;
+  max-height: 24px;
+  width: auto;
   object-fit: contain;
+}
+
+.header-home-logo--mobile img {
+  max-height: 22px;
+}
+
+.header-home-logo-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-brand);
+  color: var(--color-on-brand);
+  border-radius: var(--radius-md);
+  font-size: var(--text-title);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 38px;
+  padding: 0 14px;
+}
+
+.header-home-logo-fallback--mobile {
+  height: 40px;
+  padding: 0 12px;
+  font-size: var(--text-caption);
 }
 
 /* ─── Desktop action buttons ───────────────────────────── */
@@ -640,7 +701,7 @@ async function toggleCreateMenu() {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
   background: var(--bg-surface);
   color: var(--text-primary);
@@ -671,7 +732,7 @@ async function toggleCreateMenu() {
   height: 18px;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--bg-brand);
   border: 2px solid var(--bg-surface);
   padding: 0 4px;
@@ -813,7 +874,7 @@ async function toggleCreateMenu() {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
   background: var(--bg-muted);
   color: var(--text-primary);
@@ -868,7 +929,7 @@ async function toggleCreateMenu() {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-light);
   background: var(--bg-muted);
   color: var(--text-primary);

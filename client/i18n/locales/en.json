@@ -5653,6 +5653,8 @@
       "hoverFollowSuccess": "You are now following {name}",
       "hoverUnfollowSuccess": "You unfollowed {name}",
       "hoverFollowRequestedSuccess": "Follow request sent to {name}",
+      "menuEditLabel": "Edit post",
+      "menuEditDescription": "Update this post's content.",
       "menuDeleteLabel": "Delete post",
       "menuDeleteDescription": "Permanently delete this post.",
       "menuSaveLabel": "Save post",
@@ -5666,7 +5668,16 @@
       "menuHideLabel": "Hide post",
       "menuHideDescription": "I do not want to see this post anymore.",
       "menuCopyLabel": "Copy link",
-      "menuCopyDescription": "Copy post link to clipboard."
+      "menuCopyDescription": "Copy post link to clipboard.",
+      "editModalTitle": "Edit post",
+      "editModalDescription": "Update the post content and save your changes.",
+      "editContentLabel": "Post content",
+      "editContentPlaceholder": "Enter post content...",
+      "editContentRequired": "Post content cannot be empty.",
+      "editCancel": "Cancel",
+      "editSave": "Save changes",
+      "editSuccess": "Post updated.",
+      "editError": "Unable to update post."
     },
     "commentList": {
       "title": "Comments",

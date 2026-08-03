@@ -42,7 +42,7 @@ const realtimeEventNames = {
   counts: ["navigation:counts-changed"],
 }
 
-const postMutations = new Set(["reaction", "comment", "share", "deleted"])
+const postMutations = new Set(["reaction", "comment", "share", "edited", "deleted"])
 
 const normalizePostIds = (values, limit = 50) =>
   Array.from(new Set(
