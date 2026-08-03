@@ -1,5 +1,6 @@
 <?php
 // English description: Defines core application functions including marketplace message contexts.
+require_once __DIR__ . '/vnseea_media_url.php';
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -1804,6 +1805,14 @@ function Wo_GetMedia($media)
     global $wo;
     if (empty($media)) {
         return '';
+    }
+    $media = trim((string) $media);
+    if (filter_var($media, FILTER_VALIDATE_URL)) {
+        return $media;
+    }
+    $shared_upload_url = VNSEEA_GetSharedUploadUrl($media);
+    if ($shared_upload_url !== '') {
+        return $shared_upload_url;
     }
     if ($wo['config']['amazone_s3'] == 1) {
         if (empty($wo['config']['bucket_name'])) {

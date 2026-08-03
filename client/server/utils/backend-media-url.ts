@@ -34,6 +34,9 @@ const sameHostname = (left: URL | null, right: URL | null) =>
 const isPublicBackendAssetPath = (pathname: string) =>
   /^\/(?:upload|themes|cache|media)\//i.test(pathname)
 
+const isRelativeUploadPath = (value: string) =>
+  /^\/?upload\//i.test(value.trim())
+
 const buildRequestScopedOrigin = (event: H3Event, value?: string) => {
   const requestUrl = getRequestURL(event)
 
@@ -74,7 +77,9 @@ export const getBackendWebBaseUrl = (event: H3Event) => {
 }
 
 export const createBackendMediaUrlResolver = (event: H3Event) => {
+  const runtimeConfig = useRuntimeConfig(event)
   const backendWebBase = getBackendWebBaseUrl(event)
+  const mediaBaseUrl = trimTrailingSlash(asString(runtimeConfig.public.mediaBaseUrl))
   const requestUrl = getRequestURL(event)
   const secureOrigin = buildRequestScopedOrigin(event, backendWebBase)
   const backendUrl = toUrl(backendWebBase)
@@ -90,7 +95,11 @@ export const createBackendMediaUrlResolver = (event: H3Event) => {
       return rawValue
     }
 
-    if (!backendWebBase) {
+    const relativeBaseUrl = isRelativeUploadPath(rawValue)
+      ? mediaBaseUrl
+      : backendWebBase
+
+    if (!relativeBaseUrl) {
       return rawValue.startsWith("/") ? rawValue : `/${rawValue}`
     }
 
@@ -125,7 +134,7 @@ export const createBackendMediaUrlResolver = (event: H3Event) => {
     }
 
     try {
-      return new URL(rawValue, `${backendWebBase}/`).toString()
+      return new URL(rawValue, `${relativeBaseUrl}/`).toString()
     }
     catch {
       return rawValue
