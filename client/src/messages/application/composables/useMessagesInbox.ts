@@ -717,6 +717,31 @@ export function useMessagesInbox(
     }
   }
 
+  async function updateTagLabel(input: { tagId: number, name: string, color: string }) {
+    if (input.tagId <= 0 || isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.updateTagLabel(input)
+      await refreshMessageTags()
+      return result.ok
+    }
+    catch {
+      toast.add({
+        title: t("pages.messagesPage.multiNetworkErrorTitle"),
+        description: t("pages.messagesPage.multiNetworkErrorDescription"),
+        color: "error",
+      })
+      return false
+    }
+    finally {
+      isUpdatingTags.value = false
+    }
+  }
+
   async function deleteTagLabel(tagId: number) {
     if (tagId <= 0 || isUpdatingTags.value) {
       return false
@@ -1308,6 +1333,7 @@ export function useMessagesInbox(
     inboxError,
     inboxPending,
     createTagLabel,
+    updateTagLabel,
     deleteSelectedConversation,
     deleteThreadMessage,
     toggleThreadMessagePin,

@@ -257,6 +257,7 @@
                   :comments="localComments"
                   enable-reply
                   enable-reaction
+                  reply-composer-variant="lightbox"
                   :current-user-name="currentAuthUserStore.user?.name"
                   :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
                   :comment-action-repository="commentActionRepository"

@@ -195,6 +195,7 @@
       :pending="isUpdatingTags"
       :update-selection="updateContactTagSelection"
       :create-tag="createTagLabel"
+      :update-tag="updateTagLabel"
       :delete-tag="deleteTagLabel"
     />
 
@@ -287,6 +288,7 @@ const {
   selectedRecipientIds,
   selectedRecipients,
   createTagLabel,
+  updateTagLabel,
   deleteSelectedConversation,
   deleteThreadMessage,
   toggleThreadMessagePin,

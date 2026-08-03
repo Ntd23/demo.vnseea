@@ -1067,7 +1067,8 @@ useSeoMeta({
   justify-content: center;
   background: color-mix(in srgb, var(--bg-media) 10%, transparent);
   cursor: pointer;
-  z-index: 25;
+  /* Keep the paused-video hit area above the media, but below all controls. */
+  z-index: 5;
 }
 
 .reels-page__play-icon {

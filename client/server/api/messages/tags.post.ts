@@ -46,6 +46,27 @@ const createMutation = (body: Record<string, unknown>) => {
     }
   }
 
+  if (action === "update") {
+    const name = asString(body.name)
+    const color = asString(body.color)
+
+    if (!tagId || !name || !/^#[0-9A-Fa-f]{6}$/.test(color)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "A valid tagId, name, and color are required.",
+      })
+    }
+
+    return {
+      endpoint: "update_label",
+      body: {
+        label_id: tagId,
+        label_name: name,
+        label_color: color,
+      },
+    }
+  }
+
   if (action === "delete") {
     if (!tagId) {
       throw createError({

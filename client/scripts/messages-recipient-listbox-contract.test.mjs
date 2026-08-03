@@ -16,7 +16,7 @@ test("tagged recipients render as a removable UListbox", async () => {
   assert.match(source, /<UListbox[\s\S]*?multiple/)
   assert.match(source, /selected-icon="i-ph-x-bold"/)
   assert.match(source, /import UListbox from "@nuxt\/ui\/components\/Listbox\.vue"/)
-  assert.match(source, /\.cl-recipient-listbox\s*\{[\s\S]*?max-height:\s*108px;/)
+  assert.match(source, /\.cl-recipient-listbox\s*\{[\s\S]*?max-height:\s*104px;/)
   assert.doesNotMatch(source, /cl-recipient-chip/)
   assert.match(source, /<div v-if="activeTab !== 'multi'" class="cl-scroll-list/)
   assert.ok(
@@ -34,9 +34,16 @@ test("selecting a tag defaults to all visible recipients", async () => {
 })
 
 test("listbox selection updates the inbox recipient state", async () => {
-  const source = await readFile(messagesPagePath, "utf8")
+  const [page, list] = await Promise.all([
+    readFile(messagesPagePath, "utf8"),
+    readFile(chatListPath, "utf8"),
+  ])
 
-  assert.match(source, /@update:selected-recipient-ids="setSelectedRecipientIds"/)
+  assert.match(page, /@update:selected-recipient-ids="setSelectedRecipientIds"/)
+  assert.match(list, /<UListbox\s+v-if="contacts\.length > 0"\s+:items="multiRecipientListboxItems"/)
+  assert.match(list, /onSelect: \(event: Event\) => \{[\s\S]*?event\.preventDefault\(\)[\s\S]*?updateRecipientSelection/)
+  assert.match(list, /<UCheckbox[\s\S]*?:model-value="isRecipientSelected\(item\.value\)"[\s\S]*?@update:model-value="updateRecipientSelection/)
+  assert.doesNotMatch(list, /v-model="selectedRecipientIdModel"\s+:items="multiRecipientListboxItems"/)
 })
 
 test("message tag filters use searchable Nuxt UI select menus", async () => {
@@ -57,9 +64,9 @@ test("chat widget recipients use the same removable two-row listbox", async () =
     readFile(chatWidgetViewModelPath, "utf8"),
   ])
 
-  assert.match(chatWidget, /<UListbox[\s\S]*?v-model="selectedSendRecipientIdModel"/)
-  assert.match(chatWidget, /selected-icon="i-ph-x-bold"/)
-  assert.match(chatWidget, /\.chat-widget__recipient-listbox\s*\{[\s\S]*?max-height:\s*108px;/)
+  assert.match(chatWidget, /<UListbox[\s\S]*?:items="selectedSendRecipientListboxItems"/)
+  assert.match(chatWidget, /@click\.stop="updateSendRecipientSelection\(item\.value, false\)"/)
+  assert.match(chatWidget, /content: 'w-full min-w-0 max-h-\[108px\]/)
   assert.doesNotMatch(chatWidget, /chat-widget__recipient-chip/)
   assert.ok(
     chatWidget.indexOf('class="chat-widget__send-actions chat-widget__send-actions--inline"')

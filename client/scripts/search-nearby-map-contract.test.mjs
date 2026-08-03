@@ -149,6 +149,19 @@ test("bottom-sheet distance is recalculated from the realtime origin", () => {
   assert.match(resultCardSource, /const meters = calculateLiveDistanceMeters\(\)/)
 })
 
+test("active directions replace result cards with an explicit on-the-way card", () => {
+  assert.match(pageSource, /routeNavigationActive\.value && routeTargetItem\.value[\s\S]*\? \[routeTargetItem\.value\]/)
+  assert.match(pageSource, /:navigating="routeNavigationActive && routeTargetItem\?\.id === item\.id"/)
+  assert.match(pageSource, /@stop-directions="handleStopDirections"/)
+  assert.match(resultCardSource, /v-if="navigating" class="nearby-result-card__navigation-status"/)
+  assert.match(resultCardSource, /<template v-if="!navigating">[\s\S]*?nearby-result-card__header[\s\S]*?nearby-result-card__location/)
+  assert.match(resultCardSource, /pages\.searchNearby\.navigationRemaining/)
+  assert.match(resultCardSource, /navigating \? \$emit\('stopDirections'\) : \$emit\('directions', item\)/)
+  assert.match(resultCardSource, /function handleCardSelect\(\) \{\s*if \(!props\.navigating\)/)
+  assert.match(pageSource, /function handleStopDirections\(\)[\s\S]*?clearGoogleNearbyResults\(\)[\s\S]*?clearSearch\(\)[\s\S]*?focusOrigin\(\)/)
+  assert.match(viewModelSource, /function clearSearch\(\)[\s\S]*?selectedItemId\.value = ""[\s\S]*?clearPinnedResult\(\)/)
+})
+
 test("manual map dragging pauses route camera follow until recenter", () => {
   const followCameraSource = mapSource.match(/function followMobileRouteCamera[\s\S]*?function resetMobileRouteCamera/)?.[0] || ""
   const originFocusSource = mapSource.match(/\(\) => props\.originFocusKey[\s\S]*?\{ flush: "post" \}/)?.[0] || ""

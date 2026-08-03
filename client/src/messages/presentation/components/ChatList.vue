@@ -201,7 +201,6 @@
           <div class="cl-multi-user-list">
             <UListbox
               v-if="contacts.length > 0"
-              v-model="selectedRecipientIdModel"
               :items="multiRecipientListboxItems"
               value-key="value"
               multiple
@@ -225,12 +224,18 @@
                     }"
                   />
                   <div class="cl-multi-user-actions">
-                    <span class="cl-multi-select-state" aria-hidden="true">
-                      <span class="cl-multi-checkbox" :class="{ 'cl-multi-checkbox--checked': isRecipientSelected(item.value) }">
-                        <Icon v-if="isRecipientSelected(item.value)" name="i-ph-check-bold" class="h-3 w-3" />
-                      </span>
-                      <span>{{ $t("pages.messagesPage.selectRecipient") }}</span>
-                    </span>
+                    <div
+                      class="cl-multi-select-state"
+                      @pointerdown.stop
+                      @click.stop
+                    >
+                      <UCheckbox
+                        :model-value="isRecipientSelected(item.value)"
+                        :label="$t('pages.messagesPage.selectRecipient')"
+                        size="sm"
+                        @update:model-value="updateRecipientSelection(item.value, $event)"
+                      />
+                    </div>
                     <UButton
                       type="button"
                       size="xs"
@@ -548,6 +553,14 @@ const multiRecipientListboxItems = computed(() => props.contacts
     avatarUrl: contact.avatarUrl,
     online: isContactOnline(contact),
     contact,
+    onSelect: (event: Event) => {
+      event.preventDefault()
+      const userId = contact.userId ?? 0
+
+      if (userId > 0) {
+        updateRecipientSelection(userId, !isRecipientSelected(userId))
+      }
+    },
   })))
 const selectedRecipientIdModel = computed<number[]>({
   get: () => props.selectedRecipientIds ?? [],
@@ -583,6 +596,19 @@ function isContactOnline(contact: MessageContact) {
 
 function isRecipientSelected(userId: number) {
   return props.selectedRecipientIds?.includes(userId) ?? false
+}
+
+function updateRecipientSelection(userId: number, checked: boolean | "indeterminate") {
+  const nextRecipientIds = new Set(props.selectedRecipientIds ?? [])
+
+  if (checked === true) {
+    nextRecipientIds.add(userId)
+  }
+  else {
+    nextRecipientIds.delete(userId)
+  }
+
+  emit("update:selectedRecipientIds", [...nextRecipientIds])
 }
 
 function getContactStatus(contact: MessageContact) {

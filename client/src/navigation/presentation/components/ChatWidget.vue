@@ -430,6 +430,7 @@
         :pending="isUpdatingTags"
         :update-selection="updateContactTagSelection"
         :create-tag="createTagLabel"
+        :update-tag="updateTagLabel"
         :delete-tag="deleteTagLabel"
       />
       
@@ -978,6 +979,7 @@ const {
   buildPresenceLabel,
   messageTagLabels,
   createTagLabel,
+  updateTagLabel,
   deleteTagLabel,
   updateContactTags,
   setSelectedSendRecipientIds,

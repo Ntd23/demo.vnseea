@@ -3,46 +3,66 @@
 <template>
   <article
     class="nearby-result-card"
-    :class="{ 'nearby-result-card--active': active }"
-    role="button"
-    tabindex="0"
-    @click="$emit('select', item)"
-    @keydown.enter="$emit('select', item)"
+    :class="{
+      'nearby-result-card--active': active,
+      'nearby-result-card--navigating': navigating,
+    }"
+    :role="navigating ? 'group' : 'button'"
+    :tabindex="navigating ? undefined : 0"
+    @click="handleCardSelect"
+    @keydown.enter="handleCardSelect"
   >
     <div class="nearby-result-card__content">
-      <div class="nearby-result-card__header">
-        <div class="nearby-result-card__avatar">
-          <img v-if="item.avatarUrl" :src="item.avatarUrl" :alt="item.title">
-          <span v-else>{{ initials }}</span>
-        </div>
-
-        <div class="nearby-result-card__identity">
-          <h2 class="nearby-result-card__title">
-            <a
-              v-if="item.type === 'page' && item.href"
-              class="nearby-result-card__title-link"
-              :href="item.href"
-              target="_blank"
-              rel="noopener noreferrer"
-              @click.stop
-            >{{ item.title }}</a>
-            <span v-else>{{ item.title }}</span>
-          </h2>
-          <p class="nearby-result-card__subtitle">{{ item.subtitle }}</p>
-        </div>
-
-        <div class="nearby-result-card__facts">
-          <span class="nearby-result-card__distance">{{ distanceLabel }}</span>
-          <span v-if="coordinateLabel" class="nearby-result-card__coordinates">
-            <Icon name="i-ph-crosshair-simple-fill" />
-            <span>{{ coordinateLabel }}</span>
-          </span>
-        </div>
+      <div v-if="navigating" class="nearby-result-card__navigation-status" role="status">
+        <span class="nearby-result-card__navigation-icon" aria-hidden="true">
+          <Icon name="i-ph-navigation-arrow-fill" />
+        </span>
+        <span class="nearby-result-card__navigation-copy">
+          <span class="nearby-result-card__navigation-label">{{ t("pages.searchNearby.navigatingTo") }}</span>
+          <strong>{{ item.title }}</strong>
+          <span>{{ t("pages.searchNearby.navigationRemaining", { distance: distanceLabel }) }}</span>
+        </span>
+        <span class="nearby-result-card__navigation-live">
+          <span aria-hidden="true" />
+          {{ t("pages.searchNearby.navigationLive") }}
+        </span>
       </div>
-      <p class="nearby-result-card__location">
-        <Icon name="i-ph-map-pin-fill" />
-        <span>{{ item.locationLabel || coordinateLabel }}</span>
-      </p>
+
+      <template v-if="!navigating">
+        <div class="nearby-result-card__header">
+          <div class="nearby-result-card__avatar">
+            <img v-if="item.avatarUrl" :src="item.avatarUrl" :alt="item.title">
+            <span v-else>{{ initials }}</span>
+          </div>
+
+          <div class="nearby-result-card__identity">
+            <h2 class="nearby-result-card__title">
+              <a
+                v-if="item.type === 'page' && item.href"
+                class="nearby-result-card__title-link"
+                :href="item.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                @click.stop
+              >{{ item.title }}</a>
+              <span v-else>{{ item.title }}</span>
+            </h2>
+            <p class="nearby-result-card__subtitle">{{ item.subtitle }}</p>
+          </div>
+
+          <div class="nearby-result-card__facts">
+            <span class="nearby-result-card__distance">{{ distanceLabel }}</span>
+            <span v-if="coordinateLabel" class="nearby-result-card__coordinates">
+              <Icon name="i-ph-crosshair-simple-fill" />
+              <span>{{ coordinateLabel }}</span>
+            </span>
+          </div>
+        </div>
+        <p class="nearby-result-card__location">
+          <Icon name="i-ph-map-pin-fill" />
+          <span>{{ item.locationLabel || coordinateLabel }}</span>
+        </p>
+      </template>
 
       <div class="nearby-result-card__actions">
         <button
@@ -50,14 +70,15 @@
           type="button"
           @click.stop="$emit('focusOrigin')"
         >
-          {{ t("pages.searchNearby.myLocation") }}
+          {{ navigating ? t("pages.searchNearby.recenterNavigation") : t("pages.searchNearby.myLocation") }}
         </button>
         <button
-          class="nearby-result-card__action nearby-result-card__action--primary"
+          class="nearby-result-card__action"
+          :class="navigating ? 'nearby-result-card__action--stop' : 'nearby-result-card__action--primary'"
           type="button"
-          @click.stop="$emit('directions', item)"
+          @click.stop="navigating ? $emit('stopDirections') : $emit('directions', item)"
         >
-          {{ t("pages.searchNearby.directions") }}
+          {{ navigating ? t("pages.searchNearby.stopDirections") : t("pages.searchNearby.directions") }}
         </button>
         <button class="nearby-result-card__action" type="button" @click.stop="shareResult">
           {{ t("pages.searchNearby.share") }}
@@ -77,12 +98,14 @@ const props = defineProps<{
   item: NearbySearchItem
   origin?: NearbySearchOrigin
   active?: boolean
+  navigating?: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   select: [item: NearbySearchItem]
   focusOrigin: []
   directions: [item: NearbySearchItem]
+  stopDirections: []
 }>()
 
 const { t } = useI18n()
@@ -139,6 +162,12 @@ const coordinateLabel = computed(() => {
   return `${props.item.lat},${props.item.lng}`
 })
 
+function handleCardSelect() {
+  if (!props.navigating) {
+    emit("select", props.item)
+  }
+}
+
 async function shareResult() {
   if (!import.meta.client) {
     return
@@ -180,6 +209,83 @@ async function shareResult() {
   border-color: var(--border-strong);
   box-shadow: var(--shadow-xl);
   transform: translateY(-1px);
+}
+
+.nearby-result-card--navigating {
+  border-color: color-mix(in srgb, var(--bg-brand) 55%, var(--border-light));
+  cursor: default;
+  box-shadow: var(--shadow-xl);
+  transform: none;
+}
+
+.nearby-result-card__navigation-status {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: -4px -4px 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-brand) 12%, var(--bg-surface));
+  color: var(--text-primary);
+  padding: 12px;
+}
+
+.nearby-result-card__navigation-icon {
+  display: inline-flex;
+  height: 42px;
+  width: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-brand);
+  box-shadow: var(--shadow-brand);
+  color: var(--text-inverse);
+  font-size: 21px;
+}
+
+.nearby-result-card__navigation-copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.nearby-result-card__navigation-copy strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nearby-result-card__navigation-label {
+  color: var(--text-brand);
+  font-size: 11px;
+  font-weight: var(--weight-extrabold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.nearby-result-card__navigation-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: var(--bg-surface);
+  color: var(--text-brand);
+  font-size: 10px;
+  font-weight: var(--weight-extrabold);
+  padding: 6px 8px;
+}
+
+.nearby-result-card__navigation-live span {
+  height: 7px;
+  width: 7px;
+  border-radius: 50%;
+  background: var(--bg-brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--bg-brand) 16%, transparent);
 }
 
 .nearby-result-card__header {
@@ -343,6 +449,17 @@ async function shareResult() {
   color: var(--text-inverse);
 }
 
+.nearby-result-card__action--stop {
+  border-color: color-mix(in srgb, var(--color-error) 42%, var(--border-light));
+  background: color-mix(in srgb, var(--color-error) 10%, var(--bg-surface));
+  color: var(--text-danger);
+}
+
+.nearby-result-card__action--stop:hover {
+  background: color-mix(in srgb, var(--color-error) 17%, var(--bg-surface));
+  color: var(--text-danger);
+}
+
 @media (max-width: 640px) {
   .nearby-result-card {
     border-width: 1px;
@@ -355,6 +472,19 @@ async function shareResult() {
     grid-template-columns: 44px minmax(0, 1fr);
     align-items: center;
     gap: 10px;
+  }
+
+  .nearby-result-card__navigation-status {
+    gap: 9px;
+    margin: -2px -2px 10px;
+    border-radius: 13px;
+    padding: 10px;
+  }
+
+  .nearby-result-card__navigation-icon {
+    height: 36px;
+    width: 36px;
+    font-size: 18px;
   }
 
   .nearby-result-card__avatar {

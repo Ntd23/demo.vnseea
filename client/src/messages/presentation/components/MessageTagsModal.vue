@@ -76,22 +76,101 @@
               <span class="messages-tag-modal__dot" :style="{ backgroundColor: item.color }" />
             </template>
             <template #item-trailing="{ item }">
-              <UButton
-                color="error"
-                variant="soft"
-                size="sm"
-                class="messages-tag-modal__delete"
-                :disabled="pending"
-                @pointerdown.stop
-                @click.stop="deleteTag(item.id)"
-              >
-                {{ $t("pages.messagesPage.delete") }}
-              </UButton>
+              <div class="messages-tag-modal__item-actions">
+                <UButton
+                  color="neutral"
+                  variant="soft"
+                  size="sm"
+                  icon="i-ph-pencil-simple-bold"
+                  class="messages-tag-modal__edit"
+                  :disabled="pending"
+                  :aria-label="$t('pages.messagesPage.edit')"
+                  :title="$t('pages.messagesPage.edit')"
+                  @pointerdown.stop
+                  @click.stop="beginEditTag(item)"
+                />
+                <UButton
+                  color="error"
+                  variant="soft"
+                  size="sm"
+                  icon="i-ph-trash-bold"
+                  class="messages-tag-modal__delete"
+                  :disabled="pending"
+                  :aria-label="$t('pages.messagesPage.delete')"
+                  :title="$t('pages.messagesPage.delete')"
+                  @pointerdown.stop
+                  @click.stop="handleDeleteTag(item.id)"
+                />
+              </div>
             </template>
             <template #empty>
               <p class="messages-tag-modal__empty">{{ $t("pages.messagesPage.tagEmpty") }}</p>
             </template>
           </UListbox>
+
+          <div v-if="editingTagId" class="messages-tag-modal__edit-section">
+            <div class="messages-tag-modal__section-heading">
+              <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagEditTitle") }}</h3>
+              <UButton
+                color="neutral"
+                variant="ghost"
+                icon="i-ph-x-bold"
+                size="sm"
+                :aria-label="$t('pages.messagesPage.cancel')"
+                :disabled="pending"
+                @click="cancelEditTag"
+              />
+            </div>
+            <UInput
+              v-model="editTagName"
+              class="w-full"
+              :placeholder="$t('pages.messagesPage.tagEditPlaceholder')"
+              size="lg"
+              :disabled="pending"
+              :ui="{ base: 'rounded-lg' }"
+              autofocus
+              @keyup.enter="submitUpdateTag"
+              @keyup.esc="cancelEditTag"
+            />
+            <div class="messages-tag-modal__create-actions">
+              <UPopover>
+                <UButton
+                  color="neutral"
+                  variant="outline"
+                  size="lg"
+                  class="messages-tag-modal__color-trigger"
+                  :aria-label="$t('pages.messagesPage.tagColorLabel')"
+                  :title="$t('pages.messagesPage.tagColorLabel')"
+                  :disabled="pending"
+                >
+                  <span class="messages-tag-modal__color-swatch" :style="{ backgroundColor: editTagColor }" />
+                </UButton>
+
+                <template #content>
+                  <div class="messages-tag-modal__color-picker">
+                    <UColorPicker
+                      v-model="editTagColor"
+                      format="hex"
+                      size="xl"
+                      :ui="colorPickerUi"
+                    />
+                    <output class="messages-tag-modal__color-value">{{ editTagColor }}</output>
+                  </div>
+                </template>
+              </UPopover>
+              <UButton color="neutral" variant="soft" size="lg" :disabled="pending" @click="cancelEditTag">
+                {{ $t("pages.messagesPage.cancel") }}
+              </UButton>
+              <UButton
+                size="lg"
+                :loading="pending"
+                :disabled="editTagName.trim().length === 0"
+                @click="submitUpdateTag"
+              >
+                {{ $t("pages.messagesPage.save") }}
+              </UButton>
+            </div>
+          </div>
 
           <div class="messages-tag-modal__create-section">
             <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagCreateTitle") }}</h3>
@@ -122,13 +201,7 @@
                       v-model="newTagColor"
                       format="hex"
                       size="xl"
-                      :ui="{
-                        picker: 'gap-5',
-                        selector: 'h-52 w-52',
-                        selectorThumb: 'size-7 ring-[3px] shadow-md',
-                        track: 'h-52 w-4',
-                        trackThumb: 'size-7 -translate-x-[6px] ring-[3px] shadow-md',
-                      }"
+                      :ui="colorPickerUi"
                     />
                     <output class="messages-tag-modal__color-value">{{ newTagColor }}</output>
                   </div>
@@ -169,12 +242,16 @@ const props = defineProps<{
   pending: boolean
   updateSelection: (value: number[]) => Promise<void> | void
   createTag: (input: { name: string, color: string }) => Promise<boolean>
+  updateTag: (input: { tagId: number, name: string, color: string }) => Promise<boolean>
   deleteTag: (tagId: number) => Promise<boolean>
 }>()
 
 const activeTab = ref<"assign" | "manage">("assign")
 const newTagName = ref("")
 const newTagColor = ref(fallbackTagColor)
+const editingTagId = ref(0)
+const editTagName = ref("")
+const editTagColor = ref(fallbackTagColor)
 const assignListboxUi = {
   root: "rounded-xl border border-[var(--border-light)] ring-0 shadow-[var(--shadow-sm)]",
   content: "max-h-[min(20rem,45dvh)]",
@@ -187,10 +264,17 @@ const manageListboxUi = {
   ...assignListboxUi,
   content: "max-h-[min(13rem,28dvh)]",
 }
+const colorPickerUi = {
+  picker: "gap-5",
+  selector: "h-52 w-52",
+  selectorThumb: "size-7 ring-[3px] shadow-md",
+  track: "h-52 w-4",
+  trackThumb: "size-7 -translate-x-[6px] ring-[3px] shadow-md",
+}
 
 function normalizeHexColor(value: string, fallback = fallbackTagColor) {
   const normalized = value.trim()
-  return /^#(?:[\da-f]{3}|[\da-f]{6}|[\da-f]{8})$/i.test(normalized)
+  return /^#[\da-f]{6}$/i.test(normalized)
     ? normalized
     : fallback
 }
@@ -214,6 +298,13 @@ watch(open, (isOpen) => {
   if (isOpen) {
     activeTab.value = "assign"
     newTagColor.value = normalizeHexColor(newTagColor.value, resolveDefaultTagColor())
+    cancelEditTag()
+  }
+})
+
+watch(() => props.labels, (labels) => {
+  if (editingTagId.value && !labels.some(tag => tag.id === editingTagId.value)) {
+    cancelEditTag()
   }
 })
 
@@ -248,6 +339,40 @@ async function submitCreateTag() {
   if (created) {
     newTagName.value = ""
     activeTab.value = "assign"
+  }
+}
+
+function beginEditTag(tag: MessageUserTag) {
+  editingTagId.value = tag.id
+  editTagName.value = tag.name
+  editTagColor.value = normalizeHexColor(tag.color, resolveDefaultTagColor())
+}
+
+function cancelEditTag() {
+  editingTagId.value = 0
+  editTagName.value = ""
+  editTagColor.value = resolveDefaultTagColor()
+}
+
+async function submitUpdateTag() {
+  const name = editTagName.value.trim()
+  if (!editingTagId.value || !name) return
+
+  const updated = await props.updateTag({
+    tagId: editingTagId.value,
+    name,
+    color: normalizeHexColor(editTagColor.value, resolveDefaultTagColor()),
+  })
+
+  if (updated) {
+    cancelEditTag()
+  }
+}
+
+async function handleDeleteTag(tagId: number) {
+  const deleted = await props.deleteTag(tagId)
+  if (deleted && editingTagId.value === tagId) {
+    cancelEditTag()
   }
 }
 </script>
@@ -302,8 +427,24 @@ async function submitCreateTag() {
 }
 
 .messages-tag-modal__delete {
-  min-width: 82px;
+  width: 36px;
   justify-content: center;
+}
+
+.messages-tag-modal__edit {
+  width: 36px;
+  justify-content: center;
+}
+
+.messages-tag-modal__item-actions,
+.messages-tag-modal__section-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.messages-tag-modal__section-heading {
+  justify-content: space-between;
 }
 
 .messages-tag-modal__assign {
@@ -322,13 +463,21 @@ async function submitCreateTag() {
   padding: 8px 12px;
 }
 
-.messages-tag-modal__create-section {
+.messages-tag-modal__create-section,
+.messages-tag-modal__edit-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 6px;
   padding-top: 6px;
   border-top: 1px solid var(--border-light);
+}
+
+.messages-tag-modal__edit-section {
+  padding: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--bg-muted);
 }
 
 .messages-tag-modal__create-actions {
