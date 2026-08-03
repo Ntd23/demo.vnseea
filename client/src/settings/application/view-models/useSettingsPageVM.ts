@@ -1,6 +1,7 @@
 // English description: Settings page ViewModel that maps settings screen state and commands to the PHP-backed repository.
 
 import { toValue, type MaybeRefOrGetter } from "vue"
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import { createApiSettingsRepository } from "../../infrastructure/repositories/ApiSettingsRepository"
 import {
   normalizeLocationSelection,
@@ -694,6 +695,7 @@ export const useSettingsPageVM = (
   pageSlugSource: MaybeRefOrGetter<string | undefined> = undefined,
 ) => {
   const { t } = useI18n()
+  const currentAuthUserStore = useCurrentAuthUserStore()
   const user = ref<SettingsUser | null>(null)
   const loading = ref(false)
   const errorMessage = ref("")
@@ -736,6 +738,10 @@ export const useSettingsPageVM = (
     const response = await settingsRepository.update(updateInput)
 
     await hydrate()
+    await currentAuthUserStore.hydrate(true)
+    if (section === "avatar") {
+      currentAuthUserStore.bustAvatarCache()
+    }
 
     return response.message
   }
@@ -796,13 +802,28 @@ export const useSettingsPageVM = (
   async function exchangePoints(points: number) {
     const response = await settingsRepository.exchangePoints({ points })
     await hydrate()
+    syncPointsBalance(response.points)
     return response
   }
 
   async function transferPoints(recipientUserId: number, points: number, requestId: string, note?: string) {
     const response = await settingsRepository.transferPoints({ recipientUserId, points, requestId, note })
     await hydrate()
+    syncPointsBalance(response.senderPoints)
     return response
+  }
+
+  function syncPointsBalance(points: number) {
+    if (!Number.isFinite(points)) return
+
+    const normalizedPoints = Math.max(Math.trunc(points), 0)
+    if (user.value) {
+      user.value = {
+        ...user.value,
+        points: normalizedPoints,
+      }
+    }
+    currentAuthUserStore.setPointsBalance(normalizedPoints)
   }
 
   async function getPointsReceiveQr(points?: number | null) {

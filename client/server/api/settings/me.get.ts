@@ -1,5 +1,6 @@
 // English description: Returns the current PHP-authenticated user settings payload for Nuxt settings pages.
 
+import { setHeader } from "h3"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 
 export type SettingsMeResponse = Record<string, unknown> & {
@@ -56,6 +57,11 @@ const asNumber = (value: unknown) => {
 }
 
 export default defineEventHandler(async (event): Promise<SettingsMeResponse> => {
+  setHeader(event, "Cache-Control", "private, no-store, no-cache, max-age=0, must-revalidate")
+  setHeader(event, "Pragma", "no-cache")
+  setHeader(event, "Expires", "0")
+  setHeader(event, "Vary", "Cookie")
+
   const user = await getBackendCurrentUser(event)
   const pointsConfig = user.points_config && typeof user.points_config === "object"
     ? user.points_config as Record<string, unknown>
