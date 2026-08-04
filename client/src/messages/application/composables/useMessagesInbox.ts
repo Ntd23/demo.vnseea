@@ -14,10 +14,8 @@ import type {
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import { createApiMessagesRepository } from "../../infrastructure/repositories/ApiMessagesRepository"
 import {
-  buildReplyMessageText,
   getMessageReplyPreviewText,
 } from "../utils/message-bubble-content"
-import { getMessageLocationMeta } from "../utils/message-location"
 import { sortUserInboxContacts } from "../utils/message-contact-order"
 import {
   validateMessageAttachment,
@@ -838,6 +836,8 @@ export function useMessagesInbox(
         text: input.text,
         file: input.file,
         record: uploadedRecord,
+        replyId: input.replyId,
+        mentionedUserIds: input.mentionedUserIds,
       })
       if (buildContactKey(selectedContact.value) === contactKey) {
         thread.value = {
@@ -887,23 +887,15 @@ export function useMessagesInbox(
       return
     }
 
-    const text = getMessageLocationMeta({ text: input.text })
-      ? input.text.trim()
-      : buildReplyMessageText({
-          text: input.text,
-          target: replyTarget.value,
-          author: replyAuthor.value,
-          fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
-          locationTitle: replyLocationTitle.value,
-        })
-
     sendQueue.value.push({
       contact,
       contactKey: buildContactKey(contact),
       input: {
-        text,
+        text: input.text.trim(),
         file: input.file,
         record: input.record,
+        replyId: replyTarget.value?.id,
+        mentionedUserIds: input.mentionedUserIds,
       },
     })
 

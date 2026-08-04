@@ -174,6 +174,13 @@ export type MessageSystemEvent = {
   targetMessageId: number
 }
 
+export type MessageMention = {
+  userId: number
+  name: string
+  username?: string
+  avatarUrl?: string
+}
+
 export type MessageGroupUpdateDraft = {
   groupId: number
   name?: string
@@ -204,6 +211,7 @@ export type MessageItem = {
   senderIsOnline?: boolean
   authorName?: string
   authorProfileUrl?: string
+  mentions?: MessageMention[]
   threadType?: MessageThreadType
   mediaUrl?: string
   mediaName?: string
@@ -250,12 +258,16 @@ export type MessageComposerDraft = {
   text: string
   file?: File | null
   record?: MessageRecordDraft | null
+  replyId?: number
+  mentionedUserIds?: number[]
 }
 
 export type MessageSendDraft = {
   text: string
   file?: File | null
   record?: UploadedMessageRecord | null
+  replyId?: number
+  mentionedUserIds?: number[]
 }
 
 export type MessageThread = {
