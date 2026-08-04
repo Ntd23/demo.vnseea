@@ -118,12 +118,10 @@
           </div>
         </div>
 
-        <audio
+        <VoiceMessageCard
           v-if="recordDraft"
           :src="recordDraft.previewUrl"
-          class="mt-3 w-full"
-          controls
-          preload="none"
+          class="mt-3"
         />
       </div>
 
@@ -206,6 +204,7 @@ import { computed, ref, watch } from "vue"
 import { useCurrentLocationShare } from "../../application/composables/useCurrentLocationShare"
 import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
 import type { MessageComposerDraft } from "../../domain/types/messages.types"
+import VoiceMessageCard from "./VoiceMessageCard.vue"
 import {
   MESSAGE_ATTACHMENT_ACCEPT,
   UPLOAD_MAX_FILE_SIZE_LABEL,

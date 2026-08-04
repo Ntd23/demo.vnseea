@@ -87,6 +87,7 @@ type CreatePostPayload = {
   sharedPostId?: number
   colorId?: number
   pollAnswers: string[]
+  taggedUserIds: number[]
 }
 
 const asString = (value: unknown) =>
@@ -99,6 +100,11 @@ const hasOwn = (entity: Record<string, unknown>, key: string) =>
 
 const parseBooleanFlag = (value: unknown) =>
   value === true || value === 1 || value === "1" || value === "true"
+
+const normalizeTaggedUserIds = (value: unknown) => {
+  const source = Array.isArray(value) ? value : []
+  return [...new Set(source.map(Number).filter(id => Number.isInteger(id) && id > 0))].slice(0, 20)
+}
 
 const parseCoordinate = (value: unknown, min: number, max: number) => {
   if (value === null || value === undefined || value === "") {
@@ -179,6 +185,7 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     pollAnswers: Array.isArray(body.pollAnswers)
       ? body.pollAnswers.map(asString).filter(Boolean)
       : [],
+    taggedUserIds: normalizeTaggedUserIds(body.taggedUserIds),
   }
 }
 
@@ -198,6 +205,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     groupId: undefined,
     colorId: undefined,
     pollAnswers: [],
+    taggedUserIds: [],
   }
 
   for (const part of parts) {
@@ -241,9 +249,14 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     if (part.name === "sharedPostId") payload.sharedPostId = Number(value)
     if (part.name === "colorId" || part.name === "post_color") payload.colorId = Number(value)
     if (part.name === "answer[]" || part.name === "answer") payload.pollAnswers.push(value)
+    if (part.name === "taggedUserIds[]" || part.name === "taggedUserIds") {
+      const userId = Number(value)
+      if (Number.isInteger(userId) && userId > 0) payload.taggedUserIds.push(userId)
+    }
   }
 
   payload.pollAnswers = payload.pollAnswers.map(answer => answer.trim()).filter(Boolean)
+  payload.taggedUserIds = normalizeTaggedUserIds(payload.taggedUserIds)
 
   return payload
 }
@@ -307,6 +320,13 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 400,
       statusMessage: "Post feeling is invalid.",
+    })
+  }
+
+  if (payload.isAnonymous && payload.taggedUserIds.length > 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Anonymous posts cannot tag people.",
     })
   }
 
@@ -481,6 +501,10 @@ export default defineEventHandler(async (event) => {
 
   for (const answer of payload.pollAnswers) {
     requestBody.append("answer[]", answer)
+  }
+
+  if (payload.taggedUserIds.length > 0) {
+    requestBody.append("tagged_user_ids", JSON.stringify(payload.taggedUserIds))
   }
 
   payload.imageFiles.forEach((imageFile, index) => {

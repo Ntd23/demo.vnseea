@@ -28,6 +28,7 @@ import type {
   FeedMediaItem,
   FeedPostAttachmentCard,
   FeedPostMention,
+  FeedTaggedUser,
   FeedPollOptionRecord,
   FeedPokeActionResult,
   FeedPokeRecord,
@@ -533,6 +534,26 @@ const formatPostTime = (entity: BackendEntity) =>
 const normalizeFeedReactionType = (value: unknown): FeedStoryReactionType | null => {
   return normalizeReactionType(value)
 }
+
+const extractTaggedUsers = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): FeedTaggedUser[] => asArray(entity.tagged_users)
+  .flatMap((user) => {
+    const id = firstNumber(user, ["user_id", "id"])
+    const username = firstString(user, ["username"]).replace(/^@+/, "")
+
+    if (!id || !username) return []
+
+    return [{
+      id,
+      name: firstString(user, ["name", "full_name", "username"]) || username,
+      username,
+      avatarUrl: resolveMediaUrl(firstString(user, ["avatar", "avatar_full"])),
+      profilePath: appRoutes.profile(username),
+    }]
+  })
+  .filter((user, index, users) => users.findIndex(item => item.id === user.id) === index)
 
 const createInitials = (value: string, fallback = "VN") => {
   const initials = value
@@ -1087,6 +1108,9 @@ export const mapPostRecord = (
         ? appRoutes.profile(authorUsername)
         : appRoutes.feed
   const mentions = extractMentions(entity)
+  const taggedUsers = audienceSelection.isAnonymous
+    ? []
+    : extractTaggedUsers(entity, resolveMediaUrl)
   const text = buildPostText(entity)
   const sharedInfo = asRecord(entity.shared_info)
   const sharedPostId = firstNumber(entity, ["parent_id", "shared_post_id"])
@@ -1171,11 +1195,11 @@ export const mapPostRecord = (
       : isTruthy(sourceEntity.verified) || isTruthy(pageIdentity.verified),
     authorPath: audienceSelection.isAnonymous
       ? undefined
-      : pageSlug || groupSlug
-        ? sourcePath
+      : pageSlug
+        ? appRoutes.pageDetail(pageSlug)
         : authorUsername
           ? appRoutes.profile(authorUsername)
-          : sourcePath,
+          : appRoutes.feed,
     eventContext: audienceSelection.isAnonymous ? null : eventContext,
     groupContext: audienceSelection.isAnonymous ? null : groupContext,
     role: audienceSelection.isAnonymous
@@ -1194,6 +1218,7 @@ export const mapPostRecord = (
     text,
     videoTitle: stripHtml(firstString(entity, ["videoTitle", "video_title"])) || undefined,
     mentions,
+    taggedUsers,
     feeling,
     pollOptions,
     tags: extractTags(entity),

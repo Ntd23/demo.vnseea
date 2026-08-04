@@ -37,6 +37,13 @@ const isPublicBackendAssetPath = (pathname: string) =>
 const isRelativeUploadPath = (value: string) =>
   /^\/?upload\//i.test(value.trim())
 
+// Voice notes are created by the backend at request time. In local/staging setups
+// they are not necessarily mirrored to the shared media CDN immediately (or at
+// all), so resolving them against the CDN produces a valid-looking but unplayable
+// URL. Keep those files on the backend origin that accepted the upload.
+const isRelativeVoiceUploadPath = (value: string) =>
+  /^\/?upload\/sounds\//i.test(value.trim())
+
 const buildRequestScopedOrigin = (event: H3Event, value?: string) => {
   const requestUrl = getRequestURL(event)
 
@@ -95,7 +102,9 @@ export const createBackendMediaUrlResolver = (event: H3Event) => {
       return rawValue
     }
 
-    const relativeBaseUrl = isRelativeUploadPath(rawValue)
+    const relativeBaseUrl = isRelativeVoiceUploadPath(rawValue)
+      ? backendWebBase
+      : isRelativeUploadPath(rawValue)
       ? mediaBaseUrl
       : backendWebBase
 

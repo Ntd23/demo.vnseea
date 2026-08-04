@@ -4562,6 +4562,18 @@ function VNSEEA_AttachMarketplaceMessageContext($message)
         }
     }
 
+    // Legacy web checkout messages stored the order hash only inside a long
+    // human-readable message. Recover it so old conversations can use the
+    // same structured order card as current app/web messages.
+    if (empty($message['market_order_hash'])) {
+        $legacy_order_text = !empty($message['or_text'])
+            ? (string)$message['or_text']
+            : (!empty($message['text']) ? (string)$message['text'] : '');
+        if (preg_match('/#\s*([a-f0-9]{16,64})\b/i', $legacy_order_text, $legacy_order_match)) {
+            $message['market_order_hash'] = $legacy_order_match[1];
+        }
+    }
+
     if (empty($message['market_order_hash'])) {
         return $message;
     }
@@ -4648,6 +4660,7 @@ function VNSEEA_AttachMarketplaceMessageContext($message)
     $context = array(
         'type' => 'order_request',
         'order_hash' => $hash_id,
+        'buyer_id' => (string)$first_order->user_id,
         'buyer_name' => !empty($buyer['name']) ? $buyer['name'] : (!empty($buyer['username']) ? $buyer['username'] : 'Người mua'),
         'buyer_phone' => !empty($address) && !empty($address->phone) ? (string)$address->phone : '',
         'buyer_address' => implode(', ', $address_parts),

@@ -30,6 +30,7 @@ import type {
   MessageCreateGroupResult,
   MessageGroupDetails,
   MessageItem,
+  MessageOrderRequest,
   MessagePinnedItem,
   MessageProductCard,
   MessageGroupMember,
@@ -426,12 +427,18 @@ const buildContactPreviewLegacy = (message: BackendEntity) => {
 const inferMediaType = (entity: BackendEntity): MessageItem["mediaType"] | undefined => {
   const rawType = firstString(entity, ["type", "type_two"]).toLowerCase()
   const media = firstString(entity, ["media", "stickers", "media_file"]).toLowerCase()
+  const mediaName = firstString(entity, ["mediaFileName", "media_file_name", "filename"]).toLowerCase()
+  const isVoiceRecord = rawType.includes("record")
+    || rawType.includes("audio")
+    || media.includes("_soundfile.")
+    || /(^|[\\/])record-[^\\/]+\.(webm|mp3|m4a|wav|ogg)$/i.test(media)
+    || /^record-.+\.(webm|mp3|m4a|wav|ogg)$/i.test(mediaName)
 
+  if (isVoiceRecord) return rawType.includes("audio") ? "audio" : "record"
   if (rawType.includes("gif") || media.endsWith(".gif")) return "gif"
   if (rawType.includes("image") || /\.(png|jpe?g|webp|bmp)$/i.test(media)) return "image"
   if (rawType.includes("video") || /\.(mp4|mov|webm|m4v)$/i.test(media)) return "video"
-  if (rawType.includes("record") || /\.(mp3|m4a|wav|ogg|webm)$/i.test(media)) return "record"
-  if (rawType.includes("audio")) return "audio"
+  if (/\.(mp3|m4a|wav|ogg)$/i.test(media)) return "record"
   if (media) return "file"
 
   return undefined
@@ -1106,6 +1113,53 @@ const mapBackendMessageProduct = (
   }
 }
 
+const mapBackendMessageOrderRequest = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): MessageOrderRequest | undefined => {
+  const directOrder = asRecord(entity.market_order)
+  const marketplaceContext = asRecord(entity.marketplace_context)
+  const context = Object.keys(directOrder).length
+    ? directOrder
+    : firstString(marketplaceContext, ["type"]) === "order_request"
+      ? marketplaceContext
+      : {}
+  const orderHash = firstString(context, ["order_hash"])
+    || firstString(entity, ["market_order_hash"])
+
+  if (!orderHash || Object.keys(context).length === 0) {
+    return undefined
+  }
+
+  const items = asArray(context.items).map(item => {
+    const productId = asNumber(item.product_id)
+    const name = firstString(item, ["name", "title"])
+
+    if (productId <= 0 || !name) return null
+
+    return {
+      productId,
+      name,
+      imageUrl: resolveMediaUrl(firstString(item, ["image", "image_url"])) || undefined,
+      quantity: Math.max(1, Math.floor(asNumber(item.quantity) || 1)),
+      total: firstString(item, ["total", "price"]),
+      href: appRoutes.productDetail(productId),
+    }
+  }).filter(Boolean) as MessageOrderRequest["items"]
+
+  if (items.length === 0) return undefined
+
+  return {
+    orderHash,
+    buyerId: asNumber(context.buyer_id),
+    buyerName: firstString(context, ["buyer_name"]),
+    buyerPhone: firstString(context, ["buyer_phone"]),
+    buyerAddress: firstString(context, ["buyer_address"]),
+    items,
+    total: firstString(context, ["total"]),
+  }
+}
+
 const stripMessageMarkup = (value: string) =>
   normalizeInlineMessageText(
     decodeHtmlEntities(value)
@@ -1472,15 +1526,19 @@ const mapThreadMessage = (
   const systemEvent = mapMessagePinSystemEvent(entity)
   const story = recalledPayload ? undefined : mapMessageStoryContext(entity, resolveMediaUrl)
   const productCard = recalledPayload ? undefined : mapBackendMessageProduct(entity, resolveMediaUrl)
+  const orderRequest = recalledPayload ? undefined : mapBackendMessageOrderRequest(entity, resolveMediaUrl)
+  const orderBuyerId = orderRequest?.buyerId ?? 0
   const normalizedText = normalizeMessageText(rawText, entity)
-  const text = recalledPayload || systemEvent
+  const text = recalledPayload || systemEvent || orderRequest
     ? ""
     : mapBackendMessageReplyText(entity, normalizedText, currentUserId, resolveMediaUrl)
 
   return {
     id: asNumber(entity.id),
     text,
-    isMine: senderId === currentUserId || asString(entity.position).startsWith("right"),
+    isMine: orderBuyerId > 0
+      ? orderBuyerId === currentUserId
+      : senderId === currentUserId || asString(entity.position).startsWith("right"),
     time: firstString(entity, ["time_text"]),
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
       || firstString(messageUser, ["avatar", "avatar_full"])),
@@ -1502,6 +1560,7 @@ const mapThreadMessage = (
     mediaType: recalledPayload ? undefined : mediaType,
     story,
     productCard,
+    orderRequest,
     isDeleted: Boolean(recalledPayload),
     deletedAt: recalledPayload?.deletedAt || undefined,
     deletedTime: recalledPayload?.deletedAt ? formatMessageTime(recalledPayload.deletedAt) : undefined,

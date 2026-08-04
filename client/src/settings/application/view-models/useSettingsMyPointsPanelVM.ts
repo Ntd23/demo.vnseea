@@ -56,12 +56,15 @@ export function useSettingsMyPointsPanelVM(
   const transferConfirmOpen = ref(false)
   const receiveQrPoints = ref<number | null>(null)
   const receiveQr = ref<SettingsPointsReceiveQr | null>(null)
+  const receiveQrLoading = ref(false)
+  const receiveQrError = ref("")
   const transferDraft = reactive({
     recipientUserId: 0,
     points: 0,
   })
   let directScanner: any = null
   let receiveQrRefreshTimer: ReturnType<typeof setTimeout> | null = null
+  let receiveQrLoadVersion = 0
   let skipNextTransferRecipientSearch = false
   let transferRecipientSearchVersion = 0
 
@@ -132,7 +135,7 @@ export function useSettingsMyPointsPanelVM(
   const selectedTransferRecipientName = computed(() =>
     selectedTransferRecipient.value
       ? `${selectedTransferRecipient.value.name} (@${selectedTransferRecipient.value.username})`
-      : transferSelectedRecipientLabel.value || `User #${transferDraft.recipientUserId}`,
+      : transferSelectedRecipientLabel.value || t("settings.data.pointsPanel.userIdLabel", { id: transferDraft.recipientUserId }),
   )
   const normalizedTransferNote = computed(() => transferNote.value.trim())
   const canSubmitTransfer = computed(() =>
@@ -267,6 +270,11 @@ export function useSettingsMyPointsPanelVM(
 
   watch(receiveQrPoints, (points) => {
     if (!receiveQrPanelOpen.value) return
+
+    receiveQrLoadVersion += 1
+    receiveQr.value = null
+    receiveQrError.value = ""
+    receiveQrLoading.value = true
 
     if (receiveQrRefreshTimer) {
       clearTimeout(receiveQrRefreshTimer)
@@ -507,7 +515,7 @@ export function useSettingsMyPointsPanelVM(
       closeTransferPanel()
       void loadWalletHistory()
     }
-    catch (error) {
+    catch {
       const status = Number((error as any)?.statusCode || (error as any)?.response?.status || 0)
       const errorCode = String(
         (error as any)?.data?.error_code
@@ -618,7 +626,7 @@ export function useSettingsMyPointsPanelVM(
     transferError.value = ""
     transferLastAppliedQrPayload.value = raw
     transferDraft.recipientUserId = payload.to
-    transferSelectedRecipientLabel.value = `User #${payload.to}`
+    transferSelectedRecipientLabel.value = t("settings.data.pointsPanel.userIdLabel", { id: payload.to })
     transferRecipientSearchVersion += 1
     transferRecipients.value = []
     transferSearching.value = false
@@ -654,14 +662,14 @@ export function useSettingsMyPointsPanelVM(
 
       transferRecipients.value = []
       transferDraft.recipientUserId = userId
-      transferSelectedRecipientLabel.value = `User #${userId}`
+      transferSelectedRecipientLabel.value = t("settings.data.pointsPanel.userIdLabel", { id: userId })
       skipNextTransferRecipientSearch = true
       transferRecipientQuery.value = String(userId)
     }
     catch {
       transferRecipients.value = []
       transferDraft.recipientUserId = userId
-      transferSelectedRecipientLabel.value = `User #${userId}`
+      transferSelectedRecipientLabel.value = t("settings.data.pointsPanel.userIdLabel", { id: userId })
       skipNextTransferRecipientSearch = true
       transferRecipientQuery.value = String(userId)
     }
@@ -747,14 +755,82 @@ export function useSettingsMyPointsPanelVM(
     }
   }
 
+  const waitForQrRetry = (delay: number) => new Promise(resolve => setTimeout(resolve, delay))
+
+  async function preloadReceiveQrImage(imageUrl: string, loadVersion: number) {
+    if (typeof window === "undefined") return imageUrl
+
+    const retryDelays = [0, 180, 500]
+    for (let attempt = 0; attempt < retryDelays.length; attempt += 1) {
+      if (loadVersion !== receiveQrLoadVersion) return null
+      if (retryDelays[attempt]) await waitForQrRetry(retryDelays[attempt]!)
+
+      const separator = imageUrl.includes("?") ? "&" : "?"
+      const attemptUrl = `${imageUrl}${separator}_qr_retry=${Date.now()}-${attempt}`
+      const loaded = await new Promise<boolean>(resolve => {
+        const image = new Image()
+        image.onload = () => resolve(true)
+        image.onerror = () => resolve(false)
+        image.src = attemptUrl
+      })
+
+      if (loaded) return attemptUrl
+    }
+
+    throw new Error(t("settings.data.pointsPanel.receiveQrError"))
+  }
+
   async function openReceiveQrPanel(points?: number | null) {
+    if (receiveQrRefreshTimer) {
+      clearTimeout(receiveQrRefreshTimer)
+      receiveQrRefreshTimer = null
+    }
+
     transferPanelOpen.value = false
     receiveQrPanelOpen.value = true
-    receiveQr.value = await onLoadReceiveQr(points ?? receiveQrPoints.value)
+    receiveQrError.value = ""
+    receiveQr.value = null
+    const loadVersion = ++receiveQrLoadVersion
+
+    const rawPoints: unknown = points ?? receiveQrPoints.value
+    const normalizedPoints = rawPoints === null || rawPoints === undefined || rawPoints === ""
+      ? null
+      : Number(rawPoints)
+
+    if (normalizedPoints !== null && (!Number.isSafeInteger(normalizedPoints) || normalizedPoints <= 0)) {
+      receiveQrLoading.value = false
+      receiveQrError.value = t("settings.data.pointsPanel.receiveQrInvalidPoints")
+      return
+    }
+
+    receiveQrLoading.value = true
+
+    try {
+      const qr = await onLoadReceiveQr(normalizedPoints)
+      const readyImageUrl = await preloadReceiveQrImage(qr.imageUrl, loadVersion)
+      if (loadVersion !== receiveQrLoadVersion || !readyImageUrl) return
+
+      receiveQr.value = { ...qr, imageUrl: readyImageUrl }
+    }
+    catch {
+      if (loadVersion === receiveQrLoadVersion) {
+        receiveQrError.value = t("settings.data.pointsPanel.receiveQrError")
+      }
+    }
+    finally {
+      if (loadVersion === receiveQrLoadVersion) receiveQrLoading.value = false
+    }
   }
 
   function closeReceiveQrPanel() {
+    if (receiveQrRefreshTimer) {
+      clearTimeout(receiveQrRefreshTimer)
+      receiveQrRefreshTimer = null
+    }
+    receiveQrLoadVersion += 1
     receiveQrPanelOpen.value = false
+    receiveQrLoading.value = false
+    receiveQrError.value = ""
   }
 
   return {
@@ -789,6 +865,8 @@ export function useSettingsMyPointsPanelVM(
     transferDraft,
     receiveQrPoints,
     receiveQr,
+    receiveQrLoading,
+    receiveQrError,
     selectedTransferRecipient,
     selectedTransferRecipientName,
     normalizedTransferNote,

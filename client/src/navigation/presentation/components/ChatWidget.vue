@@ -582,6 +582,8 @@
                 'chat-widget__mini-message--mine': message.isMine,
                 'chat-widget__mini-message--system': Boolean(message.systemEvent),
                 'chat-widget__mini-message--product': Boolean(getMiniProductMeta(message)),
+                'chat-widget__mini-message--order': Boolean(message.orderRequest),
+                'chat-widget__mini-message--voice': Boolean(message.mediaUrl && (message.mediaType === 'audio' || message.mediaType === 'record')),
                 'chat-widget__mini-message--location': Boolean(getMessageLocationMeta(message)),
                 'chat-widget__mini-message--highlighted': highlightedMiniMessageKey === `${miniSession.contactId}:${message.id}`,
               }"
@@ -629,6 +631,7 @@
                 :media-name="message.isDeleted ? undefined : message.mediaName"
                 :media-type="message.isDeleted ? undefined : message.mediaType"
                 :product-card="message.isDeleted ? undefined : getMiniProductMeta(message)?.card"
+                :order-request="message.isDeleted ? undefined : message.orderRequest"
                 :shared-post="message.isDeleted ? undefined : message.sharedPost"
                 :story-context="message.isDeleted ? undefined : message.story"
                 :location="message.isDeleted ? undefined : getMessageLocationMeta(message)"
@@ -648,7 +651,7 @@
           </div>
         </div>
 
-        <div v-if="miniSession.productDraft || hasMiniReplyFor(miniSession.contactId) || miniSession.attachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
+        <div v-if="miniSession.productDraft || hasMiniReplyFor(miniSession.contactId) || miniSession.attachFile || miniRecordDraftFor(miniSession.contactId) || isMiniRecordingFor(miniSession.contactId)" class="chat-widget__mini-draft">
           <div v-if="miniSession.productDraft" class="chat-widget__mini-product-draft">
             <span class="chat-widget__mini-product-image">
               <img
@@ -717,10 +720,13 @@
               </button>
             </div>
           </div>
-          <div v-if="activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-file-preview">
+          <div v-if="miniRecordDraftFor(miniSession.contactId) || isMiniRecordingFor(miniSession.contactId)" class="chat-widget__mini-file-preview">
             <Icon name="i-ph-microphone-bold" class="h-3.5 w-3.5" />
-            <span>{{ isMiniRecording ? $t("pages.messagesPage.recordingInProgress") : $t("pages.messagesPage.recordReady") }}</span>
-            <button type="button" @click="discardMiniRecording">
+            <span>
+              {{ isMiniRecordingFor(miniSession.contactId) ? $t("pages.messagesPage.recordingInProgress") : $t("pages.messagesPage.recordReady") }}
+              · {{ formatMiniRecordingDuration(miniSession.contactId) }}
+            </span>
+            <button type="button" @click="discardMiniRecording(miniSession.contactId)">
               <Icon name="i-ph-x-bold" class="h-3 w-3" />
             </button>
           </div>
@@ -776,12 +782,12 @@
           <button
             type="button"
             class="chat-widget__mini-tool-btn"
-            :class="{ 'chat-widget__mini-tool-btn--active': isMiniRecording }"
-            :title="$t('pages.messagesPage.startRecording')"
+            :class="{ 'chat-widget__mini-tool-btn--active': isMiniRecordingFor(miniSession.contactId) }"
+            :title="$t(isMiniRecordingFor(miniSession.contactId) ? 'pages.messagesPage.stopRecording' : 'pages.messagesPage.startRecording')"
             :disabled="!isMiniRecordSupported"
             @click="handleMiniRecordButton(miniSession)"
           >
-            <Icon :name="isMiniRecording ? 'i-ph-stop-circle-bold' : 'i-ph-microphone-bold'" class="h-4 w-4" />
+            <Icon :name="isMiniRecordingFor(miniSession.contactId) ? 'i-ph-stop-circle-bold' : 'i-ph-microphone-bold'" class="h-4 w-4" />
           </button>
           <button type="button" class="chat-widget__mini-tool-btn" :title="$t('pages.messagesPage.attachmentLabel')" @click="triggerMiniFileInput('image', miniSession.contact.id)">
             <Icon name="i-ph-image-bold" class="h-4 w-4" />
@@ -938,6 +944,7 @@ const activeMiniReactionPickerId = ref<number | null>(null)
 const miniMessageReactions = ref<Record<number, FeedReactionAsset | undefined>>({})
 const miniReplyTarget = ref<MessageItem | null>(null)
 const miniReplyContactId = ref("")
+const miniRecordingContactId = ref("")
 const MINI_REPLY_PREFIX = "__VNSEEA_MINI_REPLY__:"
 const {
   isCallActionPending,
@@ -947,6 +954,7 @@ const {
 const {
   isSupported: isMiniRecordSupported,
   isRecording: isMiniRecording,
+  durationMs: miniRecordDurationMs,
   recordDraft: miniRecordDraft,
   startRecording: startMiniRecording,
   stopRecording: stopMiniRecording,
@@ -1072,7 +1080,16 @@ const miniLaunchers = computed(() =>
     .map(session => session.contact)
     .slice(0, 2),
 )
-const activeMiniRecordDraft = computed(() => miniRecordDraft.value)
+const isMiniRecordingFor = (contactId: string) =>
+  miniRecordingContactId.value === contactId && isMiniRecording.value
+const miniRecordDraftFor = (contactId: string) =>
+  miniRecordingContactId.value === contactId ? miniRecordDraft.value : null
+const formatMiniRecordingDuration = (contactId: string) => {
+  const totalSeconds = miniRecordingContactId.value === contactId
+    ? Math.max(Math.floor(miniRecordDurationMs.value / 1000), 0)
+    : 0
+  return `${String(Math.floor(totalSeconds / 60)).padStart(2, "0")}:${String(totalSeconds % 60).padStart(2, "0")}`
+}
 const miniReplyAuthor = computed(() => {
   if (!miniReplyTarget.value) {
     return ""
@@ -1137,10 +1154,10 @@ function canSubmitMiniMessage(session: MiniChatSessionView) {
   if (miniSubmittingMap.value[session.contactId]) {
     return false
   }
-  return !isMiniRecording.value
+  return !isMiniRecordingFor(session.contactId)
     && (
       session.canSend
-      || Boolean(activeMiniRecordDraft.value)
+      || Boolean(miniRecordDraftFor(session.contactId))
       || Boolean(hasMiniReplyFor(session.contactId) && session.message.trim())
     )
 }
@@ -1184,7 +1201,6 @@ async function openMiniChat(contact: Parameters<typeof openMiniChatVm>[0]) {
   activeMiniHeaderContactId.value = null
   closeMessageAvatarMenu()
   activeMiniReactionPickerId.value = null
-  clearMiniRecording()
   await openMiniChatVm(contact)
   await nextTick()
   scrollMiniMessagesToBottom(contact.id)
@@ -1204,7 +1220,7 @@ function closeMiniChat() {
   closeMessageAvatarMenu()
   clearMiniReply()
   activeMiniReactionPickerId.value = null
-  clearMiniRecording()
+  clearMiniRecordingState()
   closeMiniChatVm()
 }
 
@@ -1213,7 +1229,7 @@ function closeMiniSession(session: MiniChatSessionView) {
   closeMessageAvatarMenu()
   clearMiniReply(session.contactId)
   activeMiniReactionPickerId.value = null
-  clearMiniRecording()
+  clearMiniRecordingState(session.contactId)
   miniMessagesViewports.delete(session.contactId)
   miniMessagesPinnedToBottom.delete(session.contactId)
   closeMiniChatVm(session.contactId)
@@ -1815,7 +1831,8 @@ async function submitMiniMessage(session: MiniChatSessionView) {
   }
 
   const trimmed = session.message.trim()
-  if (!trimmed && !activeMiniRecordDraft.value && !session.attachFile) {
+  const recordDraft = miniRecordDraftFor(contactId)
+  if (!trimmed && !recordDraft && !session.attachFile) {
     return
   }
 
@@ -1832,11 +1849,11 @@ async function submitMiniMessage(session: MiniChatSessionView) {
   await sendMiniMessage({
     contactId: session.contactId,
     textOverride: text,
-    record: activeMiniRecordDraft.value,
+    record: recordDraft,
   })
   clearMiniProductDraft(contactId)
   clearMiniReply(contactId)
-  clearMiniRecording()
+  clearMiniRecordingState(contactId)
 
   setTimeout(() => {
     miniSubmittingMap.value[contactId] = false
@@ -1878,25 +1895,41 @@ async function sendMiniLike(session: MiniChatSessionView) {
 }
 
 function handleMiniFileChange(session: MiniChatSessionView, event: Event) {
-  if (miniRecordDraft.value || isMiniRecording.value) {
-    clearMiniRecording()
+  if (miniRecordDraftFor(session.contactId) || isMiniRecordingFor(session.contactId)) {
+    clearMiniRecordingState(session.contactId)
   }
 
   onMiniFile(event, session.contactId)
 }
 
 async function handleMiniRecordButton(session: MiniChatSessionView) {
-  if (isMiniRecording.value) {
+  if (isMiniRecordingFor(session.contactId)) {
     await stopMiniRecording()
     return
   }
 
+  if (isMiniRecording.value) {
+    await stopMiniRecording()
+  }
+  clearMiniRecordingState()
   clearMiniFile(session.contactId)
-  await startMiniRecording()
+  miniRecordingContactId.value = session.contactId
+  const started = await startMiniRecording()
+  if (!started) {
+    miniRecordingContactId.value = ""
+  }
 }
 
-function discardMiniRecording() {
+function clearMiniRecordingState(contactId?: string) {
+  if (contactId && miniRecordingContactId.value !== contactId) {
+    return
+  }
   clearMiniRecording()
+  miniRecordingContactId.value = ""
+}
+
+function discardMiniRecording(contactId: string) {
+  clearMiniRecordingState(contactId)
 }
 
 function setMiniMessagesViewport(contactId: string, element: unknown) {
@@ -2043,7 +2076,7 @@ watch(miniChatAutoOpenVersion, (version) => {
     activeMiniHeaderContactId.value = null
     clearMiniReply()
     activeMiniReactionPickerId.value = null
-    clearMiniRecording()
+    clearMiniRecordingState()
     nextTick(() => {
       const openedSession = miniChatSessions.value[0]
       if (openedSession) {
@@ -3078,6 +3111,16 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding-inline: 0;
 }
 
+.chat-widget__mini-message--order,
+.chat-widget__mini-message--mine.chat-widget__mini-message--order {
+  padding-inline: 0;
+}
+
+.chat-widget__mini-message--voice,
+.chat-widget__mini-message--mine.chat-widget__mini-message--voice {
+  padding-inline: 0;
+}
+
 .chat-widget__mini-chat-bubble--deleted :deep(.chat-bubble) {
   background: var(--bg-muted) !important;
   color: var(--text-secondary) !important;
@@ -3124,6 +3167,18 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--product) {
   width: min(272px, 100%);
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--order) {
+  width: min(280px, calc(100% - 24px)) !important;
+  max-width: calc(100% - 24px) !important;
+  flex: 0 1 280px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--voice) {
+  width: min(280px, calc(100% - 24px)) !important;
+  max-width: calc(100% - 24px) !important;
+  flex: 0 1 280px;
 }
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble) {

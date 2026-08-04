@@ -88,7 +88,12 @@ if (!function_exists('VNSEEA_SendMarketOrderMessage')) {
             'from_id' => $buyer_id,
             'to_id' => $seller_id,
             'time' => time(),
-            'text' => Wo_Secure(implode("\n", $lines)),
+            // The app and web must emit the same structured order message.
+            // Conversation hydration uses the hash to build the purchase card;
+            // this short text is retained only as a compatibility fallback.
+            'text' => Wo_Secure('Yêu cầu mua #' . $hash_id),
+            'type_two' => 'market_order_request',
+            'market_order_hash' => (string)$hash_id,
         ));
     }
 }

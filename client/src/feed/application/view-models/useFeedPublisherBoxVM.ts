@@ -3,7 +3,7 @@
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import { useFeedPostColors } from "../composables/useFeedPostColors"
-import type { FeedPostRecord } from "../../domain/types/feed.types"
+import type { FeedPostRecord, FeedTaggedUser } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import { normalizeContentAudienceSelection, type ContentAudience } from "../../../shared-kernel/domain/content-audience"
 import {
@@ -17,7 +17,7 @@ import {
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation"
 
-type PublisherAction = "image" | "video" | "poll" | "job" | "feeling" | "story" | "colors" | "product" | "location"
+type PublisherAction = "image" | "video" | "poll" | "job" | "feeling" | "story" | "colors" | "product" | "location" | "tag"
 type PublisherAudience = ContentAudience
 type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | "funny" | "cool" | "tired" | "confused" | ""
 
@@ -49,6 +49,13 @@ export function useFeedPublisherBoxVM(
   const showColorsPicker = ref(false)
   const showProductForm = ref(false)
   const showLocationForm = ref(false)
+  const showTagPeoplePicker = ref(false)
+  const tagPeopleQuery = ref("")
+  const taggableUsers = ref<FeedTaggedUser[]>([])
+  const selectedTaggedUsers = ref<FeedTaggedUser[]>([])
+  const tagPeopleLoading = ref(false)
+  const tagPeopleError = ref("")
+  let tagSearchTimer: ReturnType<typeof setTimeout> | undefined
 
   const { postColorOptions } = useFeedPostColors()
 
@@ -238,9 +245,79 @@ export function useFeedPublisherBoxVM(
     (isAnonymous) => {
       if (isAnonymous) {
         draft.value.audience = "public"
+        selectedTaggedUsers.value = []
+        showTagPeoplePicker.value = false
       }
     },
   )
+
+  async function loadTaggableUsers() {
+    if (draft.value.isAnonymous) return
+    tagPeopleLoading.value = true
+    tagPeopleError.value = ""
+
+    try {
+      const response = await repository.getTaggableUsers({
+        query: tagPeopleQuery.value.trim() || undefined,
+        audience: groupId || eventId ? "public" : draft.value.audience,
+        pageId,
+        eventId,
+        groupId,
+        limit: 20,
+      })
+      taggableUsers.value = response.users
+    }
+    catch (error) {
+      taggableUsers.value = []
+      tagPeopleError.value = error instanceof Error
+        ? error.message
+        : (locale.value === "vi" ? "Không thể tải danh sách người theo dõi." : "Unable to load followed people.")
+    }
+    finally {
+      tagPeopleLoading.value = false
+    }
+  }
+
+  function toggleTagPeoplePicker() {
+    if (draft.value.isAnonymous) return
+    showTagPeoplePicker.value = !showTagPeoplePicker.value
+    expanded.value = true
+    if (showTagPeoplePicker.value) {
+      showFeelingPicker.value = false
+      showPollForm.value = false
+      showColorsPicker.value = false
+      showProductForm.value = false
+      showLocationForm.value = false
+      void loadTaggableUsers()
+    }
+  }
+
+  function toggleTaggedUser(user: FeedTaggedUser) {
+    const existingIndex = selectedTaggedUsers.value.findIndex(item => item.id === user.id)
+    if (existingIndex >= 0) {
+      selectedTaggedUsers.value.splice(existingIndex, 1)
+      return
+    }
+    if (selectedTaggedUsers.value.length < 20) selectedTaggedUsers.value.push(user)
+  }
+
+  function removeTaggedUser(userId: number) {
+    selectedTaggedUsers.value = selectedTaggedUsers.value.filter(user => user.id !== userId)
+  }
+
+  watch(tagPeopleQuery, () => {
+    if (!showTagPeoplePicker.value) return
+    if (tagSearchTimer) clearTimeout(tagSearchTimer)
+    tagSearchTimer = setTimeout(() => void loadTaggableUsers(), 250)
+  })
+
+  watch(() => draft.value.audience, () => {
+    if (showTagPeoplePicker.value) void loadTaggableUsers()
+  })
+
+  onBeforeUnmount(() => {
+    if (tagSearchTimer) clearTimeout(tagSearchTimer)
+  })
 
   watch(expanded, async (value) => {
     console.log("[useFeedPublisherBoxVM] watch(expanded) triggered! New value is:", value)
@@ -250,6 +327,7 @@ export function useFeedPublisherBoxVM(
       showColorsPicker.value = false
       showProductForm.value = false
       showLocationForm.value = false
+      showTagPeoplePicker.value = false
       return
     }
 
@@ -276,6 +354,7 @@ export function useFeedPublisherBoxVM(
     showColorsPicker.value = false
     showProductForm.value = false
     showLocationForm.value = false
+    showTagPeoplePicker.value = false
     
     imageInputRef.value?.click()
     expanded.value = true
@@ -287,6 +366,7 @@ export function useFeedPublisherBoxVM(
     showColorsPicker.value = false
     showProductForm.value = false
     showLocationForm.value = false
+    showTagPeoplePicker.value = false
     
     videoInputRef.value?.click()
     expanded.value = true
@@ -324,6 +404,11 @@ export function useFeedPublisherBoxVM(
       return
     }
 
+    if (value === "tag") {
+      toggleTagPeoplePicker()
+      return
+    }
+
     if (value === "product") {
       showProductForm.value = true
       showFeelingPicker.value = false
@@ -357,6 +442,7 @@ export function useFeedPublisherBoxVM(
       showColorsPicker.value = false
       showProductForm.value = false
       showLocationForm.value = false
+      showTagPeoplePicker.value = false
       showPollForm.value = !showPollForm.value
       return
     }
@@ -371,7 +457,13 @@ export function useFeedPublisherBoxVM(
       showColorsPicker.value = false
       showProductForm.value = false
       showPollForm.value = false
+      showTagPeoplePicker.value = false
       expanded.value = true
+      return
+    }
+
+    if (value === "tag") {
+      toggleTagPeoplePicker()
       return
     }
 
@@ -381,6 +473,7 @@ export function useFeedPublisherBoxVM(
       showProductForm.value = false
       showPollForm.value = false
       showLocationForm.value = false
+      showTagPeoplePicker.value = false
       return
     }
 
@@ -390,6 +483,7 @@ export function useFeedPublisherBoxVM(
       showProductForm.value = false
       showPollForm.value = false
       showLocationForm.value = false
+      showTagPeoplePicker.value = false
       expanded.value = true
       return
     }
@@ -517,10 +611,19 @@ export function useFeedPublisherBoxVM(
         pollAnswers: showPollForm.value
           ? pollAnswers.value.map(answer => answer.trim()).filter(Boolean)
           : undefined,
+        taggedUserIds: selectedTaggedUsers.value.map(user => user.id),
       })
 
       statusTone.value = "neutral"
       statusMessage.value = ""
+      const createdPost = response.post
+        ? {
+            ...response.post,
+            taggedUsers: response.post.taggedUsers?.length
+              ? response.post.taggedUsers
+              : [...selectedTaggedUsers.value],
+          }
+        : null
       if (draft.value) {
         draft.value.text = ""
         draft.value.feeling = ""
@@ -534,8 +637,12 @@ export function useFeedPublisherBoxVM(
       showPollForm.value = false
       showLocationForm.value = false
       pollAnswers.value = ["", ""]
+      selectedTaggedUsers.value = []
+      taggableUsers.value = []
+      tagPeopleQuery.value = ""
+      showTagPeoplePicker.value = false
       expanded.value = false
-      emit("created", response.post)
+      emit("created", createdPost)
 
       toast.add({
         color: "success",
@@ -594,6 +701,15 @@ export function useFeedPublisherBoxVM(
     postColorOptions,
     showProductForm,
     showLocationForm,
+    showTagPeoplePicker,
+    tagPeopleQuery,
+    taggableUsers,
+    selectedTaggedUsers,
+    tagPeopleLoading,
+    tagPeopleError,
+    toggleTagPeoplePicker,
+    toggleTaggedUser,
+    removeTaggedUser,
     imageFiles,
     videoFile,
   }

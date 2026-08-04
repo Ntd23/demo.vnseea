@@ -58,6 +58,7 @@
           :media-name="msg.isDeleted ? undefined : msg.mediaName"
           :media-type="msg.isDeleted ? undefined : msg.mediaType"
           :product-card="msg.isDeleted ? undefined : getProductMeta(msg)?.card"
+          :order-request="msg.isDeleted ? undefined : msg.orderRequest"
           :shared-post="msg.isDeleted ? undefined : msg.sharedPost"
           :story-context="msg.isDeleted ? undefined : msg.story"
           :location="msg.isDeleted ? undefined : getMessageLocationMeta(msg)"

@@ -216,6 +216,51 @@ if (!function_exists('VNSEEA_GetPostTaggedUsers')) {
     }
 }
 
+if (!function_exists('VNSEEA_RenderPostTaggedUsers')) {
+    function VNSEEA_RenderPostTaggedUsers($story)
+    {
+        global $wo;
+
+        $tagged_users = !empty($story['tagged_users']) && is_array($story['tagged_users'])
+            ? array_values($story['tagged_users'])
+            : array();
+        if (empty($tagged_users) || (!empty($story['is_anonymous']) && (int) $story['is_anonymous'] === 1)) {
+            return '';
+        }
+
+        $first = $tagged_users[0];
+        $username = !empty($first['username']) ? (string) $first['username'] : '';
+        $name = !empty($first['name']) ? (string) $first['name'] : $username;
+        if ($username === '' || $name === '') {
+            return '';
+        }
+
+        $is_vietnamese = !empty($wo['language']) && $wo['language'] === 'vietnamese';
+        $lead = $is_vietnamese ? 'cùng với' : 'with';
+        $profile_url = Wo_SeoLink('index.php?link1=timeline&u=' . rawurlencode($username));
+        $ajax_url = '?link1=timeline&u=' . rawurlencode($username);
+        $user_id = !empty($first['user_id']) ? (int) $first['user_id'] : 0;
+
+        $html = ' <span class="post-tagged-users"><span class="post-tagged-users__lead">'
+            . htmlspecialchars($lead, ENT_QUOTES, 'UTF-8')
+            . '</span> <span class="user-popover" data-type="user" data-id="' . $user_id . '">'
+            . '<a href="' . htmlspecialchars($profile_url, ENT_QUOTES, 'UTF-8') . '" data-ajax="'
+            . htmlspecialchars($ajax_url, ENT_QUOTES, 'UTF-8') . '"><b>'
+            . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</b></a></span>';
+
+        $other_count = count($tagged_users) - 1;
+        if ($other_count > 0) {
+            $others = $is_vietnamese
+                ? 'và ' . $other_count . ' người khác'
+                : 'and ' . $other_count . ($other_count === 1 ? ' other' : ' others');
+            $html .= ' <span class="post-tagged-users__others">'
+                . htmlspecialchars($others, ENT_QUOTES, 'UTF-8') . '</span>';
+        }
+
+        return $html . '</span>';
+    }
+}
+
 if (!function_exists('VNSEEA_SearchTaggableUsers')) {
     function VNSEEA_SearchTaggableUsers($actor_id, $request)
     {

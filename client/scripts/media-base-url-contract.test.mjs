@@ -13,6 +13,8 @@ assert.match(envExample, /^MEDIA_BASE_URL=https:\/\/media\.vnseea\.vn$/m)
 assert.match(nuxtConfig, /mediaBaseUrl\s*=\s*requireEnv\("MEDIA_BASE_URL"\)/)
 assert.match(nuxtConfig, /mediaBaseUrl,/)
 assert.match(resolver, /isRelativeUploadPath\(rawValue\)/)
+assert.match(resolver, /isRelativeVoiceUploadPath\(rawValue\)/)
+assert.match(resolver, /isRelativeVoiceUploadPath\(rawValue\)[\s\S]*?\? backendWebBase/)
 assert.match(resolver, /\? mediaBaseUrl\s*:\s*backendWebBase/)
 
 console.log("media-base-url-contract: ok")

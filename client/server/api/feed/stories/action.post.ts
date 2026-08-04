@@ -146,7 +146,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (action === "delete") {
-    assertBackendApiSuccess(
+    const response = assertBackendApiSuccess(
       await createBackendApiClient(event).post<BackendDeleteStoryResponse, Record<string, unknown>>(
         "delete-story",
         {
@@ -159,7 +159,7 @@ export default defineEventHandler(async (event) => {
     return {
       ok: true,
       storyId,
-      views: Math.max(0, Math.floor(asNumber(response.story?.view_count))),
+      message: response.message || "",
     }
   }
 

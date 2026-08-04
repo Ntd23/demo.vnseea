@@ -22,22 +22,12 @@
               <Icon name="i-ph-wallet-duotone" class="h-7 w-7" />
             </span>
             <div>
-              <h1 class="wallet-points-hero__title">Ví VNSEEA</h1>
-              <strong class="wallet-points-hero__balance">{{ formatNumber(pointsBalance) }} VNSEEA</strong>
+              <h1 class="wallet-points-hero__title">{{ t("settings.data.pointsPanel.walletTitle") }}</h1>
+              <strong class="wallet-points-hero__balance">{{ t("settings.data.pointsPanel.pointsAmount", { points: formatNumber(pointsBalance) }) }}</strong>
             </div>
           </div>
 
-          <div class="wallet-points-tabs" aria-label="Thao tác ví VNSEEA">
-            <!-- Tạm comment nạp tiền/rút tiền trong ví điểm.
-            <button type="button" class="wallet-points-tab">
-              <Icon name="i-ph-plus-circle-duotone" class="h-5 w-5" />
-              <span>Nạp tiền</span>
-            </button>
-            <button type="button" class="wallet-points-tab">
-              <Icon name="i-ph-bank-duotone" class="h-5 w-5" />
-              <span>Rút tiền</span>
-            </button>
-            -->
+          <div class="wallet-points-tabs" :aria-label="t('settings.data.pointsPanel.walletActionsLabel')">
             <button
               type="button"
               class="wallet-points-tab"
@@ -45,7 +35,7 @@
               @click="openTransferPanel"
             >
               <Icon name="i-ph-paper-plane-tilt-duotone" class="h-5 w-5" />
-              <span>Chuyển VNSEEA</span>
+              <span>{{ t("settings.data.pointsPanel.transferButton") }}</span>
             </button>
             <button
               type="button"
@@ -54,7 +44,7 @@
               @click="openReceiveQrPanel(receiveQrPoints)"
             >
               <Icon name="i-ph-qr-code-duotone" class="h-5 w-5" />
-              <span>Mã QR nhận VNSEEA</span>
+              <span>{{ t("settings.data.pointsPanel.receiveQrButton") }}</span>
             </button>
           </div>
         </section>
@@ -62,10 +52,10 @@
         <section class="wallet-points-panel">
           <div class="wallet-points-panel__heading">
             <div>
-              <h2>Lịch sử VNSEEA</h2>
-              <p>Các lần nhận, gửi và thay đổi VNSEEA gần đây.</p>
+              <h2>{{ t("settings.data.pointsPanel.historyTitle") }}</h2>
+              <p>{{ t("settings.data.pointsPanel.walletHistoryDescription") }}</p>
             </div>
-            <button class="wallet-points-icon-button" type="button" @click="loadWalletHistory">
+            <button class="wallet-points-icon-button" type="button" :aria-label="t('settings.data.pointsPanel.refreshHistoryLabel')" @click="loadWalletHistory">
               <Icon name="i-ph-arrow-clockwise-duotone" class="h-4 w-4" />
             </button>
           </div>
@@ -95,7 +85,7 @@
 
           <div v-else class="wallet-points-empty">
             <Icon name="i-ph-clock-counter-clockwise-duotone" class="h-6 w-6" />
-            <p>Chưa có lịch sử VNSEEA.</p>
+            <p>{{ t("settings.data.pointsPanel.walletEmptyHistory") }}</p>
           </div>
         </section>
       </template>
@@ -103,19 +93,19 @@
 
     <Teleport to="body">
       <div v-if="transferPanelOpen" class="wallet-points-modal" role="dialog" aria-modal="true">
-        <button class="wallet-points-modal__backdrop" type="button" aria-label="Đóng" @click="closeTransferPanel" />
+        <button class="wallet-points-modal__backdrop" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="closeTransferPanel" />
         <div class="wallet-points-modal__panel wallet-points-modal__panel--wide">
           <div class="wallet-points-modal__header">
             <div>
-              <p class="wallet-points-header__eyebrow">Chuyển VNSEEA cho người khác</p>
+              <p class="wallet-points-header__eyebrow">{{ t("settings.data.pointsPanel.transferModalEyebrow") }}</p>
             </div>
-            <button class="wallet-points-icon-button" type="button" @click="closeTransferPanel">
+            <button class="wallet-points-icon-button" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="closeTransferPanel">
               <Icon name="i-ph-x" class="h-4 w-4" />
             </button>
           </div>
 
           <label class="wallet-points-field">
-            <span>Chọn số VNSEEA muốn chuyển</span>
+            <span>{{ t("settings.data.pointsPanel.transferPointsInput") }}</span>
             <input
               v-model.number="transferDraft.points"
               class="wallet-points-input"
@@ -123,27 +113,27 @@
               min="1"
               step="1"
               :max="pointsBalance"
-              placeholder="Nhập số VNSEEA"
+              :placeholder="t('settings.data.pointsPanel.transferPointsPlaceholder')"
             >
           </label>
 
           <div class="wallet-points-transfer-question">
             <div>
-              <span>Bạn muốn gửi cho ai?</span>
+              <span>{{ t("settings.data.pointsPanel.transferRecipientQuestion") }}</span>
             </div>
             <button class="wallet-points-secondary" type="button" @click="startTransferQrScan">
               <Icon name="i-ph-camera-duotone" class="h-4 w-4" />
-              <span>Quét mã QR</span>
+              <span>{{ t("settings.data.pointsPanel.scanQr") }}</span>
             </button>
           </div>
 
           <label class="wallet-points-field wallet-points-field--recipient">
-            <span>Nhập người nhận</span>
+            <span>{{ t("settings.data.pointsPanel.transferSearchRecipient") }}</span>
             <input
               v-model="transferRecipientQuery"
               class="wallet-points-input"
               type="search"
-              placeholder="Tìm theo tên, username hoặc ID"
+              :placeholder="t('settings.data.pointsPanel.transferSearchPlaceholder')"
             >
             <div
               v-if="transferRecipientQuery.length >= 2 && (transferRecipients.length > 0 || (!transferSearching && !transferDraft.recipientUserId))"
@@ -165,7 +155,7 @@
                 </div>
               </button>
               <p v-if="!transferSearching && transferRecipients.length === 0" class="wallet-points-empty-line">
-                Không tìm thấy người nhận phù hợp.
+                {{ t("settings.data.pointsPanel.noRecipients") }}
               </p>
             </div>
           </label>
@@ -178,18 +168,18 @@
             >
             <span v-else>{{ selectedTransferRecipientName.slice(0, 1).toUpperCase() }}</span>
             <p>{{ selectedTransferRecipientName }}</p>
-            <button type="button" @click="clearTransferRecipient">
+            <button type="button" :aria-label="t('settings.data.pointsPanel.clearRecipientLabel')" @click="clearTransferRecipient">
               <Icon name="i-ph-x-duotone" class="h-4 w-4" />
             </button>
           </div>
 
           <label class="wallet-points-field">
-            <span>Nội dung</span>
+            <span>{{ t("settings.data.pointsPanel.transferNote") }}</span>
             <textarea
               v-model="transferNote"
               class="wallet-points-input wallet-points-input--textarea"
               rows="3"
-              placeholder="Ghi chú cho giao dịch"
+              :placeholder="t('settings.data.pointsPanel.transferNotePlaceholder')"
             />
           </label>
 
@@ -202,7 +192,7 @@
             @click="openTransferConfirm"
           >
             <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
-            <span>{{ transferSubmitting ? "Đang gửi..." : "Chuyển VNSEEA" }}</span>
+            <span>{{ t(transferSubmitting ? "settings.data.pointsPanel.transferSubmitting" : "settings.data.pointsPanel.transferSubmit") }}</span>
           </button>
         </div>
       </div>
@@ -210,14 +200,14 @@
 
     <Teleport to="body">
       <div v-if="transferScanning" class="wallet-points-modal" role="dialog" aria-modal="true">
-        <button class="wallet-points-modal__backdrop" type="button" aria-label="Đóng" @click="stopTransferQrScan" />
+        <button class="wallet-points-modal__backdrop" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="stopTransferQrScan" />
         <div class="wallet-points-modal__panel wallet-points-modal__panel--scanner">
           <div class="wallet-points-modal__header">
             <div>
-              <p class="wallet-points-header__eyebrow">Quét mã QR</p>
-              <h2>Đưa mã QR vào khung quét</h2>
+              <p class="wallet-points-header__eyebrow">{{ t("settings.data.pointsPanel.scanQr") }}</p>
+              <h2>{{ t("settings.data.pointsPanel.scanQrTitle") }}</h2>
             </div>
-            <button class="wallet-points-icon-button" type="button" @click="stopTransferQrScan">
+            <button class="wallet-points-icon-button" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="stopTransferQrScan">
               <Icon name="i-ph-x" class="h-4 w-4" />
             </button>
           </div>
@@ -225,27 +215,27 @@
           <div class="wallet-points-scan wallet-points-scan--modal">
             <div id="points-qr-reader" class="wallet-points-scan__reader" />
           </div>
-          <p class="wallet-points-modal__hint">Sau khi quét thành công, hệ thống sẽ tự điền người nhận và số VNSEEA nếu QR có gợi ý.</p>
+          <p class="wallet-points-modal__hint">{{ t("settings.data.pointsPanel.scanQrHint") }}</p>
         </div>
       </div>
     </Teleport>
 
     <Teleport to="body">
       <div v-if="receiveQrPanelOpen" class="wallet-points-modal" role="dialog" aria-modal="true">
-        <button class="wallet-points-modal__backdrop" type="button" aria-label="Đóng" @click="closeReceiveQrPanel" />
+        <button class="wallet-points-modal__backdrop" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="closeReceiveQrPanel" />
         <div class="wallet-points-modal__panel">
           <div class="wallet-points-modal__header">
             <div>
-              <h2>Tạo mã QR nhận VNSEEA</h2>
+              <h2>{{ t("settings.data.pointsPanel.receiveQrTitle") }}</h2>
             </div>
-            <button class="wallet-points-icon-button" type="button" @click="closeReceiveQrPanel">
+            <button class="wallet-points-icon-button" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="closeReceiveQrPanel">
               <Icon name="i-ph-x" class="h-4 w-4" />
             </button>
           </div>
 
           <div class="wallet-points-qr-form">
             <label class="wallet-points-field">
-              <span>Số VNSEEA gợi ý</span>
+              <span>{{ t("settings.data.pointsPanel.receiveQrPoints") }}</span>
               <input
                 v-model.number="receiveQrPoints"
                 class="wallet-points-input"
@@ -254,57 +244,62 @@
                 step="1"
               >
             </label>
-            <button class="wallet-points-secondary" type="button" @click="openReceiveQrPanel(receiveQrPoints)">
+            <button class="wallet-points-secondary" type="button" :disabled="receiveQrLoading" @click="openReceiveQrPanel(receiveQrPoints)">
               <Icon name="i-ph-arrows-clockwise-duotone" class="h-4 w-4" />
-              <span>Cập nhật QR</span>
+              <span>{{ t("settings.data.pointsPanel.updateQr") }}</span>
             </button>
           </div>
 
+          <div v-if="receiveQrLoading" class="wallet-points-qr-state" aria-live="polite">
+            <Icon name="i-ph-circle-notch-bold" class="h-6 w-6 animate-spin" />
+            <span>{{ t("settings.data.pointsPanel.receiveQrLoading") }}</span>
+          </div>
           <img
-            v-if="receiveQr?.imageUrl"
+            v-else-if="receiveQr?.imageUrl"
             :src="receiveQr.imageUrl"
-            alt="Mã QR nhận VNSEEA"
+            :alt="t('settings.data.pointsPanel.receiveQrAlt')"
             class="wallet-points-qr"
           >
-          <p class="wallet-points-modal__hint">Người gửi quét QR này sẽ tự điền người nhận và số VNSEEA gợi ý.</p>
+          <p v-else-if="receiveQrError" class="wallet-points-error" role="alert">{{ receiveQrError }}</p>
+          <p class="wallet-points-modal__hint">{{ t("settings.data.pointsPanel.receiveQrHint") }}</p>
         </div>
       </div>
     </Teleport>
 
     <Teleport to="body">
       <div v-if="transferConfirmOpen" class="wallet-points-modal" role="dialog" aria-modal="true">
-        <button class="wallet-points-modal__backdrop" type="button" aria-label="Đóng" @click="transferConfirmOpen = false" />
+        <button class="wallet-points-modal__backdrop" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="transferConfirmOpen = false" />
         <div class="wallet-points-modal__panel">
           <div class="wallet-points-modal__header">
             <div>
-              <p class="wallet-points-header__eyebrow">Xác nhận</p>
-              <h2>Xác nhận chuyển VNSEEA</h2>
+              <p class="wallet-points-header__eyebrow">{{ t("settings.data.pointsPanel.transferConfirmEyebrow") }}</p>
+              <h2>{{ t("settings.data.pointsPanel.transferConfirmTitle") }}</h2>
             </div>
-            <button class="wallet-points-icon-button" type="button" @click="transferConfirmOpen = false">
+            <button class="wallet-points-icon-button" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="transferConfirmOpen = false">
               <Icon name="i-ph-x" class="h-4 w-4" />
             </button>
           </div>
           <div class="wallet-points-summary">
             <div>
-              <span>Người nhận</span>
+              <span>{{ t("settings.data.pointsPanel.confirmRecipient") }}</span>
               <strong>{{ selectedTransferRecipientName }}</strong>
             </div>
             <div>
-              <span>Số VNSEEA</span>
+              <span>{{ t("settings.data.pointsPanel.confirmPoints") }}</span>
               <strong>{{ formatNumber(transferDraft.points) }}</strong>
             </div>
             <div>
-              <span>Nội dung</span>
+              <span>{{ t("settings.data.pointsPanel.confirmNote") }}</span>
               <strong>{{ normalizedTransferNote || "-" }}</strong>
             </div>
           </div>
           <div class="wallet-points-modal__actions">
             <button class="wallet-points-secondary" type="button" @click="transferConfirmOpen = false">
-              Hủy
+              {{ t("settings.data.pointsPanel.cancel") }}
             </button>
             <button class="wallet-points-primary" type="button" :disabled="transferSubmitting" @click="confirmTransferPoints">
               <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
-              <span>{{ transferSubmitting ? "Đang gửi..." : "Xác nhận chuyển" }}</span>
+              <span>{{ t(transferSubmitting ? "settings.data.pointsPanel.transferSubmitting" : "settings.data.pointsPanel.transferConfirmSubmit") }}</span>
             </button>
           </div>
         </div>
@@ -328,8 +323,10 @@ const {
   getPointsReceiveQr,
 } = useSettingsPageVM(() => "myPoints")
 
+const { t } = useI18n()
+
 const disabledExchange = async (): Promise<SettingsPointsExchangeResult> => {
-  throw new Error("Tính năng đổi VNSEEA sang tiền đang tạm ẩn.")
+  throw new Error(t("settings.data.pointsPanel.exchangeUnavailable"))
 }
 
 const {
@@ -348,6 +345,8 @@ const {
   transferDraft,
   receiveQrPoints,
   receiveQr,
+  receiveQrLoading,
+  receiveQrError,
   selectedTransferRecipient,
   selectedTransferRecipientName,
   normalizedTransferNote,
@@ -700,6 +699,11 @@ const toggleHistoryItem = (itemId: string) => {
   opacity: 0.55;
 }
 
+.wallet-points-secondary:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 .wallet-points-submit {
   width: 100%;
   margin-top: 14px;
@@ -959,6 +963,22 @@ const toggleHistoryItem = (itemId: string) => {
   background: var(--bg-surface);
   padding: 10px;
   box-shadow: var(--shadow-lg);
+}
+
+.wallet-points-qr-state {
+  display: flex;
+  min-height: 270px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .wallet-points-modal__hint {

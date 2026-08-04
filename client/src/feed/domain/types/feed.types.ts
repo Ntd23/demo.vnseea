@@ -92,6 +92,20 @@ export type FeedPostMention = {
   displayName: string
 }
 
+export type FeedTaggedUser = {
+  id: number
+  name: string
+  username: string
+  avatarUrl: string
+  profilePath: string
+}
+
+export type FeedTaggableUsersResponse = {
+  users: FeedTaggedUser[]
+  hasMore: boolean
+  nextCursor: string | null
+}
+
 export type FeedPollOptionRecord = {
   id: number
   text: string
@@ -139,6 +153,7 @@ export type FeedPostRecord = {
   text: string
   videoTitle?: string
   mentions?: FeedPostMention[]
+  taggedUsers: FeedTaggedUser[]
   feeling: {
     value: string
     label: string
@@ -193,6 +208,7 @@ export type FeedCreateStoryResponse = {
 export type FeedStoryActionResult = {
   ok: boolean
   storyId: number
+  message?: string
   views?: number
   reaction?: FeedStoryReactionType
   replySent?: boolean

@@ -24,6 +24,24 @@ test("page-like notifications resolve the page name from page_id and open the pa
   assert.match(english, /'invited_page' => 'invited you to like a Page'/)
 })
 
+test("user timeline notifications open the notifier profile through the Nuxt profile route", async () => {
+  const mapper = await readRepo("client/server/api/notifications/_shared.ts")
+
+  assert.match(
+    mapper,
+    /const username = asString\(params\.get\("u"\)\) \|\| asString\(item\.notifier\?\.username\)/,
+  )
+  assert.match(mapper, /return username \? appRoutes\.profile\(username\) : ""/)
+  assert.match(
+    mapper,
+    /if \(\/\(\?:\^\|\[\?&\]\)link1=timeline[\s\S]*?normalizeLegacyIndexUrl\(ajaxUrl, item\)/,
+  )
+  assert.doesNotMatch(
+    mapper,
+    /asNumber\(item\.page_id\) > 0\s*&&\s*\/\(\?:\^\|\[\?&\]\)link1=timeline/,
+  )
+})
+
 test("invite dialog reports localized per-user pending, success, and error states", async () => {
   const [viewModel, modal, page, vietnamese, english] = await Promise.all([
     readRepo("client/src/community/application/view-models/useCommunityPageInviteVM.ts"),
