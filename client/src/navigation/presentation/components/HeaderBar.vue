@@ -862,6 +862,7 @@ async function toggleCreateMenu() {
 .mobile-bar__group {
   display: flex;
   align-items: center;
+  gap: 6px;
 }
 
 /* Icon button base */
