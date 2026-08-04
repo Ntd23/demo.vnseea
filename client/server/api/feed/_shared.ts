@@ -62,6 +62,19 @@ type BackendPostsResponse = {
   }
 }
 
+type BackendUserSuggestionsResponse = {
+  api_status?: number | string
+  suggestions?: BackendEntity[]
+}
+
+type BackendFriendsResponse = {
+  api_status?: number | string
+  data?: {
+    following?: BackendEntity[]
+    followers?: BackendEntity[]
+  }
+}
+
 type BackendSinglePostResponse = {
   api_status?: number | string
   post_data?: BackendEntity
@@ -1721,18 +1734,55 @@ const buildHomePostsResponse = (
   rawPosts: BackendEntity[],
   limit: number,
   resolveMediaUrl: (value: unknown) => string,
+  hasMoreHint = false,
 ): FeedPostsResponse => {
-  const posts = rawPosts
+  const visibleRawPosts = rawPosts.slice(0, limit)
+  const posts = visibleRawPosts
     .map(post => mapPostRecord(post, resolveMediaUrl))
-  const lastRawPost = rawPosts.at(-1)
+  const lastRawPost = visibleRawPosts.at(-1)
 
   return {
     posts,
-    hasMore: rawPosts.length >= limit,
+    hasMore: posts.length > 0 && (rawPosts.length > limit || hasMoreHint || posts.length >= limit),
     nextOffset: lastRawPost
       ? firstNumber(lastRawPost, ["post_id", "id"]) || posts.at(-1)?.id || null
       : null,
   }
+}
+
+const mergeHomePostSources = (sources: BackendEntity[][]) => {
+  const postsById = new Map<number, BackendEntity>()
+
+  for (const source of sources) {
+    for (const post of source) {
+      const postId = firstNumber(post, ["post_id", "id"])
+      if (postId > 0 && !postsById.has(postId)) {
+        postsById.set(postId, post)
+      }
+    }
+  }
+
+  return Array.from(postsById.entries())
+    .sort(([leftId], [rightId]) => rightId - leftId)
+    .map(([, post]) => post)
+}
+
+const collectHomeDiscoveryAuthorIds = (
+  currentUserId: number,
+  suggestions: BackendEntity[],
+  following: BackendEntity[],
+  followers: BackendEntity[],
+) => {
+  const authorIds = new Set<number>()
+
+  for (const user of [...following, ...followers, ...suggestions]) {
+    const userId = firstNumber(user, ["user_id", "id"])
+    if (userId > 0 && userId !== currentUserId) {
+      authorIds.add(userId)
+    }
+  }
+
+  return Array.from(authorIds).slice(0, 8)
 }
 
 export async function fetchFeedPosts(
@@ -1843,17 +1893,96 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
   const postType = Array.isArray(query.postType) ? query.postType[0] : query.postType
   const followingOnly = String(Array.isArray(query.followingOnly) ? query.followingOnly[0] : query.followingOnly || "0") === "1"
 
-  const [postsResponse, storySequences, generalResponse] = await Promise.all([
-    client.post<BackendPostsResponse, Record<string, unknown>>(
-      "posts",
-      {
-        type: "get_news_feed",
+  const backendPageLimit = Math.min(50, Math.max(40, limit * 2))
+  const shouldDiscover = !followingOnly && !asString(postType)
+  const requestOptional = async <T extends { api_status?: number | string }>(
+    endpoint: string,
+    payload: Record<string, unknown>,
+  ): Promise<T | null> => {
+    try {
+      const response = await client.post<T, Record<string, unknown>>(endpoint, payload)
+      const status = Number(response.api_status ?? 0)
+      return status >= 200 && status < 300 ? response : null
+    }
+    catch {
+      return null
+    }
+  }
+
+  const feedPagePromise = (async () => {
+    const [primaryResponse, ownResponse, suggestionsResponse, friendsResponse] = await Promise.all([
+      client.post<BackendPostsResponse, Record<string, unknown>>(
+        "posts",
+        {
+          type: "get_news_feed",
+          limit: backendPageLimit,
+          after_post_id: afterPostId,
+          filter: followingOnly ? 1 : 0,
+          post_type: asString(postType),
+        },
+      ),
+      shouldDiscover
+        ? requestOptional<BackendPostsResponse>("posts", {
+            type: "get_user_posts",
+            id: currentUserId,
+            limit,
+            after_post_id: afterPostId,
+          })
+        : Promise.resolve(null),
+      shouldDiscover
+        ? requestOptional<BackendUserSuggestionsResponse>("get-user-suggestions", { limit: 50 })
+        : Promise.resolve(null),
+      shouldDiscover
+        ? requestOptional<BackendFriendsResponse>("get-friends", {
+            user_id: currentUserId,
+            type: "following,followers",
+            limit: 50,
+          })
+        : Promise.resolve(null),
+    ])
+
+    const primary = assertBackendApiSuccess(primaryResponse, "Unable to load home feed.")
+    const primaryPosts = primary.data ?? []
+
+    if (!shouldDiscover) {
+      return buildHomePostsResponse(
+        primaryPosts,
         limit,
+        resolveMediaUrl,
+        primaryPosts.length >= backendPageLimit,
+      )
+    }
+
+    const discoveryAuthorIds = collectHomeDiscoveryAuthorIds(
+      currentUserId,
+      suggestionsResponse?.suggestions ?? [],
+      friendsResponse?.data?.following ?? [],
+      friendsResponse?.data?.followers ?? [],
+    )
+    const discoveryResponses = await Promise.all(
+      discoveryAuthorIds.map(authorId => requestOptional<BackendPostsResponse>("posts", {
+        type: "get_user_posts",
+        id: authorId,
+        limit: 10,
         after_post_id: afterPostId,
-        filter: followingOnly ? 1 : 0,
-        post_type: asString(postType),
-      },
-    ),
+      })),
+    )
+    const discoverySources = discoveryResponses.map(response => response?.data ?? [])
+    const ownPosts = ownResponse?.data ?? []
+    const mergedPosts = mergeHomePostSources([
+      ownPosts,
+      primaryPosts,
+      ...discoverySources,
+    ])
+    const hasMoreHint = primaryPosts.length >= backendPageLimit
+      || ownPosts.length >= limit
+      || discoverySources.some(posts => posts.length >= 10)
+
+    return buildHomePostsResponse(mergedPosts, limit, resolveMediaUrl, hasMoreHint)
+  })()
+
+  const [feedPage, storySequences, generalResponse] = await Promise.all([
+    feedPagePromise,
     requestUserStorySequences(client, currentUserId, resolveMediaUrl),
     client.post<BackendGeneralDataResponse, Record<string, unknown>>(
       "get-general-data",
@@ -1863,11 +1992,10 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
     ),
   ])
 
-  const posts = assertBackendApiSuccess(postsResponse, "Unable to load home feed.")
   const general = assertBackendApiSuccess(generalResponse, "Unable to load announcement.")
 
   return {
-    ...buildHomePostsResponse(posts.data ?? [], limit, resolveMediaUrl),
+    ...feedPage,
     stories: flattenStorySequences(storySequences, currentUserId),
     announcement: mapAnnouncement(general.announcement),
     greeting: mapHomeGreeting(currentUser, event),
