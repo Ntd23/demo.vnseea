@@ -21,6 +21,7 @@ PRIMARY_REALTIME_PROCESS="vnseea-web-realtime"
 
 release_tree=''
 new_manifest=''
+stale_manifest=''
 
 log() {
     printf '[deploy:%s] %s\n' "${DEPLOY_STAGE:-unknown}" "$*"
@@ -37,6 +38,9 @@ cleanup() {
     fi
     if [[ -n "$new_manifest" && -f "$new_manifest" ]]; then
         rm -f -- "$new_manifest"
+    fi
+    if [[ -n "$stale_manifest" && -f "$stale_manifest" ]]; then
+        rm -f -- "$stale_manifest"
     fi
 }
 trap cleanup EXIT
@@ -234,8 +238,10 @@ promote_primary_source() {
     local target
     local relative
 
+    cleanup
     release_tree=''
     new_manifest=''
+    stale_manifest=''
     prepare_release_tree "$sha" || return 1
 
     if [[ ! -f "$manifest" && -n "$fallback_sha" ]] &&
@@ -245,6 +251,8 @@ promote_primary_source() {
     fi
 
     if [[ -f "$manifest" ]]; then
+        stale_manifest="$(mktemp "$DEPLOY_STATE_DIR/stale-${sha:0:12}.XXXXXX")" || return 1
+        LC_ALL=C comm -23 "$manifest" "$new_manifest" >"$stale_manifest" || return 1
         while IFS= read -r relative; do
             [[ -n "$relative" ]] || continue
             is_protected_primary_path "$relative" && continue
@@ -254,14 +262,16 @@ promote_primary_source() {
             if [[ -f "$target" || -L "$target" ]]; then
                 rm -f -- "$target" || return 1
             fi
-        done < <(comm -23 "$manifest" "$new_manifest")
+        done <"$stale_manifest"
+        rm -f -- "$stale_manifest"
+        stale_manifest=''
     fi
 
     log "Promote source $sha to $PRIMARY_DEPLOY_PATH"
     # Record the intended tracked set before rsync so a partial transfer can be
     # rolled back without leaving files introduced by the failed release.
     cp "$new_manifest" "$manifest" || return 1
-    rsync -a --no-owner --no-group \
+    rsync -a --no-owner --no-group --no-perms \
         --exclude='/config.php' \
         --exclude='/client/.env' \
         --exclude='/client/.env.*' \
@@ -285,6 +295,7 @@ promote_primary_source() {
     cleanup
     release_tree=''
     new_manifest=''
+    stale_manifest=''
 }
 
 primary_rollback_sha() {
