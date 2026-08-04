@@ -120,6 +120,13 @@ export const usePostRealtimeStore = defineStore("post-realtime", () => {
     deletedPostIds.value = { ...deletedPostIds.value, [postId]: true }
   }
 
+  function markDeleted(postIdValue: number | string) {
+    const postId = normalizePostId(postIdValue)
+    if (!postId || deletedPostIds.value[postId]) return
+
+    applyDeleted(postId)
+  }
+
   function scheduleRefresh(postId: string) {
     const previousTimer = debounceTimers.get(postId)
     if (previousTimer) window.clearTimeout(previousTimer)
@@ -313,6 +320,7 @@ export const usePostRealtimeStore = defineStore("post-realtime", () => {
     watchedPostIds,
     snapshotFor,
     applySnapshot,
+    markDeleted,
     isDeleted,
     commentVersionFor,
     watchPost,

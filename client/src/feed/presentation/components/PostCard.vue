@@ -168,7 +168,7 @@
           @react="reactToPost"
           @comment="handleCommentIntent"
           @share="post.permissions.canShare && (showShare = true)"
-          @ended="emit('deleted', post.id)"
+          @ended="handleLiveEnded"
         />
       </ClientOnly>
 
@@ -619,6 +619,10 @@ watch(
     if (deleted) emit("deleted", props.post.id)
   },
 )
+
+function handleLiveEnded() {
+  postRealtimeStore.markDeleted(post.value.id)
+}
 
 onBeforeUnmount(() => releaseRealtimeWatch?.())
 

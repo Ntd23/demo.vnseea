@@ -1,3 +1,5 @@
+// English description: Verifies that ended livestreams are deleted and removed from every Nuxt feed surface.
+
 import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 import test from "node:test"
@@ -7,7 +9,7 @@ const repoRoot = new URL("../../", import.meta.url)
 const readClient = path => readFile(new URL(path, clientRoot), "utf8")
 const readRepo = path => readFile(new URL(path, repoRoot), "utf8")
 
-test("ending a livestream retains the timeline post in web, mobile, and webhook flows", async () => {
+test("ending a livestream deletes its timeline post in web, mobile, and webhook flows", async () => {
   const [webHandler, mobileHandler, webhook] = await Promise.all([
     readRepo("xhr/live.php"),
     readRepo("api/v2/endpoints/live.php"),
@@ -27,42 +29,23 @@ test("ending a livestream retains the timeline post in web, mobile, and webhook 
     webhook.indexOf("function Wo_LiveKitWebhookSyncLive"),
   )
 
-  for (const source of [webEnd, mobileEnd, webhookEnd]) {
-    assert.match(source, /'live_ended'\s*=>\s*1/)
-    assert.match(source, /'live_time'\s*=>\s*0/)
-    assert.doesNotMatch(source, /Wo_DeletePost\s*\(/)
-  }
+  assert.match(webEnd, /VNSEEA_DeleteLivePost\s*\(/)
+  assert.match(webEnd, /'post_deleted'\s*=>\s*\$deleted\s*\?\s*1\s*:\s*0/)
+  assert.match(mobileEnd, /VNSEEA_DeleteLivePost\s*\(/)
+  assert.match(mobileEnd, /'post_deleted'\s*=>\s*1/)
+  assert.match(webhookEnd, /VNSEEA_DeleteLivePost\s*\([^,]+,\s*true\s*\)/)
 })
 
-test("ended livestreams remain visible with their poster and a final viewer state", async () => {
-  const [card, player, mapper] = await Promise.all([
+test("an offline live player removes its card through the shared realtime store", async () => {
+  const [card, player, store] = await Promise.all([
     readClient("src/feed/presentation/components/PostCard.vue"),
     readClient("src/feed/presentation/components/LivePostPlayer.vue"),
-    readClient("server/api/feed/_shared.ts"),
+    readClient("src/feed/application/stores/usePostRealtimeStore.ts"),
   ])
 
-  assert.doesNotMatch(card, /shouldRenderPost/)
-  assert.match(card, /:poster-url="livePosterUrl"/)
-  assert.match(player, /v-if="!connected && posterUrl"/)
-  assert.match(player, /if \(liveState\.value === "offline"\) return/)
-  assert.match(player, /void refreshHeartbeat\(\)/)
-  assert.match(player, /liveState !== 'offline' && \(errorMessage \|\| joinError\)/)
-  assert.match(mapper, /liveEnded \|\| !liveTime \|\| liveHeartbeatAge > 45\s*\?\s*"offline"/)
-})
-
-test("joining a just-ended web livestream returns an offline result instead of an error", async () => {
-  const webHandler = await readRepo("xhr/live.php")
-  const joinHandler = webHandler.slice(
-    webHandler.indexOf("if ($s == 'join')"),
-    webHandler.indexOf("if ($s == 'check_comments')"),
-  )
-
-  assert.match(joinHandler, /intval\(\$post\['live_ended'\]\) === 1/)
-  assert.match(joinHandler, /\$data\['status'\]\s*=\s*200/)
-  assert.match(joinHandler, /\$data\['stream_state'\]\s*=\s*'offline'/)
-  const endedBranch = joinHandler.slice(
-    joinHandler.indexOf("else if (intval($post['live_ended'])"),
-    joinHandler.indexOf("} else {", joinHandler.indexOf("else if (intval($post['live_ended'])")),
-  )
-  assert.doesNotMatch(endedBranch, /\$data\['removed'\]\s*=\s*'yes'/)
+  assert.match(card, /@ended="handleLiveEnded"/)
+  assert.match(card, /postRealtimeStore\.markDeleted\(post\.value\.id\)/)
+  assert.match(player, /if \(liveState\.value === "offline"\) \{\s*reportEnded\(\)/)
+  assert.match(store, /function markDeleted\(postIdValue: number \| string\)/)
+  assert.match(store, /deletedPostIds\.value = \{ \.\.\.deletedPostIds\.value, \[postId\]: true \}/)
 })

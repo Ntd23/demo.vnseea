@@ -723,6 +723,11 @@ onMounted(async () => {
   document.addEventListener("fullscreenchange", syncFullscreenState)
   document.addEventListener("webkitfullscreenchange", syncFullscreenState)
 
+  if (liveState.value === "offline") {
+    reportEnded()
+    return
+  }
+
   await nextTick()
   await joinLive()
 })
