@@ -30,6 +30,7 @@ import type {
   MessageCreateGroupResult,
   MessageGroupDetails,
   MessageItem,
+  MessageMention,
   MessageOrderRequest,
   MessagePinnedItem,
   MessageProductCard,
@@ -135,6 +136,8 @@ type MessageThreadQuery = {
 
 type MultipartMessageInput = MessageThreadQuery & {
   text: string
+  replyId?: number
+  mentionedUserIds?: number[]
   recordFile?: string
   recordName?: string
   file?: {
@@ -442,6 +445,25 @@ const inferMediaType = (entity: BackendEntity): MessageItem["mediaType"] | undef
   if (media) return "file"
 
   return undefined
+}
+
+const asPositiveNumberArray = (value: unknown, limit = 20) => {
+  let input = value
+  if (typeof input === "string") {
+    const serializedInput = input
+    try {
+      input = JSON.parse(serializedInput)
+    }
+    catch {
+      input = serializedInput.split(",")
+    }
+  }
+  if (!Array.isArray(input)) return []
+  return [...new Set(
+    input
+      .map(item => Math.trunc(asNumber(item)))
+      .filter(item => item > 0),
+  )].slice(0, limit)
 }
 
 const mapMessageStoryContext = (
@@ -1015,10 +1037,31 @@ const buildContactPreview = (
     return "Tin nhắn đã được thu hồi"
   }
 
+  const mentionNames = new Map(
+    asArray(message.mentions ?? message.message_mentions)
+      .map(mention => [asNumber(mention.user_id) || asNumber(mention.id), buildDisplayName(mention)] as const)
+      .filter(([userId, name]) => userId > 0 && Boolean(name)),
+  )
   const normalizedText = normalizeMessageText(text, message)
+    .replace(/@\[([0-9]+)\]/g, (token, userId) => {
+      const name = mentionNames.get(Number(userId))
+      return name ? `@${name}` : token
+    })
   const senderName = buildContactPreviewSender(message, currentUserId, fallbackName)
   const mediaPreview = buildMediaPreviewLabel(senderName, inferMediaType(message))
+  const reply = asRecord(message.reply)
+  const canonicalReplyId = asNumber(message.reply_id) || asNumber(reply.id)
+  const canonicalReplyAuthor = asNumber(reply.from_id) === currentUserId
+    ? "Bạn"
+    : buildDisplayName(asRecord(reply.user_data)) || buildDisplayName(asRecord(reply.messageUser))
   const replyMeta = parseReplyMessagePreview(normalizedText)
+    || (canonicalReplyId > 0 && Object.keys(reply).length > 0
+      ? {
+          author: canonicalReplyAuthor,
+          quote: stripMessageMarkup(decryptMessageText(firstString(reply, ["or_text", "text"]), reply.time)),
+          body: normalizedText,
+        }
+      : null)
   const productMeta = parseProductMessagePreview(normalizedText)
   const sharedPostReference = parseMessageSharedPostReference(normalizedText)
   const sharedBlogReference = parseMessageSharedBlog(normalizedText)
@@ -1167,6 +1210,33 @@ const stripMessageMarkup = (value: string) =>
       .replace(/<[^>]+>/g, ""),
   )
 
+const mapBackendMessageMentions = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): MessageMention[] => asArray(entity.mentions ?? entity.message_mentions)
+  .map((mention) => {
+    const userId = asNumber(mention.user_id) || asNumber(mention.id)
+    const username = firstString(mention, ["username"])
+    const name = buildDisplayName(mention) || username
+    if (userId <= 0 || !name) return null
+    return {
+      userId,
+      name,
+      username: username || undefined,
+      avatarUrl: resolveMediaUrl(firstString(mention, ["avatar", "avatar_full"])) || undefined,
+    }
+  })
+  .filter(Boolean) as MessageMention[]
+
+const replaceBackendMentionTokens = (value: string, mentions: MessageMention[]) => {
+  if (mentions.length === 0) return value
+  const names = new Map(mentions.map(mention => [mention.userId, mention.name]))
+  return value.replace(/@\[([0-9]+)\]/g, (token, userId) => {
+    const name = names.get(Number(userId))
+    return name ? `@${name}` : token
+  })
+}
+
 const mapBackendMessageReplyText = (
   entity: BackendEntity,
   body: string,
@@ -1190,10 +1260,14 @@ const mapBackendMessageReplyText = (
   const replyProduct = mapBackendMessageProduct(reply, resolveMediaUrl)
   const replyMediaType = inferMediaType(reply)
   const replyMediaUrl = buildMediaUrl(reply, resolveMediaUrl)
+  const replyMentions = mapBackendMessageMentions(reply, resolveMediaUrl)
   const replyText = stripMessageMarkup(
-    decryptMessageText(
-      firstString(reply, ["or_text", "text"]),
-      reply.time,
+    replaceBackendMentionTokens(
+      decryptMessageText(
+        firstString(reply, ["or_text", "text"]),
+        reply.time,
+      ),
+      replyMentions,
     ),
   )
   const replyMediaName = firstString(reply, ["mediaFileName", "media_file_name", "filename"])
@@ -1528,7 +1602,11 @@ const mapThreadMessage = (
   const productCard = recalledPayload ? undefined : mapBackendMessageProduct(entity, resolveMediaUrl)
   const orderRequest = recalledPayload ? undefined : mapBackendMessageOrderRequest(entity, resolveMediaUrl)
   const orderBuyerId = orderRequest?.buyerId ?? 0
-  const normalizedText = normalizeMessageText(rawText, entity)
+  const mentions = mapBackendMessageMentions(entity, resolveMediaUrl)
+  const normalizedText = replaceBackendMentionTokens(
+    normalizeMessageText(rawText, entity),
+    mentions,
+  )
   const text = recalledPayload || systemEvent || orderRequest
     ? ""
     : mapBackendMessageReplyText(entity, normalizedText, currentUserId, resolveMediaUrl)
@@ -1554,6 +1632,7 @@ const mapThreadMessage = (
     senderId,
     authorName: buildDisplayName(userData) || buildDisplayName(messageUser),
     authorProfileUrl: buildProfileUrl(senderProfile, "user") || undefined,
+    mentions,
     threadType,
     mediaUrl: recalledPayload ? "" : mediaUrl,
     mediaName: recalledPayload ? "" : firstString(entity, ["mediaFileName", "media_file_name", "filename"]),
@@ -2159,6 +2238,26 @@ export async function sendMessageToThread(
     return body
   }
 
+  const createApiMessageBody = (
+    fields: Record<string, unknown>,
+    file?: MultipartMessageInput["file"],
+  ) => {
+    if (!file) return fields
+
+    const body = new FormData()
+    for (const [key, value] of Object.entries(fields)) {
+      if (value !== undefined && value !== null && String(value) !== "") {
+        body.append(key, String(value))
+      }
+    }
+    body.append(
+      "file",
+      new Blob([toBlobChunk(file.data)], { type: file.type || "application/octet-stream" }),
+      file.filename || "attachment",
+    )
+    return body
+  }
+
   if (input.type === "user") {
     if (!input.userId) {
       throw createError({
@@ -2183,6 +2282,7 @@ export async function sendMessageToThread(
           textSendMessage: input.text,
           "record-file": input.recordFile,
           "record-name": input.recordName,
+          reply_id: input.replyId,
           hash_id: sessionHash,
         }, input.file),
         {
@@ -2235,6 +2335,29 @@ export async function sendMessageToThread(
       })
     }
 
+    const mentionedUserIds = asPositiveNumberArray(input.mentionedUserIds)
+    const canonicalFields = {
+      type: "send",
+      id: input.groupId,
+      text: input.text,
+      message_hash_id: `${Date.now()}`,
+      reply_id: input.replyId,
+      mentioned_user_ids: mentionedUserIds.length > 0
+        ? JSON.stringify(mentionedUserIds)
+        : undefined,
+    }
+
+    if (!input.recordFile) {
+      const response = assertBackendApiSuccess(
+        await apiClient.post<BackendCollectionResponse, FormData | Record<string, unknown>>(
+          "group_chat",
+          createApiMessageBody(canonicalFields, input.file),
+        ),
+        "Unable to send group message.",
+      )
+      return await normalizeCreatedMessages(extractCollectionMessages(response))
+    }
+
     let legacyResponse: { status?: number | string } | null = null
     try {
       legacyResponse = await webClient.postForm<{ status?: number | string }>(
@@ -2244,6 +2367,10 @@ export async function sendMessageToThread(
           textSendMessage: input.text,
           "record-file": input.recordFile,
           "record-name": input.recordName,
+          reply_id: input.replyId,
+          mentioned_user_ids: mentionedUserIds.length > 0
+            ? JSON.stringify(mentionedUserIds)
+            : undefined,
           hash_id: sessionHash,
         }, input.file),
         {
@@ -2624,6 +2751,8 @@ export async function parseMessageSendBody(event: H3Event): Promise<MultipartMes
       pageId: asNumber(body.pageId),
       recipientId: asNumber(body.recipientId),
       text: asString(body.text),
+      replyId: asNumber(body.replyId) || undefined,
+      mentionedUserIds: asPositiveNumberArray(body.mentionedUserIds),
       recordFile: asString(body.recordFile),
       recordName: asString(body.recordName),
       file: null,
@@ -2658,6 +2787,8 @@ export async function parseMessageSendBody(event: H3Event): Promise<MultipartMes
     pageId: asNumber(fields.pageId),
     recipientId: asNumber(fields.recipientId),
     text: asString(fields.text),
+    replyId: asNumber(fields.replyId) || undefined,
+    mentionedUserIds: asPositiveNumberArray(fields.mentionedUserIds),
     recordFile: asString(fields.recordFile),
     recordName: asString(fields.recordName),
     file,
