@@ -89,6 +89,17 @@ assert_deploy_contract(
 );
 
 assert_deploy_contract(
+    strpos($script, 'rsync -a --no-owner --no-group --no-perms') !== false,
+    'primary promotion must preserve the document root permissions required by nginx'
+);
+
+assert_deploy_contract(
+    strpos($script, 'LC_ALL=C comm -23 "$manifest" "$new_manifest" >"$stale_manifest"') !== false &&
+        strpos($script, '< <(comm -23') === false,
+    'manifest comparison must use the same locale as sorting and propagate comparison errors'
+);
+
+assert_deploy_contract(
     strpos($script, 'pm2 restart vnseea-mobile') === false &&
         strpos($script, 'pm2 start vnseea-mobile') === false,
     'deployment must not start or restart a second mobile Socket.IO process'
