@@ -1135,6 +1135,7 @@ function VNSEEA_GetMarketplaceOrderContextsBatch($hashes, $viewer_id, $known_pro
         $contexts[$hash] = array(
             'type' => 'order_request',
             'order_hash' => $hash,
+            'buyer_id' => (string)$first['user_id'],
             'buyer_name' => !empty($buyer['name']) ? $buyer['name'] : (!empty($buyer['username']) ? $buyer['username'] : 'Người mua'),
             'buyer_phone' => !empty($address['phone']) ? (string)$address['phone'] : '',
             'buyer_address' => implode(', ', $address_parts),
@@ -1621,6 +1622,8 @@ function VNSEEA_PrimeCanonicalMessageContextsBatch($messages)
         }
         if (!empty($message['market_order_hash'])) {
             $order_hashes[(string)$message['market_order_hash']] = (string)$message['market_order_hash'];
+        } elseif (!empty($message['text']) && preg_match('/#\s*([a-f0-9]{16,64})\b/i', (string)$message['text'], $legacy_order_match)) {
+            $order_hashes[(string)$legacy_order_match[1]] = (string)$legacy_order_match[1];
         }
         if (!empty($message['reply_id'])) {
             $reply_ids[(int)$message['reply_id']] = (int)$message['reply_id'];
@@ -1687,6 +1690,8 @@ function VNSEEA_PrimeCanonicalMessageContextsBatch($messages)
                 }
                 if (!empty($reply['market_order_hash'])) {
                     $order_hashes[(string)$reply['market_order_hash']] = (string)$reply['market_order_hash'];
+                } elseif (!empty($reply['text']) && preg_match('/#\s*([a-f0-9]{16,64})\b/i', (string)$reply['text'], $legacy_order_match)) {
+                    $order_hashes[(string)$legacy_order_match[1]] = (string)$legacy_order_match[1];
                 }
                 if (!empty($reply['story_id'])) {
                     $story_ids[(int)$reply['story_id']] = (int)$reply['story_id'];

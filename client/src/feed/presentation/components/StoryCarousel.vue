@@ -429,7 +429,7 @@
       </template>
     </UModal>
 
-    <StoryAppInterstitial v-model="appPromptOpen" />
+    <StoryAppInterstitial v-model="appPromptOpen" @continue="continueStoryOnWeb" />
   </div>
 </template>
 
@@ -446,6 +446,7 @@ const { t } = useI18n()
 const router = useRouter()
 const isMobileViewport = useMediaQuery("(max-width: 767px)")
 const appPromptOpen = ref(false)
+const storyAppPromptSkippedKey = "story-app-prompt-skipped"
 type StoryMediaOrientation = "portrait" | "landscape" | "square"
 const activeStoryMediaOrientation = ref<StoryMediaOrientation | null>(null)
 
@@ -561,11 +562,22 @@ function storyOverlayStyle(item: FeedStoryOverlayItem) {
 }
 
 async function handleCreateStory() {
-  if (isMobileViewport.value) {
+  const appPromptSkipped = import.meta.client
+    && sessionStorage.getItem(storyAppPromptSkippedKey) === "1"
+
+  if (isMobileViewport.value && !appPromptSkipped) {
     appPromptOpen.value = true
     return
   }
 
+  await router.push(feedStoryCreatePath)
+}
+
+async function continueStoryOnWeb() {
+  appPromptOpen.value = false
+  if (import.meta.client) {
+    sessionStorage.setItem(storyAppPromptSkippedKey, "1")
+  }
   await router.push(feedStoryCreatePath)
 }
 

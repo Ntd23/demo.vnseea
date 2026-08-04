@@ -15,6 +15,25 @@ const parseOptionalPoints = (value: unknown) => {
 const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number" ? String(value).trim() : ""
 
+const qrImageCache = new Map<string, { image: Buffer, expiresAt: number }>()
+const qrCacheTtlMs = 10 * 60 * 1000
+const maxQrCacheEntries = 200
+
+const setQrResponseHeaders = (event: Parameters<typeof setHeader>[0]) => {
+  setHeader(event, "Content-Type", "image/png")
+  setHeader(event, "Cache-Control", "private, max-age=60, stale-if-error=600")
+  setHeader(event, "Pragma", "no-cache")
+}
+
+const rememberQrImage = (key: string, image: Buffer) => {
+  if (qrImageCache.size >= maxQrCacheEntries) {
+    const oldestKey = qrImageCache.keys().next().value
+    if (oldestKey) qrImageCache.delete(oldestKey)
+  }
+
+  qrImageCache.set(key, { image, expiresAt: Date.now() + qrCacheTtlMs })
+}
+
 const buildBackendQrUrl = (baseUrl: string, userId: string, points: number) => {
   const params = new URLSearchParams({
     f: "qrcode",
@@ -52,37 +71,47 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const cacheKey = `${userId}:${points || 0}`
+  const cached = qrImageCache.get(cacheKey)
+  if (cached && cached.expiresAt > Date.now()) {
+    setQrResponseHeaders(event)
+    return cached.image
+  }
+  if (cached) qrImageCache.delete(cacheKey)
+
   for (const baseUrl of candidates) {
-    try {
-      const response = await $fetch.raw<ArrayBuffer>(buildBackendQrUrl(baseUrl, userId, points || 0), {
-        responseType: "arrayBuffer",
-        headers: {
-          accept: "image/png",
-          ...(cookie ? { cookie } : {}),
-        },
-      })
-      const contentType = response.headers.get("content-type") || ""
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const response = await $fetch.raw<ArrayBuffer>(buildBackendQrUrl(baseUrl, userId, points || 0), {
+          responseType: "arrayBuffer",
+          retry: 0,
+          timeout: 7000,
+          headers: {
+            accept: "image/png",
+            ...(cookie ? { cookie } : {}),
+          },
+        })
+        const contentType = response.headers.get("content-type") || ""
 
-      if (!contentType.toLowerCase().includes("image/png")) {
-        lastError = new Error(`Unexpected QR response content type: ${contentType || "unknown"}`)
-        continue
+        if (!contentType.toLowerCase().includes("image/png")) {
+          lastError = new Error(`Unexpected QR response content type: ${contentType || "unknown"}`)
+          continue
+        }
+
+        const image = response._data
+        if (!image || image.byteLength < 1) {
+          lastError = new Error("Empty QR image response.")
+          continue
+        }
+
+        const imageBuffer = Buffer.from(image)
+        rememberQrImage(cacheKey, imageBuffer)
+        setQrResponseHeaders(event)
+        return imageBuffer
       }
-
-      const image = response._data
-
-      if (!image || image.byteLength < 1) {
-        lastError = new Error("Empty QR image response.")
-        continue
+      catch (error) {
+        lastError = error
       }
-
-      setHeader(event, "Content-Type", "image/png")
-      setHeader(event, "Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
-      setHeader(event, "Pragma", "no-cache")
-
-      return Buffer.from(image)
-    }
-    catch (error) {
-      lastError = error
     }
   }
 

@@ -21,6 +21,17 @@
       <div class="post-header__info">
         <div class="post-header__name-row">
           <NuxtLink :to="authorPath || '#'" class="post-header__name">{{ author }}</NuxtLink>
+          <template v-if="taggedUsers.length > 0">
+            <span class="post-header__tagged-lead">{{ locale === "vi" ? "cùng với" : "with" }}</span>
+            <button type="button" class="post-header__tagged-name" @click.stop="taggedPeopleOpen = true">
+              {{ taggedUsers[0]!.name }}
+            </button>
+            <button v-if="taggedUsers.length > 1" type="button" class="post-header__tagged-more" @click.stop="taggedPeopleOpen = true">
+              {{ locale === "vi"
+                ? `và ${taggedUsers.length - 1} người khác`
+                : `and ${taggedUsers.length - 1} ${taggedUsers.length === 2 ? "other" : "others"}` }}
+            </button>
+          </template>
           <template v-if="location">
             <span class="post-header__location-lead">— {{ locale === "vi" ? "tại" : "at" }}</span>
             <a
@@ -93,6 +104,8 @@
         </div>
       </Transition>
     </div>
+
+    <TaggedPeopleModal v-if="taggedUsers.length" v-model:open="taggedPeopleOpen" :users="taggedUsers" />
   </div>
 </template>
 
@@ -100,6 +113,8 @@
 import { onClickOutside } from "@vueuse/core"
 import { buildPostLocationMapUrl } from "../../../location/application/utils/location-map-link"
 import IdentityHoverCard from "./IdentityHoverCard.vue"
+import TaggedPeopleModal from "./TaggedPeopleModal.vue"
+import type { FeedTaggedUser } from "../../domain/types/feed.types"
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -110,6 +125,7 @@ const props = defineProps<{
   authorAvatarUrl?: string
   authorGender?: string
   authorPath?: string
+  taggedUsers?: FeedTaggedUser[]
   profileMediaUpdate?: "avatar" | "cover"
   eventContext?: {
     id: number
@@ -139,6 +155,9 @@ const props = defineProps<{
   canEdit?: boolean
   canDelete?: boolean
 }>()
+
+const taggedUsers = computed(() => props.taggedUsers ?? [])
+const taggedPeopleOpen = ref(false)
 
 const emit = defineEmits<{
   menuAction: [action: string]
@@ -391,6 +410,43 @@ function handleMenuAction(item: { key: string }) {
   font-weight: 500;
 }
 
+.post-header__tagged-lead,
+.post-header__tagged-more {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.post-header__tagged-name {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.post-header__tagged-name:hover,
+.post-header__tagged-more:hover {
+  color: var(--bg-brand);
+  text-decoration: underline;
+}
+
+.post-header__tagged-more {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .post-header__location-name {
   max-width: min(420px, 100%);
   overflow: hidden;
@@ -550,6 +606,9 @@ function handleMenuAction(item: { key: string }) {
   .post-header__profile-update,
   .post-header__location-lead,
   .post-header__location-name,
+  .post-header__tagged-lead,
+  .post-header__tagged-name,
+  .post-header__tagged-more,
   .post-header__feeling-text,
   .post-header__feeling-emoji,
   .post-header__feeling-label,
@@ -562,6 +621,9 @@ function handleMenuAction(item: { key: string }) {
   .post-header__profile-update,
   .post-header__location-lead,
   .post-header__location-name,
+  .post-header__tagged-lead,
+  .post-header__tagged-name,
+  .post-header__tagged-more,
   .post-header__feeling-text,
   .post-header__feeling-emoji,
   .post-header__feeling-label,

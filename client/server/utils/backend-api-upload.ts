@@ -6,6 +6,7 @@ import {
   getBackendBaseCandidates,
   normalizeBackendBaseURL,
 } from "./backend-api-client"
+import { parseBackendApiResponse } from "./backend-api-response"
 
 const normalizeEndpointType = (endpoint: string) => {
   if (endpoint.endsWith(".php")) {
@@ -119,10 +120,12 @@ export async function postBackendApiUpload<TResponse>(
       const queryString = queryParams.toString()
       const path = `api/${normalizeEndpointType(endpoint)}` + (queryString ? `?${queryString}` : "")
 
-      return await client<TResponse>(path, {
+      const response = await client<unknown>(path, {
         method: "POST",
         body: requestBody,
       })
+
+      return parseBackendApiResponse<TResponse>(response)
     }
     catch (error) {
       lastError = error

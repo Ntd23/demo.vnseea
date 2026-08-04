@@ -91,9 +91,13 @@ const normalizeLegacyIndexUrl = (rawUrl: string, item: BackendNotification) => {
   }
 
   if (link === "timeline") {
-    const username = asString(params.get("u"))
+    const username = asString(params.get("u")) || asString(item.notifier?.username)
     if (asNumber(item.page_id) > 0) {
       return username ? appRoutes.pageDetail(username) : appRoutes.pages
+    }
+
+    if (asNumber(item.group_id) > 0) {
+      return username ? appRoutes.groupDetail(username) : appRoutes.groups
     }
 
     return username ? appRoutes.profile(username) : ""
@@ -166,11 +170,8 @@ const normalizeNotificationUrl = (event: H3Event, item: BackendNotification) => 
   const ajaxUrl = asString(item.ajax_url)
   const rawUrl = asString(item.url) || asString(item.full_link)
 
-  if (
-    asNumber(item.page_id) > 0
-    && /(?:^|[?&])link1=timeline(?:&|$)/i.test(ajaxUrl)
-  ) {
-    return normalizeLegacyIndexUrl(ajaxUrl, item) || appRoutes.pages
+  if (/(?:^|[?&])link1=timeline(?:&|$)/i.test(ajaxUrl)) {
+    return normalizeLegacyIndexUrl(ajaxUrl, item) || "/notifications"
   }
 
   if (postId && (!rawUrl || rawUrl === "#" || rawUrl === "/notifications")) {

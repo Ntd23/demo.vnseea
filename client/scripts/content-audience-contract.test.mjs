@@ -103,6 +103,8 @@ test("feed, story, and live requests declare audience_v2 and use the shared audi
 
 test("changed Vue share surfaces compile without template errors", () => {
   for (const path of [
+    "src/feed/presentation/components/FeedPublisherBox.vue",
+    "src/feed/presentation/components/PostHeader.vue",
     "src/feed/presentation/components/PostCard.vue",
     "src/feed/presentation/components/LivePostPlayer.vue",
     "src/feed/presentation/components/ShareModal.vue",
@@ -212,4 +214,17 @@ test("anonymous post mapping redacts raw publisher identity before presentation 
   assert.match(mapper, /authorPath:\s*audienceSelection\.isAnonymous\s*\? undefined/)
   assert.match(mapper, /role:\s*audienceSelection\.isAnonymous\s*\? "Anonymous"/)
   assert.match(mapper, /sourcePath:\s*audienceSelection\.isAnonymous\s*\? appRoutes\.feed/)
+})
+
+test("group posts keep the publisher profile separate from the group source path", () => {
+  const mapper = readClient("server/api/feed/_shared.ts")
+
+  assert.match(
+    mapper,
+    /authorPath:\s*audienceSelection\.isAnonymous\s*\? undefined\s*:\s*pageSlug\s*\? appRoutes\.pageDetail\(pageSlug\)\s*:\s*authorUsername\s*\? appRoutes\.profile\(authorUsername\)\s*:\s*appRoutes\.feed/,
+  )
+  assert.match(
+    mapper,
+    /const sourcePath = pageSlug\s*\? appRoutes\.pageDetail\(pageSlug\)\s*:\s*groupSlug\s*\? appRoutes\.groupDetail\(groupSlug\)/,
+  )
 })

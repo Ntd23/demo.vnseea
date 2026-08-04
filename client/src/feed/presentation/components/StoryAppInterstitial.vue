@@ -47,6 +47,17 @@
           >
             {{ t("feed.storyCarousel.openApp") }}
           </UButton>
+          <UButton
+            type="button"
+            size="lg"
+            block
+            color="neutral"
+            variant="ghost"
+            class="story-app-prompt__secondary"
+            @click="continueOnWeb"
+          >
+            {{ t("feed.storyCarousel.continueOnWeb") }}
+          </UButton>
         </div>
       </div>
     </template>
@@ -58,6 +69,9 @@ import { storeToRefs } from "pinia"
 import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
 
 const open = defineModel<boolean>({ default: false })
+const emit = defineEmits<{
+  continue: []
+}>()
 
 const { t } = useI18n()
 const runtimeConfig = useRuntimeConfig()
@@ -152,6 +166,11 @@ function buildAppHandoffUrl(url: string) {
   catch {
     return url
   }
+}
+
+function continueOnWeb() {
+  open.value = false
+  emit("continue")
 }
 
 function openNativeApp() {
@@ -275,6 +294,13 @@ onBeforeUnmount(() => {
   justify-content: center;
   border-radius: 12px;
   font-weight: 750;
+}
+
+.story-app-prompt__secondary {
+  min-height: 44px;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 700;
 }
 
 :global(.story-app-prompt__content) {

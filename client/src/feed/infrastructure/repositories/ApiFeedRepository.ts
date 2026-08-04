@@ -216,6 +216,10 @@ export function createApiFeedRepository(): FeedRepository {
         formData.append("answer[]", answer)
       }
 
+      for (const userId of input.taggedUserIds ?? []) {
+        formData.append("taggedUserIds[]", String(userId))
+      }
+
       const imageFiles = [
         ...(input.imageFiles ?? []),
         ...(input.imageFile ? [input.imageFile] : []),
@@ -229,7 +233,7 @@ export function createApiFeedRepository(): FeedRepository {
         formData.append("is_anonymous", "1")
       }
 
-      if (imageFiles.length || input.videoFile || input.feeling || input.colorId || input.pollAnswers?.length) {
+      if (imageFiles.length || input.videoFile || input.feeling || input.colorId || input.pollAnswers?.length || input.taggedUserIds?.length) {
 
         if (input.feeling) {
           formData.append("feeling", input.feeling)
@@ -256,6 +260,9 @@ export function createApiFeedRepository(): FeedRepository {
           privacy_contract: "audience_v2",
         },
       )
+    },
+    async getTaggableUsers(input) {
+      return await client.get(apiRoutes.feed.taggableUsers, input)
     },
     async createProduct(input) {
       const formData = new FormData()

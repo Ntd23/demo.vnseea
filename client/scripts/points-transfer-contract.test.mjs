@@ -52,6 +52,8 @@ test("Nuxt receive QR keeps the canonical backend PNG proxy", async () => {
   assert.match(source, /image\/png/)
   assert.match(source, /\^\[1-9\]\[0-9\]\*\$/)
   assert.match(source, /getBackendBaseCandidates/)
+  assert.match(source, /qrImageCache/)
+  assert.match(source, /attempt < 3/)
   assert.doesNotMatch(source, /renderSVG|from ["']uqr["']/)
   assert.doesNotMatch(packageJson, /"uqr"\s*:/)
 })
@@ -63,6 +65,21 @@ test("Nuxt points UI persists the idempotency key for ambiguous retries", async 
   assert.match(source, /points-transfer:pending/)
   assert.match(source, /requestId/)
   assert.match(source, /prefix !== "POINTS" && prefix !== "WALLET"/)
+})
+
+test("wallet receive QR preloads retries and localizes every visible control", async () => {
+  const [walletPage, viewModel] = await Promise.all([
+    readClient("src/wallet/presentation/pages/WalletPage.vue"),
+    readClient("src/settings/application/view-models/useSettingsMyPointsPanelVM.ts"),
+  ])
+
+  assert.match(viewModel, /preloadReceiveQrImage/)
+  assert.match(viewModel, /receiveQrLoading/)
+  assert.match(viewModel, /receiveQrError/)
+  assert.match(viewModel, /_qr_retry=/)
+  assert.match(walletPage, /settings\.data\.pointsPanel\.receiveQrLoading/)
+  assert.match(walletPage, /receiveQrError/)
+  assert.doesNotMatch(walletPage, />\s*(?:Ví|Chuyển|Nhận|Gửi|Quét|Đóng|Hủy|Xác nhận|Lịch sử|Chưa có|Nội dung|Người nhận|Số VNSEEA)[^<{]*</)
 })
 
 test("Nuxt points UI synchronizes the committed sender balance with shared auth state", async () => {

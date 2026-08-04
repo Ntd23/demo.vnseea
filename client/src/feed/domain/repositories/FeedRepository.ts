@@ -2,6 +2,7 @@
 
 import type {
   FeedCreatePostResponse,
+  FeedTaggableUsersResponse,
   FeedCreateStoryResponse,
   FeedCommentRecord,
   FeedExploreResponse,
@@ -75,8 +76,18 @@ export interface FeedRepository {
     sharedPostId?: number
     colorId?: number
     pollAnswers?: string[]
+    taggedUserIds?: number[]
     location?: LocationSelection
   }): Promise<FeedCreatePostResponse>
+  getTaggableUsers(input: {
+    query?: string
+    audience?: string
+    pageId?: number
+    eventId?: number
+    groupId?: number
+    cursor?: string
+    limit?: number
+  }): Promise<FeedTaggableUsersResponse>
   createProduct(input: {
     name: string
     price: string

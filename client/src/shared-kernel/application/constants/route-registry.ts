@@ -133,6 +133,7 @@ export const apiRoutes = {
       create: "feed/posts/create",
       action: "feed/posts/action",
     },
+    taggableUsers: "feed/taggable-users",
     product: {
       create: "product/create",
     },

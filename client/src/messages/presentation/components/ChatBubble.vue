@@ -40,6 +40,8 @@
         class="group relative w-fit max-w-[80%] lg:max-w-[42rem] chat-bubble__wrapper"
         :class="{
           'chat-bubble__wrapper--product': productCard,
+          'chat-bubble__wrapper--order': orderRequest,
+          'chat-bubble__wrapper--voice': mediaUrl && (mediaType === 'audio' || mediaType === 'record'),
           'chat-bubble__wrapper--shared-post': sharedPost,
           'chat-bubble__wrapper--location': location && !isDeleted,
           'chat-bubble__wrapper--story': storyContext && !isDeleted,
@@ -127,6 +129,8 @@
           :class="[
             isDeleted ? 'chat-bubble--deleted' : '',
             storyContext && !isDeleted ? 'chat-bubble--story' : '',
+            orderRequest && !isDeleted ? 'chat-bubble--order' : '',
+            mediaUrl && (mediaType === 'audio' || mediaType === 'record') ? 'chat-bubble--voice' : '',
             sharedPost && !isDeleted ? 'chat-bubble--shared-post' : '',
             isMine
               ? 'chat-bubble--mine text-[var(--text-inverse)]'
@@ -134,8 +138,12 @@
           ]"
         >
           <p v-if="showAuthor && authorName && !storyContext" class="chat-bubble__author">{{ authorName }}</p>
+          <OrderRequestMessageCard
+            v-if="orderRequest"
+            :order="orderRequest"
+          />
           <MessageSharedPostCard
-            v-if="sharedPost"
+            v-else-if="sharedPost"
             :post="sharedPost"
           />
           <NuxtLink
@@ -168,7 +176,7 @@
             :reply-text="text"
           />
           <p
-            v-if="text && !storyContext"
+            v-if="text && !storyContext && !orderRequest"
             class="chat-bubble__text whitespace-pre-wrap"
             :class="{ 'mt-2.5': productCard || sharedPost }"
           >
@@ -207,12 +215,9 @@
                 <Icon name="i-ph-play-fill" />
               </span>
             </button>
-            <audio
+            <VoiceMessageCard
               v-else-if="mediaType === 'audio' || mediaType === 'record'"
               :src="mediaUrl"
-              class="min-w-[240px] rounded-[10px]"
-              controls
-              preload="none"
             />
             <a
               v-else
@@ -351,6 +356,7 @@ import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCur
 import type { MessageCallLogAction } from "../../domain/types/calls.types"
 import type {
   MessageProductCard,
+  MessageOrderRequest,
   MessageSharedPostCard as MessageSharedPostCardData,
   MessageStoryContext,
 } from "../../domain/types/messages.types"
@@ -359,7 +365,9 @@ import type { MessageLocationMeta } from "../../application/utils/message-locati
 import MessageLocationCard from "./MessageLocationCard.vue"
 import MessageMediaViewer from "./MessageMediaViewer.vue"
 import MessageSharedPostCard from "./MessageSharedPostCard.vue"
+import OrderRequestMessageCard from "./OrderRequestMessageCard.vue"
 import StoryMessageCard from "./StoryMessageCard.vue"
+import VoiceMessageCard from "./VoiceMessageCard.vue"
 
 type ChatBubbleReactionOption = {
   value: FeedStoryReactionType
@@ -404,6 +412,7 @@ const props = defineProps<{
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
   productCard?: MessageProductCard
+  orderRequest?: MessageOrderRequest
   sharedPost?: MessageSharedPostCardData
   storyContext?: MessageStoryContext
   location?: MessageLocationMeta | null
@@ -773,6 +782,44 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__wrapper--product {
   width: min(310px, 100%);
+}
+
+.chat-bubble__wrapper.chat-bubble__wrapper--order {
+  width: min(500px, calc(100vw - 32px));
+  max-width: 100% !important;
+}
+
+.chat-bubble__wrapper.chat-bubble__wrapper--order.chat-bubble__wrapper--with-tools {
+  max-width: 100% !important;
+}
+
+.chat-bubble--order,
+.chat-bubble--order.chat-bubble--mine,
+.chat-bubble--order.chat-bubble--theirs {
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+.chat-bubble__wrapper.chat-bubble__wrapper--voice {
+  width: min(330px, calc(100vw - 32px));
+  max-width: 100% !important;
+}
+
+.chat-bubble--voice,
+.chat-bubble--voice.chat-bubble--mine,
+.chat-bubble--voice.chat-bubble--theirs {
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
 }
 
 .chat-bubble__wrapper--shared-post {

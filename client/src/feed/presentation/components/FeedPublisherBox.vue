@@ -74,6 +74,22 @@
         <div class="publisher__meta">
           <p class="publisher__identity-line">
             <span class="publisher__name">{{ currentUserName || t("feed.publisherBox.expandedOpen") }}</span>
+            <template v-if="selectedTaggedUsers.length > 0">
+              <span class="publisher__identity-context">{{ locale === "vi" ? "cùng với" : "with" }}</span>
+              <NuxtLink :to="selectedTaggedUsers[0]!.profilePath" class="publisher__identity-person">
+                {{ selectedTaggedUsers[0]!.name }}
+              </NuxtLink>
+              <button
+                v-if="selectedTaggedUsers.length > 1"
+                type="button"
+                class="publisher__identity-more"
+                @click.stop="toggleTagPeoplePicker"
+              >
+                {{ locale === "vi"
+                  ? `và ${selectedTaggedUsers.length - 1} người khác`
+                  : `and ${selectedTaggedUsers.length - 1} ${selectedTaggedUsers.length === 2 ? "other" : "others"}` }}
+              </button>
+            </template>
             <template v-if="hasPublisherLocation">
               <span class="publisher__location-lead">— {{ locale === "vi" ? "tại" : "at" }}</span>
               <a
@@ -145,6 +161,19 @@
                 </span>
               </button>
             </UChip>
+
+            <UChip :show="selectedTaggedUsers.length > 0" color="primary" size="2xs" inset>
+              <button
+                type="button"
+                class="publisher__tag-trigger"
+                :class="{ 'publisher__tag-trigger--active': showTagPeoplePicker || selectedTaggedUsers.length > 0 }"
+                :disabled="draft.isAnonymous"
+                @click.stop="toggleTagPeoplePicker"
+              >
+                <Icon name="i-ph-user-plus-bold" class="h-3.5 w-3.5" />
+                <span>{{ locale === "vi" ? "Gắn thẻ" : "Tag people" }}</span>
+              </button>
+            </UChip>
           </div>
           <!-- <label v-if="isPersonalComposer" class="publisher__anonymous-toggle">
             <UCheckbox v-model="draft.isAnonymous" />
@@ -159,6 +188,70 @@
       <div v-if="statusMessage" class="publisher__status" :data-tone="statusTone">
         {{ statusMessage }}
       </div>
+
+      <section v-if="!showProductForm && showTagPeoplePicker" class="publisher__tag-panel">
+        <header class="publisher__tag-panel-head">
+          <div>
+            <h3>{{ locale === "vi" ? "Gắn thẻ mọi người" : "Tag people" }}</h3>
+            <p>{{ locale === "vi" ? "Chọn trong những người bạn đang theo dõi" : "Choose from people you follow" }}</p>
+          </div>
+          <button type="button" class="publisher__tag-panel-close" @click="toggleTagPeoplePicker">
+            <Icon name="i-ph-x-bold" class="h-4 w-4" />
+          </button>
+        </header>
+
+        <div v-if="selectedTaggedUsers.length > 0" class="publisher__tag-selected">
+          <span v-for="user in selectedTaggedUsers" :key="user.id" class="publisher__tag-pill">
+            <span>{{ user.name }}</span>
+            <button type="button" :aria-label="`${locale === 'vi' ? 'Bỏ gắn thẻ' : 'Remove'} ${user.name}`" @click="removeTaggedUser(user.id)">
+              <Icon name="i-ph-x-bold" class="h-3 w-3" />
+            </button>
+          </span>
+        </div>
+
+        <label class="publisher__tag-search">
+          <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />
+          <input
+            v-model="tagPeopleQuery"
+            type="search"
+            :placeholder="locale === 'vi' ? 'Tìm theo tên hoặc tên người dùng' : 'Search by name or username'"
+          >
+        </label>
+
+        <div v-if="tagPeopleLoading" class="publisher__tag-state">
+          <Icon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+          <span>{{ locale === "vi" ? "Đang tải..." : "Loading..." }}</span>
+        </div>
+        <div v-else-if="tagPeopleError" class="publisher__tag-state publisher__tag-state--error">
+          {{ tagPeopleError }}
+        </div>
+        <div v-else-if="taggableUsers.length === 0" class="publisher__tag-state">
+          {{ locale === "vi" ? "Không tìm thấy người phù hợp." : "No matching people found." }}
+        </div>
+        <div v-else class="publisher__tag-list">
+          <button
+            v-for="user in taggableUsers"
+            :key="user.id"
+            type="button"
+            class="publisher__tag-option"
+            :class="{ 'publisher__tag-option--selected': selectedTaggedUsers.some(item => item.id === user.id) }"
+            @click="toggleTaggedUser(user)"
+          >
+            <span class="publisher__tag-avatar">
+              <img v-if="user.avatarUrl" :src="user.avatarUrl" :alt="user.name">
+              <span v-else>{{ user.name.slice(0, 1).toUpperCase() }}</span>
+            </span>
+            <span class="publisher__tag-copy">
+              <strong>{{ user.name }}</strong>
+              <small>@{{ user.username }}</small>
+            </span>
+            <Icon
+              :name="selectedTaggedUsers.some(item => item.id === user.id) ? 'i-ph-check-circle-fill' : 'i-ph-circle'"
+              class="publisher__tag-check"
+            />
+          </button>
+        </div>
+      </section>
 
       <UProgress
         v-if="submitting && (imageFiles.length > 0 || videoFile)"
@@ -500,6 +593,15 @@ const {
   postColorOptions,
   showProductForm,
   showLocationForm,
+  showTagPeoplePicker,
+  tagPeopleQuery,
+  taggableUsers,
+  selectedTaggedUsers,
+  tagPeopleLoading,
+  tagPeopleError,
+  toggleTagPeoplePicker,
+  toggleTaggedUser,
+  removeTaggedUser,
   imageFiles,
   videoFile,
 } = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId, props.eventId, props.groupId)
@@ -691,6 +793,7 @@ function handleActionOverride(value: any) {
       showColorsPicker.value = false
       showProductForm.value = false
       showLocationForm.value = false
+      showTagPeoplePicker.value = false
       console.log("[FeedPublisherBox] Clicking imageInputRef:", imageInputRef.value)
       imageInputRef.value?.click()
       expanded.value = true
@@ -703,6 +806,7 @@ function handleActionOverride(value: any) {
       showColorsPicker.value = false
       showProductForm.value = false
       showLocationForm.value = false
+      showTagPeoplePicker.value = false
       console.log("[FeedPublisherBox] Clicking videoInputRef:", videoInputRef.value)
       videoInputRef.value?.click()
       expanded.value = true
@@ -768,6 +872,7 @@ async function openComposer() {
   showPollForm.value = false
   showColorsPicker.value = false
   showLocationForm.value = false
+  showTagPeoplePicker.value = false
   expanded.value = true
   await nextTick()
   resizeTextarea()
@@ -1073,6 +1178,33 @@ function goToLive() {
   color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
+}
+
+.publisher__identity-context {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.publisher__identity-person,
+.publisher__identity-more {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.publisher__identity-more {
+  cursor: pointer;
+}
+
+.publisher__identity-person:hover,
+.publisher__identity-more:hover {
+  color: var(--text-brand);
+  text-decoration: underline;
 }
 
 .publisher__identity-location {
@@ -1612,6 +1744,229 @@ function goToLive() {
   padding: 0 4px;
   overflow: hidden;
   border-radius: 14px;
+}
+
+.publisher__tag-trigger {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--bg-muted);
+  padding: 4px 9px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.publisher__tag-trigger:hover,
+.publisher__tag-trigger--active {
+  border-color: color-mix(in srgb, var(--bg-brand) 35%, var(--border-default));
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+}
+
+.publisher__tag-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.publisher__tag-panel {
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  background: var(--bg-surface);
+}
+
+.publisher__tag-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px 10px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.publisher__tag-panel-head h3,
+.publisher__tag-panel-head p {
+  margin: 0;
+}
+
+.publisher__tag-panel-head h3 {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.publisher__tag-panel-head p {
+  margin-top: 2px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.publisher__tag-panel-close {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.publisher__tag-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px 0;
+}
+
+.publisher__tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: var(--bg-surface-active);
+  padding: 5px 7px 5px 10px;
+  color: var(--text-brand);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.publisher__tag-pill button {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 1px;
+  color: inherit;
+  cursor: pointer;
+}
+
+.publisher__tag-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-muted);
+  padding: 9px 11px;
+  color: var(--text-tertiary);
+}
+
+.publisher__tag-search:focus-within {
+  border-color: color-mix(in srgb, var(--bg-brand) 45%, var(--border-light));
+}
+
+.publisher__tag-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.publisher__tag-list {
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 0 8px 8px;
+}
+
+.publisher__tag-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  padding: 8px;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.publisher__tag-option:hover,
+.publisher__tag-option--selected {
+  background: var(--bg-surface-hover);
+}
+
+.publisher__tag-avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.publisher__tag-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.publisher__tag-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.publisher__tag-copy strong,
+.publisher__tag-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.publisher__tag-copy strong {
+  font-size: 13px;
+}
+
+.publisher__tag-copy small {
+  color: var(--text-tertiary);
+  font-size: 11px;
+}
+
+.publisher__tag-check {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--text-tertiary);
+}
+
+.publisher__tag-option--selected .publisher__tag-check {
+  color: var(--text-brand);
+}
+
+.publisher__tag-state {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  text-align: center;
+}
+
+.publisher__tag-state--error {
+  color: var(--color-error-600, #dc2626);
 }
 
 .publisher__media-previews--count-1 {

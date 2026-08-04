@@ -15,6 +15,7 @@ export function useMessageRecorder() {
   const mediaRecorder = shallowRef<MediaRecorder | null>(null)
   const mediaStream = shallowRef<MediaStream | null>(null)
   const chunks = shallowRef<BlobPart[]>([])
+  const discardOnStop = ref(false)
   const timerId = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
   const startedAt = ref(0)
   const durationMs = ref(0)
@@ -45,6 +46,14 @@ export function useMessageRecorder() {
 
   const clearRecording = () => {
     clearTimer()
+
+    const recorder = mediaRecorder.value
+    if (recorder && recorder.state !== "inactive") {
+      discardOnStop.value = true
+      recorder.stop()
+      isRecording.value = false
+    }
+    stopStream()
 
     if (recordDraft.value?.previewUrl) {
       URL.revokeObjectURL(recordDraft.value.previewUrl)
@@ -109,6 +118,17 @@ export function useMessageRecorder() {
         clearTimer()
         isRecording.value = false
 
+        if (mediaRecorder.value === recorder) {
+          mediaRecorder.value = null
+        }
+
+        if (discardOnStop.value) {
+          discardOnStop.value = false
+          chunks.value = []
+          stopStream()
+          return
+        }
+
         const mimeType = recorder.mimeType || "audio/webm"
         const finalDurationMs = durationMs.value || Math.max(Date.now() - startedAt.value, 0)
         const blob = new Blob(chunks.value, { type: mimeType })
@@ -127,6 +147,7 @@ export function useMessageRecorder() {
       })
 
       mediaRecorder.value = recorder
+      discardOnStop.value = false
       startedAt.value = Date.now()
       durationMs.value = 0
       isRecording.value = true
@@ -151,11 +172,7 @@ export function useMessageRecorder() {
   }
 
   onBeforeUnmount(() => {
-    clearTimer()
-    stopStream()
-    if (recordDraft.value?.previewUrl) {
-      URL.revokeObjectURL(recordDraft.value.previewUrl)
-    }
+    clearRecording()
   })
 
   return {

@@ -14,6 +14,7 @@
         :author-avatar-url="post.authorAvatarUrl"
         :author-gender="post.authorGender"
         :author-path="post.authorPath"
+        :tagged-users="post.taggedUsers"
         :event-context="post.eventContext"
         :group-context="post.groupContext"
         :feeling="post.feeling"

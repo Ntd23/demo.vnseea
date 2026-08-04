@@ -106,6 +106,22 @@ const latestPreview = computed(() => {
 })
 
 function previewFor(message: MessagePinnedItem): PinnedMessagePreview {
+  if (message.orderRequest) {
+    const firstItem = message.orderRequest.items[0]
+    const remainingItems = Math.max(message.orderRequest.items.length - 1, 0)
+    return {
+      kind: t("navigation.chatWidget.pinnedOrderRequest"),
+      title: `${t("pages.messagesPage.orderRequestTitle")} #${message.orderRequest.orderHash}`,
+      description: [
+        firstItem?.name,
+        remainingItems > 0 ? t("navigation.chatWidget.pinnedOrderMoreItems", { count: remainingItems }) : "",
+        message.orderRequest.total,
+      ].filter(Boolean).join(" · "),
+      imageUrl: firstItem?.imageUrl || "",
+      icon: "i-ph-bag-simple-fill",
+    }
+  }
+
   const location = getMessageLocationMeta(message)
   if (location) {
     return {

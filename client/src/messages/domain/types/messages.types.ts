@@ -86,6 +86,25 @@ export type MessageProductCard = {
   href: string
 }
 
+export type MessageOrderRequestItem = {
+  productId: number
+  name: string
+  imageUrl?: string
+  quantity: number
+  total: string
+  href: string
+}
+
+export type MessageOrderRequest = {
+  orderHash: string
+  buyerId: number
+  buyerName: string
+  buyerPhone: string
+  buyerAddress: string
+  items: MessageOrderRequestItem[]
+  total: string
+}
+
 export type MessageProductLaunchContext = {
   sellerId: number
   product: MessageProductCard
@@ -191,6 +210,7 @@ export type MessageItem = {
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
   story?: MessageStoryContext
   productCard?: MessageProductCard
+  orderRequest?: MessageOrderRequest
   sharedPost?: MessageSharedPostCard
   selectedReaction?: FeedStoryReactionType | null
   isDeleted?: boolean
