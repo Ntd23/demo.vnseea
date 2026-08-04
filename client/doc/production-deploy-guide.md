@@ -47,9 +47,9 @@ NUXT_BACKEND_SERVER_KEY=your_backend_server_key
 NUXT_PUBLIC_SITE_URL=https://your-domain.com
 
 NUXT_PUBLIC_REALTIME_URL=https://your-domain.com
-REALTIME_INTERNAL_URL=http://127.0.0.1:3015
+REALTIME_INTERNAL_URL=http://127.0.0.1:3025
 REALTIME_SECRET=change_this_to_a_long_random_secret
-REALTIME_PORT=3015
+REALTIME_PORT=3025
 ```
 
 Không commit file chứa secret thật.
@@ -118,7 +118,7 @@ server {
     }
 
     location ^~ /socket.io/ {
-        proxy_pass http://127.0.0.1:3015;
+        proxy_pass http://127.0.0.1:3025;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -126,6 +126,16 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location = /healthz {
+        proxy_pass http://127.0.0.1:3025/healthz;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        access_log off;
     }
 
     location ~ ^/(requests|ajax_loading|api-v2|api|xhr/.*|admincp|cron-job)\.php$ {
@@ -201,7 +211,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         REALTIME_HOST: "127.0.0.1",
-        REALTIME_PORT: "3015",
+        REALTIME_PORT: "3025",
       },
     },
   ],
