@@ -647,7 +647,7 @@ async function toggleCreateMenu() {
 
 .header-home-logo--mobile {
   height: 40px;
-  padding: 0 12px;
+  padding: 0 6px;
 }
 
 .header-home-link:hover .header-home-logo,
@@ -658,7 +658,7 @@ async function toggleCreateMenu() {
 .header-home-logo img {
   display: block;
   max-height: 24px;
-  width: auto;
+  width: 100px;
   object-fit: contain;
 }
 
@@ -862,7 +862,6 @@ async function toggleCreateMenu() {
 .mobile-bar__group {
   display: flex;
   align-items: center;
-  gap: 6px;
 }
 
 /* Icon button base */
