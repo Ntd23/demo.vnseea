@@ -43,6 +43,17 @@ const realtimeEventNames = {
 }
 
 const postMutations = new Set(["reaction", "comment", "share", "edited", "deleted"])
+const directCallEvents = new Map([
+  ["incoming", "livekit_call_incoming"],
+  ["answered", "livekit_call_answered"],
+  ["declined", "livekit_call_declined"],
+  ["closed", "livekit_call_closed"],
+])
+const groupCallEvents = new Map([
+  ["incoming", "livekit_group_call_incoming"],
+  ["sync", "livekit_group_call_sync"],
+  ["closed", "livekit_group_call_closed"],
+])
 
 const normalizePostIds = (values, limit = 50) =>
   Array.from(new Set(
@@ -52,6 +63,13 @@ const normalizePostIds = (values, limit = 50) =>
   )).slice(0, limit)
 
 const normalizePresenceUserIds = (values, limit = 200) =>
+  Array.from(new Set(
+    (Array.isArray(values) ? values : [])
+      .map(value => String(value).trim())
+      .filter(value => /^[1-9][0-9]*$/.test(value)),
+  )).slice(0, limit)
+
+const normalizeUserIds = (values, limit = 1000) =>
   Array.from(new Set(
     (Array.isArray(values) ? values : [])
       .map(value => String(value).trim())
@@ -119,6 +137,7 @@ export function createRealtimeRelay({
         request.url === "/internal/notifications/publish"
         || request.url === "/internal/posts/publish"
         || request.url === "/internal/messages/presence/publish"
+        || request.url === "/internal/livekit-call/publish"
       )
     if (!internalRoute) {
       send(encodeJson(404, { ok: false }))
@@ -131,6 +150,49 @@ export function createRealtimeRelay({
 
     try {
       const payload = await readJsonBody(request)
+      if (request.url === "/internal/livekit-call/publish") {
+        const context = payload.context === "group" ? "group" : "direct"
+        const event = String(payload.event || "").trim()
+        const callId = String(payload.call_id || "").trim()
+        const eventName = context === "group"
+          ? groupCallEvents.get(event)
+          : directCallEvents.get(event)
+        if (!eventName || !/^[1-9][0-9]*$/.test(callId)) {
+          send(encodeJson(400, { ok: false, message: "Invalid call change" }))
+          return
+        }
+
+        let recipientIds
+        if (context === "group") {
+          recipientIds = normalizeUserIds(payload.recipient_ids)
+        }
+        else {
+          const fromId = String(payload.from_id || "").trim()
+          const toId = String(payload.to_id || "").trim()
+          if (!/^[1-9][0-9]*$/.test(fromId) || !/^[1-9][0-9]*$/.test(toId)) {
+            send(encodeJson(400, { ok: false, message: "Invalid call participants" }))
+            return
+          }
+          recipientIds = event === "incoming"
+            ? [toId]
+            : normalizeUserIds([fromId, toId])
+        }
+
+        if (recipientIds.length === 0) {
+          send(encodeJson(400, { ok: false, message: "Call recipients are required" }))
+          return
+        }
+        recipientIds.forEach((recipientId) => {
+          io.to(`user:${recipientId}`).emit(eventName, payload)
+        })
+        send(encodeJson(200, {
+          ok: true,
+          event: eventName,
+          recipients: recipientIds.length,
+        }))
+        return
+      }
+
       if (request.url === "/internal/posts/publish") {
         const postId = String(payload.postId || "").trim()
         const mutation = String(payload.mutation || "").trim()
@@ -308,7 +370,7 @@ const entryModulePaths = [process.argv[1], process.env.pm_exec_path]
 const isMainModule = entryModulePaths.some(entryPath => entryPath === currentModulePath)
 
 if (isMainModule) {
-  const port = Number(process.env.REALTIME_PORT || 3015)
+  const port = Number(process.env.REALTIME_PORT || 3025)
   const host = process.env.REALTIME_HOST || "0.0.0.0"
   const realtimeSecret = String(process.env.REALTIME_SECRET || "").trim()
   const corsOrigin = (process.env.REALTIME_CORS_ORIGIN || "*")

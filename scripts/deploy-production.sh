@@ -15,9 +15,12 @@ PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://vnseea.vn}"
 DEPLOY_STATE_DIR="${DEPLOY_STATE_DIR:-/home/vnseea/.deploy}"
 
 V2_CLIENT_PROCESS="vnseea-client"
-V2_REALTIME_PROCESS="vnseea-realtime"
 PRIMARY_CLIENT_PROCESS="vnseea-web"
 PRIMARY_REALTIME_PROCESS="vnseea-web-realtime"
+OBSOLETE_REALTIME_PROCESSES=(
+    "vnseea-realtime"
+    "vnseea-mobile-main-socketclear"
+)
 
 release_tree=''
 new_manifest=''
@@ -130,8 +133,33 @@ reload_php() {
 }
 
 restart_realtime() {
-    local process_name="$1"
-    pm2 restart "$process_name" --update-env >/dev/null
+    local root="$1"
+    local process_name="$2"
+    (
+        cd "$root/client"
+        REALTIME_PROCESS_NAME="$process_name" \
+            pm2 startOrReload ecosystem.config.cjs \
+                --only "$process_name" --update-env >/dev/null
+    )
+}
+
+retire_obsolete_realtime() {
+    local process_name
+    for process_name in "${OBSOLETE_REALTIME_PROCESSES[@]}"; do
+        [[ "$process_name" == "$PRIMARY_REALTIME_PROCESS" ]] && continue
+        pm2 delete "$process_name" >/dev/null 2>&1 || true
+    done
+}
+
+run_realtime_contract_tests() {
+    local root="$1"
+    (
+        cd "$root/client"
+        node --test \
+            scripts/message-realtime-server.test.mjs \
+            scripts/post-realtime-server.test.mjs \
+            scripts/livekit-realtime-server.test.mjs
+    )
 }
 
 curl_with_retry() {
@@ -204,7 +232,6 @@ rollback_v2_source() {
         client/app client/server client/src client/realtime client/scripts >/dev/null
     install_dependencies_best_effort "$V2_DEPLOY_PATH"
     reload_php
-    restart_realtime "$V2_REALTIME_PROCESS" || true
 }
 
 is_protected_primary_path() {
@@ -326,7 +353,7 @@ rollback_primary_source() {
         rollback_v2_source
         fail 'PHP-FPM reload failed after v2 build; primary promotion was not started'
     fi
-    restart_realtime "$PRIMARY_REALTIME_PROCESS" || true
+    restart_realtime "$PRIMARY_DEPLOY_PATH" "$PRIMARY_REALTIME_PROCESS" || true
 }
 
 deploy_v2() {
@@ -335,14 +362,18 @@ deploy_v2() {
     [[ "$current_sha" == "$RELEASE_SHA" ]] ||
         fail "v2 checkout is $current_sha, expected $RELEASE_SHA"
 
+    if ! run_realtime_contract_tests "$V2_DEPLOY_PATH"; then
+        rollback_v2_source
+        fail 'Socket.IO v4 relay contract tests failed; primary promotion was not started'
+    fi
+
     if ! build_nuxt_target "$V2_DEPLOY_PATH" "$V2_CLIENT_PROCESS"; then
         rollback_v2_source
         fail 'v2 Nuxt build failed; primary promotion was not started'
     fi
 
     reload_php
-    if ! restart_realtime "$V2_REALTIME_PROCESS" ||
-        ! smoke_test_target "$V2_BASE_URL" "$V2_DEPLOY_PATH"; then
+    if ! smoke_test_target "$V2_BASE_URL" "$V2_DEPLOY_PATH"; then
         rollback_target "$V2_DEPLOY_PATH" "$V2_CLIENT_PROCESS"
         rollback_v2_source
         fail 'v2 smoke test failed; primary promotion was not started'
@@ -384,7 +415,7 @@ deploy_primary() {
         rollback_primary_source "$rollback_sha"
         fail 'PHP-FPM reload failed and the previous primary release was restored'
     fi
-    if ! restart_realtime "$PRIMARY_REALTIME_PROCESS" ||
+    if ! restart_realtime "$PRIMARY_DEPLOY_PATH" "$PRIMARY_REALTIME_PROCESS" ||
         ! smoke_test_target "$PRIMARY_BASE_URL" "$PRIMARY_DEPLOY_PATH"; then
         rollback_target "$PRIMARY_DEPLOY_PATH" "$PRIMARY_CLIENT_PROCESS"
         rollback_primary_source "$rollback_sha"
@@ -393,6 +424,7 @@ deploy_primary() {
 
     finalize_output "$PRIMARY_DEPLOY_PATH"
     printf '%s\n' "$RELEASE_SHA" >"$DEPLOY_STATE_DIR/primary-success.sha"
+    retire_obsolete_realtime
     pm2 save >/dev/null
     log 'primary deployment and smoke tests passed'
 }
