@@ -35,6 +35,16 @@
       @change="handleFileSelection"
     >
 
+    <UAlert
+      v-if="statusDescription"
+      :color="submitStatus === 'error' ? 'error' : 'neutral'"
+      variant="subtle"
+      :icon="submitStatus === 'error' ? 'i-ph-file-x-duotone' : 'i-ph-spinner-gap-bold'"
+      :description="statusDescription"
+      class="story-create__status-alert"
+      role="alert"
+    />
+
     <main class="story-create__content">
       <section v-if="!selectedFile" class="story-create__empty">
         <div class="story-create__illustration" aria-hidden="true">
@@ -289,13 +299,6 @@
             </div>
           </fieldset>
 
-          <p
-            v-if="statusDescription"
-            class="story-create__status"
-            :class="{ 'story-create__status--error': submitStatus === 'error' }"
-          >
-            {{ statusDescription }}
-          </p>
         </aside>
       </section>
     </main>
@@ -640,6 +643,13 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   height: 1px;
   opacity: 0;
   pointer-events: none;
+}
+
+.story-create__status-alert {
+  width: 100%;
+  margin-top: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
 }
 
 .story-create__content {
@@ -1314,21 +1324,6 @@ const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   color: var(--text-tertiary);
   font-size: 10px;
   font-weight: 600;
-}
-
-.story-create__status {
-  margin: 0;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: var(--bg-surface-active);
-  color: var(--text-brand);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.story-create__status--error {
-  background: color-mix(in srgb, var(--color-error) 10%, var(--bg-surface));
-  color: var(--text-danger);
 }
 
 .story-create__spin {

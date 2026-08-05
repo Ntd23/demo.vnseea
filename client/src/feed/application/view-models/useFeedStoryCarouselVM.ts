@@ -7,8 +7,6 @@ import {
   feedStoryPointerTapTolerance,
   feedStoryReactionLongPressDelay,
   feedStorySwipeMinDistance,
-  feedStoryVideoExtensions,
-  feedStoryVideoPathHint,
   feedStoryViewerFallbackGradient,
   feedStoryViewerSideTapDivisor,
 } from "../constants/story-carousel"
@@ -159,7 +157,6 @@ export function useFeedStoryCarouselVM(
   )
 
   const fallbackGradient = feedStoryViewerFallbackGradient
-  const storyVideoExtensionPattern = new RegExp(`\\.(${feedStoryVideoExtensions.join("|")})$`, "i")
   const {
     start: startReactionLongPressTimer,
     stop: stopReactionLongPressTimer,
@@ -172,17 +169,8 @@ export function useFeedStoryCarouselVM(
     reactionTrayOpen.value = true
   }, feedStoryReactionLongPressDelay, { immediate: false })
 
-  function isVideoStoryMedia(media: string) {
-    const normalized = media.toLowerCase().split(/[?#]/)[0] || ""
-    return storyVideoExtensionPattern.test(normalized) || normalized.includes(feedStoryVideoPathHint)
-  }
-
   function isVideoStory(story?: FeedStoryRecord | null) {
-    if (!story) {
-      return false
-    }
-
-    return story.mediaType === "video" || isVideoStoryMedia(story.media)
+    return story?.mediaType === "video"
   }
 
   function resolveStoryCardMedia(story: FeedStoryRecord) {

@@ -17,6 +17,24 @@ $get_config['logo_url'] = $config['theme_url'] . '/img/logo.' . $get_config['log
 $theme_url = $config['theme_url'];
 $logo_extension = !empty($get_config['logo_extension']) ? $get_config['logo_extension'] : 'png';
 $favicon_extension = !empty($get_config['favicon_extension']) ? $get_config['favicon_extension'] : 'png';
+$upload_max_file_size = !empty($wo['config']['maxUpload']) ? (int) $wo['config']['maxUpload'] : 0;
+$upload_max_file_size_label = '';
+if ($upload_max_file_size > 0) {
+    $upload_size_unit = 'B';
+    $upload_size_divisor = 1;
+    if ($upload_max_file_size >= 1000000000) {
+        $upload_size_unit = 'GB';
+        $upload_size_divisor = 1000000000;
+    } elseif ($upload_max_file_size >= 1000000) {
+        $upload_size_unit = 'MB';
+        $upload_size_divisor = 1000000;
+    } elseif ($upload_max_file_size >= 1000) {
+        $upload_size_unit = 'KB';
+        $upload_size_divisor = 1000;
+    }
+    $upload_size_value = rtrim(rtrim(number_format($upload_max_file_size / $upload_size_divisor, 2, '.', ''), '0'), '.');
+    $upload_max_file_size_label = $upload_size_value . ' ' . $upload_size_unit;
+}
 $public_config = array(
     'siteName' => !empty($get_config['siteName']) ? $get_config['siteName'] : 'VNSEEA',
     'siteTitle' => !empty($get_config['siteTitle']) ? $get_config['siteTitle'] : (!empty($get_config['siteName']) ? $get_config['siteName'] : 'VNSEEA'),
@@ -26,7 +44,11 @@ $public_config = array(
     'theme_url' => $theme_url,
     'logo_url' => $theme_url . '/img/logo.' . $logo_extension,
     'night_logo_url' => $theme_url . '/img/night-logo.' . $logo_extension,
-    'favicon_url' => $theme_url . '/img/icon.' . $favicon_extension
+    'favicon_url' => $theme_url . '/img/icon.' . $favicon_extension,
+    'upload_max_file_size' => $upload_max_file_size,
+    'upload_max_file_size_label' => $upload_max_file_size_label,
+    'upload_allowed_extensions' => !empty($wo['config']['allowedExtenstion']) ? $wo['config']['allowedExtenstion'] : '',
+    'upload_allowed_mime_types' => !empty($wo['config']['mime_types']) ? $wo['config']['mime_types'] : ''
 );
 $get_config['page_categories'] = $wo['page_categories'];
 $get_config['group_categories'] = $wo['group_categories'];

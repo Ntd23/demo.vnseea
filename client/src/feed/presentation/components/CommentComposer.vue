@@ -29,6 +29,16 @@
         class="mb-2"
       />
 
+      <UAlert
+        v-if="uploadValidationMessage"
+        color="error"
+        variant="subtle"
+        icon="i-ph-file-x-duotone"
+        :title="t('uploadValidation.title')"
+        :description="uploadValidationMessage"
+        class="mb-2 rounded-[var(--radius-md)]"
+      />
+
       <div class="comment-composer__field">
         <div class="comment-composer__main-row">
           <div class="comment-composer__input-wrap">
@@ -360,7 +370,7 @@
         ref="imageInputRef"
         class="comment-composer__file"
         type="file"
-        :accept="FEED_IMAGE_ACCEPT"
+        :accept="commentImageAccept"
         @change="selectImageFile"
       />
       <input
@@ -383,10 +393,12 @@ import type {
   FeedCommentSubmitPayload,
 } from "../../domain/types/feed.types";
 import {
-  FEED_IMAGE_ACCEPT,
+  getFeedImageAccept,
   validateFeedCommentImage,
+  validateUploadAttachment,
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation";
+import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore";
 
 const props = withDefaults(
   defineProps<{
@@ -410,6 +422,12 @@ const emit = defineEmits<{
 }>();
 const { t } = useI18n();
 const toast = useToast();
+const uploadPolicyStore = useUploadPolicyStore();
+const commentImageAccept = computed(() => getFeedImageAccept(uploadPolicyStore.policy));
+
+onMounted(() => {
+  void uploadPolicyStore.hydrate();
+});
 
 function getUploadValidationMessage(result: UploadValidationResult) {
   if (result.valid) {
@@ -463,6 +481,7 @@ const recordingSampleRate = ref(44100);
 const recordingStartedAt = ref<number | null>(null);
 const recordingElapsedMs = ref(0);
 const submittedWithUpload = ref(false);
+const uploadValidationMessage = ref("");
 let recordingTimer: ReturnType<typeof setInterval> | null = null;
 
 const trimmedMessage = computed(() => message.value.trim());
@@ -568,18 +587,31 @@ function resetComposerState() {
   audioFile.value = undefined;
   attachmentPreview.value = undefined;
   recordingErrorMessage.value = "";
+  uploadValidationMessage.value = "";
   resetFileInputs();
 }
 
-function openImagePicker() {
+function showUploadValidationError(result: UploadValidationResult) {
+  const description = getUploadValidationMessage(result);
+  uploadValidationMessage.value = description;
+  toast.add({
+    title: t("uploadValidation.title"),
+    description,
+    color: "error",
+  });
+}
+
+async function openImagePicker() {
+  await uploadPolicyStore.hydrate();
   imageInputRef.value?.click();
 }
 
-function openGifPicker() {
+async function openGifPicker() {
+  await uploadPolicyStore.hydrate();
   gifInputRef.value?.click();
 }
 
-function selectImageFile(event: Event) {
+async function selectImageFile(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
 
@@ -587,22 +619,20 @@ function selectImageFile(event: Event) {
     return;
   }
 
-  const validation = validateFeedCommentImage(file);
+  await uploadPolicyStore.hydrate();
+  const validation = validateFeedCommentImage(file, uploadPolicyStore.policy);
   input.value = "";
 
   if (!validation.valid) {
-    toast.add({
-      title: t("uploadValidation.title"),
-      description: getUploadValidationMessage(validation),
-      color: "error",
-    });
+    showUploadValidationError(validation);
     return;
   }
 
+  uploadValidationMessage.value = "";
   setAttachment(file, file.type === "image/gif" ? "gif" : "image");
 }
 
-function selectGifFile(event: Event) {
+async function selectGifFile(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
 
@@ -610,20 +640,27 @@ function selectGifFile(event: Event) {
     return;
   }
 
-  const validation = validateFeedCommentImage(file);
+  await uploadPolicyStore.hydrate();
+  const validation = validateFeedCommentImage(file, uploadPolicyStore.policy);
   input.value = "";
 
   if (!validation.valid || file.name.toLowerCase().split(".").pop() !== "gif") {
-    toast.add({
-      title: t("uploadValidation.title"),
-      description: validation.valid
-        ? t("uploadValidation.unsupportedType", { name: file.name })
-        : getUploadValidationMessage(validation),
-      color: "error",
-    });
+    if (!validation.valid) {
+      showUploadValidationError(validation);
+    }
+    else {
+      const description = t("uploadValidation.unsupportedType", { name: file.name });
+      uploadValidationMessage.value = description;
+      toast.add({
+        title: t("uploadValidation.title"),
+        description,
+        color: "error",
+      });
+    }
     return;
   }
 
+  uploadValidationMessage.value = "";
   setAttachment(file, "gif");
 }
 
@@ -943,9 +980,22 @@ async function toggleRecording() {
   }
 }
 
-function submitComment() {
+async function submitComment() {
   if (!canSubmit.value || props.submitting) {
     return;
+  }
+
+  const selectedFile = imageFile.value || gifFile.value || audioFile.value;
+  if (selectedFile) {
+    await uploadPolicyStore.hydrate();
+    const validation = audioFile.value
+      ? validateUploadAttachment(selectedFile, uploadPolicyStore.policy)
+      : validateFeedCommentImage(selectedFile, uploadPolicyStore.policy);
+
+    if (!validation.valid) {
+      showUploadValidationError(validation);
+      return;
+    }
   }
 
   const displayText = trimmedMessage.value;

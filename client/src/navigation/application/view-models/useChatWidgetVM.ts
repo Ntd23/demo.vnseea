@@ -19,6 +19,7 @@ import {
   validateMessageAttachment,
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation"
+import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore"
 import { useChatWidgetLauncher, type ProductChatLaunchRequest } from "../composables/useChatWidgetLauncher"
 
 type ChatWidgetTab = "send" | "contacts" | "groups"
@@ -219,6 +220,7 @@ export function useChatWidgetVM(
   const router = useRouter()
   const toast = useToast()
   const currentAuthUserStore = useCurrentAuthUserStore()
+  const uploadPolicyStore = useUploadPolicyStore()
 
   function getUploadValidationMessage(result: UploadValidationResult) {
     if (result.valid) {
@@ -240,7 +242,7 @@ export function useChatWidgetVM(
   }
 
   function validateAndReportMessageFile(file: File) {
-    const validation = validateMessageAttachment(file)
+    const validation = validateMessageAttachment(file, uploadPolicyStore.policy)
     if (validation.valid) {
       return true
     }
@@ -1816,6 +1818,7 @@ export function useChatWidgetVM(
   }, { flush: "post" })
 
   onMounted(() => {
+    void uploadPolicyStore.hydrate()
     setChatWidgetReady(true)
     startRefreshTimer()
     void refreshInboxSafely().then(() => {

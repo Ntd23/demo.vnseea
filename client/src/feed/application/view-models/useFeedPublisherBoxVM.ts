@@ -12,10 +12,13 @@ import {
   type LocationSelection,
 } from "../../../location/domain/types/location.types"
 import {
+  getFeedImageAccept,
+  getFeedVideoAccept,
   validateFeedImages,
   validateFeedVideo,
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation"
+import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore"
 
 type PublisherAction = "image" | "video" | "poll" | "job" | "feeling" | "story" | "colors" | "product" | "location" | "tag"
 type PublisherAudience = ContentAudience
@@ -33,6 +36,7 @@ export function useFeedPublisherBoxVM(
   const router = useRouter()
   const toast = useToast()
   const currentAuthUserStore = useCurrentAuthUserStore()
+  const uploadPolicyStore = useUploadPolicyStore()
 
   const textareaEl = ref<HTMLTextAreaElement | null>(null)
   const imageInputRef = ref<HTMLInputElement | null>(null)
@@ -77,6 +81,8 @@ export function useFeedPublisherBoxVM(
   const submitting = ref(false)
   const statusMessage = ref("")
   const statusTone = ref<"neutral" | "success" | "warning">("neutral")
+  const imageAccept = computed(() => getFeedImageAccept(uploadPolicyStore.policy))
+  const videoAccept = computed(() => getFeedVideoAccept(uploadPolicyStore.policy))
 
   function getUploadValidationMessage(result: UploadValidationResult) {
     if (result.valid) {
@@ -124,7 +130,7 @@ export function useFeedPublisherBoxVM(
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
-      .map(part => part[0]?.toUpperCase() || "")
+      .map((part: string) => part[0]?.toUpperCase() || "")
       .join(""),
   )
 
@@ -204,7 +210,10 @@ export function useFeedPublisherBoxVM(
   })
 
   onMounted(async () => {
-    await currentAuthUserStore.hydrate()
+    await Promise.all([
+      currentAuthUserStore.hydrate(),
+      uploadPolicyStore.hydrate(),
+    ])
     try {
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem(storageKey)
@@ -348,7 +357,7 @@ export function useFeedPublisherBoxVM(
     }
   }
 
-  function openImagePicker() {
+  async function openImagePicker() {
     showFeelingPicker.value = false
     showPollForm.value = false
     showColorsPicker.value = false
@@ -356,11 +365,12 @@ export function useFeedPublisherBoxVM(
     showLocationForm.value = false
     showTagPeoplePicker.value = false
     
+    await uploadPolicyStore.hydrate()
     imageInputRef.value?.click()
     expanded.value = true
   }
 
-  function openVideoPicker() {
+  async function openVideoPicker() {
     showFeelingPicker.value = false
     showPollForm.value = false
     showColorsPicker.value = false
@@ -368,6 +378,7 @@ export function useFeedPublisherBoxVM(
     showLocationForm.value = false
     showTagPeoplePicker.value = false
     
+    await uploadPolicyStore.hydrate()
     videoInputRef.value?.click()
     expanded.value = true
   }
@@ -499,7 +510,7 @@ export function useFeedPublisherBoxVM(
     }
   }
 
-  function selectImageFile(event: Event) {
+  async function selectImageFile(event: Event) {
     const input = event.target as HTMLInputElement
     const files = Array.from(input.files ?? [])
 
@@ -507,7 +518,8 @@ export function useFeedPublisherBoxVM(
       return
     }
 
-    const validation = validateFeedImages(files)
+    await uploadPolicyStore.hydrate()
+    const validation = validateFeedImages(files, uploadPolicyStore.policy)
     input.value = ""
 
     if (!validation.valid) {
@@ -521,7 +533,7 @@ export function useFeedPublisherBoxVM(
     statusMessage.value = ""
   }
 
-  function selectVideoFile(event: Event) {
+  async function selectVideoFile(event: Event) {
     const input = event.target as HTMLInputElement
     const file = input.files?.[0]
 
@@ -529,7 +541,8 @@ export function useFeedPublisherBoxVM(
       return
     }
 
-    const validation = validateFeedVideo(file)
+    await uploadPolicyStore.hydrate()
+    const validation = validateFeedVideo(file, uploadPolicyStore.policy)
     input.value = ""
 
     if (!validation.valid) {
@@ -570,10 +583,11 @@ export function useFeedPublisherBoxVM(
   }
 
   async function publish(input?: { text?: string }) {
+    await uploadPolicyStore.hydrate()
     const mediaValidation = imageFiles.value.length
-      ? validateFeedImages(imageFiles.value)
+      ? validateFeedImages(imageFiles.value, uploadPolicyStore.policy)
       : videoFile.value
-        ? validateFeedVideo(videoFile.value)
+        ? validateFeedVideo(videoFile.value, uploadPolicyStore.policy)
         : { valid: true as const }
 
     if (!mediaValidation.valid) {
@@ -666,6 +680,8 @@ export function useFeedPublisherBoxVM(
     textareaEl,
     imageInputRef,
     videoInputRef,
+    imageAccept,
+    videoAccept,
     expanded,
     draft,
     submitting,

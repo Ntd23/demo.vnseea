@@ -5,7 +5,7 @@
       ref="imageInputRef"
       class="publisher__file-input"
       type="file"
-      :accept="FEED_IMAGE_ACCEPT"
+      :accept="imageAccept"
       multiple
       @change="selectImageFile"
     >
@@ -13,7 +13,7 @@
       ref="videoInputRef"
       class="publisher__file-input"
       type="file"
-      :accept="FEED_VIDEO_ACCEPT"
+      :accept="videoAccept"
       @change="selectVideoFile"
     >
 
@@ -540,10 +540,6 @@ import NewProductPage from "../../../product/presentation/pages/NewProductPage.v
 import { buildPostLocationMapUrl } from "../../../location/application/utils/location-map-link"
 import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
 import PreciseLocationPicker from "../../../location/presentation/components/PreciseLocationPicker.vue"
-import {
-  FEED_IMAGE_ACCEPT,
-  FEED_VIDEO_ACCEPT,
-} from "../../../shared-kernel/application/utils/uploadValidation"
 
 const { t } = useI18n()
 const { locale } = useI18n()
@@ -578,6 +574,8 @@ const {
   activeFeeling,
   selectedMediaLabel,
   selectedMediaType,
+  imageAccept,
+  videoAccept,
   showFeelingPicker,
   showPollForm,
   canPublish,
