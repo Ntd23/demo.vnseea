@@ -3,18 +3,21 @@
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import {
-  feedStoryAcceptedImageMimeTypes,
-  feedStoryAcceptedMimeTypes,
-  feedStoryAcceptedVideoExtensions,
-  feedStoryAcceptedVideoMimeTypes,
   feedStoryCreateRedirectDelay,
-  feedStoryImageMimePrefix,
-  feedStoryVideoMimePrefix,
 } from "../constants/story-carousel"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import type { ContentAudience } from "../../../shared-kernel/domain/content-audience"
 import type { FeedStoryOverlays } from "../../domain/types/feed.types"
 import { usePendingCreatedStories } from "../composables/usePendingCreatedStories"
+import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore"
+import {
+  getStoryImageAccept,
+  getStoryMediaAccept,
+  getStoryVideoAccept,
+  getUploadMediaKind,
+  validateStoryMedia,
+  type UploadValidationResult,
+} from "../../../shared-kernel/application/utils/uploadValidation"
 
 type MediaType = "image" | "video" | null
 type MediaOrientation = "portrait" | "landscape" | "square" | null
@@ -113,19 +116,44 @@ export function useStatusCreatePageVM(
   const router = useRouter()
   const currentAuthUserStore = useCurrentAuthUserStore()
   const pendingCreatedStories = usePendingCreatedStories()
+  const uploadPolicyStore = useUploadPolicyStore()
 
   const fileInputRef = ref<HTMLInputElement | null>(null)
   const selectedFile = ref<File | null>(null)
   const previewUrl = ref("")
   const mediaType = ref<MediaType>(null)
   const mediaOrientation = ref<MediaOrientation>(null)
-  const pickerAccept = ref(feedStoryAcceptedMimeTypes)
+  const requestedPickerType = ref<MediaType>(null)
+  const pickerAccept = computed(() => requestedPickerType.value === "image"
+    ? getStoryImageAccept(uploadPolicyStore.policy)
+    : requestedPickerType.value === "video"
+      ? getStoryVideoAccept(uploadPolicyStore.policy)
+      : getStoryMediaAccept(uploadPolicyStore.policy))
   const title = ref("")
   const caption = ref("")
   const privacy = ref<ContentAudience>("followers")
   const submitting = ref(false)
   const submitStatus = ref<"idle" | "submitting" | "error">("idle")
   const statusDescription = ref("")
+
+  const getUploadValidationMessage = (result: UploadValidationResult) => {
+    if (result.valid) {
+      return ""
+    }
+
+    if (result.code === "too-large") {
+      return t("uploadValidation.tooLarge", {
+        name: result.fileName,
+        maxSize: result.maxSizeLabel,
+      })
+    }
+
+    if (result.code === "empty-file") {
+      return t("uploadValidation.emptyFile", { name: result.fileName })
+    }
+
+    return t("uploadValidation.unsupportedType", { name: result.fileName })
+  }
 
   const revokePreview = () => {
     if (!previewUrl.value) {
@@ -135,16 +163,6 @@ export function useStatusCreatePageVM(
     URL.revokeObjectURL(previewUrl.value)
     previewUrl.value = ""
   }
-
-  const getFileExtension = (file: File) =>
-    file.name.match(/\.[^.]+$/)?.[0]?.toLowerCase() ?? ""
-
-  const isImageFile = (file: File) =>
-    file.type.startsWith(feedStoryImageMimePrefix)
-
-  const isVideoFile = (file: File) =>
-    file.type.startsWith(feedStoryVideoMimePrefix)
-    || feedStoryAcceptedVideoExtensions.includes(getFileExtension(file) as typeof feedStoryAcceptedVideoExtensions[number])
 
   const updateMediaOrientation = (width: number, height: number) => {
     if (!width || !height) {
@@ -180,32 +198,50 @@ export function useStatusCreatePageVM(
       return
     }
 
-    if (!isImageFile(file) && !isVideoFile(file)) {
+    const selectedMediaKind = getUploadMediaKind(file)
+    if (!selectedMediaKind) {
       return
     }
 
     revokePreview()
     selectedFile.value = file
-    mediaType.value = isVideoFile(file) ? "video" : "image"
+    mediaType.value = selectedMediaKind
     mediaOrientation.value = null
     previewUrl.value = URL.createObjectURL(file)
   }
 
   const openPicker = async (requestedType?: Exclude<MediaType, null>) => {
-    pickerAccept.value = requestedType === "image"
-      ? feedStoryAcceptedImageMimeTypes
-      : requestedType === "video"
-        ? feedStoryAcceptedVideoMimeTypes
-        : feedStoryAcceptedMimeTypes
-
+    await uploadPolicyStore.hydrate()
+    requestedPickerType.value = requestedType ?? null
     await nextTick()
     fileInputRef.value?.click()
   }
 
-  const handleFileSelection = (event: Event) => {
+  const handleFileSelection = async (event: Event) => {
     const input = event.target as HTMLInputElement
-    applyFile(input.files?.[0] ?? null)
+    const file = input.files?.[0] ?? null
     input.value = ""
+
+    if (!file) {
+      return
+    }
+
+    await uploadPolicyStore.hydrate()
+    const validation = validateStoryMedia(
+      file,
+      uploadPolicyStore.policy,
+      requestedPickerType.value,
+    )
+
+    if (!validation.valid) {
+      submitStatus.value = "error"
+      statusDescription.value = getUploadValidationMessage(validation)
+      return
+    }
+
+    submitStatus.value = "idle"
+    statusDescription.value = ""
+    applyFile(file)
   }
 
   const removeFile = () => {
@@ -215,7 +251,10 @@ export function useStatusCreatePageVM(
   }
 
   onMounted(async () => {
-    await currentAuthUserStore.hydrate()
+    await Promise.all([
+      currentAuthUserStore.hydrate(),
+      uploadPolicyStore.hydrate(),
+    ])
   })
 
   onUnmounted(revokePreview)
@@ -225,6 +264,18 @@ export function useStatusCreatePageVM(
     overlays?: FeedStoryOverlays
   }) {
     if (!selectedFile.value || !mediaType.value || submitting.value) {
+      return
+    }
+
+    await uploadPolicyStore.hydrate()
+    const validation = validateStoryMedia(
+      selectedFile.value,
+      uploadPolicyStore.policy,
+      mediaType.value,
+    )
+    if (!validation.valid) {
+      submitStatus.value = "error"
+      statusDescription.value = getUploadValidationMessage(validation)
       return
     }
 

@@ -1,62 +1,10 @@
-// English description: Defines frontend upload limits and supported file formats that mirror the current PHP backend configuration.
+// English description: Validates frontend uploads against the backend-managed Admin upload policy.
 
-export const UPLOAD_MAX_FILE_SIZE_BYTES = 96_000_000
-export const UPLOAD_MAX_FILE_SIZE_LABEL = "96 MB"
+import type { UploadPolicy } from "../../domain/upload-policy"
+
 export const FEED_MAX_IMAGE_FILES = 20
 
-const FEED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "gif"] as const
-const FEED_VIDEO_EXTENSIONS = ["mp4", "m4v", "webm", "flv", "mov", "mpeg", "mkv"] as const
-const MESSAGE_ATTACHMENT_EXTENSIONS = [
-  "jpg",
-  "jpeg",
-  "png",
-  "gif",
-  "mkv",
-  "docx",
-  "zip",
-  "rar",
-  "pdf",
-  "doc",
-  "mp3",
-  "mp4",
-  "flv",
-  "wav",
-  "txt",
-  "mov",
-  "avi",
-  "webm",
-  "mpeg",
-] as const
-const BACKEND_ALLOWED_MIME_TYPES = new Set([
-  "application/json",
-  "application/msword",
-  "application/octet-stream",
-  "application/pdf",
-  "application/x-pointplus",
-  "application/x-rar-compressed",
-  "application/zip",
-  "audio/mp3",
-  "audio/mpeg",
-  "audio/wav",
-  "image/gif",
-  "image/jpeg",
-  "image/png",
-  "text/css",
-  "text/pdf",
-  "text/plain",
-  "video/avi",
-  "video/flv",
-  "video/mov",
-  "video/mp4",
-  "video/mpeg",
-  "video/quicktime",
-  "video/webm",
-])
-
-export const FEED_IMAGE_ACCEPT = FEED_IMAGE_EXTENSIONS.map(extension => `.${extension}`).join(",")
-export const FEED_VIDEO_ACCEPT = FEED_VIDEO_EXTENSIONS.map(extension => `.${extension}`).join(",")
-export const MESSAGE_ATTACHMENT_ACCEPT = MESSAGE_ATTACHMENT_EXTENSIONS.map(extension => `.${extension}`).join(",")
-export const MESSAGE_IMAGE_ACCEPT = FEED_IMAGE_ACCEPT
+export type UploadMediaKind = "image" | "video"
 
 export type UploadValidationErrorCode =
   | "empty-file"
@@ -83,7 +31,8 @@ function getFileExtension(file: File) {
 
 function validateFile(
   file: File,
-  allowedExtensions: readonly string[],
+  policy: UploadPolicy,
+  allowedMediaKinds: readonly UploadMediaKind[] = [],
 ): UploadValidationResult {
   if (file.size <= 0) {
     return {
@@ -93,16 +42,20 @@ function validateFile(
     }
   }
 
-  if (file.size > UPLOAD_MAX_FILE_SIZE_BYTES) {
+  if (policy.maxFileSizeBytes > 0 && file.size > policy.maxFileSizeBytes) {
     return {
       valid: false,
       code: "too-large",
       fileName: file.name,
-      maxSizeLabel: UPLOAD_MAX_FILE_SIZE_LABEL,
+      maxSizeLabel: getUploadMaxFileSizeLabel(policy),
     }
   }
 
-  if (!allowedExtensions.includes(getFileExtension(file))) {
+  const fileExtension = getFileExtension(file)
+  if (
+    policy.allowedExtensions.length > 0
+    && (!fileExtension || !policy.allowedExtensions.includes(fileExtension))
+  ) {
     return {
       valid: false,
       code: "unsupported-type",
@@ -111,7 +64,18 @@ function validateFile(
   }
 
   const mimeType = file.type.trim().toLowerCase()
-  if (mimeType && !BACKEND_ALLOWED_MIME_TYPES.has(mimeType)) {
+  if (
+    allowedMediaKinds.length > 0
+    && !allowedMediaKinds.some(kind => mimeType.startsWith(`${kind}/`))
+  ) {
+    return {
+      valid: false,
+      code: "unsupported-type",
+      fileName: file.name,
+    }
+  }
+
+  if (mimeType && policy.allowedMimeTypes.length > 0 && !policy.allowedMimeTypes.includes(mimeType)) {
     return {
       valid: false,
       code: "unsupported-type",
@@ -122,7 +86,78 @@ function validateFile(
   return { valid: true }
 }
 
-export function validateFeedImages(files: File[]): UploadValidationResult {
+const buildMediaAccept = (policy: UploadPolicy, mediaKinds: readonly UploadMediaKind[]) => {
+  const mimeTypes = policy.allowedMimeTypes.filter(mimeType =>
+    mediaKinds.some(kind => mimeType.startsWith(`${kind}/`)),
+  )
+
+  return mimeTypes.length > 0
+    ? mimeTypes.join(",")
+    : mediaKinds.map(kind => `${kind}/*`).join(",")
+}
+
+const buildAttachmentAccept = (policy: UploadPolicy) => [
+  ...policy.allowedExtensions.map(extension => `.${extension}`),
+  ...policy.allowedMimeTypes,
+].filter(Boolean).join(",")
+
+export const getUploadMaxFileSizeLabel = (policy: UploadPolicy) => {
+  if (policy.maxFileSizeLabel) {
+    return policy.maxFileSizeLabel
+  }
+
+  const bytes = policy.maxFileSizeBytes
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    return ""
+  }
+
+  const units = ["B", "KB", "MB", "GB", "TB"]
+  const unitIndex = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1000)),
+    units.length - 1,
+  )
+  const value = bytes / (1000 ** unitIndex)
+
+  return `${Number(value.toFixed(value >= 10 ? 0 : 1))} ${units[unitIndex] ?? "B"}`
+}
+
+export const getFeedImageAccept = (policy: UploadPolicy) =>
+  buildMediaAccept(policy, ["image"])
+
+export const getFeedVideoAccept = (policy: UploadPolicy) =>
+  buildMediaAccept(policy, ["video"])
+
+export const getStoryImageAccept = (policy: UploadPolicy) =>
+  buildMediaAccept(policy, ["image"])
+
+export const getStoryVideoAccept = (policy: UploadPolicy) =>
+  buildMediaAccept(policy, ["video"])
+
+export const getStoryMediaAccept = (policy: UploadPolicy) => [
+  getStoryImageAccept(policy),
+  getStoryVideoAccept(policy),
+].filter(Boolean).join(",")
+
+export const getMessageAttachmentAccept = (policy: UploadPolicy) =>
+  buildAttachmentAccept(policy)
+
+export const getMessageImageAccept = getFeedImageAccept
+
+export const getUploadMediaKind = (file: File): UploadMediaKind | null => {
+  const mimeType = file.type.trim().toLowerCase()
+
+  if (mimeType.startsWith("image/")) {
+    return "image"
+  }
+
+  if (mimeType.startsWith("video/")) {
+    return "video"
+  }
+
+  return null
+}
+
+export function validateFeedImages(files: File[], policy: UploadPolicy): UploadValidationResult {
   if (files.length > FEED_MAX_IMAGE_FILES) {
     return {
       valid: false,
@@ -132,7 +167,7 @@ export function validateFeedImages(files: File[]): UploadValidationResult {
   }
 
   for (const file of files) {
-    const result = validateFile(file, FEED_IMAGE_EXTENSIONS)
+    const result = validateFile(file, policy, ["image"])
     if (!result.valid) {
       return result
     }
@@ -141,14 +176,26 @@ export function validateFeedImages(files: File[]): UploadValidationResult {
   return { valid: true }
 }
 
-export function validateFeedVideo(file: File): UploadValidationResult {
-  return validateFile(file, FEED_VIDEO_EXTENSIONS)
+export function validateFeedVideo(file: File, policy: UploadPolicy): UploadValidationResult {
+  return validateFile(file, policy, ["video"])
 }
 
-export function validateFeedCommentImage(file: File): UploadValidationResult {
-  return validateFile(file, FEED_IMAGE_EXTENSIONS)
+export function validateStoryMedia(
+  file: File,
+  policy: UploadPolicy,
+  expectedKind?: UploadMediaKind | null,
+): UploadValidationResult {
+  return validateFile(file, policy, expectedKind ? [expectedKind] : ["image", "video"])
 }
 
-export function validateMessageAttachment(file: File): UploadValidationResult {
-  return validateFile(file, MESSAGE_ATTACHMENT_EXTENSIONS)
+export function validateFeedCommentImage(file: File, policy: UploadPolicy): UploadValidationResult {
+  return validateFile(file, policy, ["image"])
+}
+
+export function validateUploadAttachment(file: File, policy: UploadPolicy): UploadValidationResult {
+  return validateFile(file, policy)
+}
+
+export function validateMessageAttachment(file: File, policy: UploadPolicy): UploadValidationResult {
+  return validateUploadAttachment(file, policy)
 }

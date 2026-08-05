@@ -253,6 +253,7 @@ export const apiRoutes = {
   },
   site: {
     branding: "site/branding",
+    uploadPolicy: "site/upload-policy",
   },
   cms: {
     page: "cms/page",

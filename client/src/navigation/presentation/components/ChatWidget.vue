@@ -142,7 +142,7 @@
               ref="fileInput"
               class="hidden"
               type="file"
-              :accept="MESSAGE_ATTACHMENT_ACCEPT"
+              :accept="messageAttachmentAccept"
               @change="onFile"
             >
             <button
@@ -763,8 +763,8 @@
               />
             </button>
           </div>
-          <input :id="`mini-image-input-${miniSession.contact.id}`" type="file" :accept="MESSAGE_IMAGE_ACCEPT" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
-          <input :id="`mini-file-input-${miniSession.contact.id}`" type="file" :accept="MESSAGE_ATTACHMENT_ACCEPT" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
+          <input :id="`mini-image-input-${miniSession.contact.id}`" type="file" :accept="messageImageAccept" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
+          <input :id="`mini-file-input-${miniSession.contact.id}`" type="file" :accept="messageAttachmentAccept" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
           <button
             type="button"
             class="chat-widget__mini-tool-btn"
@@ -887,12 +887,16 @@ import {
 } from "../../../messages/application/utils/message-bubble-content"
 import { getMessageLocationMeta } from "../../../messages/application/utils/message-location"
 import {
-  MESSAGE_ATTACHMENT_ACCEPT,
-  MESSAGE_IMAGE_ACCEPT,
+  getMessageAttachmentAccept,
+  getMessageImageAccept,
 } from "../../../shared-kernel/application/utils/uploadValidation"
+import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore"
 import { useChatWidgetVM } from "../../application/view-models/useChatWidgetVM"
 
 const collapsed = ref(false)
+const uploadPolicyStore = useUploadPolicyStore()
+const messageAttachmentAccept = computed(() => getMessageAttachmentAccept(uploadPolicyStore.policy))
+const messageImageAccept = computed(() => getMessageImageAccept(uploadPolicyStore.policy))
 
 const tabs = [
   {
@@ -1393,6 +1397,7 @@ watch(collapsed, (isCollapsed) => {
 })
 
 onMounted(() => {
+  void uploadPolicyStore.hydrate()
   document.addEventListener("click", closeFloatingMenusOnOutsideClick)
 })
 

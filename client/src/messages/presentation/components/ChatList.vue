@@ -96,10 +96,10 @@
               <UFileUpload
                 v-model="multiFileModel"
                 :multiple="false"
-                :accept="MESSAGE_ATTACHMENT_ACCEPT"
+                :accept="messageAttachmentAccept"
                 layout="list"
                 :label="$t('pages.messagesPage.chooseFile')"
-                :description="$t('uploadValidation.messageRules', { maxSize: UPLOAD_MAX_FILE_SIZE_LABEL })"
+                :description="$t('uploadValidation.messageRules', { maxSize: uploadMaxFileSizeLabel })"
                 class="w-full"
               />
               <UAlert
@@ -333,21 +333,25 @@
 
 <script setup lang="ts">
 import UListbox from "@nuxt/ui/components/Listbox.vue"
-import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue"
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
 import type { MessageContact, MessageRecordDraft, MessageTab, MessageTabKey, MessageUserTag } from "../../domain/types/messages.types"
 import {
-  MESSAGE_ATTACHMENT_ACCEPT,
-  UPLOAD_MAX_FILE_SIZE_LABEL,
+  getMessageAttachmentAccept,
+  getUploadMaxFileSizeLabel,
   validateMessageAttachment,
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation"
+import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore"
 import MessagesChatListItem from "./ChatListItem.vue"
 
 const multiRecordModel = defineModel<MessageRecordDraft | null>("multiRecord", { default: null })
 const tabListRef = ref<HTMLElement | null>(null)
 const multiStackRef = ref<HTMLElement | null>(null)
 const multiFileValidationMessage = ref("")
+const uploadPolicyStore = useUploadPolicyStore()
+const messageAttachmentAccept = computed(() => getMessageAttachmentAccept(uploadPolicyStore.policy))
+const uploadMaxFileSizeLabel = computed(() => getUploadMaxFileSizeLabel(uploadPolicyStore.policy))
 let multiPanelResetFrame: number | null = null
 let multiPanelSettleFrame: number | null = null
 
@@ -404,7 +408,7 @@ const multiFileModel = computed<File | null>({
       return
     }
 
-    const validation = validateMessageAttachment(file)
+    const validation = validateMessageAttachment(file, uploadPolicyStore.policy)
     if (!validation.valid) {
       multiFileValidationMessage.value = getUploadValidationMessage(validation)
       return
@@ -413,6 +417,10 @@ const multiFileModel = computed<File | null>({
     multiFileValidationMessage.value = ""
     emit("update:multiFile", file)
   },
+})
+
+onMounted(() => {
+  void uploadPolicyStore.hydrate()
 })
 
 function getUploadValidationMessage(result: UploadValidationResult) {

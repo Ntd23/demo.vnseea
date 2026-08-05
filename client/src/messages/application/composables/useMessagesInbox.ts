@@ -21,6 +21,7 @@ import {
   validateMessageAttachment,
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation"
+import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore"
 
 type MessageFeedbackTone = "neutral" | "success" | "warning" | "error"
 type QueuedMessageDraft = {
@@ -171,6 +172,8 @@ export function useMessagesInbox(
   const route = useRoute()
   const router = useRouter()
   const toast = useToast()
+  const uploadPolicyStore = useUploadPolicyStore()
+  void uploadPolicyStore.hydrate()
 
   function getUploadValidationMessage(result: UploadValidationResult) {
     if (result.valid) {
@@ -870,7 +873,7 @@ export function useMessagesInbox(
     }
 
     if (input.file) {
-      const validation = validateMessageAttachment(input.file)
+      const validation = validateMessageAttachment(input.file, uploadPolicyStore.policy)
       if (!validation.valid) {
         toast.add({
           title: t("uploadValidation.title"),
@@ -1120,7 +1123,7 @@ export function useMessagesInbox(
     }
 
     if (multiFile.value) {
-      const validation = validateMessageAttachment(multiFile.value)
+      const validation = validateMessageAttachment(multiFile.value, uploadPolicyStore.policy)
       if (!validation.valid) {
         setMultiFeedbackMessage("error", getUploadValidationMessage(validation))
         return

@@ -4,41 +4,13 @@ import { appRoutes } from "../../../shared-kernel/application/constants/route-re
 
 export const feedStoryCreatePath = appRoutes.statusCreate
 
-export const feedHomePath = appRoutes.feed
-
 export const feedStoryCreateRedirectDelay = 500
-
-export const feedStoryAcceptedVideoExtensions = [".mp4", ".mov", ".mkv", ".avi", ".wmv", ".webm"] as const
-
-export const feedStoryAcceptedImageMimeTypes = "image/*"
-
-export const feedStoryAcceptedVideoMimeTypes = [
-  "video/*",
-  ...feedStoryAcceptedVideoExtensions,
-].join(",")
-
-export const feedStoryAcceptedMimeTypes = [
-  "image/*",
-  "video/*",
-  ...feedStoryAcceptedVideoExtensions,
-].join(",")
-
-export const feedStoryImageMimePrefix = "image/"
-
-export const feedStoryVideoMimePrefix = "video/"
 
 export const feedStoryTitleMaxLength = 100
 
 export const feedStoryCaptionMaxLength = 300
 
-export const feedStoryCaptionWarningLength = 180
-
-export const feedStoryPreviewProgressWidths = {
-  empty: "24%",
-  ready: "76%",
-} as const
-
-export const feedStoryViewerFallbackGradient = "linear-gradient(135deg,#0f172a 0%,var(--bg-brand-hover) 58%,#38bdf8 100%)"
+export const feedStoryViewerFallbackGradient = "linear-gradient(135deg, var(--bg-media) 0%, var(--bg-brand-hover) 58%, var(--color-accent-500) 100%)"
 
 export const feedStoryCarouselScrollDistance = 220
 
@@ -49,10 +21,6 @@ export const feedStorySwipeMinDistance = 50
 export const feedStoryViewerSideTapDivisor = 3
 
 export const feedStoryReactionLongPressDelay = 420
-
-export const feedStoryVideoPathHint = "video"
-
-export const feedStoryVideoExtensions = ["mp4", "webm", "ogg", "mov", "m4v", "mpg", "mpeg", "avi", "mkv", "wmv"] as const
 
 export const feedStoryKeyboardKeys = {
   close: "Escape",

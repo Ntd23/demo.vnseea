@@ -27,12 +27,12 @@
         <UFileUpload
           v-model="attachmentFile"
           :multiple="false"
-          :accept="MESSAGE_ATTACHMENT_ACCEPT"
+          :accept="messageAttachmentAccept"
           :disabled="disabled || isRecording"
           layout="list"
           highlight
           :label="$t('pages.messagesPage.chooseFile')"
-          :description="$t('uploadValidation.messageRules', { maxSize: UPLOAD_MAX_FILE_SIZE_LABEL })"
+          :description="$t('uploadValidation.messageRules', { maxSize: uploadMaxFileSizeLabel })"
           class="w-full"
         />
       </div>
@@ -200,17 +200,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useCurrentLocationShare } from "../../application/composables/useCurrentLocationShare"
 import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
 import type { MessageComposerDraft } from "../../domain/types/messages.types"
 import VoiceMessageCard from "./VoiceMessageCard.vue"
 import {
-  MESSAGE_ATTACHMENT_ACCEPT,
-  UPLOAD_MAX_FILE_SIZE_LABEL,
+  getMessageAttachmentAccept,
+  getUploadMaxFileSizeLabel,
   validateMessageAttachment,
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation"
+import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore"
 
 const modelValue = defineModel<string>({ default: "" })
 
@@ -229,6 +230,13 @@ const emit = defineEmits<{
 const attachmentPanelOpen = ref(false)
 const attachmentFile = ref<File | null>(null)
 const attachmentValidationMessage = ref("")
+const uploadPolicyStore = useUploadPolicyStore()
+const messageAttachmentAccept = computed(() => getMessageAttachmentAccept(uploadPolicyStore.policy))
+const uploadMaxFileSizeLabel = computed(() => getUploadMaxFileSizeLabel(uploadPolicyStore.policy))
+
+onMounted(() => {
+  void uploadPolicyStore.hydrate()
+})
 const submittedWithUpload = ref(false)
 const { t } = useI18n()
 
@@ -299,12 +307,13 @@ const locationErrorMessage = computed(() => {
   return t(keyByError[locationError.value])
 })
 
-watch(attachmentFile, (file) => {
+watch(attachmentFile, async (file) => {
   if (!file) {
     return
   }
 
-  const validation = validateMessageAttachment(file)
+  await uploadPolicyStore.hydrate()
+  const validation = validateMessageAttachment(file, uploadPolicyStore.policy)
   if (!validation.valid) {
     attachmentValidationMessage.value = getUploadValidationMessage(validation)
     attachmentFile.value = null
@@ -427,13 +436,14 @@ function resetComposerState() {
   emit("typing-stop")
 }
 
-function submitMessage() {
+async function submitMessage() {
   if (!canSend.value || isSubmitting.value || props.submitting) {
     return
   }
 
   if (attachmentFile.value) {
-    const validation = validateMessageAttachment(attachmentFile.value)
+    await uploadPolicyStore.hydrate()
+    const validation = validateMessageAttachment(attachmentFile.value, uploadPolicyStore.policy)
     if (!validation.valid) {
       attachmentValidationMessage.value = getUploadValidationMessage(validation)
       attachmentPanelOpen.value = true
