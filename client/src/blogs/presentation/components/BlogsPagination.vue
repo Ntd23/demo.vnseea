@@ -1,3 +1,4 @@
+<!-- English description: Renders accessible pagination controls for the blog directory. -->
 <template>
   <nav
     class="blogs-pagination"
@@ -79,19 +80,19 @@ const changePage = (page: number) => {
 .blogs-pagination {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 16px;
+  gap: var(--space-3);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  padding: 12px;
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3);
 }
 
 .blogs-pagination__status {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 12.5px;
-  font-weight: 700;
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
 }
 
 .blogs-pagination__controls,
@@ -104,7 +105,7 @@ const changePage = (page: number) => {
   position: relative;
   z-index: 2;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .blogs-pagination__pages {
@@ -119,21 +120,25 @@ const changePage = (page: number) => {
   height: 38px;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 700;
+  border-radius: var(--radius-md);
+  font-size: var(--text-body);
+  font-weight: var(--weight-bold);
 }
 
 .blogs-pagination__button {
   position: relative;
   z-index: 2;
-  border: 1px solid #e2e8f0;
-  background: #fafbfe;
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
   color: var(--text-primary);
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
-  transition: all 0.15s ease;
+  transition:
+    transform var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    background-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
 }
 
 .blogs-pagination__button > * {
@@ -141,9 +146,9 @@ const changePage = (page: number) => {
 }
 
 .blogs-pagination__button:not(:disabled):hover {
-  border-color: color-mix(in srgb, var(--bg-brand) 18%, transparent);
-  background: color-mix(in srgb, var(--bg-brand) 4%, transparent);
-  color: var(--bg-brand);
+  border-color: var(--border-strong);
+  background: var(--bg-surface-hover);
+  color: var(--text-brand);
   transform: translateY(-1px);
 }
 
@@ -169,14 +174,14 @@ const changePage = (page: number) => {
 
 .blogs-pagination__button--active {
   border-color: var(--bg-brand);
-  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--bg-brand) 20%, transparent);
-  color: #ffffff;
+  background: var(--bg-brand-gradient);
+  box-shadow: var(--shadow-brand);
+  color: var(--text-inverse);
 }
 
 .blogs-pagination__button--active:not(:disabled):hover {
-  background: linear-gradient(180deg, var(--bg-brand-hover) 0%, var(--bg-brand) 100%);
-  color: #ffffff;
+  background: var(--bg-brand-hover);
+  color: var(--text-inverse);
 }
 
 .blogs-pagination__ellipsis {
@@ -199,7 +204,7 @@ const changePage = (page: number) => {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px;
+    padding: var(--space-3) var(--space-4);
   }
 
   .blogs-pagination__edge-label {
