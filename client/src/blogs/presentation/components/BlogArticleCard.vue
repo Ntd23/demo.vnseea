@@ -1,3 +1,4 @@
+<!-- English description: Renders a theme-aware blog article card with category, author, and engagement details. -->
 <template>
   <article class="blog-card">
     <NuxtLink :to="article.href" class="blog-card__media">
@@ -114,23 +115,23 @@ const handleImageError = () => {
 }
 
 const categoryColorMap: Record<string, string> = {
-  business: "linear-gradient(90deg,var(--bg-brand),#06b6d4)",
-  vehicles: "linear-gradient(90deg,#64748b,#334155)",
-  education: "linear-gradient(90deg,#8b5cf6,#6366f1)",
-  movies: "linear-gradient(90deg,#f59e0b,#ef4444)",
-  gaming: "linear-gradient(90deg,#a855f7,#6366f1)",
-  history: "linear-gradient(90deg,#b45309,#f59e0b)",
-  lifestyle: "linear-gradient(90deg,#10b981,#06b6d4)",
-  pets: "linear-gradient(90deg,#f472b6,#fb7185)",
-  science: "linear-gradient(90deg,#6366f1,#8b5cf6)",
-  sports: "linear-gradient(90deg,#22c55e,#16a34a)",
-  travel: "linear-gradient(90deg,#0ea5e9,#38bdf8)",
-  people: "linear-gradient(90deg,#f97316,#fb923c)",
-  other: "linear-gradient(90deg,#94a3b8,#64748b)",
+  business: "linear-gradient(90deg,var(--bg-brand),var(--color-success))",
+  vehicles: "linear-gradient(90deg,var(--color-secondary-500),var(--color-secondary-700))",
+  education: "linear-gradient(90deg,var(--color-primary-300),var(--color-primary-500))",
+  movies: "linear-gradient(90deg,var(--color-warning),var(--color-error))",
+  gaming: "linear-gradient(90deg,var(--color-primary-400),var(--color-primary-700))",
+  history: "linear-gradient(90deg,var(--color-accent-700),var(--color-accent-500))",
+  lifestyle: "linear-gradient(90deg,var(--color-success),var(--bg-brand))",
+  pets: "linear-gradient(90deg,var(--color-primary-200),var(--color-primary-400))",
+  science: "linear-gradient(90deg,var(--color-info),var(--color-primary-300))",
+  sports: "linear-gradient(90deg,var(--color-success),var(--color-info))",
+  travel: "linear-gradient(90deg,var(--color-success),var(--color-secondary-400))",
+  people: "linear-gradient(90deg,var(--color-accent-600),var(--color-accent-500))",
+  other: "linear-gradient(90deg,var(--color-secondary-400),var(--color-secondary-600))",
 }
 
 const categoryAccentColor = computed(() =>
-  categoryColorMap[props.article.category ?? ""] ?? "linear-gradient(90deg,#6366f1,#4f46e5)",
+  categoryColorMap[props.article.category ?? ""] ?? "linear-gradient(90deg,var(--color-primary-400),var(--bg-brand))",
 )
 </script>
 
@@ -138,16 +139,16 @@ const categoryAccentColor = computed(() =>
 .blog-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default), border-color var(--duration-fast) var(--ease-default);
 }
 
 .blog-card:hover {
-  border-color: color-mix(in srgb, var(--bg-brand) 12%, transparent);
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -169,7 +170,7 @@ const categoryAccentColor = computed(() =>
 
 .blog-card__image {
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform var(--duration-slow) var(--ease-default);
 }
 
 .blog-card__media:hover .blog-card__image {
@@ -178,12 +179,12 @@ const categoryAccentColor = computed(() =>
 
 .blog-card__badges {
   position: absolute;
-  left: 12px;
-  right: 12px;
-  top: 12px;
+  left: var(--space-3);
+  right: var(--space-3);
+  top: var(--space-3);
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .blog-card__category,
@@ -191,53 +192,53 @@ const categoryAccentColor = computed(() =>
 .blog-card__read {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
+  gap: var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-label);
+  font-weight: var(--weight-extrabold);
 }
 
 .blog-card__edit {
   position: absolute;
-  right: 12px;
-  top: 12px;
+  right: var(--space-3);
+  top: var(--space-3);
   z-index: 2;
   display: inline-flex;
   height: 28px;
   width: 28px;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--bg-brand) 14%, transparent);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  color: var(--bg-brand);
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  color: var(--text-brand);
+  box-shadow: var(--shadow-md);
   text-decoration: none;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default);
 }
 
 .blog-card__edit:hover {
-  background: var(--bg-surface);
+  background: var(--bg-surface-hover);
   transform: translateY(-1px);
 }
 
 .blog-card__category,
 .blog-card__mine {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--bg-surface);
   color: var(--text-primary);
-  padding: 6px 9px;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+  padding: var(--space-2) var(--space-3);
+  box-shadow: var(--shadow-md);
 }
 
 .blog-card__dot {
   height: 7px;
   width: 7px;
   flex: 0 0 7px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 }
 
 .blog-card__body {
-  padding: 14px;
+  padding: var(--space-4);
 }
 
 .blog-card__title-link {
@@ -252,8 +253,8 @@ const categoryAccentColor = computed(() =>
   overflow: hidden;
   margin: 0;
   color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 800;
+  font-size: var(--text-title);
+  font-weight: var(--weight-extrabold);
   letter-spacing: -0.01em;
   line-height: 1.3;
 }
@@ -264,10 +265,10 @@ const categoryAccentColor = computed(() =>
   -webkit-line-clamp: 2;
   overflow: hidden;
   min-height: 42px;
-  margin: 8px 0 0;
+  margin: var(--space-2) 0 0;
   color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
   line-height: 1.55;
 }
 
@@ -280,18 +281,18 @@ const categoryAccentColor = computed(() =>
 
 .blog-card__footer {
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 14px;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
 }
 
 .blog-card__author {
   min-width: 0;
-  gap: 9px;
+  gap: var(--space-2);
 }
 
 .blog-card__stats {
   flex: 0 0 auto;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .blog-card__avatar {
@@ -302,7 +303,7 @@ const categoryAccentColor = computed(() =>
   flex: 0 0 32px;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--bg-muted);
   color: var(--text-secondary);
 }
@@ -327,21 +328,21 @@ const categoryAccentColor = computed(() =>
 
 .blog-card__author-name {
   color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 800;
+  font-size: var(--text-caption);
+  font-weight: var(--weight-extrabold);
 }
 
 .blog-card__date {
   margin-top: 1px;
   color: var(--text-tertiary);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
 }
 
 .blog-card__read {
   flex: 0 0 auto;
   background: var(--bg-muted);
   color: var(--text-secondary);
-  padding: 7px 9px;
+  padding: var(--space-2) var(--space-3);
 }
 </style>

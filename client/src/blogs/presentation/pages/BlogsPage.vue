@@ -1,3 +1,4 @@
+<!-- English description: Renders the searchable and paginated blog directory. -->
 <template>
   <div class="blogs-page mx-auto max-w-[1440px] space-y-5 pb-10 mt-2">
     <BlogsFilters
@@ -85,7 +86,7 @@ const {
 
 <style scoped>
 .blogs-page {
-  --blogs-card-border: rgba(15, 23, 42, 0.08);
-  --blogs-soft-bg: #f8fafc;
+  --blogs-card-border: var(--border-light);
+  --blogs-soft-bg: var(--bg-muted);
 }
 </style>
