@@ -8210,6 +8210,7 @@ function Wo_GetJobById($job_id)
 			$query_one           = " SELECT `id` FROM " . T_POSTS . " WHERE job_id = '{$job_id}'";
 			$sql                 = mysqli_query($sqlConnect, $query_one);
 			$fetched_data        = mysqli_fetch_assoc($sql);
+			$jobs['post_id']     = !empty($fetched_data) ? (int) $fetched_data['id'] : 0;
 			$jobs['url']         = Wo_SeoLink('index.php?link1=post&id=' . (!empty($fetched_data) ? $fetched_data['id'] : 0));
 			$jobs['apply_count'] = $job_apply;
 		}
