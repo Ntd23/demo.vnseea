@@ -14,6 +14,13 @@ test("job creation does not require a page cover or uploaded image", () => {
   assert.match(endpoint, /!empty\(\$page_data->cover\)/)
 })
 
+test("job creation supports the personal account when page_id is omitted", () => {
+  assert.doesNotMatch(endpoint, /&&\s*!empty\(\$_POST\['page_id'\]\)/)
+  assert.match(endpoint, /\$page_id\s*=\s*0;/)
+  assert.match(endpoint, /'user_id'\s*=>\s*\$page_id\s*>\s*0\s*\?\s*0\s*:\s*\$wo\['user'\]\['id'\]/)
+  assert.match(endpoint, /\$page_owner_valid\s*=\s*!empty\(\$page_data\).*\$wo\['user'\]\['id'\]/)
+})
+
 test("job and feed post creation are committed atomically", () => {
   assert.match(endpoint, /\$db->startTransaction\(\)/)
   assert.match(endpoint, /\$db->commit\(\)/)

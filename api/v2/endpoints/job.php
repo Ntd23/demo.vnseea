@@ -29,11 +29,18 @@ $question_type = array('free_text_question','yes_no_question','multiple_choice_q
 
 if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
     if ($_POST['type'] == 'create') {
-    	if (!empty($_POST['job_title']) && !empty($_POST['description']) && !empty($_POST['location']) && !empty($_POST['job_type']) && in_array($_POST['job_type'], $job_type) && !empty($_POST['category']) && in_array($_POST['category'], array_keys($wo['job_categories'])) && !empty($_POST['page_id'])) {
+        if (!empty($_POST['job_title']) && !empty($_POST['description']) && !empty($_POST['location']) && !empty($_POST['job_type']) && in_array($_POST['job_type'], $job_type) && !empty($_POST['category']) && in_array($_POST['category'], array_keys($wo['job_categories']))) {
+            $page_id = 0;
+            $page_data = null;
+            $page_requested = isset($_POST['page_id']) && trim((string)$_POST['page_id']) !== '' && trim((string)$_POST['page_id']) !== '0';
+            $page_owner_valid = !$page_requested;
+            if ($page_requested && is_numeric($_POST['page_id']) && (int)$_POST['page_id'] > 0) {
+                $page_id = (int)Wo_Secure($_POST['page_id']);
+                $page_data = $db->where('page_id', $page_id)->getOne(T_PAGES);
+                $page_owner_valid = !empty($page_data) && (int)$page_data->user_id === (int)$wo['user']['id'];
+            }
 
-    		$page_data = $db->where('page_id',Wo_Secure($_POST['page_id']))->getOne(T_PAGES);
-
-    		if (!empty($page_data) && $page_data->user_id == $wo['user']['id']) {
+        if ($page_owner_valid) {
 
 	    		$insert_array = array();
 
@@ -127,8 +134,11 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                 $uploaded_image = '';
                 $job_upload_failed = false;
 
-			if (!empty($_POST['image_type']) && $_POST['image_type'] == 'cover' && !empty($page_data->cover)) {
-				$insert_array['image'] = $page_data->cover;
+			if (!empty($_POST['image_type']) && $_POST['image_type'] == 'cover') {
+                    $owner_cover = $page_id > 0
+                        ? (!empty($page_data->cover) ? $page_data->cover : '')
+                        : (!empty($wo['user']['cover_org']) ? $wo['user']['cover_org'] : (!empty($wo['user']['cover']) ? $wo['user']['cover'] : ''));
+				$insert_array['image'] = $owner_cover;
                     $insert_array['image_type'] = 'cover';
 			}
 			elseif (!empty($_POST['image_type']) && $_POST['image_type'] == 'upload') {
@@ -167,8 +177,8 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                     );
                 }
                 else {
-			    $insert_array['page_id'] = $page_data->page_id;
-				$insert_array['user_id'] = $page_data->user_id;
+                    $insert_array['page_id'] = $page_id;
+				$insert_array['user_id'] = $page_id > 0 ? (int)$page_data->user_id : (int)$wo['user']['id'];
 				$insert_array['time'] = time();
 
                     $db->startTransaction();
@@ -180,10 +190,13 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                         }
 
 				    $post_id = $db->insert(T_POSTS, array(
-                            'page_id' => $page_data->page_id,
+                            'page_id' => $page_id,
+                            'user_id' => $page_id > 0 ? 0 : $wo['user']['id'],
                             'postText' => $insert_array['title'],
                             'job_id' => $job_id,
-                            'postType' => 'job'
+                            'postType' => 'job',
+                            'postPrivacy' => '0',
+                            'time' => time()
                         ));
                         if (empty($post_id)) {
                             throw new RuntimeException('job_post_insert_failed');
