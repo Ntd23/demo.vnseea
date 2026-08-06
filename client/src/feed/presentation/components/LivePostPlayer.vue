@@ -11,6 +11,7 @@
         },
         `feed-live-player__stage--${videoOrientation}`,
       ]"
+      @click="handleStagePreviewClick"
     >
       <div ref="stageHost" class="feed-live-player__video-host" />
       <img
@@ -89,7 +90,7 @@
         type="button"
         :aria-label="isFullscreen ? t('pages.livePage.viewer.exitFullscreen') : t('pages.livePage.viewer.openFullscreen')"
         class="feed-live-player__fullscreen-btn"
-        @click="toggleFullscreen"
+        @click.stop="handleFullscreenToggle"
       >
         <UIcon :name="isFullscreen ? 'i-ph-arrows-in-bold' : 'i-ph-arrows-out-bold'" class="feed-live-player__fullscreen-icon" />
       </button>
@@ -333,6 +334,7 @@ const {
   videoOrientation,
   connect,
   disconnect,
+  enableAudio,
   setStageHost,
 } = useLiveKitViewer()
 
@@ -709,6 +711,28 @@ async function toggleFullscreen() {
   enableCssFullscreenFallback()
 }
 
+function handleFullscreenToggle() {
+  void enableAudio()
+  void toggleFullscreen()
+}
+
+function handleStagePreviewClick(event: MouseEvent) {
+  const target = event.target
+
+  if (
+    target instanceof Element
+    && target.closest("button, a, input, textarea, select, form, [role='button']")
+  ) {
+    return
+  }
+
+  void enableAudio()
+
+  if (!isFullscreen.value) {
+    void toggleFullscreen()
+  }
+}
+
 function syncFullscreenState() {
   const fullscreenDocument = document as Document & {
     webkitFullscreenElement?: Element | null
@@ -762,6 +786,10 @@ onBeforeUnmount(() => {
 
 .feed-live-player__stage:hover {
   box-shadow: var(--shadow-xl);
+}
+
+.feed-live-player__stage:not(.feed-live-player__stage--fullscreen) {
+  cursor: pointer;
 }
 
 .feed-live-player__stage--portrait:not(.feed-live-player__stage--fullscreen) {

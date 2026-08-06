@@ -10,6 +10,7 @@ import type {
   SearchResultItem,
   SearchResultsByType,
 } from "../../../search/domain/types/search.types"
+import type { MessageContact } from "../../../messages/domain/types/messages.types"
 import type { FeedShareRepository } from "../../domain/repositories/FeedShareRepository"
 import type {
   FeedShareBlogCard,
@@ -81,6 +82,27 @@ const mapGroupTarget = (group: CommunityGroupRecord): FeedShareTarget => ({
   entityId: group.id,
 })
 
+const mapMessageTarget = (contact: MessageContact): FeedShareTarget | null => {
+  if (contact.type !== "user" || !contact.userId) {
+    return null
+  }
+
+  return {
+    id: String(contact.userId),
+    kind: "message",
+    title: contact.name,
+    subtitle: contact.preview || contact.status,
+    avatarUrl: contact.avatarUrl,
+    initials: createInitials(contact.name),
+    href: contact.profileUrl,
+    searchableText: createSearchableText([
+      contact.name,
+      contact.status,
+    ]),
+    entityId: contact.userId,
+  }
+}
+
 const mapSearchTarget = (
   result: SearchResultItem,
   kind: Exclude<FeedShareDestination, "timeline">,
@@ -118,6 +140,15 @@ export function createApiFeedShareRepository(): FeedShareRepository {
       ])
 
       return uniqueTargets([...mine, ...joined].map(mapGroupTarget))
+    },
+    async getMessageTargets() {
+      const contacts = await client.get<MessageContact[]>(apiRoutes.messages.conversations)
+
+      return uniqueTargets(
+        contacts
+          .map(mapMessageTarget)
+          .filter((target): target is FeedShareTarget => Boolean(target)),
+      )
     },
     async searchTargets(keyword, limit = 12) {
       const trimmedKeyword = keyword.trim()

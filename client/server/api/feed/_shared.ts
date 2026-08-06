@@ -1983,7 +1983,10 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
 
   const [feedPage, storySequences, generalResponse] = await Promise.all([
     feedPagePromise,
-    requestUserStorySequences(client, currentUserId, resolveMediaUrl),
+    requestUserStorySequences(client, currentUserId, resolveMediaUrl).catch((error) => {
+      console.error("Unable to load stories for the home feed.", error)
+      return []
+    }),
     client.post<BackendGeneralDataResponse, Record<string, unknown>>(
       "get-general-data",
       {

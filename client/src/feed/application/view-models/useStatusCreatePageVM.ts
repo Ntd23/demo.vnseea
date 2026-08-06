@@ -25,6 +25,22 @@ type MediaOrientation = "portrait" | "landscape" | "square" | null
 const storyCoverMaxDimension = 1280
 const storyCoverCaptureSecond = 1
 
+const getHttpErrorStatusCode = (error: unknown) => {
+  if (!error || typeof error !== "object") {
+    return 0
+  }
+
+  const record = error as Record<string, unknown>
+  const data = record.data && typeof record.data === "object"
+    ? record.data as Record<string, unknown>
+    : {}
+  const response = record.response && typeof record.response === "object"
+    ? record.response as Record<string, unknown>
+    : {}
+
+  return Number(record.statusCode ?? record.status ?? data.statusCode ?? response.status ?? 0)
+}
+
 const waitForVideoEvent = (
   video: HTMLVideoElement,
   successEvent: "loadedmetadata" | "loadeddata" | "seeked",
@@ -317,7 +333,10 @@ export function useStatusCreatePageVM(
     catch (error) {
       console.error(error)
       submitStatus.value = "error"
-      statusDescription.value = t("pages.statusCreatePage.errorStatus")
+      const statusCode = getHttpErrorStatusCode(error)
+      statusDescription.value = statusCode === 400 || statusCode === 413
+        ? t("pages.statusCreatePage.uploadRejectedStatus")
+        : t("pages.statusCreatePage.errorStatus")
     }
     finally {
       submitting.value = false

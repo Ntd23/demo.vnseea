@@ -209,7 +209,6 @@
                 <button
                   type="button"
                   class="studio__mobile-device studio__mobile-comments-toggle"
-                  :class="{ 'studio__mobile-device--active': commentsVisible }"
                   :aria-pressed="commentsVisible"
                   :aria-label="commentsToggleLabel"
                   @click="toggleComments"
@@ -2317,12 +2316,6 @@ onBeforeUnmount(() => {
     place-items: center;
     color: #ffffff;
     font-size: 18px;
-  }
-
-  .studio__mobile-device--active span {
-    border-radius: 999px;
-    background: rgba(37, 99, 235, 0.82);
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
   }
 
   .studio__mobile-comments-toggle > span {

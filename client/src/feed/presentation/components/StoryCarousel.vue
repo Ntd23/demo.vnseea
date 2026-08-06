@@ -104,7 +104,6 @@
               :poster="activeStoryData.poster || undefined"
               class="story-viewer__media story-viewer__media--video"
               autoplay
-              muted
               playsinline
               preload="auto"
               @ended="nextStory"
