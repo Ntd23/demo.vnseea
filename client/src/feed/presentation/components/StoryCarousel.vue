@@ -429,7 +429,9 @@
       </template>
     </UModal>
 
+    <!-- Story app interstitial temporarily disabled until the iOS and Android apps are released.
     <StoryAppInterstitial v-model="appPromptOpen" @continue="continueStoryOnWeb" />
+    -->
   </div>
 </template>
 
@@ -440,13 +442,17 @@ import {
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useFeedStoryCarouselVM } from "../../application/view-models/useFeedStoryCarouselVM"
 import type { FeedStoryOverlayItem, FeedStoryRecord } from "../../domain/types/feed.types"
+/* Story app interstitial temporarily disabled until the iOS and Android apps are released.
 import StoryAppInterstitial from "./StoryAppInterstitial.vue"
+*/
 
 const { t } = useI18n()
 const router = useRouter()
+/* Story app interstitial temporarily disabled until the iOS and Android apps are released.
 const isMobileViewport = useMediaQuery("(max-width: 767px)")
 const appPromptOpen = ref(false)
 const storyAppPromptSkippedKey = "story-app-prompt-skipped"
+*/
 type StoryMediaOrientation = "portrait" | "landscape" | "square"
 const activeStoryMediaOrientation = ref<StoryMediaOrientation | null>(null)
 
@@ -562,6 +568,7 @@ function storyOverlayStyle(item: FeedStoryOverlayItem) {
 }
 
 async function handleCreateStory() {
+  /* Story app interstitial temporarily disabled until the iOS and Android apps are released.
   const appPromptSkipped = import.meta.client
     && sessionStorage.getItem(storyAppPromptSkippedKey) === "1"
 
@@ -569,10 +576,12 @@ async function handleCreateStory() {
     appPromptOpen.value = true
     return
   }
+  */
 
   await router.push(feedStoryCreatePath)
 }
 
+/* Story app interstitial temporarily disabled until the iOS and Android apps are released.
 async function continueStoryOnWeb() {
   appPromptOpen.value = false
   if (import.meta.client) {
@@ -580,6 +589,7 @@ async function continueStoryOnWeb() {
   }
   await router.push(feedStoryCreatePath)
 }
+*/
 
 watch(() => activeStoryData.value?.id, () => {
   activeStoryMediaOrientation.value = null
