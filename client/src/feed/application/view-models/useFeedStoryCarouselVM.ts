@@ -202,7 +202,22 @@ export function useFeedStoryCarouselVM(
     scrollRef.value?.scrollBy({ left: dir * feedStoryCarouselScrollDistance, behavior: "smooth" })
   }
 
-  function openStoryGroup(groupIndex: number, itemIndex = 0) {
+  async function playActiveStoryVideoFromStart() {
+    const video = activeVideoRef.value
+
+    if (!video || !activeStoryData.value || !isVideoStory(activeStoryData.value)) {
+      return
+    }
+
+    video.defaultMuted = false
+    video.muted = false
+    video.volume = 1
+    video.currentTime = 0
+    await video.play().catch(() => undefined)
+    activeVideoPaused.value = video.paused
+  }
+
+  async function openStoryGroup(groupIndex: number, itemIndex = 0) {
     if (!Number.isInteger(groupIndex) || groupIndex < 0 || groupIndex >= storyGroups.value.length) {
       return
     }
@@ -217,6 +232,8 @@ export function useFeedStoryCarouselVM(
     activeVideoRef.value?.pause()
     activeStoryGroupIndex.value = groupIndex
     activeStoryItemIndex.value = Math.min(Math.max(itemIndex, 0), groupStories.length - 1)
+    await nextTick()
+    await playActiveStoryVideoFromStart()
   }
 
   function rememberStoryPointer(event: PointerEvent) {
@@ -518,7 +535,7 @@ export function useFeedStoryCarouselVM(
     openStoryGroup((activeStoryGroupIndex.value + 1) % storyGroups.value.length)
   }
 
-  function openStoryItem(itemIndex: number) {
+  async function openStoryItem(itemIndex: number) {
     if (
       activeStoryGroupIndex.value === null
       || !Number.isInteger(itemIndex)
@@ -530,6 +547,8 @@ export function useFeedStoryCarouselVM(
 
     activeVideoRef.value?.pause()
     activeStoryItemIndex.value = itemIndex
+    await nextTick()
+    await playActiveStoryVideoFromStart()
   }
 
   function prevStory() {
@@ -583,6 +602,9 @@ export function useFeedStoryCarouselVM(
     }
 
     if (video.paused) {
+      video.defaultMuted = false
+      video.muted = false
+      video.volume = 1
       await video.play().catch(() => undefined)
       activeVideoPaused.value = video.paused
       return
@@ -711,17 +733,12 @@ export function useFeedStoryCarouselVM(
     activeVideoPaused.value = false
     storyActionError.value = ""
     storyActionState.value = "idle"
-    await markStoryViewed(story)
+    const markViewedPromise = markStoryViewed(story)
     await nextTick()
 
-    if (isVideoStory(story) && activeVideoRef.value) {
-      const video = activeVideoRef.value
-      video.currentTime = 0
-      video.load()
-      await video.play().catch(() => undefined)
-      activeVideoPaused.value = video.paused
-    }
+    await playActiveStoryVideoFromStart()
 
+    await markViewedPromise
     dialogRef.value?.focus()
   })
 

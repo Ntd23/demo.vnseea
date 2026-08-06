@@ -12,11 +12,13 @@ export function useLiveKitViewer() {
   const connected = ref(false)
   const errorMessage = ref("")
   const videoOrientation = ref<"unknown" | "portrait" | "landscape">("unknown")
+  const audioPlaybackBlocked = ref(false)
 
   let liveKitModule: LiveKitModule | null = null
   let room: Room | null = null
   let activeConnection: Promise<void> | null = null
   let connectionGeneration = 0
+  let audioEnabledByUser = false
 
   async function ensureModule() {
     if (liveKitModule) return liveKitModule
@@ -26,6 +28,10 @@ export function useLiveKitViewer() {
 
   function clearStage() {
     stageHost.value?.querySelectorAll("video, audio").forEach(element => element.remove())
+  }
+
+  function clearTrackElements(kind: "video" | "audio") {
+    stageHost.value?.querySelectorAll(kind).forEach(element => element.remove())
   }
 
   function syncVideoOrientation(element: HTMLVideoElement) {
@@ -39,24 +45,51 @@ export function useLiveKitViewer() {
   }
 
   function attachRemoteTrack(track: RemoteTrack) {
-    if (!stageHost.value || track.kind !== "video") return
-    clearStage()
+    const host = stageHost.value
+    if (!host) return
+
+    if (track.kind === "audio") {
+      clearTrackElements("audio")
+      const element = track.attach() as HTMLAudioElement
+      element.autoplay = true
+      element.defaultMuted = !audioEnabledByUser
+      element.muted = !audioEnabledByUser
+      element.volume = 1
+      element.hidden = true
+      element.className = "feed-live-player__audio"
+      host.appendChild(element)
+      void element.play()
+        .then(() => {
+          audioPlaybackBlocked.value = false
+        })
+        .catch(() => {
+          audioPlaybackBlocked.value = audioEnabledByUser
+        })
+      return
+    }
+
+    if (track.kind !== "video") return
+
+    clearTrackElements("video")
     const element = track.attach() as HTMLVideoElement
     element.autoplay = true
+    // Feed previews must remain silent until the viewer explicitly taps them.
+    // LiveKit publishes microphone audio as a separate audio track.
     element.defaultMuted = true
     element.muted = true
+    element.volume = 1
     element.playsInline = true
     element.className = "feed-live-player__video"
     element.addEventListener("loadedmetadata", () => syncVideoOrientation(element), { once: true })
     element.addEventListener("resize", () => syncVideoOrientation(element))
-    stageHost.value.appendChild(element)
+    host.appendChild(element)
     syncVideoOrientation(element)
     void element.play().catch(() => {
-      // Muted inline video is retried by the browser when the track becomes playable.
+      // A click on the preview retries playback through enableAudio().
     })
   }
 
-  function attachPublishedVideoTracks() {
+  function attachPublishedTracks() {
     room?.remoteParticipants.forEach((participant: RemoteParticipant) => {
       participant.trackPublications.forEach((publication: RemoteTrackPublication) => {
         if (publication.track) attachRemoteTrack(publication.track)
@@ -80,6 +113,7 @@ export function useLiveKitViewer() {
     if (generation !== connectionGeneration) return
 
     videoOrientation.value = "unknown"
+    audioPlaybackBlocked.value = false
     const nextRoom = new module.Room({
       adaptiveStream: true,
       dynacast: true,
@@ -109,7 +143,7 @@ export function useLiveKitViewer() {
       }
 
       connected.value = true
-      attachPublishedVideoTracks()
+      attachPublishedTracks()
     }
     catch (error) {
       if (room === nextRoom) {
@@ -159,6 +193,8 @@ export function useLiveKitViewer() {
     const currentRoom = room
     room = null
     connected.value = false
+    audioPlaybackBlocked.value = false
+    audioEnabledByUser = false
     clearStage()
 
     if (currentRoom) {
@@ -170,7 +206,33 @@ export function useLiveKitViewer() {
   function setStageHost(element: HTMLElement | null) {
     stageHost.value = element
     if (element && connected.value) {
-      attachPublishedVideoTracks()
+      attachPublishedTracks()
+    }
+  }
+
+  async function enableAudio() {
+    audioEnabledByUser = true
+    const activeRoom = room
+    if (!activeRoom) return
+
+    try {
+      await activeRoom.startAudio()
+
+      const mediaElements = Array.from(
+        stageHost.value?.querySelectorAll("audio, video") ?? [],
+      ) as HTMLMediaElement[]
+
+      await Promise.all(mediaElements.map((element) => {
+        const isAudio = element instanceof HTMLAudioElement
+        element.defaultMuted = !isAudio
+        element.muted = !isAudio
+        element.volume = 1
+        return element.play()
+      }))
+      audioPlaybackBlocked.value = false
+    }
+    catch {
+      audioPlaybackBlocked.value = true
     }
   }
 
@@ -185,6 +247,7 @@ export function useLiveKitViewer() {
     videoOrientation,
     connect,
     disconnect,
+    enableAudio,
     setStageHost,
   }
 }

@@ -99,6 +99,15 @@ export function useFeedShareModalVM(
     },
   )
 
+  const { data: messagesData, status: messagesStatus, refresh: refreshMessages } = useAsyncData(
+    "feed-share:message-conversations",
+    () => feedShareRepository.getMessageTargets(),
+    {
+      default: () => [],
+      immediate: false,
+    },
+  )
+
   const activeSearch = computed(() => {
     if (selectedDestination.value === "page") return pageSearch.value
     if (selectedDestination.value === "group") return groupSearch.value
@@ -136,7 +145,7 @@ export function useFeedShareModalVM(
   })
 
   const messageTargets = computed(() =>
-    searchData.value.users,
+    filterTargets(uniqueTargets(messagesData.value ?? []), messageSearch.value),
   )
 
   const destinationTargets = computed(() => {
@@ -163,7 +172,7 @@ export function useFeedShareModalVM(
     }
 
     if (selectedDestination.value === "message") {
-      return searchPending.value
+      return messagesStatus.value === "pending"
     }
 
     return false
@@ -282,6 +291,11 @@ export function useFeedShareModalVM(
   async function runSearch(keyword: string) {
     const trimmedKeyword = keyword.trim()
 
+    if (selectedDestination.value === "message") {
+      searchPending.value = false
+      return
+    }
+
     if (selectedDestination.value === "timeline" || !trimmedKeyword) {
       searchData.value = emptySearchResponse()
       searchPending.value = false
@@ -317,7 +331,7 @@ export function useFeedShareModalVM(
     }
 
     await authStore.hydrate()
-    await Promise.all([refreshPages(), refreshGroups()])
+    await Promise.all([refreshPages(), refreshGroups(), refreshMessages()])
   })
 
   watch(activeSearch, (keyword) => {

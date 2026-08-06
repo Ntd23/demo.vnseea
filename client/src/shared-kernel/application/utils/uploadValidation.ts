@@ -4,6 +4,15 @@ import type { UploadPolicy } from "../../domain/upload-policy"
 
 export const FEED_MAX_IMAGE_FILES = 20
 
+const STORY_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "gif"] as const
+const STORY_VIDEO_EXTENSIONS = ["mp4", "mov", "webm"] as const
+const STORY_IMAGE_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/gif"])
+const STORY_VIDEO_MIME_TYPES = new Set(["video/mp4", "video/quicktime", "video/webm"])
+const STORY_MEDIA_EXTENSIONS = new Set<string>([
+  ...STORY_IMAGE_EXTENSIONS,
+  ...STORY_VIDEO_EXTENSIONS,
+])
+
 export type UploadMediaKind = "image" | "video"
 
 export type UploadValidationErrorCode =
@@ -127,11 +136,26 @@ export const getFeedImageAccept = (policy: UploadPolicy) =>
 export const getFeedVideoAccept = (policy: UploadPolicy) =>
   buildMediaAccept(policy, ["video"])
 
+const buildStoryMediaAccept = (
+  policy: UploadPolicy,
+  mediaKinds: readonly UploadMediaKind[],
+  extensions: readonly string[],
+  mimeTypes: ReadonlySet<string>,
+) => [
+  ...extensions
+    .filter(extension => policy.allowedExtensions.length === 0 || policy.allowedExtensions.includes(extension))
+    .map(extension => `.${extension}`),
+  ...policy.allowedMimeTypes.filter(mimeType =>
+    mimeTypes.has(mimeType)
+    && mediaKinds.some(kind => mimeType.startsWith(`${kind}/`)),
+  ),
+].filter(Boolean).join(",")
+
 export const getStoryImageAccept = (policy: UploadPolicy) =>
-  buildMediaAccept(policy, ["image"])
+  buildStoryMediaAccept(policy, ["image"], STORY_IMAGE_EXTENSIONS, STORY_IMAGE_MIME_TYPES)
 
 export const getStoryVideoAccept = (policy: UploadPolicy) =>
-  buildMediaAccept(policy, ["video"])
+  buildStoryMediaAccept(policy, ["video"], STORY_VIDEO_EXTENSIONS, STORY_VIDEO_MIME_TYPES)
 
 export const getStoryMediaAccept = (policy: UploadPolicy) => [
   getStoryImageAccept(policy),
@@ -185,7 +209,21 @@ export function validateStoryMedia(
   policy: UploadPolicy,
   expectedKind?: UploadMediaKind | null,
 ): UploadValidationResult {
-  return validateFile(file, policy, expectedKind ? [expectedKind] : ["image", "video"])
+  const validation = validateFile(file, policy, expectedKind ? [expectedKind] : ["image", "video"])
+
+  if (!validation.valid) {
+    return validation
+  }
+
+  if (!STORY_MEDIA_EXTENSIONS.has(getFileExtension(file))) {
+    return {
+      valid: false,
+      code: "unsupported-type",
+      fileName: file.name,
+    }
+  }
+
+  return { valid: true }
 }
 
 export function validateFeedCommentImage(file: File, policy: UploadPolicy): UploadValidationResult {

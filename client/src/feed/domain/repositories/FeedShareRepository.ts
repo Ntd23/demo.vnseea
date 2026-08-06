@@ -9,6 +9,7 @@ import type {
 export interface FeedShareRepository {
   getPageTargets(): Promise<FeedShareTarget[]>
   getGroupTargets(): Promise<FeedShareTarget[]>
+  getMessageTargets(): Promise<FeedShareTarget[]>
   searchTargets(keyword: string, limit?: number): Promise<FeedShareSearchTargets>
   sendMessageShare(input: {
     recipientIds: number[]
