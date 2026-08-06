@@ -321,17 +321,21 @@
       </div>
     </div>
 
+    <!-- Native app interstitial temporarily disabled until the iOS and Android apps are released.
     <ClientOnly>
       <NearbyAppInterstitial
         v-model="appPromptOpen"
         @continue="continueOnMobileWeb"
       />
     </ClientOnly>
+    -->
   </section>
 </template>
 
 <script setup lang="ts">
+/* Native app interstitial temporarily disabled until the iOS and Android apps are released.
 import NearbyAppInterstitial from "../components/NearbyAppInterstitial.vue"
+*/
 import NearbyResultCard from "../components/NearbyResultCard.vue"
 import NearbySearchMap from "../components/NearbySearchMap.vue"
 import { useSearchNearbyPageVM } from "../../application/view-models/useSearchNearbyPageVM"
@@ -447,8 +451,10 @@ const {
 
 const { t } = useI18n()
 const route = useRoute()
+/* Native app interstitial temporarily disabled until the iOS and Android apps are released.
 const isMobileWebViewport = useMediaQuery("(max-width: 767px)")
 const appPromptOpen = ref(false)
+*/
 let nearbyExperienceStarted = false
 
 const searchPlaceholder = computed(() =>
@@ -1931,18 +1937,22 @@ function startNearbyExperience() {
   void hydrateSharedLocationCard()
 }
 
+/* Native app interstitial temporarily disabled until the iOS and Android apps are released.
 function continueOnMobileWeb() {
   appPromptOpen.value = false
   startNearbyExperience()
 }
+*/
 
 onMounted(() => {
   void loadSearchNearbyConfig()
 
+  /* Native app interstitial temporarily disabled until the iOS and Android apps are released.
   if (isMobileWebViewport.value) {
     appPromptOpen.value = true
     return
   }
+  */
 
   startNearbyExperience()
 })
