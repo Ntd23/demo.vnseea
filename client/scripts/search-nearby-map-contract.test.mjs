@@ -64,14 +64,22 @@ test("shared chat locations open as one focused address result", () => {
   assert.match(mapSource, /image\.src = item\.avatarUrl/)
 })
 
-test("nearby search defers geolocation until the mobile app prompt is skipped", () => {
+test("nearby search starts directly while the native app prompt is temporarily disabled", () => {
+  const activePageSource = pageSource
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+
   assert.match(
     pageSource,
     /function startNearbyExperience\(\)[\s\S]*void startDeviceOrientationTracking\(\)[\s\S]*void requestLocationPermission\(\)/,
   )
-  assert.match(pageSource, /if \(isMobileWebViewport\.value\) \{\s*appPromptOpen\.value = true\s*return/)
-  assert.match(pageSource, /function continueOnMobileWeb\(\)[\s\S]*startNearbyExperience\(\)/)
-  assert.match(pageSource, /<NearbyAppInterstitial[\s\S]*@continue="continueOnMobileWeb"/)
+  assert.match(pageSource, /Native app interstitial temporarily disabled until the iOS and Android apps are released/)
+  assert.doesNotMatch(activePageSource, /NearbyAppInterstitial/)
+  assert.doesNotMatch(activePageSource, /appPromptOpen|isMobileWebViewport|continueOnMobileWeb/)
+  assert.match(
+    activePageSource,
+    /onMounted\(\(\) => \{\s*void loadSearchNearbyConfig\(\)\s*startNearbyExperience\(\)/,
+  )
   assert.match(viewModelSource, /const needsLocation = computed\(\(\) => !hasOrigin\.value\)/)
   assert.match(
     viewModelSource,
