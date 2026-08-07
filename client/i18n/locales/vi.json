@@ -5723,7 +5723,9 @@
       "label": "Media mô phỏng {index}",
       "openLabel": "Mở media số {index}",
       "imageType": "Ảnh",
-      "videoType": "Video"
+      "videoType": "Video",
+      "mute": "Tắt âm thanh video xem trước",
+      "unmute": "Bật âm thanh video xem trước"
     },
     "postCard": {
       "commentsCount": "{count} bình luận",
