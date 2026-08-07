@@ -5723,7 +5723,9 @@
       "label": "Mock media {index}",
       "openLabel": "Open media {index}",
       "imageType": "Image",
-      "videoType": "Video"
+      "videoType": "Video",
+      "mute": "Mute video previews",
+      "unmute": "Turn on sound for video previews"
     },
     "postCard": {
       "commentsCount": "{count} comments",

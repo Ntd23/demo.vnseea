@@ -33,9 +33,10 @@
           class="media-grid__img media-grid__video"
           autoplay
           loop
+          muted
           playsinline
           preload="auto"
-          @loadedmetadata="playVideoWithSound"
+          @loadedmetadata="handleVideoLoadedMetadata"
         >
           <source :src="item.src" :type="item.mime || 'video/mp4'">
         </video>
@@ -45,6 +46,16 @@
           :aria-label="t('pages.reelsPage.playing')"
           @click.stop.prevent="openVideoInReels"
         />
+        <button
+          class="media-grid__sound-toggle"
+          type="button"
+          :aria-label="isMuted ? t('feed.postMediaGrid.unmute') : t('feed.postMediaGrid.mute')"
+          :aria-pressed="!isMuted"
+          :title="isMuted ? t('feed.postMediaGrid.unmute') : t('feed.postMediaGrid.mute')"
+          @click.stop.prevent="toggleVideoSound($event)"
+        >
+          <UIcon :name="isMuted ? 'i-ph-speaker-slash-fill' : 'i-ph-speaker-high-fill'" />
+        </button>
         <button
           v-if="isMoreSlot(index)"
           class="media-grid__more media-grid__more--button"
@@ -61,11 +72,13 @@
 
 <script setup lang="ts">
 import { useReelsViewerOverlay } from "../../../reels/application/composables/useReelsViewerOverlay"
+import { useFeedVideoSound } from "../../application/composables/useFeedVideoSound"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 
 const { t } = useI18n()
 const videoRefs = ref<HTMLVideoElement[]>([])
 const { open: openReelsViewer } = useReelsViewerOverlay()
+const { isMuted, activateVideo, deactivateVideo, toggleSound } = useFeedVideoSound()
 
 const props = defineProps<{
   items: Array<{
@@ -104,7 +117,7 @@ function isMoreSlot(index: number) {
   return hiddenCount.value > 0 && index === visibleItems.value.length - 1
 }
 
-function playVideoWithSound(event: Event) {
+function handleVideoLoadedMetadata(event: Event) {
   const video = event.currentTarget as HTMLVideoElement | null
 
   if (!video) return
@@ -112,21 +125,33 @@ function playVideoWithSound(event: Event) {
   if (visibleCount.value === 1) {
     singleVideoIsPortrait.value = video.videoHeight > video.videoWidth
   }
-
-  playVisibleVideo(video)
 }
 
 function playVisibleVideo(video: HTMLVideoElement) {
-  video.muted = true
-  video.volume = 1
+  activateVideo(video)
   void video.play().catch(() => {
     // Browser autoplay rules can still require a user gesture.
   })
 }
 
+function toggleVideoSound(event: MouseEvent) {
+  const button = event.currentTarget as HTMLButtonElement | null
+  const video = button?.parentElement?.querySelector("video") as HTMLVideoElement | null
+
+  if (!video) return
+
+  toggleSound(video)
+
+  if (!isMuted.value) {
+    void video.play().catch(() => {
+      // The click is a direct user gesture, but platform playback rules still win.
+    })
+  }
+}
+
 function openVideoInReels() {
   for (const video of videoRefs.value) {
-    video.pause()
+    deactivateVideo(video)
   }
 
   openReelsViewer(props.post)
@@ -144,12 +169,18 @@ onMounted(() => {
           return
         }
 
-        video.pause()
+        deactivateVideo(video)
       },
       {
         threshold: [0, 0.55, 1],
       },
     )
+  }
+})
+
+onBeforeUnmount(() => {
+  for (const video of videoRefs.value) {
+    deactivateVideo(video)
   }
 })
 </script>
@@ -320,6 +351,41 @@ onMounted(() => {
   touch-action: manipulation;
 }
 
+.media-grid__sound-toggle {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #ffffff;
+  font-size: 21px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+  cursor: pointer;
+  touch-action: manipulation;
+  backdrop-filter: blur(6px);
+  transition: background var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default);
+}
+
+.media-grid__sound-toggle:hover {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.media-grid__sound-toggle:active {
+  transform: scale(0.94);
+}
+
+.media-grid__sound-toggle:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
 .media-grid__more {
   position: absolute;
   inset: 0;
@@ -343,6 +409,13 @@ onMounted(() => {
 }
 
 @media (max-width: 520px) {
+  .media-grid__sound-toggle {
+    right: 10px;
+    bottom: 10px;
+    width: 42px;
+    height: 42px;
+  }
+
   .media-grid--count-1.media-grid--single-video.media-grid--portrait {
     aspect-ratio: 4 / 5;
   }
