@@ -103,6 +103,7 @@ test("blog shares preserve structured card metadata across legacy chat text", ()
 
   const shared = read("server/api/messages/_shared.ts")
   const shareRepository = read("src/feed/infrastructure/repositories/ApiFeedShareRepository.ts")
+  const shareVm = read("src/feed/application/view-models/useFeedShareModalVM.ts")
   const page = read("src/blogs/presentation/pages/ReadBlogPage.vue")
   const pinned = read("src/messages/presentation/components/PinnedMessagesBar.vue")
 
@@ -110,6 +111,11 @@ test("blog shares preserve structured card metadata across legacy chat text", ()
   assert.match(shared, /fetchLegacySharedBlogCard/)
   assert.match(shared, /blog:\s*\{/)
   assert.match(shareRepository, /serializeMessageSharedBlog/)
+  assert.match(
+    shareVm,
+    /isMessageBlogShare[\s\S]*?\? \(input\.caption\?\.trim\(\) \?\? ""\)/,
+  )
+  assert.match(shareVm, /!text && !input\.postId && !input\.blog/)
   assert.match(page, /:blog="\{/)
   assert.match(pinned, /sharedPost\?\.blog/)
 })

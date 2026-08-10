@@ -205,7 +205,16 @@ export function useFeedPostCardVM(
       const isDifferentPost = lastPostId !== null && String(lastPostId) !== String(value.id)
       lastPostId = value.id
 
-      localComments.value = [...value.comments]
+      // Realtime post snapshots only carry a short comment preview. Keep a richer
+      // list already loaded on the detail page instead of collapsing it back to
+      // that preview whenever polling or viewport re-entry refreshes the post.
+      const shouldReplaceLocalComments = isDifferentPost
+        || localComments.value.length === 0
+        || value.comments.length >= localComments.value.length
+
+      if (shouldReplaceLocalComments) {
+        localComments.value = [...value.comments]
+      }
       localPollOptions.value = [...value.pollOptions]
       localReactionSummaries.value = value.reactions.length > 0
         ? [...value.reactions]

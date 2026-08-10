@@ -47,14 +47,22 @@
           <Icon name="i-ph-caret-left-bold" />
         </button>
 
-        <div class="product-image-viewer__stage" @click.stop>
-          <NuxtImg
-            v-if="currentImage"
+        <div
+          class="product-image-viewer__stage"
+          @click.stop
+          @touchstart.passive="handleTouchStart"
+          @touchend.passive="handleTouchEnd"
+          @touchcancel="resetTouchGesture"
+        >
+          <img
+            v-if="currentImage && !currentImageFailed"
             :src="currentImage.src"
             :alt="currentImage.alt || title"
             class="product-image-viewer__image"
             loading="eager"
-            sizes="100vw"
+            draggable="false"
+            @dragstart.prevent
+            @error="currentImageFailed = true"
           />
 
           <div v-else class="product-image-viewer__empty">
@@ -113,6 +121,10 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 let previousBodyOverflow = ""
+const currentImageFailed = ref(false)
+const touchStartX = ref<number | null>(null)
+const touchStartY = ref<number | null>(null)
+const minimumSwipeDistance = 48
 
 const normalizedIndex = computed(() => {
   if (props.images.length === 0) return 0
@@ -132,6 +144,39 @@ function next() {
   if (!props.images.length) return
 
   emit("change", (normalizedIndex.value + 1) % props.images.length)
+}
+
+function resetTouchGesture() {
+  touchStartX.value = null
+  touchStartY.value = null
+}
+
+function handleTouchStart(event: TouchEvent) {
+  if (!canNavigate.value || event.touches.length !== 1) {
+    resetTouchGesture()
+    return
+  }
+
+  touchStartX.value = event.touches[0]?.clientX ?? null
+  touchStartY.value = event.touches[0]?.clientY ?? null
+}
+
+function handleTouchEnd(event: TouchEvent) {
+  const startX = touchStartX.value
+  const startY = touchStartY.value
+  const touch = event.changedTouches[0]
+
+  resetTouchGesture()
+
+  if (!canNavigate.value || startX === null || startY === null || !touch) return
+
+  const deltaX = touch.clientX - startX
+  const deltaY = touch.clientY - startY
+
+  if (Math.abs(deltaX) < minimumSwipeDistance || Math.abs(deltaX) <= Math.abs(deltaY)) return
+
+  if (deltaX > 0) previous()
+  else next()
 }
 
 function handleKeydown(event: KeyboardEvent) {
@@ -172,6 +217,14 @@ watch(
   },
 )
 
+watch(
+  () => currentImage.value?.src,
+  () => {
+    currentImageFailed.value = false
+    resetTouchGesture()
+  },
+)
+
 onMounted(() => window.addEventListener("keydown", handleKeydown))
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown)
@@ -208,18 +261,23 @@ onBeforeUnmount(() => {
   display: grid;
   min-width: 0;
   gap: 2px;
-  color: var(--text-inverse);
+  padding: 8px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .product-image-viewer__heading strong {
   overflow: hidden;
+  color: var(--text-primary);
   font-size: 15px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .product-image-viewer__heading span {
-  color: color-mix(in srgb, var(--text-inverse) 72%, transparent);
+  color: var(--text-secondary);
   font-size: 12px;
 }
 
@@ -230,6 +288,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   padding: 16px 64px;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
 }
 
 .product-image-viewer__image {
@@ -262,16 +322,23 @@ onBeforeUnmount(() => {
   height: 48px;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--text-inverse) 22%, transparent);
+  border: 1px solid var(--border-light);
   border-radius: 999px;
-  color: var(--text-inverse);
-  background: color-mix(in srgb, var(--color-secondary-900) 66%, transparent);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md);
   cursor: pointer;
   transform: translateY(-50%);
 }
 
 .product-image-viewer__nav:hover {
-  background: color-mix(in srgb, var(--text-inverse) 14%, var(--color-secondary-900));
+  color: var(--text-brand);
+  background: var(--bg-surface-active);
+}
+
+.product-image-viewer__nav:focus-visible {
+  outline: 2px solid var(--bg-brand);
+  outline-offset: 3px;
 }
 
 .product-image-viewer__nav svg,
