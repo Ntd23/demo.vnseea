@@ -3,12 +3,61 @@
 import { computed, onBeforeUnmount, ref, shallowRef } from "vue"
 import type { MessageRecordDraft } from "../../domain/types/messages.types"
 
-function inferRecordExtension(mimeType: string) {
-  if (mimeType.includes("mp4") || mimeType.includes("m4a")) return "m4a"
-  if (mimeType.includes("ogg")) return "ogg"
-  if (mimeType.includes("mpeg") || mimeType.includes("mp3")) return "mp3"
-  if (mimeType.includes("wav")) return "wav"
-  return "webm"
+const writeWavString = (view: DataView, offset: number, value: string) => {
+  for (let index = 0; index < value.length; index += 1) {
+    view.setUint8(offset + index, value.charCodeAt(index))
+  }
+}
+
+function encodeAudioBufferAsWav(audioBuffer: AudioBuffer) {
+  const channelCount = Math.min(Math.max(audioBuffer.numberOfChannels, 1), 2)
+  const bytesPerSample = 2
+  const frameCount = audioBuffer.length
+  const dataLength = frameCount * channelCount * bytesPerSample
+  const wavBuffer = new ArrayBuffer(44 + dataLength)
+  const view = new DataView(wavBuffer)
+
+  writeWavString(view, 0, "RIFF")
+  view.setUint32(4, 36 + dataLength, true)
+  writeWavString(view, 8, "WAVE")
+  writeWavString(view, 12, "fmt ")
+  view.setUint32(16, 16, true)
+  view.setUint16(20, 1, true)
+  view.setUint16(22, channelCount, true)
+  view.setUint32(24, audioBuffer.sampleRate, true)
+  view.setUint32(28, audioBuffer.sampleRate * channelCount * bytesPerSample, true)
+  view.setUint16(32, channelCount * bytesPerSample, true)
+  view.setUint16(34, bytesPerSample * 8, true)
+  writeWavString(view, 36, "data")
+  view.setUint32(40, dataLength, true)
+
+  const channels = Array.from(
+    { length: channelCount },
+    (_, channel) => audioBuffer.getChannelData(channel),
+  )
+  let offset = 44
+
+  for (let frame = 0; frame < frameCount; frame += 1) {
+    for (let channel = 0; channel < channelCount; channel += 1) {
+      const sample = Math.max(-1, Math.min(1, channels[channel]?.[frame] ?? 0))
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true)
+      offset += bytesPerSample
+    }
+  }
+
+  return wavBuffer
+}
+
+async function convertRecordingToWav(blob: Blob) {
+  const audioContext = new AudioContext()
+
+  try {
+    const audioBuffer = await audioContext.decodeAudioData(await blob.arrayBuffer())
+    return new Blob([encodeAudioBufferAsWav(audioBuffer)], { type: "audio/wav" })
+  }
+  finally {
+    await audioContext.close()
+  }
 }
 
 export function useMessageRecorder() {
@@ -23,6 +72,7 @@ export function useMessageRecorder() {
   const permissionDenied = ref(false)
   const errorMessage = ref("")
   const recordDraft = ref<MessageRecordDraft | null>(null)
+  let recordingSessionId = 0
 
   const isSupported = computed(() =>
     import.meta.client
@@ -45,6 +95,7 @@ export function useMessageRecorder() {
   }
 
   const clearRecording = () => {
+    recordingSessionId += 1
     clearTimer()
 
     const recorder = mediaRecorder.value
@@ -102,6 +153,7 @@ export function useMessageRecorder() {
         audio: true,
       })
 
+      const sessionId = ++recordingSessionId
       mediaStream.value = stream
       const recorder = new MediaRecorder(stream)
       chunks.value = []
@@ -114,7 +166,7 @@ export function useMessageRecorder() {
         }
       })
 
-      recorder.addEventListener("stop", () => {
+      recorder.addEventListener("stop", async () => {
         clearTimer()
         isRecording.value = false
 
@@ -131,16 +183,31 @@ export function useMessageRecorder() {
 
         const mimeType = recorder.mimeType || "audio/webm"
         const finalDurationMs = durationMs.value || Math.max(Date.now() - startedAt.value, 0)
-        const blob = new Blob(chunks.value, { type: mimeType })
-        const extension = inferRecordExtension(mimeType)
-        const previewUrl = URL.createObjectURL(blob)
+        const sourceBlob = new Blob(chunks.value, { type: mimeType })
 
-        recordDraft.value = {
-          blob,
-          fileName: `record-${Date.now()}.${extension}`,
-          mimeType,
-          durationMs: finalDurationMs,
-          previewUrl,
+        try {
+          const blob = await convertRecordingToWav(sourceBlob)
+
+          if (sessionId !== recordingSessionId) {
+            return
+          }
+
+          const previewUrl = URL.createObjectURL(blob)
+
+          recordDraft.value = {
+            blob,
+            fileName: `record-${Date.now()}.wav`,
+            mimeType: "audio/wav",
+            durationMs: finalDurationMs,
+            previewUrl,
+          }
+        }
+        catch (error) {
+          if (sessionId === recordingSessionId) {
+            errorMessage.value = error instanceof Error
+              ? error.message
+              : "Unable to prepare the recording for sending."
+          }
         }
 
         stopStream()

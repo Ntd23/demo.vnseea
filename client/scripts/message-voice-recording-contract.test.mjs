@@ -56,3 +56,13 @@ test("mini chat recording state belongs to exactly one conversation", async () =
   assert.match(recorder, /stopStream\(\)/)
   assertCompiles(widget, "ChatWidget.vue")
 })
+
+test("browser recordings are normalized to app-compatible WAV before upload", async () => {
+  const recorder = await read("src/messages/application/composables/useMessageRecorder.ts")
+
+  assert.match(recorder, /decodeAudioData\(await blob\.arrayBuffer\(\)\)/)
+  assert.match(recorder, /encodeAudioBufferAsWav/)
+  assert.match(recorder, /fileName: `record-\$\{Date\.now\(\)\}\.wav`/)
+  assert.match(recorder, /mimeType: "audio\/wav"/)
+  assert.match(recorder, /sessionId !== recordingSessionId/)
+})

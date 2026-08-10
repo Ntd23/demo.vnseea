@@ -228,13 +228,16 @@ export function useFeedShareModalVM(
     const canonicalPostUrl = input.postId
       ? new URL(appRoutes.postDetail(input.postId), requestURL.origin).toString()
       : ""
-    const text = input.postId
-      ? selectedDestination.value === "message"
-        ? [input.caption?.trim(), canonicalPostUrl].filter(Boolean).join("\n\n")
-        : (input.caption?.trim() ?? "")
-      : createShareText(input)
+    const isMessageBlogShare = selectedDestination.value === "message" && Boolean(input.blog)
+    const text = isMessageBlogShare
+      ? (input.caption?.trim() ?? "")
+      : input.postId
+        ? selectedDestination.value === "message"
+          ? [input.caption?.trim(), canonicalPostUrl].filter(Boolean).join("\n\n")
+          : (input.caption?.trim() ?? "")
+        : createShareText(input)
 
-    if (!canShare.value || (!text && !input.postId)) {
+    if (!canShare.value || (!text && !input.postId && !input.blog)) {
       throw new Error("Share target and content are required.")
     }
 

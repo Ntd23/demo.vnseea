@@ -35,6 +35,7 @@ test("Nuxt watches visible post cards and refreshes canonical snapshots safely",
   const store = read("client/src/feed/application/stores/usePostRealtimeStore.ts")
   const card = read("client/src/feed/presentation/components/PostCard.vue")
   const detail = read("client/src/feed/presentation/pages/PostDetailPage.vue")
+  const cardVm = read("client/src/feed/application/view-models/useFeedPostCardVM.ts")
 
   assert.match(store, /MAX_WATCHED_POSTS\s*=\s*50/)
   assert.match(store, /MAX_CONCURRENT_REQUESTS\s*=\s*3/)
@@ -50,6 +51,10 @@ test("Nuxt watches visible post cards and refreshes canonical snapshots safely",
   assert.match(card, /useIntersectionObserver\(/)
   assert.match(card, /postRealtimeStore\.watchPost\(post\.value\.id\)/)
   assert.match(card, /showComments\.value[\s\S]*refreshComments\(\)/)
+  assert.match(
+    cardVm,
+    /value\.comments\.length >= localComments\.value\.length[\s\S]*if \(shouldReplaceLocalComments\)/,
+  )
   assert.match(detail, /postRealtimeStore\.watchPost\(props\.postId\)/)
   assert.match(detail, /onBeforeUnmount\(releasePostWatch\)/)
 })
