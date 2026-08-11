@@ -14,7 +14,6 @@ $response_data   = array(
 );
 $required_fields = array(
     'password',
-    'email',
     'confirm_password'
 );
 
@@ -56,16 +55,34 @@ foreach ($required_fields as $key => $value) {
 }
 
 if (empty($error_code)) {
+    $email = isset($_POST['email']) ? trim((string) $_POST['email']) : '';
+    $phone_number = isset($_POST['phone_num'])
+        ? preg_replace('/\D+/', '', (string) $_POST['phone_num'])
+        : '';
+    $is_phone_registration = ($email === '' && $phone_number !== '');
+
+    if ($email === '' && $phone_number === '') {
+        $error_code    = 3;
+        $error_message = 'email or phone_num (POST) is missing';
+    } elseif ($phone_number !== '' && (strlen($phone_number) < 8 || strlen($phone_number) > 20)) {
+        $error_code    = 14;
+        $error_message = 'Phone number is invalid';
+    } elseif ($phone_number !== '' && Wo_PhoneExists($phone_number) === true) {
+        $error_code    = 15;
+        $error_message = 'Phone number is already taken';
+    }
+}
+
+if (empty($error_code)) {
     // Never trust a client-supplied username; every account receives a numeric UUID.
     $username          = VNSEEA_GenerateNumericUuidUsername();
     $_POST['username'] = $username;
     $password         = $_POST['password'];
-    $email            = $_POST['email'];
     $confirm_password = $_POST['confirm_password'];
-    if (Wo_EmailExists($email) === true) {
+    if ($email !== '' && Wo_EmailExists($email) === true) {
         $error_code    = 7;
         $error_message = 'E-mail is already taken';
-    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } else if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_code    = 8;
         $error_message = 'E-mail is invalid';
     } else if (strlen($password) < 6) {
@@ -85,7 +102,6 @@ if (empty($error_code)) {
         $activation_code = (string) random_int(100000, 999999);
         $code = md5($activation_code);
         $account_data = array(
-            'email' => Wo_Secure($email, 0),
             'username' => Wo_Secure($username, 0),
             'password' => $password,
             'email_code' => $code,
@@ -95,7 +111,14 @@ if (empty($error_code)) {
             'lastseen' => time(),
             'active' => Wo_Secure($activate)
         );
-        if ($activate == 0 && $wo['config']['sms_or_email'] == 'mail') {
+        if ($email !== '') {
+            $account_data['email'] = Wo_Secure($email, 0);
+        }
+        if ($phone_number !== '') {
+            $account_data['phone_number'] = Wo_Secure($phone_number, 0);
+            $_POST['phone_num'] = $phone_number;
+        }
+        if ($activate == 0 && !$is_phone_registration && $wo['config']['sms_or_email'] == 'mail') {
             // Keep the email OTP available for exact comparison and stable resends.
             $account_data['sms_code'] = $activation_code;
         }
@@ -190,7 +213,7 @@ if (empty($error_code)) {
                         'user_platform' => $device_type,
                     );
                 }
-            } elseif ($wo['config']['sms_or_email'] == 'mail') {
+            } elseif (!$is_phone_registration && $wo['config']['sms_or_email'] == 'mail') {
                 $user_id             = Wo_UserIdFromUsername($username);
                 $wo['user']        = $_POST;
                 $wo['code']        = $activation_code;
@@ -217,7 +240,7 @@ if (empty($error_code)) {
                     $error_message = 'Error found while sending the verification email, please try again later.';
                 }
             }
-            elseif ($wo['config']['sms_or_email'] == 'sms' && !empty($_POST['phone_num'])) {
+            elseif (($is_phone_registration || $wo['config']['sms_or_email'] == 'sms') && !empty($_POST['phone_num'])) {
                 $random_activation = Wo_Secure(rand(11111, 99999));
                 $message           = "Your confirmation code is: {$random_activation}";
 

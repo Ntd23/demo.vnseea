@@ -62,7 +62,7 @@ export default defineEventHandler(async (event): Promise<RegisterAccountResult> 
   const lastName = body.lastName?.trim() ?? ""
   const digitsOnly = identity.replace(/\D/g, "")
   const isEmailIdentity = identity.includes("@")
-  const email = isEmailIdentity ? identity : (digitsOnly ? `phone_${digitsOnly}@vnseea.invalid` : "")
+  const email = isEmailIdentity ? identity : ""
   const phoneNum = !isEmailIdentity && digitsOnly ? digitsOnly : ""
 
   if (!identity) {

@@ -21,6 +21,9 @@ export default defineEventHandler(async (event): Promise<LoginResult> => {
   const client = createBackendApiClient(event)
   const body = await readBody<LoginInput>(event)
   const identity = body.identity?.trim() ?? ""
+  const normalizedIdentity = /^[+\d\s().-]+$/.test(identity)
+    ? identity.replace(/\D/g, "")
+    : identity
   const password = body.password ?? ""
 
   if (!identity) {
@@ -39,7 +42,7 @@ export default defineEventHandler(async (event): Promise<LoginResult> => {
 
   const response = assertBackendApiSuccess(
     await client.post<BackendLoginResponse, Record<string, unknown>>(backendRoutes.api.auth, {
-      username: identity,
+      username: normalizedIdentity,
       password,
       timezone: body.timezone || "UTC",
       device_type: "windows",

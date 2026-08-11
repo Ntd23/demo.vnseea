@@ -63,7 +63,7 @@
 
 ## Current limitation
 
-- Bridge `register` hiện chỉ support `email`, chưa support `phone-only` registration.
+- Bridge `register` support cả email và đăng ký chỉ bằng số điện thoại. Tài khoản số điện thoại lưu số đã chuẩn hóa vào `phone_number` và để `email` là `NULL`.
 - Bridge `forgot-password` hiện chỉ support `email-based reset`, chưa support đầy đủ SMS reset flow.
 - Nếu PHP endpoint hoặc proxy lỗi `5xx`, [ApiAuthRepository.ts](/d:/Duong/src/laragon/www/demo.vnseea/client/src/auth/infrastructure/repositories/ApiAuthRepository.ts) mới fallback sang mock repository.
 - Nếu backend trả lỗi nghiệp vụ `4xx`, lỗi sẽ được giữ nguyên và đẩy lên UI, không fallback mock.
