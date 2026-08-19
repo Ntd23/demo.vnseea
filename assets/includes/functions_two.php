@@ -4206,6 +4206,9 @@ function Wo_GetCommentReply($reply_id = 0) {
         }
         $post_query = mysqli_query($sqlConnect, "SELECT P.* FROM " . T_POSTS . " P INNER JOIN " . T_COMMENTS . " C ON C.`post_id` = P.`id` WHERE C.`id` = " . (int) $fetched_data["comment_id"] . " LIMIT 1");
         $post = ($post_query && mysqli_num_rows($post_query)) ? mysqli_fetch_assoc($post_query) : array();
+        if ($wo["loggedin"] == true && !empty($post["id"])) {
+            $fetched_data["post_onwer"] = Wo_IsPostOnwer($post["id"], $wo["user"]["user_id"]) ? true : false;
+        }
         $anonymous_label = !empty($wo["lang"]["anonymous"]) ? $wo["lang"]["anonymous"] : "Anonymous";
         $anonymous_avatar = Wo_GetMedia("upload/photos/incognito.png");
         return VNSEEA_RedactAnonymousComment($fetched_data, $post, VNSEEA_CurrentViewerId(), $anonymous_label, $anonymous_avatar);
