@@ -4323,9 +4323,6 @@ function Wo_RegisterCommentReply($data = array()) {
             return false;
         }
     }
-    if (!empty($page_id)) {
-        $user_id = "";
-    }
     if (empty($data["page_id"])) {
         $data["page_id"] = 0;
     }
@@ -4378,6 +4375,7 @@ function Wo_RegisterCommentReply($data = array()) {
                     $notification_data_array = array(
                         "recipient_id" => $user["user_id"],
                         "type" => "also_replied",
+                        "page_id" => $page_id,
                         "post_id" => $comment["post_id"],
                         "text" => $text,
                         "type2" => $type2,
