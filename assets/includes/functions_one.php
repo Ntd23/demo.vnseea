@@ -11773,15 +11773,17 @@ function Wo_DeletePostComment($comment_id = '')
     }
     $logged_user_id = Wo_Secure($wo['user']['user_id']);
     $post_id = Wo_GetPostIdFromCommentId($comment_id);
-    $query_one = mysqli_query($sqlConnect, "SELECT `id`, `user_id`, `c_file` FROM " . T_COMMENTS . " WHERE `id` = {$comment_id} AND `user_id` = {$logged_user_id}");
-    if (mysqli_num_rows($query_one) > 0 || Wo_IsPostOnwer($post_id, $logged_user_id) === true || Wo_IsAdmin()) {
-        if ($query_one) {
-            $query_img = mysqli_fetch_assoc($query_one);
-            if (!empty($query_img['c_file'])) {
-                @unlink($query_img['c_file']);
-            }
+    $query_one = mysqli_query($sqlConnect, "SELECT `id`, `user_id`, `c_file` FROM " . T_COMMENTS . " WHERE `id` = {$comment_id} LIMIT 1");
+    $comment = ($query_one && mysqli_num_rows($query_one) > 0) ? mysqli_fetch_assoc($query_one) : array();
+    if (empty($comment)) {
+        return false;
+    }
+    $is_comment_owner = (int) $comment['user_id'] === (int) $logged_user_id;
+    if ($is_comment_owner || Wo_IsPostOnwer($post_id, $logged_user_id) === true || Wo_IsAdmin()) {
+        if (!empty($comment['c_file'])) {
+            @unlink($comment['c_file']);
         }
-        if (mysqli_num_rows($query_one) > 0) {
+        if ($is_comment_owner) {
             Wo_RegisterPoint($post_id, "comments", "-");
         }
         $query_delete = mysqli_query($sqlConnect, "DELETE FROM " . T_COMMENTS . " WHERE `id` = {$comment_id}");
@@ -11814,13 +11816,16 @@ function Wo_DeletePostReplyComment($comment_id = '')
         return false;
     }
     $logged_user_id = Wo_Secure($wo['user']['user_id']);
-    $query_one = mysqli_query($sqlConnect, "SELECT `id`, `user_id`,`c_file` FROM " . T_COMMENTS_REPLIES . " WHERE `id` = {$comment_id} AND `user_id` = {$logged_user_id}");
-    if (mysqli_num_rows($query_one) > 0 || Wo_IsAdmin()) {
-        if ($query_one) {
-            $query_img = mysqli_fetch_assoc($query_one);
-            if (!empty($query_img['c_file'])) {
-                @unlink($query_img['c_file']);
-            }
+    $query_one = mysqli_query($sqlConnect, "SELECT `id`, `user_id`, `c_file`, `comment_id` FROM " . T_COMMENTS_REPLIES . " WHERE `id` = {$comment_id} LIMIT 1");
+    $reply = ($query_one && mysqli_num_rows($query_one) > 0) ? mysqli_fetch_assoc($query_one) : array();
+    if (empty($reply)) {
+        return false;
+    }
+    $post_id = Wo_GetPostIdFromCommentId($reply['comment_id']);
+    $is_reply_owner = (int) $reply['user_id'] === (int) $logged_user_id;
+    if ($is_reply_owner || Wo_IsPostOnwer($post_id, $logged_user_id) === true || Wo_IsAdmin()) {
+        if (!empty($reply['c_file'])) {
+            @unlink($reply['c_file']);
         }
         $query_delete = mysqli_query($sqlConnect, "DELETE FROM " . T_COMMENTS_REPLIES . " WHERE `id` = {$comment_id}");
         $query_delete .= mysqli_query($sqlConnect, "DELETE FROM " . T_REACTIONS . " WHERE `replay_id` = '{$comment_id}'");

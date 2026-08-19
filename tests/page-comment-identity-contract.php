@@ -39,5 +39,13 @@ page_comment_identity_assert(
     strpos($push, "empty(\$notification['notifier_id']) && !empty(\$notification['page_id'])") !== false,
     'push title and avatar must resolve the Page actor'
 );
+page_comment_identity_assert(
+    strpos($functions_one, '$is_reply_owner || Wo_IsPostOnwer($post_id, $logged_user_id) === true') !== false,
+    'Page owners and admins must be allowed to delete replies on Page posts'
+);
+page_comment_identity_assert(
+    strpos($functions_two, '$fetched_data["post_onwer"] = Wo_IsPostOnwer($post["id"], $wo["user"]["user_id"])') !== false,
+    'reply payloads must expose Page moderation permission to the App'
+);
 
 fwrite(STDOUT, "page comment identity contract: ok\n");
