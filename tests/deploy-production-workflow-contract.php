@@ -105,4 +105,11 @@ assert_deploy_contract(
     'deployment must not start or restart a second mobile Socket.IO process'
 );
 
+assert_deploy_contract(
+    strpos($script, 'restart_push_worker') !== false &&
+        strpos($script, 'vnseea-push-worker.service') !== false &&
+        strpos($script, 'systemctl is-active --quiet') !== false,
+    'a validated primary release must restart the long-running push worker'
+);
+
 echo "deploy production workflow contract: ok\n";

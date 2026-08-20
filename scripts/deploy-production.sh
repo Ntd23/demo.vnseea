@@ -13,6 +13,7 @@ PNPM_BIN="${PNPM_BIN:-/root/.local/share/pnpm/bin/pnpm}"
 V2_BASE_URL="${V2_BASE_URL:-https://v2.vnseea.vn}"
 PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://vnseea.vn}"
 DEPLOY_STATE_DIR="${DEPLOY_STATE_DIR:-/home/vnseea/.deploy}"
+PUSH_WORKER_SERVICE="${PUSH_WORKER_SERVICE:-vnseea-push-worker.service}"
 
 V2_CLIENT_PROCESS="vnseea-client"
 PRIMARY_CLIENT_PROCESS="vnseea-web"
@@ -130,6 +131,12 @@ finalize_output() {
 reload_php() {
     systemctl reload php8.3-fpm >/dev/null 2>&1 ||
         systemctl restart php8.3-fpm >/dev/null
+}
+
+restart_push_worker() {
+    log "Restart dedicated push worker"
+    systemctl restart "$PUSH_WORKER_SERVICE" >/dev/null &&
+        systemctl is-active --quiet "$PUSH_WORKER_SERVICE"
 }
 
 restart_realtime() {
@@ -420,6 +427,9 @@ deploy_primary() {
         rollback_target "$PRIMARY_DEPLOY_PATH" "$PRIMARY_CLIENT_PROCESS"
         rollback_primary_source "$rollback_sha"
         fail 'primary smoke test failed and the previous release was restored'
+    fi
+    if ! restart_push_worker; then
+        fail 'primary release passed smoke tests but the push worker could not be restarted'
     fi
 
     finalize_output "$PRIMARY_DEPLOY_PATH"
