@@ -2445,7 +2445,9 @@ function Wo_PageSug($limit = 1, $page_id = 0, $type = "next") {
     if (!is_numeric($page_id) || empty($page_id) || $page_id < 1) {
         $query_not = "";
     }
-    if ($type == "previous") {
+    if ($type == "latest") {
+        $query_not = !empty($page_id) ? "AND `page_id` < $page_id" : "";
+    } else if ($type == "previous") {
         $query_not = "AND `page_id` < $page_id";
     } else {
         $query_not = "AND `page_id` > $page_id";
@@ -2453,6 +2455,9 @@ function Wo_PageSug($limit = 1, $page_id = 0, $type = "next") {
     $data      = array();
     $user_id   = Wo_Secure($wo["user"]["user_id"]);
     $query_one = " SELECT `page_id` FROM " . T_PAGES . " WHERE `active` = '1' {$query_not} AND `page_id` NOT IN (SELECT `page_id` FROM " . T_PAGES_LIKES . " WHERE `user_id` = {$user_id} AND `active` = '1') AND `user_id` <> {$user_id}";
+    if ($type == "latest") {
+        $query_one .= " ORDER BY `page_id` DESC";
+    }
     if (isset($limit)) {
         $query_one .= " LIMIT {$limit}";
     }
