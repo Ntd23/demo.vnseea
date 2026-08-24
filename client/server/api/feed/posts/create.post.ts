@@ -81,6 +81,11 @@ type CreatePostPayload = {
     type?: string
     data: Buffer
   } | null
+  videoThumbnailFile: {
+    filename?: string
+    type?: string
+    data: Buffer
+  } | null
   pageId?: number
   eventId?: number
   groupId?: number
@@ -177,6 +182,7 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     ),
     imageFiles: [],
     videoFile: null,
+    videoThumbnailFile: null,
     pageId: body.pageId ? Number(body.pageId) : undefined,
     eventId: body.eventId ? Number(body.eventId) : undefined,
     groupId: body.groupId ? Number(body.groupId) : undefined,
@@ -200,6 +206,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     location: emptyLocationSelection(),
     imageFiles: [],
     videoFile: null,
+    videoThumbnailFile: null,
     pageId: undefined,
     eventId: undefined,
     groupId: undefined,
@@ -225,6 +232,9 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
       }
       else if (part.name === "postVideo") {
         payload.videoFile = file
+      }
+      else if (part.name === "video_thumb" && part.type?.startsWith("image/")) {
+        payload.videoThumbnailFile = file
       }
 
       continue
@@ -523,6 +533,17 @@ export default defineEventHandler(async (event) => {
         type: payload.videoFile.type || "video/mp4",
       }),
     )
+    if (payload.videoThumbnailFile) {
+      requestBody.append(
+        "video_thumb",
+        new File(
+          [payload.videoThumbnailFile.data],
+          payload.videoThumbnailFile.filename || "video-thumbnail.jpg",
+          { type: payload.videoThumbnailFile.type || "image/jpeg" },
+        ),
+      )
+      requestBody.append("video_thumbnail_contract", "preserve_aspect_v1")
+    }
   }
 
   const backendResponse = await postBackendApiUpload<BackendCreatePostResponse>(

@@ -19,6 +19,7 @@ import {
   type UploadValidationResult,
 } from "../../../shared-kernel/application/utils/uploadValidation"
 import { useUploadPolicyStore } from "../../../shared-kernel/application/stores/useUploadPolicyStore"
+import { createFeedVideoThumbnailFile } from "../utils/createFeedVideoThumbnailFile"
 
 type PublisherAction = "image" | "video" | "poll" | "job" | "feeling" | "story" | "colors" | "product" | "location" | "tag"
 type PublisherAudience = ContentAudience
@@ -48,6 +49,7 @@ export function useFeedPublisherBoxVM(
   const pollAnswers = ref<string[]>(["", ""])
   const imageFiles = ref<File[]>([])
   const videoFile = ref<File | null>(null)
+  const videoThumbnailFile = ref<File | null>(null)
 
   const selectedColorId = ref<number | null>(null)
   const showColorsPicker = ref(false)
@@ -347,6 +349,7 @@ export function useFeedPublisherBoxVM(
   function resetSelectedMedia() {
     imageFiles.value = []
     videoFile.value = null
+    videoThumbnailFile.value = null
 
     if (imageInputRef.value) {
       imageInputRef.value.value = ""
@@ -528,6 +531,7 @@ export function useFeedPublisherBoxVM(
     }
 
     videoFile.value = null
+    videoThumbnailFile.value = null
     imageFiles.value = files
     showFeelingPicker.value = false
     statusMessage.value = ""
@@ -552,6 +556,7 @@ export function useFeedPublisherBoxVM(
 
     imageFiles.value = []
     videoFile.value = file
+    videoThumbnailFile.value = null
     showFeelingPicker.value = false
     statusMessage.value = ""
   }
@@ -608,6 +613,16 @@ export function useFeedPublisherBoxVM(
     statusMessage.value = ""
 
     try {
+      const selectedVideoFile = videoFile.value
+      if (selectedVideoFile && !videoThumbnailFile.value) {
+        try {
+          videoThumbnailFile.value = await createFeedVideoThumbnailFile(selectedVideoFile)
+        }
+        catch (thumbnailError) {
+          console.warn("Unable to capture the Feed video thumbnail; using the backend fallback.", thumbnailError)
+        }
+      }
+
       const response = await repository.createPost({
         text: input?.text ?? draft.value?.text ?? "",
         audience: groupId ? undefined : draft.value?.audience || "public",
@@ -615,6 +630,7 @@ export function useFeedPublisherBoxVM(
         feeling: draft.value?.feeling || undefined,
         imageFiles: imageFiles.value.length ? imageFiles.value : undefined,
         videoFile: videoFile.value || undefined,
+        videoThumbnailFile: videoThumbnailFile.value || undefined,
         pageId,
         eventId,
         groupId,
