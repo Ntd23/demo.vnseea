@@ -69,6 +69,7 @@ export interface FeedRepository {
     imageFile?: File
     imageFiles?: File[]
     videoFile?: File
+    videoThumbnailFile?: File
     feeling?: string
     pageId?: number
     eventId?: number

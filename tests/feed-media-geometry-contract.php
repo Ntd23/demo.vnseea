@@ -42,5 +42,8 @@ $new_post_source = file_get_contents($root . '/api/v2/endpoints/new_post.php');
 vnseea_geometry_assert(strpos($new_post_source, "photo_media_geometry") !== false, 'accepts ordered photo geometry');
 vnseea_geometry_assert(strpos($new_post_source, "VNSEEA_ReadImageMediaGeometry") !== false, 'trusts server image dimensions');
 vnseea_geometry_assert(strpos($new_post_source, "VNSEEA_PostMediaGeometryColumnsAvailable") !== false, 'stays compatible before migration');
+vnseea_geometry_assert(strpos($new_post_source, "video_thumbnail_contract") !== false, 'accepts the App thumbnail aspect contract');
+vnseea_geometry_assert(strpos($new_post_source, "preserve_aspect_v1") !== false, 'recognizes aspect-preserving App thumbnails');
+vnseea_geometry_assert(strpos($new_post_source, "if (!\$preserve_video_thumbnail_aspect)") !== false, 'keeps the legacy fixed crop behind a compatibility branch');
 
 echo "feed media geometry contract: ok\n";

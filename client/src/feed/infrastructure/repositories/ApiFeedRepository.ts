@@ -245,6 +245,9 @@ export function createApiFeedRepository(): FeedRepository {
 
         if (input.videoFile) {
           formData.append("postVideo", input.videoFile, input.videoFile.name)
+          if (input.videoThumbnailFile) {
+            formData.append("video_thumb", input.videoThumbnailFile, input.videoThumbnailFile.name)
+          }
         }
 
         return await client.post<FeedCreatePostResponse, FormData>(
