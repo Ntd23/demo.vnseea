@@ -16,6 +16,16 @@
       class="rounded-[14px]"
     />
 
+    <UAlert
+      v-else-if="emailFromQuery"
+      color="info"
+      variant="subtle"
+      icon="i-ph-shield-check-fill"
+      :title="$t('pages.resetPasswordPage.accountNoticeTitle')"
+      :description="$t('pages.resetPasswordPage.accountNoticeDescription', { email: emailFromQuery })"
+      class="rounded-[14px]"
+    />
+
     <UForm
       v-else
       :state="state"
@@ -30,6 +40,7 @@
           autocomplete="username"
           size="xl"
           :placeholder="$t('pages.resetPasswordPage.emailPlaceholder')"
+          :readonly="Boolean(emailFromQuery)"
           class="w-full"
         />
       </UFormField>
@@ -110,6 +121,7 @@ const showConfirmPassword = ref(false)
 
 const {
   state,
+  emailFromQuery,
   pageReady,
   submitState,
   submitMessage,

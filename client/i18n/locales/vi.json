@@ -258,6 +258,8 @@
       "subtitle": "Thiết lập mật khẩu mới cho tài khoản VNSEEA. Luồng này dùng mã đặt lại đã được PHP backend tạo.",
       "invalidTitle": "Liên kết đặt lại không hợp lệ",
       "invalidDescription": "Liên kết đặt lại này thiếu mã bắt buộc. Hãy yêu cầu đặt lại mật khẩu mới rồi thử lại.",
+      "accountNoticeTitle": "Tài khoản được đặt lại",
+      "accountNoticeDescription": "Liên kết này chỉ đặt lại mật khẩu cho {email}. Tài khoản khác đang đăng nhập trên trình duyệt sẽ không bị thay đổi.",
       "emailLabel": "Email tài khoản",
       "emailPlaceholder": "Nhập email tài khoản",
       "passwordLabel": "Mật khẩu mới",
