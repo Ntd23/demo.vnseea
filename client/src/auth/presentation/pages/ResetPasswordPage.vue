@@ -17,7 +17,7 @@
     />
 
     <UAlert
-      v-else-if="emailFromQuery"
+      v-if="pageReady && emailFromQuery"
       color="info"
       variant="subtle"
       icon="i-ph-shield-check-fill"
@@ -27,7 +27,7 @@
     />
 
     <UForm
-      v-else
+      v-if="pageReady"
       :state="state"
       :validate="validate"
       class="auth-form__body"
