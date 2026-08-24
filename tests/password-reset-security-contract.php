@@ -47,6 +47,11 @@ password_reset_contract_assert(
     'reset form must identify and lock the account email supplied by the reset link'
 );
 password_reset_contract_assert(
+    strpos($reset_presentation, 'v-if="pageReady && emailFromQuery"') !== false &&
+        preg_match('/<UForm\s+v-if="pageReady"/', $reset_presentation) === 1,
+    'account notice and reset form must render together for a valid email link'
+);
+password_reset_contract_assert(
     strpos($reset_view_model, 'emailFromQuery,') !== false,
     'reset view model must expose the link email to the presentation'
 );
