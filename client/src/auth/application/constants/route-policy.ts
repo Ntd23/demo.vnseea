@@ -7,11 +7,11 @@ const guestOnlyPaths = new Set([
   "/confirm-login",
   "/confirm-account",
   "/confirm-reset-sms",
-  "/reset-password",
 ])
 
 const publicPaths = new Set([
   ...guestOnlyPaths,
+  "/reset-password",
   "/logout",
   "/contact-us",
   "/offers",

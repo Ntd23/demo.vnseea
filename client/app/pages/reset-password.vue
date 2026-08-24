@@ -10,7 +10,6 @@ import { useSiteBrandingStore } from "../../src/site-branding/application/stores
 
 definePageMeta({
   layout: "guest",
-  middleware: "guest",
 })
 
 const route = useRoute()

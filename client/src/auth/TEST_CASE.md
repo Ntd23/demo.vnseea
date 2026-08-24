@@ -134,6 +134,8 @@ Ket luan:
 | `AUTH-FORGOT-001` | `[x]` | Desktop `1440x900` va Mobile `390x844`, route `/forgot-password` | Forgot password bang email | Vao `/forgot-password`, nhap email ton tai | Goi `POST /_api/auth/forgot-password`, UI bao gui thanh cong hoac loi SMTP backend ro rang. |
 | `AUTH-FORGOT-002` | `[ ]` | Desktop `1440x900`, route `/forgot-password -> /confirm-reset-sms` | Forgot password bang phone | Nhap so dien thoai ton tai | Chuyen sang `/confirm-reset-sms?userId=...` neu backend tra SMS flow. |
 | `AUTH-RESET-001` | `[x]` | Desktop `1440x900`, route `/reset-password` | Reset password dung token | Vao `/reset-password?code=...&email=...`, nhap password moi | Goi `POST /_api/auth/reset-password`, backend doi password, ve `/welcome`. |
+| `AUTH-RESET-002` | `[ ]` | Browser dang login tai khoan khac, route `/reset-password` | Reset qua link khi da co session | Dang nhap tai khoan B, mo link reset cua tai khoan A | Form reset van mo; backend chi cho phep token cua A doi dung email tai khoan A. |
+| `AUTH-RESET-003` | `[ ]` | API reset password | Token va email khong cung user | Gui token hop le cua A kem email cua B | Backend tu choi va khong thay doi mat khau cua A hoac B. |
 
 ## Logout
 
@@ -146,7 +148,7 @@ Ket luan:
 
 | ID | Status | Man hinh | Case | Cach test | Ky vong |
 | --- | --- | --- | --- | --- | --- |
-| `AUTH-GUARD-001` | `[ ]` | Browser URL bar, guest routes | Da login vao guest routes | Khi co cookie `user_id`, vao `/welcome`, `/register`, `/forgot-password`, `/confirm-login`, `/confirm-account`, `/confirm-reset-sms`, `/reset-password` | SSR/client deu dua ve `/home`, khong loe guest page. |
+| `AUTH-GUARD-001` | `[ ]` | Browser URL bar, guest routes | Da login vao guest routes | Khi co cookie `user_id`, vao `/welcome`, `/register`, `/forgot-password`, `/confirm-login`, `/confirm-account`, `/confirm-reset-sms` | SSR/client deu dua ve `/home`, khong loe guest page; `/reset-password` la public route ngoai le. |
 | `AUTH-GUARD-002` | `[ ]` | Browser URL bar, protected routes | Chua login vao protected routes | Xoa cookie `user_id`, vao `/`, `/home`, `/messages` | Bi dua ve `/welcome`. |
 
 ## Session Resilience
