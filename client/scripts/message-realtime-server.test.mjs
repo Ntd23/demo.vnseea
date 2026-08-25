@@ -185,3 +185,68 @@ test("presence publisher rejects unauthorized and invalid changes", async (t) =>
     online: "yes",
   })).status, 400)
 })
+
+test("relationship changes reach both affected user rooms with canonical state", { timeout: 2_000 }, async (t) => {
+  const { relay, url } = await startRelay()
+  const first = await connect(url, "21")
+  const second = await connect(url, "22")
+  const other = await connect(url, "23")
+  t.after(async () => {
+    first.disconnect()
+    second.disconnect()
+    other.disconnect()
+    await relay.close()
+  })
+
+  let leaked = false
+  other.on("relationship:changed", () => {
+    leaked = true
+  })
+  const firstChange = new Promise(resolve => first.once("relationship:changed", resolve))
+  const secondChange = new Promise(resolve => second.once("relationship:changed", resolve))
+  const response = await fetch(`${url}/internal/notifications/publish`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-realtime-secret": secret,
+    },
+    body: JSON.stringify({
+      recipientId: "21",
+      kind: "relationship",
+      relationships: [
+        {
+          recipientId: "21",
+          peerUserId: "22",
+          occurredAt: 456,
+          isFollowing: 1,
+          isFollower: 0,
+        },
+        {
+          recipientId: "22",
+          peerUserId: "21",
+          occurredAt: 456,
+          isFollowing: 0,
+          isFollower: 1,
+        },
+      ],
+    }),
+  })
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(await firstChange, {
+    kind: "relationship",
+    peerUserId: "22",
+    occurredAt: 456,
+    isFollowing: true,
+    isFollower: false,
+  })
+  assert.deepEqual(await secondChange, {
+    kind: "relationship",
+    peerUserId: "21",
+    occurredAt: 456,
+    isFollowing: false,
+    isFollower: true,
+  })
+  await new Promise(resolve => setTimeout(resolve, 20))
+  assert.equal(leaked, false)
+})
