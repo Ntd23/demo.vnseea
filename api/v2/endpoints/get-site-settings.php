@@ -48,7 +48,17 @@ $public_config = array(
     'upload_max_file_size' => $upload_max_file_size,
     'upload_max_file_size_label' => $upload_max_file_size_label,
     'upload_allowed_extensions' => !empty($wo['config']['allowedExtenstion']) ? $wo['config']['allowedExtenstion'] : '',
-    'upload_allowed_mime_types' => !empty($wo['config']['mime_types']) ? $wo['config']['mime_types'] : ''
+    'upload_allowed_mime_types' => !empty($wo['config']['mime_types']) ? $wo['config']['mime_types'] : '',
+    'mobile_app' => array(
+        'ios' => array(
+            'version' => isset($wo['config']['vnseea_ios_app_version']) ? trim($wo['config']['vnseea_ios_app_version']) : '',
+            'store_url' => isset($wo['config']['vnseea_ios_store_url']) ? trim($wo['config']['vnseea_ios_store_url']) : ''
+        ),
+        'android' => array(
+            'version' => isset($wo['config']['vnseea_android_app_version']) ? trim($wo['config']['vnseea_android_app_version']) : '',
+            'store_url' => isset($wo['config']['vnseea_android_store_url']) ? trim($wo['config']['vnseea_android_store_url']) : ''
+        )
+    )
 );
 $get_config['page_categories'] = $wo['page_categories'];
 $get_config['group_categories'] = $wo['group_categories'];
@@ -103,4 +113,3 @@ $response_data      = array(
     'public_config' => $public_config,
     'currencies' => $currencies_plain,
 );
-

@@ -38,6 +38,7 @@ const realtimeEventNames = {
   notification: ["notification:new", "notification:counts-changed"],
   request: ["request:new", "navigation:counts-changed"],
   message: ["messages:count", "navigation:counts-changed"],
+  relationship: ["relationship:changed"],
   group_chat_request: ["group-chat-request:new", "navigation:counts-changed"],
   counts: ["navigation:counts-changed"],
 }
@@ -238,9 +239,46 @@ export function createRealtimeRelay({
       }
       const kind = String(payload.kind || "notification").trim()
       const eventNames = realtimeEventNames[kind] || realtimeEventNames.notification
+      if (kind === "relationship" && Array.isArray(payload.relationships)) {
+        let emitted = 0
+        payload.relationships.slice(0, 10).forEach(relationship => {
+          const relationshipRecipientId = String(relationship?.recipientId || "").trim()
+          const peerUserId = String(relationship?.peerUserId || "").trim()
+          if (
+            !/^[1-9][0-9]*$/.test(relationshipRecipientId)
+            || !/^[1-9][0-9]*$/.test(peerUserId)
+            || relationshipRecipientId === peerUserId
+          ) return
+          io.to(`user:${relationshipRecipientId}`).emit("relationship:changed", {
+            kind,
+            peerUserId,
+            occurredAt: Number(relationship?.occurredAt) || Date.now(),
+            isFollowing: Boolean(Number(relationship?.isFollowing)),
+            isFollower: Boolean(Number(relationship?.isFollower)),
+          })
+          emitted += 1
+        })
+        if (emitted === 0) {
+          send(encodeJson(400, { ok: false, message: "Invalid relationship change" }))
+          return
+        }
+        send(encodeJson(200, { ok: true }))
+        return
+      }
       const eventPayload = {
         notificationId: String(payload.notificationId || ""),
         kind,
+      }
+      if (kind === "relationship") {
+        const peerUserId = String(payload.peerUserId || "").trim()
+        if (!/^[1-9][0-9]*$/.test(peerUserId) || peerUserId === recipientId) {
+          send(encodeJson(400, { ok: false, message: "Invalid relationship change" }))
+          return
+        }
+        eventPayload.peerUserId = peerUserId
+        eventPayload.occurredAt = Number(payload.occurredAt) || Date.now()
+        eventPayload.isFollowing = Boolean(Number(payload.isFollowing))
+        eventPayload.isFollower = Boolean(Number(payload.isFollower))
       }
       eventNames.forEach((eventName) => {
         io.to(`user:${recipientId}`).emit(eventName, eventPayload)
