@@ -66,7 +66,9 @@
         </div>
         <div class="post-header__meta">
           <template v-if="displayTime">
-            <span>{{ displayTime }}</span>
+            <time :datetime="displayTimeIso || undefined" :title="absoluteDisplayTime || undefined">
+              {{ displayTime }}
+            </time>
             <span class="post-header__dot">·</span>
           </template>
           <Icon :name="audienceIcon" class="post-header__audience-icon" :title="audience" />
@@ -112,6 +114,12 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core"
 import { buildPostLocationMapUrl } from "../../../location/application/utils/location-map-link"
+import {
+  formatAbsoluteLocalTime,
+  formatRelativeTime,
+  formatTimestampAsIso,
+  parseBackendTimestamp,
+} from "../../../shared-kernel/application/utils/formatRelativeTime"
 import IdentityHoverCard from "./IdentityHoverCard.vue"
 import TaggedPeopleModal from "./TaggedPeopleModal.vue"
 import type { FeedTaggedUser } from "../../domain/types/feed.types"
@@ -158,6 +166,9 @@ const props = defineProps<{
 
 const taggedUsers = computed(() => props.taggedUsers ?? [])
 const taggedPeopleOpen = ref(false)
+const isClientTimeReady = ref(false)
+const relativeTimeNow = ref(Date.now())
+let relativeTimeTimer: ReturnType<typeof setInterval> | null = null
 
 const emit = defineEmits<{
   menuAction: [action: string]
@@ -196,28 +207,44 @@ const displayTime = computed(() => {
     return ""
   }
 
-  // If it's a Unix timestamp (10+ digits)
-  if (/^\d{10,}$/.test(normalized)) {
-    return formatStableUnixTimestamp(Number(normalized))
+  if (!parseBackendTimestamp(normalized)) {
+    return normalized
   }
 
-  return normalized
-})
-
-function formatStableUnixTimestamp(value: number) {
-  if (!Number.isFinite(value) || value <= 0) {
+  if (!isClientTimeReady.value) {
     return ""
   }
 
-  const date = new Date(value * 1000)
-  const day = String(date.getUTCDate()).padStart(2, "0")
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
-  const year = date.getUTCFullYear()
-  const hours = String(date.getUTCHours()).padStart(2, "0")
-  const minutes = String(date.getUTCMinutes()).padStart(2, "0")
+  return formatRelativeTime(normalized, {
+    locale: locale.value,
+    now: relativeTimeNow.value,
+    labels: {
+      justNow: t("feed.postHeader.relativeTime.justNow"),
+      today: t("feed.postHeader.relativeTime.today"),
+      thisWeek: t("feed.postHeader.relativeTime.thisWeek"),
+    },
+  }) || normalized
+})
 
-  return `${day}/${month}/${year} ${hours}:${minutes}`
-}
+const absoluteDisplayTime = computed(() => isClientTimeReady.value
+  ? formatAbsoluteLocalTime(props.time, locale.value)
+  : "")
+const displayTimeIso = computed(() => formatTimestampAsIso(props.time))
+
+onMounted(() => {
+  isClientTimeReady.value = true
+  relativeTimeNow.value = Date.now()
+  relativeTimeTimer = setInterval(() => {
+    relativeTimeNow.value = Date.now()
+  }, 30_000)
+})
+
+onBeforeUnmount(() => {
+  if (relativeTimeTimer) {
+    clearInterval(relativeTimeTimer)
+    relativeTimeTimer = null
+  }
+})
 
 const currentEventId = computed(() => {
   const match = route.path.match(/^\/events\/(\d+)(?:\/)?$/)

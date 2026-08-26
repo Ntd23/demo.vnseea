@@ -5655,6 +5655,11 @@
       "notFoundDescription": "Bài viết này không tồn tại, đã bị xóa hoặc bạn không còn quyền xem."
     },
     "postHeader": {
+      "relativeTime": {
+        "justNow": "V\u1eeba xong",
+        "today": "H\u00f4m nay",
+        "thisWeek": "Tu\u1ea7n n\u00e0y"
+      },
       "followRequested": "\u0110\u00e3 g\u1eedi y\u00eau c\u1ea7u",
       "taggedPeopleTitle": "Nh\u1eefng ng\u01b0\u1eddi \u0111\u01b0\u1ee3c g\u1eafn th\u1ebb",
       "taggedPeopleDescription": "Xem danh s\u00e1ch ng\u01b0\u1eddi \u0111\u01b0\u1ee3c nh\u1eafc \u0111\u1ebfn trong b\u00e0i vi\u1ebft.",

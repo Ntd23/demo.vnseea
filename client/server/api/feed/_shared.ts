@@ -541,8 +541,8 @@ const formatBackendTimestamp = (value: unknown) => {
 }
 
 const formatPostTime = (entity: BackendEntity) =>
-  firstString(entity, ["time_text"]) ||
-  formatBackendTimestamp(firstString(entity, ["posted", "time", "created_at"]))
+  firstString(entity, ["posted", "time", "created_at"]) ||
+  firstString(entity, ["time_text"])
 
 const normalizeFeedReactionType = (value: unknown): FeedStoryReactionType | null => {
   return normalizeReactionType(value)

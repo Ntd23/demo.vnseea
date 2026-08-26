@@ -5655,6 +5655,11 @@
       "notFoundDescription": "This post does not exist, was removed, or you no longer have permission to view it."
     },
     "postHeader": {
+      "relativeTime": {
+        "justNow": "Just now",
+        "today": "Today",
+        "thisWeek": "This week"
+      },
       "followRequested": "Request sent",
       "taggedPeopleTitle": "Tagged people",
       "taggedPeopleDescription": "See everyone mentioned in this post.",
