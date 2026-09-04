@@ -78,3 +78,14 @@ test("Nuxt group room keeps official LiveKit track attachment and camera control
   assert.match(callTypes, /MessageGroupCallPayload[\s\S]*?type:\s*["']video["']/)
   assert.match(bridge, /type:\s*["']video["']/)
 })
+
+test("group call state uses socket events with a slower PHP reconciliation interval", async () => {
+  const calls = await readClient("src/messages/application/composables/useMessageCalls.ts")
+  const session = await readClient("src/messages/application/composables/useGroupCallRoomSession.ts")
+
+  assert.match(calls, /realtimeSocket\.on\("livekit_group_call_sync"/)
+  assert.match(calls, /realtimeSocket\.on\("livekit_group_call_closed"/)
+  assert.match(session, /GROUP_CALL_FALLBACK_SYNC_INTERVAL_MS = 3000/)
+  assert.match(session, /GROUP_CALL_RECONCILE_INTERVAL_MS = 15000/)
+  assert.match(session, /realtimeConnected\.value \? GROUP_CALL_RECONCILE_INTERVAL_MS : GROUP_CALL_FALLBACK_SYNC_INTERVAL_MS/)
+})

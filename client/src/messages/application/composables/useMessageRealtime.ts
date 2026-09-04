@@ -52,6 +52,9 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
   const typingHeartbeatTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
   const typingStatusTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
   const remoteTypingTimers = shallowRef<Map<string, ReturnType<typeof window.setTimeout>>>(new Map())
+  const fallbackTypingTargets = new Set<string>()
+  let incomingRefreshPromise: Promise<void> | null = null
+  let incomingRefreshQueued = false
   const activeTypingTargetKey = ref("")
 
   const isUserThread = computed(() =>
@@ -64,6 +67,10 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
     options.activeTab.value === "group"
     && options.selectedContact.value?.type === "group"
     && (options.selectedContact.value.groupId ?? 0) > 0,
+  )
+
+  const needsTypingStatusFallback = computed(() =>
+    isGroupThread.value || (isUserThread.value && !connected.value),
   )
 
   const resolveTypingTarget = (contact?: MessageContact | null): TypingTarget | null => {
@@ -139,18 +146,28 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
     }
   }
 
+  const hasConnectedSocket = () => connected.value && Boolean(socket.value?.connected)
+
   const sendTypingHeartbeat = async (target: TypingTarget) => {
     if (target.type === "user") {
+      if (hasConnectedSocket()) {
+        if (fallbackTypingTargets.delete(target.key)) {
+          await options.repository.clearTyping(target.userId).catch(() => null)
+        }
+
+        socket.value?.emit("message:typing", {
+          recipientId: target.userId,
+        })
+        return
+      }
+
       try {
         await options.repository.setTyping(target.userId)
+        fallbackTypingTargets.add(target.key)
       }
       catch {
         // Silent: typing is auxiliary state.
       }
-
-      socket.value?.emit("message:typing", {
-        recipientId: target.userId,
-      })
 
       return
     }
@@ -162,9 +179,6 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
       // Silent: typing is auxiliary state.
     }
 
-    socket.value?.emit("message:typing", {
-      groupId: target.groupId,
-    })
   }
 
   const scheduleRemoteTypingExpiry = (target: TypingTarget) => {
@@ -209,9 +223,23 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
     await options.refreshThread()
   }
 
-  const refreshFromIncomingMessage = async () => {
-    await options.refreshInbox()
-    await refreshActiveThread()
+  const refreshFromIncomingMessage = () => {
+    if (incomingRefreshPromise) {
+      incomingRefreshQueued = true
+      return incomingRefreshPromise
+    }
+
+    incomingRefreshPromise = (async () => {
+      do {
+        incomingRefreshQueued = false
+        await options.refreshInbox()
+        await refreshActiveThread()
+      } while (incomingRefreshQueued)
+    })().finally(() => {
+      incomingRefreshPromise = null
+    })
+
+    return incomingRefreshPromise
   }
 
   const startPolling = () => {
@@ -262,6 +290,10 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
         connected.value = true
         pollingFallbackActive.value = false
         stopPolling()
+        stopTypingStatusSync()
+        if (isGroupThread.value) {
+          startTypingStatusSync()
+        }
         watchMessagePresenceUsers(realtimeSocket, options.presenceUserIds.value)
 
         const sessionHash = useCookie("user_id").value
@@ -273,6 +305,7 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
       realtimeSocket.on("disconnect", () => {
         connected.value = false
         socket.value = null
+        startTypingStatusSync()
         startPolling()
       })
 
@@ -280,6 +313,7 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
         connected.value = false
         socket.value = null
         realtimeSocket.disconnect()
+        startTypingStatusSync()
         startPolling()
       })
 
@@ -432,7 +466,7 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
   }
 
   const startTypingStatusSync = () => {
-    if (!import.meta.client || typingStatusTimer.value || (!isUserThread.value && !isGroupThread.value)) {
+    if (!import.meta.client || typingStatusTimer.value || !needsTypingStatusFallback.value) {
       return
     }
 
@@ -460,7 +494,7 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
       const activeUserId = options.selectedContact.value?.userId ?? 0
       const activeGroupId = options.selectedContact.value?.groupId ?? 0
 
-      if (!isUserThread.value && !isGroupThread.value) {
+      if (!needsTypingStatusFallback.value) {
         stopTypingStatusSync()
         options.setRemoteTyping(false)
         return
@@ -490,11 +524,15 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
     activeTypingTargetKey.value = ""
 
     if (target?.type === "user") {
-      try {
-        await options.repository.clearTyping(target.userId)
-      }
-      catch {
-        // Silent: clearing typing should not block messaging.
+      const usedFallback = fallbackTypingTargets.delete(target.key)
+
+      if (usedFallback || !hasConnectedSocket()) {
+        try {
+          await options.repository.clearTyping(target.userId)
+        }
+        catch {
+          // Silent: clearing typing should not block messaging.
+        }
       }
     }
 
@@ -529,6 +567,9 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
       socket.value?.emit("message:typing-stop", { groupId: id })
     }
     else if (type === "user" && id > 0) {
+      if (fallbackTypingTargets.delete(activeKey) || !hasConnectedSocket()) {
+        await options.repository.clearTyping(id).catch(() => null)
+      }
       socket.value?.emit("message:typing-stop", { recipientId: id })
     }
   }
@@ -582,6 +623,7 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
       clearRemoteTypingTimer(targetKey)
     }
     await stopTyping()
+    fallbackTypingTargets.clear()
 
     if (socket.value) {
       socket.value.disconnect()
@@ -603,7 +645,7 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
     ([tab, type, userId]) => {
       stopTypingStatusSync()
 
-      if (tab === "user" && type === "user" && userId > 0) {
+      if (tab === "user" && type === "user" && userId > 0 && !connected.value) {
         startTypingStatusSync()
         return
       }

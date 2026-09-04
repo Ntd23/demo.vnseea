@@ -11,8 +11,10 @@ import type {
   MessageIncomingCall,
   MessageIncomingGroupCall,
 } from "../types/calls.types"
+import type { MessageRealtimeToken } from "../types/messages.types"
 
 export interface MessageCallsRepository {
+  getRealtimeToken(): Promise<MessageRealtimeToken>
   createCall(input: {
     userId: number
     type: MessageCallType

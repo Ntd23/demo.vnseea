@@ -98,6 +98,24 @@ const shouldStartPhpWatchdog = process.platform === "win32"
   && watchdogMode !== "false"
   && (watchdogMode === "1" || watchdogMode === "on" || watchdogMode === "true" || isLocalBackend())
 
+const realtimeMode = String(process.env.REALTIME_DEV_SERVER || "auto").trim().toLowerCase()
+const realtimeHost = String(process.env.REALTIME_HOST || "127.0.0.1").trim()
+const configuredRealtimePort = Number(process.env.REALTIME_PORT || 3025)
+const realtimePort = Number.isInteger(configuredRealtimePort) && configuredRealtimePort > 0
+  ? configuredRealtimePort
+  : 3025
+const realtimeDisabled = ["0", "off", "false"].includes(realtimeMode)
+
+const isTcpPortAvailable = (host, port) => new Promise((resolvePromise) => {
+  const probe = createServer()
+
+  probe.unref()
+  probe.once("error", () => resolvePromise(false))
+  probe.listen({ host, port, exclusive: true }, () => {
+    probe.close(() => resolvePromise(true))
+  })
+})
+
 try {
   await assertDevPortAvailable()
 }
@@ -108,6 +126,17 @@ catch (error) {
 
 if (shouldStartPhpWatchdog) {
   spawnChild("node", [join("realtime", "php-upstream-watchdog.mjs")])
+}
+
+if (!realtimeDisabled && process.env.REALTIME_SECRET) {
+  const realtimePortAvailable = await isTcpPortAvailable(realtimeHost, realtimePort)
+
+  if (realtimePortAvailable) {
+    spawnChild("node", [join("realtime", "notification-server.mjs")])
+  }
+  else {
+    console.log(`[vnseea-dev] Realtime port ${realtimeHost}:${realtimePort} is already in use; keeping the existing process.`)
+  }
 }
 
 const nuxt = spawnChild("nuxt", ["dev", "--host", devHost, "--port", String(devPort)])

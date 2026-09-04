@@ -50,7 +50,7 @@ type MiniChatSessionView = MiniChatSession & {
   canSend: boolean
 }
 
-const INBOX_REFRESH_INTERVAL_MS = 2000
+const INBOX_FALLBACK_INTERVAL_MS = 10000
 const MAX_MINI_CHAT_SESSIONS = 2
 
 function normalizeKeyword(value: string) {
@@ -287,9 +287,12 @@ export function useChatWidgetVM(
   const isSendingQuick = ref(false)
   const isUpdatingTags = ref(false)
   const socket = shallowRef<Socket | null>(null)
+  const realtimeConnected = ref(false)
   const connectingRealtime = ref(false)
   const socketOwnerId = ref(0)
   const refreshTimer = shallowRef<number | null>(null)
+  let incomingRefreshPromise: Promise<void> | null = null
+  let incomingRefreshQueued = false
   const isInboxRefreshPaused = ref(false)
   const unreadSnapshot = shallowRef<Map<string, { unreadCount: number, preview: string }>>(new Map())
   const hasUnreadSnapshot = ref(false)
@@ -769,7 +772,7 @@ export function useChatWidgetVM(
     }
   }
 
-  async function refreshFromIncomingMessage() {
+  async function runIncomingMessageRefresh() {
     if (isInboxRefreshPaused.value) {
       return
     }
@@ -793,6 +796,28 @@ export function useChatWidgetVM(
 
     await openMiniChat(incomingContact)
     miniChatAutoOpenVersion.value += 1
+  }
+
+  function refreshFromIncomingMessage() {
+    if (isInboxRefreshPaused.value) {
+      return Promise.resolve()
+    }
+
+    if (incomingRefreshPromise) {
+      incomingRefreshQueued = true
+      return incomingRefreshPromise
+    }
+
+    incomingRefreshPromise = (async () => {
+      do {
+        incomingRefreshQueued = false
+        await runIncomingMessageRefresh()
+      } while (incomingRefreshQueued && !isInboxRefreshPaused.value)
+    })().finally(() => {
+      incomingRefreshPromise = null
+    })
+
+    return incomingRefreshPromise
   }
 
   function getSessionContact(session: MiniChatSession) {
@@ -1609,18 +1634,18 @@ export function useChatWidgetVM(
   }
 
   function startRefreshTimer() {
-    if (!import.meta.client || refreshTimer.value) {
+    if (!import.meta.client || refreshTimer.value || realtimeConnected.value) {
       return
     }
 
     refreshTimer.value = window.setInterval(() => {
-      if (!isInboxRefreshPaused.value) {
+      if (!realtimeConnected.value && !isInboxRefreshPaused.value) {
         void refreshFromIncomingMessage()
       }
       if (!socket.value) {
         void connectRealtime()
       }
-    }, INBOX_REFRESH_INTERVAL_MS)
+    }, INBOX_FALLBACK_INTERVAL_MS)
   }
 
   function setInboxRefreshPaused(paused: boolean) {
@@ -1640,6 +1665,7 @@ export function useChatWidgetVM(
     const realtimeSocket = socket.value
     socket.value = null
     socketOwnerId.value = 0
+    realtimeConnected.value = false
 
     if (realtimeSocket) {
       realtimeSocket.removeAllListeners()
@@ -1690,11 +1716,17 @@ export function useChatWidgetVM(
           return
         }
 
+        realtimeConnected.value = true
+        stopRefreshTimer()
         watchMessagePresenceUsers(realtimeSocket, presenceUserIds.value)
 
         const sessionHash = useCookie("user_id").value
         if (sessionHash) {
           realtimeSocket.emit("join", { user_id: sessionHash })
+        }
+
+        if (!isInboxRefreshPaused.value) {
+          void refreshFromIncomingMessage()
         }
       })
 
@@ -1717,6 +1749,8 @@ export function useChatWidgetVM(
       })
 
       realtimeSocket.on("disconnect", (reason) => {
+        realtimeConnected.value = false
+
         if (reason === "io client disconnect" && socket.value === realtimeSocket) {
           socket.value = null
           socketOwnerId.value = 0
@@ -1724,10 +1758,21 @@ export function useChatWidgetVM(
         else if (reason === "io server disconnect" && ownerId === currentOwnerId.value) {
           realtimeSocket.connect()
         }
+
+        if (ownerId === currentOwnerId.value) {
+          startRefreshTimer()
+        }
       })
 
       realtimeSocket.on("connect_error", () => {
-        // Socket.IO keeps retrying; the refresh timer remains the data fallback.
+        realtimeConnected.value = false
+        if (socket.value === realtimeSocket) {
+          socket.value = null
+          socketOwnerId.value = 0
+        }
+        realtimeSocket.removeAllListeners()
+        realtimeSocket.disconnect()
+        startRefreshTimer()
       })
 
       socket.value = realtimeSocket
@@ -1736,6 +1781,8 @@ export function useChatWidgetVM(
     catch {
       socket.value = null
       socketOwnerId.value = 0
+      realtimeConnected.value = false
+      startRefreshTimer()
     }
     finally {
       connectingRealtime.value = false

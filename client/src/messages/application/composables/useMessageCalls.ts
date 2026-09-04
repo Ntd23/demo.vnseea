@@ -1,6 +1,7 @@
-// Description: Coordinates one-to-one message call state, PHP call polling, and LiveKit sessions.
+// Description: Coordinates message call state through Socket.IO events, PHP reconciliation, and LiveKit sessions.
 
 import type { Ref } from "vue"
+import type { Socket } from "socket.io-client"
 import type {
   MessageCallSession,
   MessageCallStatus,
@@ -38,15 +39,41 @@ type MessageCallOptions = {
   pollIncoming?: boolean | Ref<boolean>
 }
 
-const POLL_INTERVAL_MS = 2000
-const INCOMING_POLL_INTERVAL_MS = 5000
+type DirectCallRealtimePayload = {
+  call_id?: number | string
+  call_type?: MessageCallType
+  status?: string
+  peer?: {
+    id?: number | string
+    name?: string
+    avatar?: string
+  }
+}
+
+type GroupCallRealtimePayload = {
+  call_id?: number | string
+  group_id?: number | string
+  call_type?: string
+  status?: string
+  room_name?: string
+  group?: {
+    id?: number | string
+    name?: string
+    avatar?: string
+  }
+}
+
+const OUTGOING_FALLBACK_INTERVAL_MS = 2000
+const OUTGOING_RECONCILE_INTERVAL_MS = 10000
+const INCOMING_FALLBACK_INTERVAL_MS = 5000
+const INCOMING_RECONCILE_INTERVAL_MS = 10000
 const NO_ANSWER_MS = 43000
 let outgoingPoll: ReturnType<typeof setInterval> | null = null
 let incomingPoll: ReturnType<typeof setInterval> | null = null
 let noAnswerTimer: ReturnType<typeof setTimeout> | null = null
 let incomingPollPending = false
+let outgoingSyncPending = false
 let incomingPollingConsumers = 0
-let nextIncomingPollType: MessageCallType = "video"
 
 import.meta.hot?.dispose(() => {
   if (outgoingPoll) {
@@ -63,6 +90,7 @@ import.meta.hot?.dispose(() => {
   }
 
   incomingPollPending = false
+  outgoingSyncPending = false
   incomingPollingConsumers = 0
 })
 
@@ -77,6 +105,9 @@ export function useMessageCalls(
   const status = useState<MessageCallStatus>("messages:call:status", () => "idle")
   const errorMessage = useState("messages:call:error", () => "")
   const isCallActionPending = useState("messages:call:pending", () => false)
+  const realtimeConnected = useState("messages:call:realtime-connected", () => false)
+  const callSocket = shallowRef<Socket | null>(null)
+  const connectingRealtime = ref(false)
   const shouldPollIncoming = computed(() =>
     typeof options.pollIncoming === "object"
       ? Boolean(options.pollIncoming.value)
@@ -91,6 +122,13 @@ export function useMessageCalls(
     if (noAnswerTimer) {
       clearTimeout(noAnswerTimer)
       noAnswerTimer = null
+    }
+  }
+
+  const clearOutgoingSyncTimer = () => {
+    if (outgoingPoll) {
+      clearInterval(outgoingPoll)
+      outgoingPoll = null
     }
   }
 
@@ -115,29 +153,39 @@ export function useMessageCalls(
   }
 
   const syncOutgoingAnswer = async (id: number, type: MessageCallType) => {
-    const result = await repository.getOutgoingStatus({ id, type }).catch(() => null)
-
-    if (!result) {
+    if (outgoingSyncPending) {
       return false
     }
 
-    if (result.status === 200) {
-      clearOutgoingTimers()
-      await fetchPayload(id, type).catch((error) => {
-        errorMessage.value = error?.statusMessage || "Can not join call."
-        status.value = "error"
-      })
-      return true
-    }
+    outgoingSyncPending = true
+    const result = await repository.getOutgoingStatus({ id, type }).catch(() => null)
 
-    if (result.status === 400) {
-      clearOutgoingTimers()
-      ringingCall.value = null
-      status.value = "declined"
-      return true
-    }
+    try {
+      if (!result) {
+        return false
+      }
 
-    return false
+      if (result.status === 200) {
+        clearOutgoingTimers()
+        await fetchPayload(id, type).catch((error) => {
+          errorMessage.value = error?.statusMessage || "Can not join call."
+          status.value = "error"
+        })
+        return true
+      }
+
+      if (result.status === 400) {
+        clearOutgoingTimers()
+        ringingCall.value = null
+        status.value = "declined"
+        return true
+      }
+
+      return false
+    }
+    finally {
+      outgoingSyncPending = false
+    }
   }
 
   const pollOutgoingAnswer = (id: number, type: MessageCallType) => {
@@ -145,7 +193,7 @@ export function useMessageCalls(
     void syncOutgoingAnswer(id, type)
     outgoingPoll = setInterval(() => {
       void syncOutgoingAnswer(id, type)
-    }, POLL_INTERVAL_MS)
+    }, realtimeConnected.value ? OUTGOING_RECONCILE_INTERVAL_MS : OUTGOING_FALLBACK_INTERVAL_MS)
 
     noAnswerTimer = setTimeout(async () => {
       clearOutgoingTimers()
@@ -409,9 +457,11 @@ export function useMessageCalls(
         return
       }
 
-      const type = nextIncomingPollType
-      nextIncomingPollType = type === "video" ? "audio" : "video"
-      await pollIncoming(type)
+      await pollIncoming("video")
+
+      if (!ringingCall.value) {
+        await pollIncoming("audio")
+      }
 
       if (!ringingCall.value && !ringingGroupCall.value && !activeSession.value && !activeGroupCall.value) {
         const incomingGroup = await repository.getIncomingGroupCall().catch(() => null)
@@ -437,6 +487,27 @@ export function useMessageCalls(
 
   let ownsIncomingPolling = false
 
+  const scheduleIncomingPolling = () => {
+    if (!import.meta.client || incomingPoll || incomingPollingConsumers === 0) {
+      return
+    }
+
+    const delay = realtimeConnected.value
+      ? INCOMING_RECONCILE_INTERVAL_MS
+      : INCOMING_FALLBACK_INTERVAL_MS
+
+    incomingPoll = window.setTimeout(async () => {
+      incomingPoll = null
+      await pollIncomingTypes()
+
+      if (!realtimeConnected.value && !callSocket.value) {
+        await connectCallRealtime()
+      }
+
+      scheduleIncomingPolling()
+    }, delay)
+  }
+
   const startIncomingPolling = () => {
     if (!import.meta.client) {
       return
@@ -452,9 +523,7 @@ export function useMessageCalls(
     }
 
     void pollIncomingTypes()
-    incomingPoll = setInterval(() => {
-      void pollIncomingTypes()
-    }, INCOMING_POLL_INTERVAL_MS)
+    scheduleIncomingPolling()
   }
 
   const stopIncomingPolling = () => {
@@ -466,8 +535,216 @@ export function useMessageCalls(
     incomingPollingConsumers = Math.max(0, incomingPollingConsumers - 1)
 
     if (incomingPollingConsumers === 0 && incomingPoll) {
-      clearInterval(incomingPoll)
+      window.clearTimeout(incomingPoll)
       incomingPoll = null
+    }
+  }
+
+  const realtimeCallType = (value: unknown): MessageCallType =>
+    value === "audio" ? "audio" : "video"
+
+  const realtimeCallId = (value: unknown) => {
+    const id = Number(value ?? 0)
+    return Number.isFinite(id) && id > 0 ? id : 0
+  }
+
+  const closeDirectCallFromRealtime = (payload: DirectCallRealtimePayload, declined = false) => {
+    const id = realtimeCallId(payload.call_id)
+    if (!id) {
+      return
+    }
+
+    if (ringingCall.value?.id === id) {
+      clearOutgoingTimers()
+      ringingCall.value = null
+    }
+
+    if (activeSession.value?.id === id) {
+      activeSession.value = null
+    }
+
+    if (!ringingCall.value && !activeSession.value) {
+      status.value = declined || payload.status === "declined" ? "declined" : "ended"
+    }
+  }
+
+  const closeGroupCallFromRealtime = (payload: GroupCallRealtimePayload) => {
+    const id = realtimeCallId(payload.call_id)
+    if (!id) {
+      return
+    }
+
+    if (ringingGroupCall.value?.id === id) {
+      ringingGroupCall.value = null
+    }
+
+    if (activeGroupCall.value?.id === id) {
+      activeGroupCall.value = null
+    }
+
+    if (!ringingGroupCall.value && !activeGroupCall.value) {
+      status.value = "ended"
+    }
+  }
+
+  const disconnectCallRealtime = () => {
+    const realtimeSocket = callSocket.value
+
+    if (!realtimeSocket) {
+      return
+    }
+
+    callSocket.value = null
+    realtimeConnected.value = false
+
+    realtimeSocket.removeAllListeners()
+    realtimeSocket.disconnect()
+  }
+
+  const connectCallRealtime = async () => {
+    if (!import.meta.client || !shouldPollIncoming.value || callSocket.value || connectingRealtime.value) {
+      return
+    }
+
+    connectingRealtime.value = true
+
+    try {
+      const auth = await repository.getRealtimeToken()
+
+      if (!auth.enabled || !auth.token || !auth.url) {
+        realtimeConnected.value = false
+        startIncomingPolling()
+        return
+      }
+
+      const { io } = await import("socket.io-client")
+      const realtimeSocket = io(auth.url, {
+        auth: {
+          token: auth.token,
+        },
+        transports: ["websocket"],
+        timeout: 5000,
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 10000,
+      })
+
+      realtimeSocket.on("connect", () => {
+        realtimeConnected.value = true
+        void pollIncomingTypes()
+        scheduleIncomingPolling()
+
+        const outgoing = ringingCall.value
+        if (outgoing?.direction === "outgoing" && outgoing.id > 0) {
+          clearOutgoingSyncTimer()
+          outgoingPoll = setInterval(() => {
+            void syncOutgoingAnswer(outgoing.id, outgoing.type)
+          }, OUTGOING_RECONCILE_INTERVAL_MS)
+          void syncOutgoingAnswer(outgoing.id, outgoing.type)
+        }
+      })
+
+      realtimeSocket.on("disconnect", (reason) => {
+        realtimeConnected.value = false
+        startIncomingPolling()
+
+        const outgoing = ringingCall.value
+        if (outgoing?.direction === "outgoing" && outgoing.id > 0) {
+          clearOutgoingSyncTimer()
+          outgoingPoll = setInterval(() => {
+            void syncOutgoingAnswer(outgoing.id, outgoing.type)
+          }, OUTGOING_FALLBACK_INTERVAL_MS)
+        }
+
+        if (reason === "io server disconnect") {
+          realtimeSocket.connect()
+        }
+      })
+
+      realtimeSocket.on("connect_error", () => {
+        realtimeConnected.value = false
+        if (callSocket.value === realtimeSocket) {
+          callSocket.value = null
+        }
+        realtimeSocket.removeAllListeners()
+        realtimeSocket.disconnect()
+        startIncomingPolling()
+      })
+
+      realtimeSocket.on("livekit_call_incoming", (payload: DirectCallRealtimePayload = {}) => {
+        const id = realtimeCallId(payload.call_id)
+        if (!id || ringingCall.value || ringingGroupCall.value || activeSession.value || activeGroupCall.value) {
+          return
+        }
+
+        ringingCall.value = {
+          id,
+          type: realtimeCallType(payload.call_type),
+          direction: "incoming",
+          peer: {
+            name: String(payload.peer?.name || "Contact"),
+            avatar: String(payload.peer?.avatar || ""),
+          },
+        }
+        status.value = "ringing"
+      })
+
+      realtimeSocket.on("livekit_call_answered", (payload: DirectCallRealtimePayload = {}) => {
+        const id = realtimeCallId(payload.call_id)
+        const outgoing = ringingCall.value
+
+        if (id && outgoing?.direction === "outgoing" && outgoing.id === id) {
+          void syncOutgoingAnswer(id, realtimeCallType(payload.call_type || outgoing.type))
+        }
+      })
+
+      realtimeSocket.on("livekit_call_declined", (payload: DirectCallRealtimePayload = {}) => {
+        closeDirectCallFromRealtime(payload, true)
+      })
+
+      realtimeSocket.on("livekit_call_closed", (payload: DirectCallRealtimePayload = {}) => {
+        closeDirectCallFromRealtime(payload)
+      })
+
+      realtimeSocket.on("livekit_group_call_incoming", (payload: GroupCallRealtimePayload = {}) => {
+        const id = realtimeCallId(payload.call_id)
+        const groupId = realtimeCallId(payload.group_id || payload.group?.id)
+
+        if (!id || !groupId || ringingCall.value || ringingGroupCall.value || activeSession.value || activeGroupCall.value) {
+          return
+        }
+
+        ringingGroupCall.value = {
+          id,
+          type: "video",
+          direction: "incoming",
+          groupId,
+          groupName: String(payload.group?.name || "Group call"),
+          avatar: String(payload.group?.avatar || ""),
+        }
+        status.value = "ringing"
+      })
+
+      realtimeSocket.on("livekit_group_call_sync", (payload: GroupCallRealtimePayload = {}) => {
+        if (payload.status && payload.status !== "active") {
+          closeGroupCallFromRealtime(payload)
+        }
+      })
+
+      realtimeSocket.on("livekit_group_call_closed", (payload: GroupCallRealtimePayload = {}) => {
+        closeGroupCallFromRealtime(payload)
+      })
+
+      callSocket.value = realtimeSocket
+    }
+    catch {
+      realtimeConnected.value = false
+      callSocket.value = null
+      startIncomingPolling()
+    }
+    finally {
+      connectingRealtime.value = false
     }
   }
 
@@ -574,25 +851,33 @@ export function useMessageCalls(
   onMounted(() => {
     if (shouldPollIncoming.value) {
       startIncomingPolling()
+      void connectCallRealtime()
     }
 
     stopPollingWatch = watch(shouldPollIncoming, (enabled) => {
       if (enabled) {
         startIncomingPolling()
+        void connectCallRealtime()
         return
       }
 
       stopIncomingPolling()
+      disconnectCallRealtime()
     })
   })
 
   onBeforeUnmount(() => {
+    const ownsCallRuntime = ownsIncomingPolling || Boolean(callSocket.value) || shouldPollIncoming.value
+
     if (stopPollingWatch) {
       stopPollingWatch()
       stopPollingWatch = null
     }
     stopIncomingPolling()
-    clearOutgoingTimers()
+    disconnectCallRealtime()
+    if (ownsCallRuntime) {
+      clearOutgoingTimers()
+    }
   })
 
   return {
@@ -612,6 +897,7 @@ export function useMessageCalls(
     resetRinging,
     ringingGroupCall,
     ringingCall,
+    realtimeConnected,
     startCall,
     startGroupCall,
     status,

@@ -43,3 +43,20 @@ test("the caller checks for an already answered call without waiting for the fir
   assert.match(pollingBlock, /void syncOutgoingAnswer\(id, type\)/)
   assert.match(pollingBlock, /outgoingPoll = setInterval/)
 })
+
+test("call signaling uses realtime events with PHP polling as reconciliation fallback", async () => {
+  const callsComposable = await readClient("src/messages/application/composables/useMessageCalls.ts")
+  const repositoryContract = await readClient("src/messages/domain/repositories/MessageCallsRepository.ts")
+  const apiRepository = await readClient("src/messages/infrastructure/repositories/ApiMessageCallsRepository.ts")
+
+  assert.match(repositoryContract, /getRealtimeToken\(\): Promise<MessageRealtimeToken>/)
+  assert.match(apiRepository, /client\.get<MessageRealtimeToken>\("realtime\/token"\)/)
+  assert.match(callsComposable, /realtimeSocket\.on\("livekit_call_incoming"/)
+  assert.match(callsComposable, /realtimeSocket\.on\("livekit_call_answered"/)
+  assert.match(callsComposable, /realtimeSocket\.on\("livekit_call_declined"/)
+  assert.match(callsComposable, /realtimeSocket\.on\("livekit_call_closed"/)
+  assert.match(callsComposable, /INCOMING_RECONCILE_INTERVAL_MS = 10000/)
+  assert.match(callsComposable, /realtimeConnected\.value = true\s+void pollIncomingTypes\(\)/)
+  assert.doesNotMatch(callsComposable, /realtimeConnected\.value = true\s+stopIncomingPolling\(\)/)
+  assert.match(callsComposable, /OUTGOING_RECONCILE_INTERVAL_MS = 10000/)
+})
