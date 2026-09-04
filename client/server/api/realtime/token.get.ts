@@ -36,6 +36,7 @@ export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig(event)
   const secret = String(runtimeConfig.realtimeSecret || "")
   const realtimeUrl = String(runtimeConfig.public.realtimeUrl || "").trim()
+  const realtimeInternalUrl = String(runtimeConfig.realtimeInternalUrl || "").trim()
 
   if (!secret || !realtimeUrl) {
     return {
@@ -46,7 +47,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const reachable = await isRealtimeReachable(realtimeUrl)
+  const reachable = await isRealtimeReachable(realtimeInternalUrl || realtimeUrl)
 
   if (!reachable) {
     return {

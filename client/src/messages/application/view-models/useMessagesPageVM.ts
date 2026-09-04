@@ -43,7 +43,7 @@ export function useMessagesPageVM() {
   const createGroupErrorMessage = ref("")
   const isCreatingGroup = ref(false)
   const createGroupCandidatesPending = ref(false)
-  const onlineStatusRefreshTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
+  const groupDetailsRefreshTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
   const selectedCreateGroupUserIds = computed(() =>
     new Set(createGroupSelectedCandidates.value.map(candidate => candidate.userId)),
   )
@@ -533,21 +533,19 @@ export function useMessagesPageVM() {
     void realtime.start()
     void syncActiveTypingState()
 
-    onlineStatusRefreshTimer.value = window.setInterval(() => {
-      void inbox.refreshInbox()
-
+    groupDetailsRefreshTimer.value = window.setInterval(() => {
       if (selectedGroupId.value > 0) {
         void refreshGroupDetails()
       }
 
       logOnlineState("interval")
-    }, 30000)
+    }, 60000)
   })
 
   onBeforeUnmount(() => {
-    if (onlineStatusRefreshTimer.value) {
-      window.clearInterval(onlineStatusRefreshTimer.value)
-      onlineStatusRefreshTimer.value = null
+    if (groupDetailsRefreshTimer.value) {
+      window.clearInterval(groupDetailsRefreshTimer.value)
+      groupDetailsRefreshTimer.value = null
     }
 
     revokeCreateGroupAvatarPreview()

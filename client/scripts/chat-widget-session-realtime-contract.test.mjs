@@ -41,6 +41,14 @@ test("socket reconnects and only refreshes data for its authenticated owner", ()
   assert.doesNotMatch(source, /reconnection: false/)
 })
 
+test("socket connection suspends inbox polling and disconnect restores a slower fallback", () => {
+  assert.match(source, /const INBOX_FALLBACK_INTERVAL_MS = 10000/)
+  assert.match(source, /realtimeConnected\.value = true\s+stopRefreshTimer\(\)/)
+  assert.match(source, /realtimeConnected\.value = false[\s\S]*?startRefreshTimer\(\)/)
+  assert.match(source, /!realtimeConnected\.value && !isInboxRefreshPaused\.value/)
+  assert.doesNotMatch(source, /const INBOX_REFRESH_INTERVAL_MS = 2000/)
+})
+
 test("mini-chat reply previews stay scoped to their conversation", () => {
   assert.match(widgetSource, /const miniReplyContactId = ref\(""\)/)
   assert.match(widgetSource, /hasMiniReplyFor\(miniSession\.contactId\)/)

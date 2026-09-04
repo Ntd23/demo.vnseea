@@ -30,6 +30,9 @@ type GroupCallRoomSessionOptions = {
   onEnded: () => void
 }
 
+const GROUP_CALL_FALLBACK_SYNC_INTERVAL_MS = 3000
+const GROUP_CALL_RECONCILE_INTERVAL_MS = 15000
+
 export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallRoomSessionOptions) {
   const vm = useGroupCallPageVM(callId)
   const {
@@ -48,11 +51,12 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
   const cameraEnabled = ref(true)
   const remoteAudioMuted = ref(false)
   const elapsedSeconds = ref(0)
+  const realtimeConnected = useState("messages:call:realtime-connected", () => false)
   const audioSink = ref<HTMLElement | null>(null)
   const videoNodes = new Map<string, HTMLElement>()
 
   let room: Room | null = null
-  let syncTimer: ReturnType<typeof setInterval> | null = null
+  let syncTimer: ReturnType<typeof setTimeout> | null = null
   let elapsedTimer: ReturnType<typeof setInterval> | null = null
   let hasLeft = false
   let currentFacingMode: "user" | "environment" = "user"
@@ -283,7 +287,19 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
 
   function startTimers() {
     elapsedTimer = setInterval(() => { elapsedSeconds.value += 1 }, 1000)
-    syncTimer = setInterval(() => { void runSync() }, 3000)
+    scheduleSync()
+  }
+
+  function scheduleSync() {
+    if (hasLeft || syncTimer) {
+      return
+    }
+
+    syncTimer = setTimeout(async () => {
+      syncTimer = null
+      await runSync()
+      scheduleSync()
+    }, realtimeConnected.value ? GROUP_CALL_RECONCILE_INTERVAL_MS : GROUP_CALL_FALLBACK_SYNC_INTERVAL_MS)
   }
 
   async function toggleMic() {
@@ -421,7 +437,7 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
       window.removeEventListener("pagehide", leaveCallKeepalive)
       window.removeEventListener("beforeunload", leaveCallKeepalive)
     }
-    if (syncTimer) clearInterval(syncTimer)
+    if (syncTimer) clearTimeout(syncTimer)
     if (elapsedTimer) clearInterval(elapsedTimer)
     if (!hasLeft && payload.value?.id) {
       void vm.leaveCall()

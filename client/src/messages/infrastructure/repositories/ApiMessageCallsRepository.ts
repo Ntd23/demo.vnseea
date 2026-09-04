@@ -14,6 +14,7 @@ import type {
   MessageIncomingCall,
   MessageIncomingGroupCall,
 } from "../../domain/types/calls.types"
+import type { MessageRealtimeToken } from "../../domain/types/messages.types"
 
 const createCallQuery = (input: { id: number, type: MessageCallType }) => ({
   id: input.id,
@@ -24,6 +25,9 @@ export function createApiMessageCallsRepository(): MessageCallsRepository {
   const client = useNuxtApiClient()
 
   return {
+    async getRealtimeToken() {
+      return await client.get<MessageRealtimeToken>("realtime/token")
+    },
     async createCall(input) {
       return await client.post<MessageCallCreateResult, Record<string, unknown>>(
         apiRoutes.messages.calls.create,

@@ -822,3 +822,9 @@
 2026-08-06T10:40:40+00:00 [vnseea_call_debug] type=live_bootstrap user_id=1770 role=host status=200 blocked_reason= enabled=1 can_use_live=1 livekit_ready=1 active_live=0 stream_name=live_1770_5fad8cb1f8e2f666 room_name=wowonder_live_live_1770_5fad8cb1f8e2f666 ws_url=wss://livekit.vnseea.vn
 2026-08-06T10:42:04+00:00 [vnseea_call_debug] type=live_create source=xhr user_id=1770 role=host status=200 blocked_reason= post_id=4740 stream_name=live_1770_0c51384494b25cad room_name=wowonder_live_live_1770_0c51384494b25cad ws_url=wss://livekit.vnseea.vn privacy_value=0 privacy_type=string
 2026-08-06T10:42:29+00:00 [vnseea_call_debug] type=live_join user_id=5 role=viewer status=200 post_id=4740 stream_name=live_1770_0c51384494b25cad room_name=wowonder_live_live_1770_0c51384494b25cad ws_url=wss://livekit.vnseea.vn stream_state=live heartbeat_age=1
+2026-09-04T03:26:17+00:00 [vnseea_call_debug] type=call_realtime_publish event=incoming call_id=44 context=direct http_status=0 duration_ms=251 error=Failed to connect to 127.0.0.1 port 3015 after 251 ms: Timeout was reached response_present=0
+2026-09-04T03:26:17+00:00 [vnseea_call_debug] type=call_push_dispatch_v2 source=nuxt call_id=44 call_type=video from_id=1 to_id=5 onesignal=unavailable voip=unavailable
+2026-09-04T03:37:53+00:00 [vnseea_call_debug] type=call_realtime_publish event=incoming call_id=98 context=direct http_status=200 duration_ms=2 error=- response_present=1
+2026-09-04T03:37:53+00:00 [vnseea_call_debug] type=call_push_dispatch_v2 source=nuxt call_id=98 call_type=audio from_id=1 to_id=5 onesignal=unavailable voip=unavailable
+2026-09-04T03:38:04+00:00 [vnseea_call_debug] type=call_realtime_publish event=answered call_id=98 context=direct http_status=200 duration_ms=3 error=- response_present=1
+2026-09-04T03:39:40+00:00 [vnseea_call_debug] type=call_realtime_publish event=sync call_id=4 context=group http_status=200 duration_ms=5 error=- response_present=1
