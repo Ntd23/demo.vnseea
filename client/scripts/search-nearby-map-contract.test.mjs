@@ -38,6 +38,19 @@ test("Google Map initialization stops when its Vue host has unmounted", () => {
   assert.match(mapSource, /onBeforeUnmount\(\(\) => \{\s*isMapComponentMounted = false/)
 })
 
+test("Google Map initialization waits for the Nuxt Scripts readiness promise", () => {
+  assert.match(
+    mapSource,
+    /const googleMapsApi = await load\(\)\s*mapsRuntime = await googleMapsApi\.maps/,
+  )
+  assert.match(
+    pageSource,
+    /const googleMapsApi = await loadGoogleMaps\(\)\s*const maps = await googleMapsApi\.maps/,
+  )
+  assert.doesNotMatch(mapSource, /let retries = 25/)
+  assert.doesNotMatch(mapSource, /!window\.google\?\.maps && retries > 0/)
+})
+
 test("missing route coordinates cannot be interpreted as zero coordinates", () => {
   assert.match(viewModelSource, /const rawValue = readString\(value\)\.trim\(\)/)
   assert.match(viewModelSource, /if \(!rawValue\) \{\s*return null\s*\}/)

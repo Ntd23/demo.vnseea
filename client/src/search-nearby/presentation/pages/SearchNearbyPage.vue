@@ -1472,9 +1472,8 @@ async function ensureGooglePlacesServices() {
     return false
   }
 
-  await loadGoogleMaps()
-
-  const maps = window.google?.maps
+  const googleMapsApi = await loadGoogleMaps()
+  const maps = await googleMapsApi.maps
   if (!maps?.places?.AutocompleteService || !maps.places.PlacesService) {
     return false
   }
