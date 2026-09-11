@@ -146,12 +146,7 @@ function shouldUseOriginRadiusViewport() {
   return hasOriginCoordinates() && !props.selectedItemId && !props.routeTargetItem
 }
 
-async function resolveMapConstructors() {
-  const mapsRuntime = window.google?.maps as GoogleMapsRuntime | undefined
-
-  if (!mapsRuntime) {
-    return null
-  }
+async function resolveMapConstructors(mapsRuntime: GoogleMapsRuntime) {
 
   if (typeof mapsRuntime.importLibrary === "function") {
     const mapsLibrary = await mapsRuntime.importLibrary("maps") as google.maps.MapsLibrary
@@ -1798,8 +1793,10 @@ async function initializeMap() {
     return
   }
 
+  let mapsRuntime: GoogleMapsRuntime
   try {
-    await load()
+    const googleMapsApi = await load()
+    mapsRuntime = await googleMapsApi.maps as GoogleMapsRuntime
   }
   catch {
     if (!isMapComponentMounted) {
@@ -1813,34 +1810,16 @@ async function initializeMap() {
     return
   }
 
-  // Đợi window.google.maps sẵn sàng (tối đa 5 giây)
-  let retries = 25
-  while (isMapComponentMounted && !window.google?.maps && retries > 0) {
-    await new Promise((resolve) => setTimeout(resolve, 200))
-    retries--
-  }
-
-  if (!window.google?.maps) {
-    mapError.value = t("pages.searchNearby.googleMapsNotReady")
-    return
-  }
-
   let constructors: Awaited<ReturnType<typeof resolveMapConstructors>> = null
-  retries = 15
-
-  // Đợi thêm để resolveMapConstructors có thể lấy đủ các libraries như maps, marker, routes
-  while (isMapComponentMounted && retries > 0) {
-    try {
-      constructors = await resolveMapConstructors()
-      if (constructors) {
-        break
-      }
+  try {
+    constructors = await resolveMapConstructors(mapsRuntime)
+  }
+  catch {
+    if (!isMapComponentMounted) {
+      return
     }
-    catch {
-      // Bỏ qua lỗi tạm thời khi các library chưa load xong
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200))
-    retries--
+    mapError.value = t("pages.searchNearby.googleMapsLoadError")
+    return
   }
 
   if (!isMapComponentMounted) {
@@ -1859,8 +1838,9 @@ async function initializeMap() {
   markerConstructor.value = constructors.Marker
   directionsServiceConstructor.value = constructors.DirectionsService
   directionsRendererConstructor.value = constructors.DirectionsRenderer
+  mapError.value = ""
   void ensureDirectionsConstructors()
-  const vectorRenderingType = window.google.maps.RenderingType?.VECTOR
+  const vectorRenderingType = mapsRuntime.RenderingType?.VECTOR
   const vectorMapOptions = {
     ...(googleMapsMapId.value ? { mapId: googleMapsMapId.value } : {}),
     ...(vectorRenderingType ? { renderingType: vectorRenderingType } : {}),
@@ -1882,8 +1862,8 @@ async function initializeMap() {
     tiltInteractionEnabled: true,
     zoomControl: false,
   })
-  placesService.value = window.google?.maps?.places?.PlacesService
-    ? new window.google.maps.places.PlacesService(mapInstance.value)
+  placesService.value = mapsRuntime.places?.PlacesService
+    ? new mapsRuntime.places.PlacesService(mapInstance.value)
     : null
   mapInstance.value.addListener("click", handleGooglePoiClick)
   mapInstance.value.addListener("dragstart", pauseMobileRouteCameraFollow)
