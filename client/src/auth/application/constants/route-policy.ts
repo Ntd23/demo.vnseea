@@ -11,6 +11,10 @@ const guestOnlyPaths = new Set([
 
 const publicPaths = new Set([
   ...guestOnlyPaths,
+  "/",
+  "/home",
+  "/blogs",
+  "/directory",
   "/reset-password",
   "/logout",
   "/contact-us",

@@ -6,11 +6,13 @@
     :class="{ 'header-bar--hidden': isHeaderHidden }"
   >
     <!-- ─── Desktop header ────────────────────────────────── -->
-    <div class="hidden rounded-b-3xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-[7.5] shadow-[var(--shadow-sm)] xl:block">
+    <div class="hidden rounded-b-3xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-4 shadow-[var(--shadow-sm)] xl:block">
+      <!-- Main Top Bar: Logo | Navigation Pill Menu | Actions -->
       <div
-        class="mx-auto flex h-16 w-full items-center gap-4 px-2.5"
+        class="mx-auto flex h-16 w-full items-center justify-between gap-4"
         :class="isMarketplaceExperience ? 'max-w-[1280px]' : 'max-w-[1880px]'"
       >
+        <!-- Logo -->
         <NuxtLink
           :to="headerHomeRoute"
           class="header-home-link"
@@ -30,26 +32,32 @@
           <span v-else class="header-home-logo-fallback">{{ brandName || "VNSEEA" }}</span>
         </NuxtLink>
 
-        <!-- Search -->
-        <div class="min-w-0 max-w-195 flex-1">
-          <NavigationHeaderSearchInput :mode="isMarketplaceExperience ? 'marketplace' : 'global'" />
+        <!-- Center: Search input + 3 inline menu items -->
+        <div class="flex flex-1 items-center gap-3 min-w-0 max-w-[800px]">
+          <div class="min-w-0 w-[320px] max-w-[320px]">
+            <NavigationHeaderSearchInput :mode="isMarketplaceExperience ? 'marketplace' : 'global'" />
+          </div>
+
+          <nav class="header-main-nav shrink-0">
+            <NuxtLink
+              v-for="item in inlineNavItems"
+              :key="item.id"
+              :to="item.to"
+              class="header-nav-pill header-nav-pill--compact"
+              :class="{ 'header-nav-pill--active': item.active }"
+              @click="handleNavClick($event, item)"
+            >
+              <Icon :name="item.active ? item.activeIcon : item.icon" class="header-nav-pill__icon" />
+              <span class="header-nav-pill__label">{{ item.label }}</span>
+              <div v-if="item.active" class="header-nav-pill__active-indicator" />
+            </NuxtLink>
+          </nav>
         </div>
 
         <!-- Right actions -->
         <div class="ml-auto flex shrink-0 items-center gap-2">
 
           <div class="notification-popover-root">
-            <!-- <button
-              class="header-action-btn"
-              :class="createMenuOpen ? 'header-action-btn--active' : ''"
-              type="button"
-              :aria-expanded="createMenuOpen"
-              aria-label="Tạo"
-              @click="toggleCreateMenu"
-            >
-              <Icon name="i-ph-plus-circle-duotone" class="h-4.5 w-4.5" />
-            </button> -->
-
             <Transition
               enter-active-class="transition duration-150 ease-out"
               enter-from-class="opacity-0 translate-y-1"
@@ -76,18 +84,6 @@
           </div>
 
           <div class="notification-popover-root">
-            <!-- <button
-              class="header-action-btn"
-              type="button"
-              :aria-label="$t('navigation.headerBar.friendRequests')"
-              @click="toggleRequests"
-            >
-              <Icon name="i-ph-user-plus-duotone" class="h-4.5 w-4.5" />
-              <span v-if="isClientReady && requestCount > 0" class="header-action-badge">
-                {{ requestCount }}
-              </span>
-            </button> -->
-
             <Transition
               enter-active-class="transition duration-150 ease-out"
               enter-from-class="opacity-0 translate-y-1"
@@ -150,13 +146,22 @@
           </div>
 
           <ClientOnly>
-            <NavigationHeaderUserMenu :marketplace-mode="isMarketplaceExperience" />
+            <NavigationHeaderUserMenu v-if="backendSession" :marketplace-mode="isMarketplaceExperience" />
+            <NuxtLink
+              v-else
+              :to="appRoutes.welcome"
+              class="header-login-btn"
+              aria-label="Đăng nhập"
+            >
+              <Icon name="i-ph-sign-in-bold" class="h-4.5 w-4.5" />
+              <span>Đăng nhập</span>
+            </NuxtLink>
 
             <template #fallback>
-              <div class="h-[38px] w-[156px] rounded-full border border-[var(--border-light)] bg-[var(--bg-surface)]"></div>
+              <div class="h-[38px] w-[120px] rounded-full border border-[var(--border-light)] bg-[var(--bg-surface)]"></div>
             </template>
           </ClientOnly>
-        
+
         </div>
       </div>
     </div>
@@ -196,34 +201,10 @@
           >
             <Icon name="i-ph-magnifying-glass-bold" class="h-[20px] w-[20px]" />
           </button>
-
-          <!-- <button
-            class="mobile-icon-btn"
-            :class="createMenuOpen ? 'mobile-icon-btn--active' : ''"
-            type="button"
-            :aria-expanded="createMenuOpen"
-            aria-label="Tạo"
-            @click="toggleCreateMenu"
-          >
-            <Icon name="i-ph-plus-bold" class="h-[20px] w-[20px]" />
-          </button> -->
         </div>
 
         <!-- RIGHT GROUP: Locale + Avatar -->
         <div class="mobile-bar__group">
-
-          <!-- <button
-            class="mobile-icon-btn"
-            :class="requestsOpen ? 'mobile-icon-btn--active' : ''"
-            type="button"
-            :aria-label="$t('navigation.headerBar.friendRequests')"
-            @click="toggleRequests"
-          >
-            <Icon name="i-ph-user-plus-duotone" class="h-[20px] w-[20px]" />
-            <span v-if="isClientReady && requestCount > 0" class="header-action-badge">
-              {{ requestCount }}
-            </span>
-          </button> -->
           <NuxtLink
             :to="messagesRoute"
             class="mobile-icon-btn"
@@ -249,36 +230,61 @@
           </button>
 
           <ClientOnly>
-  <button
-    class="mobile-icon-btn mobile-icon-btn--avatar"
-    type="button"
-    :aria-label="$t('navigation.headerBar.account')"
-    @click="mobileMenuOpen = true"
-  >
-    <NuxtImg
-      v-if="avatarUrl"
-      :src="avatarUrl"
-      :alt="currentUser?.name || 'User'"
-      class="h-[20px] w-[20px] rounded-full object-cover"
-      width="20"
-      height="20"
-    />
-    <span v-else class="mobile-avatar-fallback">{{ currentUserInitials }}</span>
-  </button>
+            <button
+              v-if="backendSession"
+              class="mobile-icon-btn mobile-icon-btn--avatar"
+              type="button"
+              :aria-label="$t('navigation.headerBar.account')"
+              @click="mobileMenuOpen = true"
+            >
+              <NuxtImg
+                v-if="avatarUrl"
+                :src="avatarUrl"
+                :alt="currentUser?.name || 'User'"
+                class="h-[20px] w-[20px] rounded-full object-cover"
+                width="20"
+                height="20"
+              />
+              <span v-else class="mobile-avatar-fallback">{{ currentUserInitials }}</span>
+            </button>
+            <NuxtLink
+              v-else
+              :to="appRoutes.welcome"
+              class="mobile-login-btn"
+              aria-label="Đăng nhập"
+            >
+              <Icon name="i-ph-sign-in-bold" class="h-4 w-4" />
+              <span>Đăng nhập</span>
+            </NuxtLink>
 
-  <template v-slot:fallback>
-    <button
-      class="mobile-icon-btn mobile-icon-btn--avatar"
-      type="button"
-      :aria-label="$t('navigation.headerBar.account')"
-      disabled
-    >
-      <span class="mobile-avatar-fallback">U</span>
-    </button>
-  </template>
-</ClientOnly>
+            <template v-slot:fallback>
+              <button
+                class="mobile-icon-btn mobile-icon-btn--avatar"
+                type="button"
+                :aria-label="$t('navigation.headerBar.account')"
+                disabled
+              >
+                <span class="mobile-avatar-fallback">U</span>
+              </button>
+            </template>
+          </ClientOnly>
         </div>
       </div>
+    </div>
+
+    <!-- Mobile Navigation Strip -->
+    <div class="mobile-nav-strip xl:hidden">
+      <NuxtLink
+        v-for="item in inlineNavItems"
+        :key="'mobile-' + item.id"
+        :to="item.to"
+        class="mobile-nav-item"
+        :class="{ 'mobile-nav-item--active': item.active }"
+        @click="handleNavClick($event, item)"
+      >
+        <Icon :name="item.active ? item.activeIcon : item.icon" class="h-4.5 w-4.5" />
+        <span class="text-[11px] font-bold">{{ item.label }}</span>
+      </NuxtLink>
     </div>
 
     <!-- ─── Mobile search — drops right below header ──────── -->
@@ -450,6 +456,44 @@ const createActions = [
     color: "var(--color-warning)",
   },
 ] as const
+
+const inlineNavItems = computed(() => [
+  {
+    id: "home",
+    label: "Trang chủ",
+    to: appRoutes.feed,
+    icon: "i-ph-house-bold",
+    activeIcon: "i-ph-house-fill",
+    active: route.path === appRoutes.home || route.path === appRoutes.feed,
+  },
+  {
+    id: "marketplace",
+    label: "Thị trường",
+    to: appRoutes.products,
+    icon: "i-ph-shopping-bag-bold",
+    activeIcon: "i-ph-shopping-bag-fill",
+    active: route.path === appRoutes.products || route.path.startsWith("/product"),
+  },
+  {
+    id: "blogs",
+    label: "Bài viết",
+    to: appRoutes.blogs,
+    icon: "i-ph-article-bold",
+    activeIcon: "i-ph-article-fill",
+    active: route.path === appRoutes.blogs || route.path.startsWith("/read-blog") || route.path === appRoutes.createBlog,
+  },
+])
+
+function handleNavClick(event: MouseEvent, item: typeof inlineNavItems.value[number]) {
+  if (item.active) {
+    if (item.id === "home") {
+      handleHomeClick(event)
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }
+}
+
 const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
 const headerLogoUrl = computed(() => branding.value.logoUrl || branding.value.nightLogoUrl || branding.value.faviconUrl)
 const logoAlt = computed(() => brandName.value ? `${brandName.value} logo` : "Site logo")
@@ -968,9 +1012,151 @@ async function toggleCreateMenu() {
   color: var(--bg-brand);
 }
 
+/* ─── Desktop Header Navigation Menu ───────────────────────── */
+.header-main-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-nav-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.header-nav-pill--compact {
+  height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.header-nav-pill:hover {
+  color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+}
+
+.header-nav-pill--active {
+  color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 12%, transparent);
+  font-weight: 700;
+}
+
+.header-nav-pill__icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.18s ease;
+}
+
+.header-nav-pill:hover .header-nav-pill__icon {
+  transform: scale(1.1);
+}
+
+.header-nav-pill__active-indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--bg-brand);
+  box-shadow: 0 1px 6px color-mix(in srgb, var(--bg-brand) 45%, transparent);
+}
+
+/* ─── Mobile Navigation Strip ───────────────────────────── */
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.mobile-nav-item:hover,
+.mobile-nav-item--active {
+  color: var(--bg-brand);
+  background: color-mix(in srgb, var(--bg-brand) 8%, transparent);
+}
+
+/* ─── Header Sign In / Login Button ──────────────────────── */
+.header-login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: var(--radius-full);
+  background: var(--bg-brand);
+  color: var(--color-on-brand);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bg-brand) 30%, transparent);
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.header-login-btn:hover {
+  background: var(--bg-brand-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--bg-brand) 40%, transparent);
+}
+
+.mobile-login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-brand);
+  color: var(--color-on-brand);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.mobile-login-btn:hover {
+  background: var(--bg-brand-hover);
+}
+
 @media (max-width: 1279.98px) {
   .header-bar--hidden {
     transform: translateY(-100%);
+  }
+
+  .mobile-nav-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-light);
+    padding: 4px 8px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .mobile-nav-strip {
+    display: none !important;
   }
 }
 </style>

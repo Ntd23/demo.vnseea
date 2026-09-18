@@ -7,22 +7,23 @@
       role="search"
       @submit.prevent="submitMarketplaceSearch"
     >
-      <UInput
-        v-model="marketplaceSearch"
-        :autofocus="autofocus"
-        icon="i-ph-magnifying-glass-bold"
-        :placeholder="$t('pages.productsPage.searchPlaceholder')"
-        autocomplete="off"
-        class="min-w-0 flex-1"
-        :ui="{
-          base: 'h-10 rounded-[var(--radius-lg)] bg-[var(--bg-muted)] text-sm font-medium',
-        }"
-      />
-      <UButton
-        type="submit"
-        icon="i-ph-magnifying-glass-bold"
-        :aria-label="$t('pages.marketplaceHome.searchAction')"
-      />
+      <div class="header-search-input-wrapper">
+        <Icon name="i-ph-magnifying-glass-bold" class="header-search-leading-icon" />
+        <input
+          v-model="marketplaceSearch"
+          type="text"
+          :placeholder="$t('pages.productsPage.searchPlaceholder')"
+          autocomplete="off"
+          class="header-search-input"
+        />
+        <button
+          type="submit"
+          class="header-search-inside-btn"
+          :aria-label="$t('pages.marketplaceHome.searchAction')"
+        >
+          <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />
+        </button>
+      </div>
     </form>
 
     <ClientOnly v-else>
@@ -347,12 +348,64 @@ onBeforeUnmount(() => {
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 8px;
 }
 
-.header-marketplace-search :deep(button) {
-  min-width: 40px;
-  min-height: 40px;
+.header-search-input-wrapper {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.header-search-leading-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.header-search-input {
+  height: 38px;
+  width: 100%;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
+  padding-left: 36px;
+  padding-right: 42px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.header-search-input:focus {
+  border-color: var(--bg-brand);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-brand) 12%, transparent);
+}
+
+.header-search-inside-btn {
+  position: absolute;
+  right: 4px;
+  display: flex;
+  height: 30px;
+  width: 30px;
+  align-items: center;
   justify-content: center;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--bg-brand);
+  color: var(--color-on-brand);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--bg-brand) 25%, transparent);
+}
+
+.header-search-inside-btn:hover {
+  background: var(--bg-brand-hover);
+  transform: scale(1.05);
 }
 </style>

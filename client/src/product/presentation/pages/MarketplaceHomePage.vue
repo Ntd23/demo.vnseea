@@ -228,6 +228,7 @@
 </template>
 
 <script setup lang="ts">
+import NavigationHeaderSearchInput from "../../../navigation/presentation/components/HeaderSearchInput.vue";
 import { useMarketplaceHomePageVM } from "../../application/view-models/useMarketplaceHomePageVM";
 import MarketplaceHomeProductCard from "../components/MarketplaceHomeProductCard.vue";
 
@@ -308,6 +309,12 @@ const {
 .marketplace-home__section {
   display: grid;
   gap: 18px;
+}
+
+.marketplace-home__search-bar {
+  width: 100%;
+  max-width: 680px;
+  margin-bottom: 4px;
 }
 
 .marketplace-home__section-heading {
