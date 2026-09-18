@@ -101,11 +101,15 @@
 
       <div class="flex flex-col gap-3">
         <UButton
+          v-if="order.status === 'pending'"
           size="xl"
           icon="i-ph-lightning-duotone"
+          :loading="isConfirming"
+          :disabled="isConfirming"
           class="h-12 rounded-2xl bg-[var(--bg-media)] text-xs font-black uppercase tracking-widest text-[var(--text-media)] shadow-[var(--shadow-lg)] transition-all hover:opacity-90 active:scale-95"
+          @click="emit('confirm-order')"
         >
-          {{ $t(primaryActionLabel) }}
+          {{ $t('orders.sidebar.confirmOrder') }}
         </UButton>
 
         <UButton
@@ -144,6 +148,11 @@ import OrdersOrderPriceSummary from "./OrderPriceSummary.vue"
 
 const props = defineProps<{
   order: SellerOrder
+  isConfirming?: boolean
+}>()
+
+const emit = defineEmits<{
+  "confirm-order": []
 }>()
 
 const { paymentMeta } = useOrderPresentation(computed(() => props.order))
@@ -158,10 +167,4 @@ const formatOrderCurrency = (value: number) =>
 
 const payoutMeta = computed(() => sellerOrderPayoutStatusMeta[props.order.payoutStatus])
 
-const primaryActionLabel = computed(() => {
-  if (props.order.status === "pending") return "orders.sidebar.confirmOrder"
-  if (props.order.status === "shipping") return "orders.sidebar.markDelivered"
-  if (props.order.status === "delivered") return "orders.sidebar.viewPayout"
-  return "orders.sidebar.viewCancelled"
-})
 </script>

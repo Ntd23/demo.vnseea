@@ -25,7 +25,44 @@
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-95"
     >
-      <div v-if="open" class="user-menu__dropdown">
+      <div v-if="open && props.marketplaceMode" class="user-menu__dropdown user-menu__dropdown--marketplace">
+        <div v-if="currentUser?.isAdmin" class="user-menu__section">
+          <a
+            :href="adminCpUrl"
+            class="user-menu__item"
+            @click="open = false"
+          >
+            <Icon name="i-ph-squares-four-fill" class="user-menu__item-icon" />
+            <span class="user-menu__item-label">{{ $t("navigation.mobileMenu.settingsNav.adminArea") }}</span>
+          </a>
+        </div>
+
+        <div v-if="currentUser?.isAdmin" class="user-menu__divider" />
+
+        <div class="user-menu__section">
+          <div class="user-menu__item user-menu__item--theme">
+            <Icon name="i-ph-moon-bold" class="user-menu__item-icon h-5 w-5" />
+            <UColorModeSwitch color="primary" size="md" />
+          </div>
+
+          <NavigationLocaleSwitcher />
+        </div>
+
+        <div class="user-menu__divider" />
+
+        <div class="user-menu__section">
+          <NuxtLink
+            :to="logoutAction.to"
+            class="user-menu__item user-menu__item--danger"
+            @click="open = false"
+          >
+            <Icon :name="logoutAction.icon" class="user-menu__item-icon" />
+            <span class="user-menu__item-label">{{ $t(logoutAction.label) }}</span>
+          </NuxtLink>
+        </div>
+      </div>
+
+      <div v-else-if="open" class="user-menu__dropdown">
         <div class="user-menu__summary">
           <div class="user-menu__summary-card">
             <div class="user-menu__summary-head">
@@ -138,6 +175,12 @@ import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useBackendWebUrl } from "#shared-kernel/application/utils/backend-web-url"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import NavigationLocaleSwitcher from "./LocaleSwitcher.vue"
+
+const props = withDefaults(defineProps<{
+  marketplaceMode?: boolean
+}>(), {
+  marketplaceMode: false,
+})
 
 const { t, locale } = useI18n()
 const currentAuthUserStore = useCurrentAuthUserStore()
@@ -310,6 +353,10 @@ const logoutAction = {
   border: 1px solid var(--border-default);
   background: var(--bg-surface);
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.16);
+}
+
+.user-menu__dropdown--marketplace {
+  width: 280px;
 }
 
 .user-menu__summary {

@@ -14,6 +14,22 @@ type BackendOrderProduct = {
   seller?: { name?: string; username?: string }
 }
 
+type BackendUser = {
+  name?: string
+  username?: string
+  first_name?: string
+  last_name?: string
+}
+
+type BackendAddress = {
+  name?: string
+  phone?: string
+  address?: string
+  city?: string
+  country?: string
+  zip?: string
+}
+
 type BackendOrderRow = {
   id?: number | string
   product_id?: number | string
@@ -25,14 +41,8 @@ type BackendOrderRow = {
   tracking_id?: string
   tracking_url?: string
   product?: BackendOrderProduct
-  address?: {
-    name?: string
-    phone?: string
-    address?: string
-    city?: string
-    country?: string
-    zip?: string
-  }
+  buyer?: BackendUser
+  address?: BackendAddress
 }
 
 export type BackendPurchase = {
@@ -43,6 +53,7 @@ export type BackendPurchase = {
   final_price?: number | string
   time?: number | string
   date?: string
+  address?: BackendAddress
   orders?: BackendOrderRow[]
 }
 
@@ -68,6 +79,7 @@ const toStatus = (status: unknown): BuyerOrderStatus => {
   switch (asString(status).toLowerCase()) {
     case "accepted":
     case "packed":
+      return "processing"
     case "shipped":
       return "shipping"
     case "delivered":
@@ -100,8 +112,25 @@ const getSellerName = (order: BackendOrderRow | undefined) =>
   || asString(order?.product?.user_data?.username)
   || "Seller"
 
-const getAddressText = (order: BackendOrderRow | undefined) => {
-  const address = order?.address
+const getBuyerName = (order: BackendOrderRow | undefined, purchaseAddress: BackendAddress | undefined) => {
+  const buyer = order?.buyer
+  const fullName = [asString(buyer?.first_name), asString(buyer?.last_name)]
+    .filter(Boolean)
+    .join(" ")
+
+  return asString(buyer?.name)
+    || fullName
+    || asString(buyer?.username)
+    || asString(order?.address?.name)
+    || asString(purchaseAddress?.name)
+    || "Buyer"
+}
+
+const getAddress = (order: BackendOrderRow | undefined, purchaseAddress: BackendAddress | undefined) =>
+  order?.address ?? purchaseAddress
+
+const getAddressText = (order: BackendOrderRow | undefined, purchaseAddress: BackendAddress | undefined) => {
+  const address = getAddress(order, purchaseAddress)
 
   if (!address) return ""
 
@@ -112,7 +141,7 @@ const getAddressText = (order: BackendOrderRow | undefined) => {
 }
 
 const buildTimeline = (placedAt: string, status: BuyerOrderStatus) => {
-  const progress = status === "delivered" ? 4 : status === "shipping" ? 3 : 1
+  const progress = status === "delivered" ? 4 : status === "shipping" ? 3 : status === "processing" ? 2 : 1
 
   return [
     {
@@ -148,6 +177,7 @@ const buildTimeline = (placedAt: string, status: BuyerOrderStatus) => {
 
 export const normalizeBuyerOrder = (event: H3Event, purchase: BackendPurchase): BuyerOrder => {
   const primaryOrder = getPrimaryOrder(purchase)
+  const shippingAddress = getAddress(primaryOrder, purchase.address)
   const status = toStatus(primaryOrder?.status)
   const placedAt = asString(purchase.date) || asString(purchase.time)
   const items = (purchase.orders ?? []).map((order) => {
@@ -177,9 +207,9 @@ export const normalizeBuyerOrder = (event: H3Event, purchase: BackendPurchase): 
     deliveryWindow: placedAt,
     paymentMethod: "Wallet",
     paymentReference: asString(purchase.order_hash_id || purchase.id),
-    shippingAddress: getAddressText(primaryOrder),
-    recipientName: asString(primaryOrder?.address?.name),
-    recipientPhone: asString(primaryOrder?.address?.phone),
+    shippingAddress: getAddressText(primaryOrder, purchase.address),
+    recipientName: asString(shippingAddress?.name),
+    recipientPhone: asString(shippingAddress?.phone),
     shippingProvider: "",
     trackingCode: asString(primaryOrder?.tracking_id),
     status,
@@ -194,6 +224,8 @@ export const normalizeBuyerOrder = (event: H3Event, purchase: BackendPurchase): 
 
 export const normalizeSellerOrder = (event: H3Event, purchase: BackendPurchase): SellerOrder => {
   const buyerOrder = normalizeBuyerOrder(event, purchase)
+  const primaryOrder = getPrimaryOrder(purchase)
+  const buyerAddress = getAddress(primaryOrder, purchase.address)
   const tasks: SellerOrderTask[] = [
     {
       key: "payment",
@@ -218,9 +250,9 @@ export const normalizeSellerOrder = (event: H3Event, purchase: BackendPurchase):
   return {
     ...buyerOrder,
     storeName: buyerOrder.seller,
-    buyerName: buyerOrder.recipientName,
-    buyerPhone: buyerOrder.recipientPhone,
-    buyerAddress: buyerOrder.shippingAddress,
+    buyerName: getBuyerName(primaryOrder, purchase.address),
+    buyerPhone: asString(buyerAddress?.phone),
+    buyerAddress: getAddressText(primaryOrder, purchase.address),
     buyerNote: buyerOrder.note,
     sellerNote: "",
     tasks,

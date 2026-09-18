@@ -19,6 +19,12 @@ import {
 } from "../../domain/services/product-marketplace.service"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 
+function readProductSearchQuery(value: unknown) {
+  const normalized = Array.isArray(value) ? value[0] : value
+
+  return typeof normalized === "string" ? normalized.trim() : ""
+}
+
 export const useProductMarketplace = (
   repository = createApiProductRepository(),
 ) => {
@@ -27,7 +33,7 @@ export const useProductMarketplace = (
   const toast = useToast()
   const { openProductChat } = useChatWidgetLauncher()
 
-  const search = ref("")
+  const search = ref(readProductSearchQuery(route.query.keyword))
   const sortBy = ref<ProductSortValue>("latest")
   const selectedCategory = ref<ProductCategory>(String(route.query.c_id || "all"))
   const selectedSubCategory = ref(String(route.query.sub_id || ""))
@@ -325,6 +331,14 @@ export const useProductMarketplace = (
 
   watch(selectedCategory, () => {
     selectedSubCategory.value = ""
+  })
+
+  watch(() => route.query.keyword, (value) => {
+    const nextSearch = readProductSearchQuery(value)
+
+    if (nextSearch !== search.value) {
+      search.value = nextSearch
+    }
   })
 
   watchDebounced(

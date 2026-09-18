@@ -26,6 +26,7 @@ export function useOrdersPageVM(
   const filters = computed<OrdersFilterOption[]>(() => [
     { key: "all", label: buyerOrderFilterLabels.all, count: orders.value.length },
     { key: "pending", label: buyerOrderFilterLabels.pending, count: orders.value.filter(order => order.status === "pending").length },
+    { key: "processing", label: buyerOrderFilterLabels.processing, count: orders.value.filter(order => order.status === "processing").length },
     { key: "shipping", label: buyerOrderFilterLabels.shipping, count: orders.value.filter(order => order.status === "shipping").length },
     { key: "delivered", label: buyerOrderFilterLabels.delivered, count: orders.value.filter(order => order.status === "delivered").length },
     { key: "cancelled", label: buyerOrderFilterLabels.cancelled, count: orders.value.filter(order => order.status === "cancelled").length },
@@ -68,6 +69,13 @@ export function useOrdersPageVM(
       tone: "amber",
     },
     {
+      label: "orders.status.processing.label",
+      value: String(orders.value.filter(order => order.status === "processing").length),
+      description: "orders.status.processing.description",
+      icon: "i-ph-package-fill",
+      tone: "blue",
+    },
+    {
       label: "orders.status.shipping.label",
       value: String(orders.value.filter(order => order.status === "shipping").length),
       description: "orders.status.shipping.description",
@@ -92,6 +100,7 @@ export function useOrdersPageVM(
 
   const nextDeliveryOrder = computed(() =>
     orders.value.find(order => order.status === "shipping")
+    ?? orders.value.find(order => order.status === "processing")
     ?? orders.value.find(order => order.status === "pending")
     ?? null,
   )

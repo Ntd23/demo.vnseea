@@ -1,6 +1,6 @@
 // English description: Order domain types and metadata shared by order presentation and view models.
 
-export type BuyerOrderStatus = "pending" | "shipping" | "delivered" | "cancelled"
+export type BuyerOrderStatus = "pending" | "processing" | "shipping" | "delivered" | "cancelled"
 
 export type BuyerOrderFilter = "all" | BuyerOrderStatus
 
@@ -102,6 +102,7 @@ export interface OrdersOverviewCard {
 export const buyerOrderFilterLabels: Record<BuyerOrderFilter, string> = {
   all: "orders.filter.all",
   pending: "orders.status.pending.label",
+  processing: "orders.status.processing.label",
   shipping: "orders.status.shipping.label",
   delivered: "orders.status.delivered.label",
   cancelled: "orders.status.cancelled.label",
@@ -122,6 +123,14 @@ export const buyerOrderStatusMeta: Record<BuyerOrderStatus, {
     icon: "i-ph-hourglass-medium-fill",
     progress: 1,
     description: "orders.status.pending.description",
+  },
+  processing: {
+    label: "orders.status.processing.label",
+    badgeClass: "border-[#cfe0ff] bg-[#eef4ff] text-[var(--text-brand)]",
+    panelClass: "bg-[#eef4ff] text-[var(--text-brand)]",
+    icon: "i-ph-package-fill",
+    progress: 2,
+    description: "orders.status.processing.description",
   },
   shipping: {
     label: "orders.status.shipping.label",

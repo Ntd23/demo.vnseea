@@ -1,7 +1,15 @@
-<!-- English description: Home feed route with SEO metadata and a theme-aware hydration skeleton. -->
+<!-- English description: Switches the home route between reversible marketplace and original social-feed variants. -->
 <template>
   <ClientOnly>
-    <Suspense>
+    <Suspense v-if="isMarketplaceHome">
+      <ProductPresentationMarketplaceHomePage />
+
+      <template #fallback>
+        <ProductPresentationMarketplaceHomeLoadingState />
+      </template>
+    </Suspense>
+
+    <Suspense v-else>
       <FeedPresentationHomeFeedPage />
 
       <template #fallback>
@@ -10,7 +18,8 @@
     </Suspense>
 
     <template #fallback>
-      <FeedPresentationHomeFeedLoadingState />
+      <ProductPresentationMarketplaceHomeLoadingState v-if="isMarketplaceHome" />
+      <FeedPresentationHomeFeedLoadingState v-else />
     </template>
   </ClientOnly>
 </template>
@@ -18,22 +27,26 @@
 <script setup lang="ts">
 import FeedPresentationHomeFeedLoadingState from "../../src/feed/presentation/components/HomeFeedLoadingState.vue"
 import FeedPresentationHomeFeedPage from "../../src/feed/presentation/pages/HomeFeedPage.vue"
+import ProductPresentationMarketplaceHomeLoadingState from "../../src/product/presentation/components/MarketplaceHomeLoadingState.vue"
+import ProductPresentationMarketplaceHomePage from "../../src/product/presentation/pages/MarketplaceHomePage.vue"
 definePageMeta({
   layout: "default",
 })
 
 const { t } = useI18n()
 const requestURL = useRequestURL()
+const runtimeConfig = useRuntimeConfig()
+const isMarketplaceHome = computed(() => runtimeConfig.public.homeVariant === "marketplace")
 
 const canonicalUrl = computed(() =>
   new URL("/", requestURL.origin).toString(),
 )
 
 useSeoMeta({
-  title: () => t("pages.homeFeedPage.seoTitle"),
-  description: () => t("pages.homeFeedPage.seoDescription"),
-  ogTitle: () => t("pages.homeFeedPage.seoTitle"),
-  ogDescription: () => t("pages.homeFeedPage.seoDescription"),
+  title: () => t(isMarketplaceHome.value ? "pages.marketplaceHome.seoTitle" : "pages.homeFeedPage.seoTitle"),
+  description: () => t(isMarketplaceHome.value ? "pages.marketplaceHome.seoDescription" : "pages.homeFeedPage.seoDescription"),
+  ogTitle: () => t(isMarketplaceHome.value ? "pages.marketplaceHome.seoTitle" : "pages.homeFeedPage.seoTitle"),
+  ogDescription: () => t(isMarketplaceHome.value ? "pages.marketplaceHome.seoDescription" : "pages.homeFeedPage.seoDescription"),
   ogUrl: () => canonicalUrl.value,
 })
 

@@ -60,8 +60,10 @@ import NavigationRightSidebar from "../../src/navigation/presentation/components
 import NavigationChatWidgetLoadingState from "../../src/navigation/presentation/components/ChatWidgetLoadingState.vue"
 import DirectoryLeftSidebar from "../../src/directory/presentation/components/LeftSidebar.vue"
 import ReelsPresentationReelsViewerOverlay from "../../src/reels/presentation/components/ReelsViewerOverlay.vue"
+import { isMarketplaceNavigationContext } from "../../src/shared-kernel/application/utils/marketplace-navigation"
 
 const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
 
 const isHeaderHidden = ref(false)
 const lastScrollY = ref(0)
@@ -116,18 +118,24 @@ const isFundingPage = computed(() =>
 )
 const isForumPage = computed(() => route.path === appRoutes.forum)
 const isHomeFeedPage = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
+const isMarketplaceExperience = computed(() =>
+  runtimeConfig.public.homeVariant === "marketplace"
+  && isMarketplaceNavigationContext(route.path, route.query),
+)
 const isCommunityComposerPage = computed(() =>
   route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
 )
 const showLeftSidebar = computed(() =>
   !isGuestPublicContentPage.value
   && !shouldHideLeftSidebar.value
+  && !isMarketplaceExperience.value
   && !route.path.startsWith('/@')
   && !route.path.startsWith('/g/')
 )
 const showRightSidebar = computed(() =>
   !isGuestPublicContentPage.value
   && !isReelsPage.value
+  && !isMarketplaceExperience.value
   && !isLivePage.value
   && !isCmsPage.value
 )
@@ -140,7 +148,9 @@ const iconNavPages = new Set([
   appRoutes.photos,
   appRoutes.products,
 ])
-const showHeaderIconNav = computed(() => iconNavPages.has(route.path))
+const showHeaderIconNav = computed(() =>
+  !isMarketplaceExperience.value && iconNavPages.has(route.path),
+)
 
 const shellClass = computed(() => {
   if (isReelsPage.value) {
@@ -157,6 +167,10 @@ const shellClass = computed(() => {
 
   if (isCmsPage.value) {
     return 'max-w-[1200px] xl:grid-cols-1'
+  }
+
+  if (isMarketplaceExperience.value) {
+    return 'max-w-[1280px] px-3 sm:px-4 xl:grid-cols-1'
   }
 
   // All content pages share same sidebar widths → no layout shift on navigation

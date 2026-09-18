@@ -7,9 +7,12 @@
   >
     <!-- ─── Desktop header ────────────────────────────────── -->
     <div class="hidden rounded-b-3xl border border-[var(--border-light)] bg-[var(--bg-surface)] px-[7.5] shadow-[var(--shadow-sm)] xl:block">
-      <div class="mx-auto flex h-16 w-full max-w-[1880px] items-center gap-4 px-2.5">
+      <div
+        class="mx-auto flex h-16 w-full items-center gap-4 px-2.5"
+        :class="isMarketplaceExperience ? 'max-w-[1280px]' : 'max-w-[1880px]'"
+      >
         <NuxtLink
-          :to="appRoutes.feed"
+          :to="headerHomeRoute"
           class="header-home-link"
           :aria-label="$t('navigation.headerBar.home')"
           @click="handleHomeClick"
@@ -29,7 +32,7 @@
 
         <!-- Search -->
         <div class="min-w-0 max-w-195 flex-1">
-          <NavigationHeaderSearchInput />
+          <NavigationHeaderSearchInput :mode="isMarketplaceExperience ? 'marketplace' : 'global'" />
         </div>
 
         <!-- Right actions -->
@@ -102,7 +105,7 @@
           </div>
 
           <NuxtLink
-            :to="appRoutes.messages"
+            :to="messagesRoute"
             class="header-action-btn"
             :class="route.path === appRoutes.messages ? 'header-action-btn--active' : ''"
             :aria-label="$t('navigation.headerBar.messages')"
@@ -111,7 +114,7 @@
               :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-bold' : 'i-ph-chat-circle-dots-bold'"
               class="h-[25px] w-[25px]"
             />
-            <span v-if="isClientReady && navigationSummary.messageCount > 0" class="header-action-badge">
+            <span v-if="isClientReady && !isMarketplaceExperience && navigationSummary.messageCount > 0" class="header-action-badge">
               {{ navigationSummary.messageCount }}
             </span>
           </NuxtLink>
@@ -140,18 +143,19 @@
               <NotificationDropdown
                 v-if="notificationOpen"
                 class="notification-popover"
+                :product-only="isMarketplaceExperience"
                 @navigate="notificationOpen = false"
               />
             </Transition>
           </div>
 
-        	<ClientOnly>
-  <NavigationHeaderUserMenu />
+          <ClientOnly>
+            <NavigationHeaderUserMenu :marketplace-mode="isMarketplaceExperience" />
 
-  <template #fallback>
-    <div class="h-[38px] w-[156px] rounded-full border border-[var(--border-light)] bg-[var(--bg-surface)]"></div>
-  </template>
-</ClientOnly>
+            <template #fallback>
+              <div class="h-[38px] w-[156px] rounded-full border border-[var(--border-light)] bg-[var(--bg-surface)]"></div>
+            </template>
+          </ClientOnly>
         
         </div>
       </div>
@@ -163,7 +167,7 @@
         <!-- LEFT GROUP: Home + Search -->
         <div class="mobile-bar__group">
           <NuxtLink
-            :to="appRoutes.feed"
+            :to="headerHomeRoute"
             class="mobile-home-link"
             :aria-label="$t('navigation.headerBar.home')"
             @click="handleHomeClick"
@@ -221,13 +225,13 @@
             </span>
           </button> -->
           <NuxtLink
-            :to="appRoutes.messages"
+            :to="messagesRoute"
             class="mobile-icon-btn"
             :class="route.path === appRoutes.messages ? 'mobile-icon-btn--active' : ''"
             :aria-label="$t('navigation.headerBar.messages')"
           >
              <Icon name="i-ph-chat-circle-dots-bold" class="h-[20px] w-[20px]" />
-            <span v-if="isClientReady && navigationSummary.messageCount > 0" class="header-action-badge">
+            <span v-if="isClientReady && !isMarketplaceExperience && navigationSummary.messageCount > 0" class="header-action-badge">
               {{ navigationSummary.messageCount }}
             </span>
           </NuxtLink>
@@ -287,7 +291,7 @@
       leave-to-class="opacity-0 -translate-y-2"
     >
       <div v-if="mobileSearchOpen" class="mobile-search xl:hidden">
-        <NavigationHeaderSearchInput autofocus />
+        <NavigationHeaderSearchInput autofocus :mode="isMarketplaceExperience ? 'marketplace' : 'global'" />
         <button
           class="mobile-search__close"
           type="button"
@@ -308,7 +312,7 @@
       leave-to-class="opacity-0 -translate-y-2"
     >
       <div v-if="notificationOpen" class="mobile-notification-panel xl:hidden">
-        <NotificationDropdown @navigate="notificationOpen = false" />
+        <NotificationDropdown :product-only="isMarketplaceExperience" @navigate="notificationOpen = false" />
       </div>
     </Transition>
 
@@ -365,6 +369,7 @@
 import { NuxtLink } from '#components'
 import { storeToRefs } from "pinia"
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
+import { isMarketplaceNavigationContext, isProductNotificationTarget } from "#shared-kernel/application/utils/marketplace-navigation"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import { useNotificationCenterStore } from "../../../notifications/application/stores/useNotificationCenterStore"
 import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
@@ -406,6 +411,7 @@ const isClientReady = ref(false)
 const logoFailed = ref(false)
 const route = useRoute()
 const router = useRouter()
+const runtimeConfig = useRuntimeConfig()
 const homeLoadingIndicator = useLoadingIndicator()
 const createActions = [
   {
@@ -450,8 +456,27 @@ const logoAlt = computed(() => brandName.value ? `${brandName.value} logo` : "Si
 const currentUser = computed(() => currentAuthUserStore.user)
 const navigationSummary = computed(() => navigationGeneralStore.summary)
 const requestCount = computed(() => navigationSummary.value.friendRequestCount + navigationSummary.value.groupChatRequestCount)
+const isMarketplaceExperience = computed(() =>
+  runtimeConfig.public.homeVariant === "marketplace"
+  && isMarketplaceNavigationContext(route.path, route.query),
+)
+const headerHomeRoute = computed(() =>
+  isMarketplaceExperience.value ? appRoutes.home : appRoutes.feed,
+)
+const messagesRoute = computed(() =>
+  isMarketplaceExperience.value
+    ? { path: appRoutes.messages, query: { context: "product" } }
+    : appRoutes.messages,
+)
+const marketplaceNotificationCount = computed(() =>
+  notificationCenterStore.items.filter(item =>
+    item.isUnread && isProductNotificationTarget(item),
+  ).length,
+)
 const notificationCount = computed(() =>
-  notificationCenterStore.hydrated
+  isMarketplaceExperience.value
+    ? marketplaceNotificationCount.value
+    : notificationCenterStore.hydrated
     ? notificationCenterStore.unreadCount
     : navigationSummary.value.notificationCount,
 )
@@ -476,7 +501,7 @@ const lastScrollY = ref(0)
 function handleHomeClick(event: MouseEvent) {
   homeLoadingIndicator.start({ force: true })
 
-  if (route.path !== appRoutes.feed) {
+  if (route.path !== headerHomeRoute.value) {
     return
   }
 

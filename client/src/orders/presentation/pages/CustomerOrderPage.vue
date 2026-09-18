@@ -201,7 +201,11 @@
       </main>
 
       <aside class="customer-order-side">
-        <OrdersSellerOrderSidebar :order="order" />
+        <OrdersSellerOrderSidebar
+          :order="order"
+          :is-confirming="isConfirming"
+          @confirm-order="handleConfirmOrder"
+        />
       </aside>
     </div>
 
@@ -242,7 +246,7 @@ const props = defineProps<{
   orderId: string
 }>()
 
-const { order } = useSellerOrderDetailVM(() => props.orderId)
+const { order, isConfirming, confirmOrder } = useSellerOrderDetailVM(() => props.orderId)
 const { paymentMeta, statusMeta, totalItems } = useOrderPresentation(order)
 
 const payoutMeta = computed(() =>
@@ -252,7 +256,41 @@ const payoutMeta = computed(() =>
 )
 
 const { t, locale } = useI18n()
+const toast = useToast()
 const { displayOrderPaymentMethod, displayOrderText } = useOrderDisplayText()
+
+const getErrorMessage = (error: unknown) => {
+  const fetchError = error as {
+    data?: { statusMessage?: string; message?: string }
+    statusMessage?: string
+    message?: string
+  }
+
+  return fetchError.data?.statusMessage
+    || fetchError.data?.message
+    || fetchError.statusMessage
+    || fetchError.message
+    || String(error)
+}
+
+const handleConfirmOrder = async () => {
+  try {
+    await confirmOrder()
+    toast.add({
+      title: t("orders.sidebar.confirmOrderSuccess"),
+      color: "success",
+      icon: "i-ph-check-circle",
+    })
+  }
+  catch (error) {
+    toast.add({
+      title: t("orders.sidebar.confirmOrderError"),
+      description: getErrorMessage(error),
+      color: "error",
+      icon: "i-ph-warning-circle",
+    })
+  }
+}
 
 const formatOrderCurrency = (value: number) =>
   formatCurrency(value, {

@@ -1268,6 +1268,33 @@
         "followingDescription": "Focus on people you already follow."
       }
     },
+    "marketplaceHome": {
+      "seoTitle": "Marketplace | VNSEEA",
+      "seoDescription": "Explore products from the VNSEEA community, review seller-provided information, and connect for marketplace transactions on one platform.",
+      "eyebrow": "VNSEEA Marketplace",
+      "title": "Explore products from the VNSEEA community",
+      "description": "Find relevant products, review seller-provided public information, and connect before making a purchase decision.",
+      "browseProducts": "Browse products",
+      "publishProduct": "Create listing",
+      "searchLabel": "What are you looking for?",
+      "searchAction": "Search",
+      "categoriesEyebrow": "Categories",
+      "categoriesTitle": "Browse by category",
+      "productsEyebrow": "Recently updated",
+      "productsTitle": "New listings",
+      "viewAll": "View all",
+      "retry": "Try again",
+      "emptyTitle": "There are no products to show yet",
+      "emptyDescription": "Return later or create the first product listing on VNSEEA.",
+      "guidanceEyebrow": "Transaction information",
+      "guidanceTitle": "Clear marketplace information on VNSEEA",
+      "listingInfoTitle": "Product information",
+      "contactInfoTitle": "Connect with sellers",
+      "policyInfoTitle": "Terms of use",
+      "termsLink": "Terms of use",
+      "privacyLink": "Privacy policy",
+      "contactLink": "Contact support"
+    },
     "statusCreatePage": {
       "seoTitle": "Create story | VNSEEA",
       "seoDescription": "Upload an image or video to create a new VNSEEA story.",
@@ -7346,6 +7373,10 @@
         "label": "Pending",
         "description": "The order has just been placed and is waiting for shop confirmation."
       },
+      "processing": {
+        "label": "Processing",
+        "description": "The shop has confirmed the order and is preparing it."
+      },
       "shipping": {
         "label": "Shipping",
         "description": "The order has left the warehouse and is on its way to you."
@@ -7380,7 +7411,9 @@
       "backToProducts": "Back to my products",
       "coordination": "Sales Coordination",
       "payoutShop": "Payout Shop",
-      "confirmOrder": "Confirm & Create Label",
+      "confirmOrder": "Confirm order",
+      "confirmOrderSuccess": "Order confirmed.",
+      "confirmOrderError": "Unable to confirm order.",
       "markDelivered": "Mark as Delivered",
       "viewPayout": "View Order Payout",
       "viewCancelled": "View Cancelled Record"

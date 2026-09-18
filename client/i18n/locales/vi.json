@@ -1268,6 +1268,33 @@
         "followingDescription": "Ưu tiên các kết nối bạn đang theo dõi."
       }
     },
+    "marketplaceHome": {
+      "seoTitle": "Sàn thương mại điện tử | VNSEEA",
+      "seoDescription": "Khám phá sản phẩm từ cộng đồng VNSEEA, xem thông tin người bán và kết nối mua bán trên cùng một nền tảng.",
+      "eyebrow": "Sàn thương mại điện tử VNSEEA",
+      "title": "Khám phá sản phẩm từ cộng đồng VNSEEA",
+      "description": "Tìm sản phẩm phù hợp, xem thông tin công khai từ người bán và chủ động kết nối trước khi mua.",
+      "browseProducts": "Khám phá sản phẩm",
+      "publishProduct": "Đăng sản phẩm",
+      "searchLabel": "Bạn đang tìm gì?",
+      "searchAction": "Tìm kiếm",
+      "categoriesEyebrow": "Danh mục",
+      "categoriesTitle": "Khám phá theo danh mục",
+      "productsEyebrow": "Mới cập nhật",
+      "productsTitle": "Sản phẩm mới đăng",
+      "viewAll": "Xem tất cả",
+      "retry": "Thử lại",
+      "emptyTitle": "Chưa có sản phẩm để hiển thị",
+      "emptyDescription": "Hãy quay lại sau hoặc đăng sản phẩm đầu tiên của bạn trên VNSEEA.",
+      "guidanceEyebrow": "Thông tin giao dịch",
+      "guidanceTitle": "Mua bán rõ ràng trên VNSEEA",
+      "listingInfoTitle": "Thông tin sản phẩm",
+      "contactInfoTitle": "Kết nối người bán",
+      "policyInfoTitle": "Điều khoản sử dụng",
+      "termsLink": "Điều khoản sử dụng",
+      "privacyLink": "Chính sách quyền riêng tư",
+      "contactLink": "Liên hệ hỗ trợ"
+    },
     "statusCreatePage": {
       "seoTitle": "Tạo story | VNSEEA",
       "seoDescription": "Tải lên ảnh hoặc video để tạo story mới trên VNSEEA.",
@@ -7346,6 +7373,10 @@
         "label": "Chờ xác nhận",
         "description": "Các đơn vừa đặt, đang chờ shop xác nhận và chuẩn bị."
       },
+      "processing": {
+        "label": "Đang xử lý",
+        "description": "Shop đã xác nhận đơn và đang chuẩn bị hàng."
+      },
       "shipping": {
         "label": "Đang giao",
         "description": "Đơn đã rời kho và đang trên hành trình đến tay bạn."
@@ -7380,7 +7411,9 @@
       "backToProducts": "Về SP của tôi",
       "coordination": "Điều phối đơn bán",
       "payoutShop": "Đối soát shop",
-      "confirmOrder": "Xác nhận & tạo vận đơn",
+      "confirmOrder": "Xác nhận đơn",
+      "confirmOrderSuccess": "Đơn hàng đã được xác nhận.",
+      "confirmOrderError": "Không thể xác nhận đơn hàng.",
       "markDelivered": "Đánh dấu giao thành công",
       "viewPayout": "Xem đối soát đơn",
       "viewCancelled": "Xem hồ sơ đơn hủy"

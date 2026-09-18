@@ -29,6 +29,7 @@ export type MessageContact = {
   preview: string
   time: string
   unreadCount: number
+  hasProductContext?: boolean
   lastActivityAt?: number
   isFollowing?: boolean
   isFollowingMe?: boolean

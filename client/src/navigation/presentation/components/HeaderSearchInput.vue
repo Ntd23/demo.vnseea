@@ -1,7 +1,31 @@
-<!-- English description: Inline global search command palette for users, pages, groups, and hashtags. -->
+<!-- English description: Inline header search that switches between global discovery and marketplace product queries. -->
 <template>
   <div ref="rootRef" class="w-full">
-    <ClientOnly>
+    <form
+      v-if="mode === 'marketplace'"
+      class="header-marketplace-search"
+      role="search"
+      @submit.prevent="submitMarketplaceSearch"
+    >
+      <UInput
+        v-model="marketplaceSearch"
+        :autofocus="autofocus"
+        icon="i-ph-magnifying-glass-bold"
+        :placeholder="$t('pages.productsPage.searchPlaceholder')"
+        autocomplete="off"
+        class="min-w-0 flex-1"
+        :ui="{
+          base: 'h-10 rounded-[var(--radius-lg)] bg-[var(--bg-muted)] text-sm font-medium',
+        }"
+      />
+      <UButton
+        type="submit"
+        icon="i-ph-magnifying-glass-bold"
+        :aria-label="$t('pages.marketplaceHome.searchAction')"
+      />
+    </form>
+
+    <ClientOnly v-else>
       <UCommandPalette
         v-model:search-term="search"
         :groups="commandPaletteGroups"
@@ -53,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useHeaderSearchSuggestions } from "../../application/composables/useHeaderSearchSuggestions"
 
 type HeaderSearchCommandItem = {
@@ -75,13 +100,16 @@ type HeaderSearchCommandItem = {
 
 const props = withDefaults(defineProps<{
   autofocus?: boolean
+  mode?: "global" | "marketplace"
 }>(), {
-  autofocus: false
+  autofocus: false,
+  mode: "global",
 })
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const marketplaceSearch = ref(readQueryValue(route.query.keyword))
 const rootRef = ref<HTMLElement | null>(null)
 const paletteOpen = ref(false)
 const search = ref(readQueryValue(route.query.q))
@@ -158,7 +186,20 @@ function selectSuggestion(href: string) {
   void router.push(href)
 }
 
+async function submitMarketplaceSearch() {
+  const keyword = marketplaceSearch.value.trim()
+
+  await navigateTo({
+    path: appRoutes.products,
+    query: keyword ? { keyword } : undefined,
+  })
+}
+
 function handleShortcut(event: KeyboardEvent) {
+  if (props.mode !== "global") {
+    return
+  }
+
   if (
     (event.ctrlKey || event.metaKey)
     && event.key.toLowerCase() === "k"
@@ -193,9 +234,25 @@ function handleFocusOut(event: FocusEvent) {
 watch(
   () => route.query.q,
   (value) => {
+    if (props.mode !== "global") {
+      return
+    }
+
     const next = readQueryValue(value)
     if (next !== search.value) search.value = next
   }
+)
+
+watch(
+  () => route.query.keyword,
+  (value) => {
+    if (props.mode !== "marketplace") {
+      return
+    }
+
+    const next = readQueryValue(value)
+    if (next !== marketplaceSearch.value) marketplaceSearch.value = next
+  },
 )
 
 watch(paletteOpen, (open) => {
@@ -205,16 +262,20 @@ watch(paletteOpen, (open) => {
 })
 
 onMounted(() => {
-  window.addEventListener("keydown", handleShortcut)
+  if (props.mode === "global") {
+    window.addEventListener("keydown", handleShortcut)
+  }
 
-  if (props.autofocus) {
+  if (props.autofocus && props.mode === "global") {
     paletteOpen.value = true
     focusSearchInput()
   }
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener("keydown", handleShortcut)
+  if (props.mode === "global") {
+    window.removeEventListener("keydown", handleShortcut)
+  }
 })
 </script>
 
@@ -280,5 +341,18 @@ onBeforeUnmount(() => {
 :global(.header-command-palette__viewport) {
   scrollbar-color: var(--border-strong) transparent;
   scrollbar-width: thin;
+}
+
+.header-marketplace-search {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-marketplace-search :deep(button) {
+  min-width: 40px;
+  min-height: 40px;
+  justify-content: center;
 }
 </style>

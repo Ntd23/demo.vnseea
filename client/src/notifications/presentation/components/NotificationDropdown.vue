@@ -121,6 +121,7 @@
 <script setup lang="ts">
 import type { NotificationItem } from "../../domain/types/notification.types"
 import { useNotificationCenterStore } from "../../application/stores/useNotificationCenterStore"
+import { isProductNotificationTarget } from "../../../shared-kernel/application/utils/marketplace-navigation"
 
 type DisplayNotificationItem = NotificationItem & {
   displayTitle: string
@@ -132,19 +133,26 @@ type DisplayNotificationItem = NotificationItem & {
 const emit = defineEmits<{
   navigate: []
 }>()
+const props = withDefaults(defineProps<{
+  productOnly?: boolean
+}>(), {
+  productOnly: false,
+})
 
 const store = useNotificationCenterStore()
 const activeFilter = ref<"all" | "unread">("all")
 const optionsOpen = ref(false)
 
 const displayItems = computed<DisplayNotificationItem[]>(() =>
-  store.items.map(item => ({
-    ...item,
-    displayTitle: notificationTitle(item),
-    displayBody: notificationBody(item),
-    badgeIcon: notificationBadgeIcon(item),
-    badgeClass: notificationBadgeClass(item),
-  })),
+  store.items
+    .filter(item => !props.productOnly || isProductNotificationTarget(item))
+    .map(item => ({
+      ...item,
+      displayTitle: notificationTitle(item),
+      displayBody: notificationBody(item),
+      badgeIcon: notificationBadgeIcon(item),
+      badgeClass: notificationBadgeClass(item),
+    })),
 )
 
 const filteredItems = computed(() =>
@@ -192,6 +200,16 @@ async function openNotification(item: NotificationItem) {
 
 async function markAllRead() {
   optionsOpen.value = false
+
+  if (props.productOnly) {
+    await Promise.all(
+      displayItems.value
+        .filter(item => item.isUnread)
+        .map(item => store.markOneRead(item.id)),
+    )
+    return
+  }
+
   await store.markRead()
 }
 

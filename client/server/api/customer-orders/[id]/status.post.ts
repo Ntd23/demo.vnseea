@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
 
   const statusMap: Record<string, string> = {
     pending: "accepted",
+    processing: "accepted",
     shipping: "shipped",
     delivered: "delivered",
     cancelled: "canceled",

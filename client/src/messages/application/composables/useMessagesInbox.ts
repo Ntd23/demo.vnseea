@@ -217,12 +217,21 @@ export function useMessagesInbox(
   const isUpdatingTags = ref(false)
   const activeReactionPickerId = ref<number | null>(null)
   const replyTarget = ref<MessageItem | null>(null)
+  const productOnly = computed(() => readQueryValue(route.query.context) === "product")
 
-  const tabs = computed<MessageTab[]>(() => [
-    { id: "multi", label: t("pages.messagesPage.sendMultiple"), icon: "i-ph-user-list-duotone" },
-    { id: "user", label: t("pages.messagesPage.users"), icon: "i-ph-user-circle-duotone" },
-    { id: "group", label: t("pages.messagesPage.groups"), icon: "i-ph-users-three-duotone" },
-  ])
+  const tabs = computed<MessageTab[]>(() => {
+    const userTab = { id: "user" as const, label: t("pages.messagesPage.users"), icon: "i-ph-user-circle-duotone" }
+
+    if (productOnly.value) {
+      return [userTab]
+    }
+
+    return [
+      { id: "multi", label: t("pages.messagesPage.sendMultiple"), icon: "i-ph-user-list-duotone" },
+      userTab,
+      { id: "group", label: t("pages.messagesPage.groups"), icon: "i-ph-users-three-duotone" },
+    ]
+  })
 
   const {
     data: inbox,
@@ -297,6 +306,7 @@ export function useMessagesInbox(
           preview: "",
           time: "",
           unreadCount: 0,
+          hasProductContext: productOnly.value,
           members: [requestedUserName.value],
           userId,
         }, taggedByUserId.get(userId)),
@@ -307,9 +317,15 @@ export function useMessagesInbox(
     return nextContacts
   })
 
+  const marketplaceContacts = computed(() =>
+    productOnly.value
+      ? inboxContacts.value.filter(contact => contact.hasProductContext)
+      : inboxContacts.value,
+  )
+
   const presenceUserIds = computed(() =>
     Array.from(new Set(
-      inboxContacts.value
+      marketplaceContacts.value
         .filter(contact => contact.type === "user")
         .map(contact => contact.userId ?? 0)
         .filter(userId => userId > 0),
@@ -330,14 +346,18 @@ export function useMessagesInbox(
       contactsByUserId.set(userId, current ? mergeContactTags(current, contact) : contact)
     }
 
-    return [...contactsByUserId.values()]
+    return [...contactsByUserId.values()].filter(contact =>
+      !productOnly.value || marketplaceContacts.value.some(
+        marketplaceContact => marketplaceContact.userId === contact.userId,
+      ),
+    )
   })
 
   const multiRecipientSource = computed(() => {
     const tagId = activeTagFilter.value
     const baseContacts = tagId
       ? taggedRecipientSource.value
-      : inboxContacts.value.filter(contact => contact.type === "user" && (contact.userId ?? 0) > 0)
+      : marketplaceContacts.value.filter(contact => contact.type === "user" && (contact.userId ?? 0) > 0)
 
     if (!tagId || tagId === "0") {
       return sortUserInboxContacts(baseContacts)
@@ -355,7 +375,7 @@ export function useMessagesInbox(
   const visibleContacts = computed(() => {
     const source = activeTab.value === "multi"
       ? multiRecipientSource.value
-      : inboxContacts.value
+      : marketplaceContacts.value
 
     if (activeTab.value === "multi") {
       return source
@@ -489,6 +509,12 @@ export function useMessagesInbox(
       activeTab.value = normalizedTab
     }
   })
+
+  watch(productOnly, (enabled) => {
+    if (enabled && activeTab.value !== "user") {
+      activeTab.value = "user"
+    }
+  }, { immediate: true })
 
   watch(activeTab, (value) => {
     const currentTab = normalizeTab(readQueryValue(route.query.tab))

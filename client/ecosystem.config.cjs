@@ -25,6 +25,7 @@ module.exports = {
         NITRO_PORT: process.env.NITRO_PORT || process.env.PORT,
         NUXT_PUBLIC_API_BASE: process.env.NUXT_PUBLIC_API_BASE,
         NUXT_PUBLIC_SITE_URL: process.env.NUXT_PUBLIC_SITE_URL ,
+        NUXT_PUBLIC_HOME_VARIANT: process.env.NUXT_PUBLIC_HOME_VARIANT,
         NUXT_BACKEND_API_BASE: process.env.NUXT_BACKEND_API_BASE,
         NUXT_BACKEND_SERVER_KEY: process.env.NUXT_BACKEND_SERVER_KEY,
         NUXT_PUBLIC_REALTIME_URL: process.env.NUXT_PUBLIC_REALTIME_URL,

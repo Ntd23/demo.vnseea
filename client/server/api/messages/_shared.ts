@@ -1110,6 +1110,25 @@ const buildContactPreview = (
     || buildContactPreviewLegacy(message)
 }
 
+const hasProductConversationContext = (...entities: BackendEntity[]) =>
+  entities.some((entity) => {
+    const text = decryptMessageText(entity.text, entity.time)
+    const normalizedText = normalizeMessageText(text, entity)
+    const product = asRecord(entity.product)
+    const marketplaceContext = asRecord(entity.marketplace_context)
+
+    return Boolean(
+      parseProductMessagePreview(normalizedText)
+      || asNumber(entity.product_id) > 0
+      || asNumber(product.id) > 0
+      || asNumber(product.product_id) > 0
+      || asNumber(marketplaceContext.product_id) > 0
+      || Object.keys(product).length > 0
+      || Object.keys(marketplaceContext).length > 0
+      || asString(entity.market_order_hash),
+    )
+  })
+
 const buildMediaUrl = (
   entity: BackendEntity,
   resolveMediaUrl: (value: unknown) => string,
@@ -1482,6 +1501,7 @@ const mapMessageContact = (
       preview: buildContactPreview(lastMessage, currentUserId, currentUserName, name),
       time: firstString(lastMessage, ["time_text"]),
       unreadCount: asNumber(entity.message_count),
+      hasProductContext: hasProductConversationContext(entity, lastMessage),
       lastActivityAt: Math.max(
         asNumber(entity.chat_time),
         asNumber(lastMessage.time),
@@ -1529,6 +1549,7 @@ const mapMessageContact = (
       preview: buildContactPreview(lastMessage, currentUserId, currentUserName, name),
       time: firstString(lastMessage, ["time_text"]),
       unreadCount: asNumber(entity.message_count),
+      hasProductContext: hasProductConversationContext(entity, lastMessage),
       members,
       type: "group",
       groupId,
@@ -1562,6 +1583,7 @@ const mapMessageContact = (
       preview: buildContactPreview(lastMessage, currentUserId, currentUserName, name),
       time: firstString(lastMessage, ["time_text"]),
       unreadCount: 0,
+      hasProductContext: hasProductConversationContext(entity, lastMessage),
       members: [
         firstString(asRecord(lastMessage.to_data), ["name", "username"]),
       ].filter(Boolean),
