@@ -10,7 +10,7 @@
       <!-- Main Top Bar: Logo | Navigation Pill Menu | Actions -->
       <div
         class="mx-auto flex h-16 w-full items-center justify-between gap-4"
-        :class="isMarketplaceExperience ? 'max-w-[1280px]' : 'max-w-[1880px]'"
+        :class="(isMarketplaceExperience || isBlogsPage) ? 'max-w-[1280px]' : 'max-w-[1880px]'"
       >
         <!-- Logo -->
         <NuxtLink
@@ -35,7 +35,7 @@
         <!-- Center: Search input + 3 inline menu items -->
         <div class="flex flex-1 items-center gap-3 min-w-0 max-w-[800px]">
           <div class="min-w-0 w-[320px] max-w-[320px]">
-            <NavigationHeaderSearchInput :mode="isMarketplaceExperience ? 'marketplace' : 'global'" />
+            <NavigationHeaderSearchInput :mode="(isMarketplaceExperience || isBlogsPage) ? 'marketplace' : 'global'" />
           </div>
 
           <nav class="header-main-nav shrink-0">
@@ -297,7 +297,7 @@
       leave-to-class="opacity-0 -translate-y-2"
     >
       <div v-if="mobileSearchOpen" class="mobile-search xl:hidden">
-        <NavigationHeaderSearchInput autofocus :mode="isMarketplaceExperience ? 'marketplace' : 'global'" />
+        <NavigationHeaderSearchInput autofocus :mode="(isMarketplaceExperience || isBlogsPage) ? 'marketplace' : 'global'" />
         <button
           class="mobile-search__close"
           type="button"
@@ -503,6 +503,12 @@ const requestCount = computed(() => navigationSummary.value.friendRequestCount +
 const isMarketplaceExperience = computed(() =>
   runtimeConfig.public.homeVariant === "marketplace"
   && isMarketplaceNavigationContext(route.path, route.query),
+)
+const isBlogsPage = computed(() =>
+  route.path === appRoutes.blogs
+  || route.path === appRoutes.createBlog
+  || route.path.startsWith("/read-blog/")
+  || route.path.startsWith("/edit-blog/")
 )
 const headerHomeRoute = computed(() =>
   isMarketplaceExperience.value ? appRoutes.home : appRoutes.feed,

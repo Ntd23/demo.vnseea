@@ -110,6 +110,12 @@ const isBlogDetailPage = computed(() => route.path.startsWith("/read-blog/"))
 const isCmsPage = computed(() => route.path.startsWith("/terms/") || route.path.startsWith("/site-pages/"))
 const isDirectoryPage = computed(() => route.path.startsWith("/directory"))
 const isCreateBlogPage = computed(() => route.path === appRoutes.createBlog)
+const isBlogsPage = computed(() =>
+  route.path === appRoutes.blogs
+  || route.path === appRoutes.createBlog
+  || route.path.startsWith("/read-blog/")
+  || route.path.startsWith("/edit-blog/")
+)
 const isLivePage = computed(() => route.path === appRoutes.live)
 const isFundingPage = computed(() =>
   route.path === appRoutes.funding
@@ -130,6 +136,7 @@ const showLeftSidebar = computed(() =>
   !isGuestPublicContentPage.value
   && !shouldHideLeftSidebar.value
   && !isMarketplaceExperience.value
+  && !isBlogsPage.value
   && !route.path.startsWith('/@')
   && !route.path.startsWith('/g/')
 )
@@ -137,6 +144,7 @@ const showRightSidebar = computed(() =>
   !isGuestPublicContentPage.value
   && !isReelsPage.value
   && !isMarketplaceExperience.value
+  && !isBlogsPage.value
   && !isLivePage.value
   && !isCmsPage.value
 )
@@ -170,7 +178,7 @@ const shellClass = computed(() => {
     return 'max-w-[1200px] xl:grid-cols-1'
   }
 
-  if (isMarketplaceExperience.value) {
+  if (isMarketplaceExperience.value || isBlogsPage.value) {
     return 'max-w-[1280px] px-3 sm:px-4 xl:grid-cols-1'
   }
 

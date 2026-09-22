@@ -12,7 +12,7 @@
         <input
           v-model="marketplaceSearch"
           type="text"
-          :placeholder="$t('pages.productsPage.searchPlaceholder')"
+          :placeholder="route.path.startsWith('/blogs') || route.path.startsWith('/read-blog') || route.path.startsWith('/edit-blog') || route.path === '/create-blog' ? 'Tìm tiêu đề, tác giả hoặc chủ đề' : $t('pages.productsPage.searchPlaceholder')"
           autocomplete="off"
           class="header-search-input"
         />
@@ -189,6 +189,14 @@ function selectSuggestion(href: string) {
 
 async function submitMarketplaceSearch() {
   const keyword = marketplaceSearch.value.trim()
+
+  if (route.path.startsWith('/blogs') || route.path.startsWith('/read-blog') || route.path.startsWith('/edit-blog') || route.path === '/create-blog') {
+    await navigateTo({
+      path: appRoutes.blogs,
+      query: keyword ? { q: keyword } : undefined,
+    })
+    return
+  }
 
   await navigateTo({
     path: appRoutes.products,

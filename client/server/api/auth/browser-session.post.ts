@@ -1,6 +1,6 @@
 // English description: Proxies backend set-browser-cookie.php so the Nuxt app can establish the PHP browser session without cross-origin redirects.
 
-import { appendResponseHeader, createError, getRequestHeader, readBody } from "h3"
+import { appendResponseHeader, createError, readBody } from "h3"
 import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import { getBackendBaseCandidates, normalizeBackendBaseURL } from "../../utils/backend-api-client"
 
@@ -70,9 +70,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const runtimeConfig = useRuntimeConfig(event)
-  const backendWebBase = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase || "")
-  const backendCandidates = getBackendBaseCandidates(normalizeBackendBaseURL(backendWebBase))
-  const forwardedCookie = getRequestHeader(event, "cookie")
+  const configuredBases = [
+    String(runtimeConfig.backendApiBase || ""),
+    String(runtimeConfig.public.backendWebBase || ""),
+  ].filter(Boolean)
+  const backendCandidates = Array.from(new Set(
+    configuredBases.flatMap((base) => getBackendBaseCandidates(normalizeBackendBaseURL(base))),
+  ))
 
   let lastError: unknown
 
@@ -86,7 +90,6 @@ export default defineEventHandler(async (event) => {
         headers: {
           accept: "application/json",
           "content-type": "application/x-www-form-urlencoded",
-          ...(forwardedCookie ? { cookie: forwardedCookie } : {}),
         },
         body: new URLSearchParams({
           access_token: accessToken,
