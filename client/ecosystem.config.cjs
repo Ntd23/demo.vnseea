@@ -7,7 +7,7 @@ process.loadEnvFile?.(path.join(clientRoot, ".env"))
 module.exports = {
   apps: [
     {
-      name: "vnseea-client",
+      name: "demo-vnseea-client",
       cwd: clientRoot,
       script: path.join(clientRoot, ".output", "server", "index.mjs"),
       interpreter: "node",
@@ -44,7 +44,7 @@ module.exports = {
       },
     },
     {
-      name: process.env.REALTIME_PROCESS_NAME || "vnseea-realtime",
+      name: process.env.REALTIME_PROCESS_NAME || "demo-vnseea-realtime",
       cwd: clientRoot,
       script: path.join(clientRoot, "realtime", "notification-server.mjs"),
       interpreter: "node",
@@ -56,7 +56,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         REALTIME_HOST: process.env.REALTIME_HOST || "0.0.0.0",
-        REALTIME_PORT: process.env.REALTIME_PORT || "3025",
+        REALTIME_PORT: process.env.REALTIME_PORT || "3035",
         REALTIME_SECRET: process.env.REALTIME_SECRET,
         REALTIME_CORS_ORIGIN: process.env.REALTIME_CORS_ORIGIN || process.env.NUXT_PUBLIC_SITE_URL,
       },
