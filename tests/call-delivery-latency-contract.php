@@ -100,6 +100,35 @@ assert_call_latency_contract(
     'passive group call payload must keep its expiry and low priority'
 );
 
+$silent_control_request = VNSEEA_BuildOneSignalCallRequestPayload(
+    'ios',
+    'ios-control-subscription',
+    array(
+        'event_type' => 'livekit_call_closed',
+        'call_id' => '85',
+        'call_type' => 'audio',
+        'call_context' => 'direct',
+        'status' => 'ended'
+    ),
+    array('silent' => true, 'ttl' => 20, 'priority' => 5),
+    'onesignal-ios-app',
+    'ios-control-uuid',
+    2000
+);
+assert_call_latency_contract(
+    $silent_control_request['content_available'] === true &&
+        $silent_control_request['apns_push_type_override'] === 'background' &&
+        !isset($silent_control_request['headings']) &&
+        !isset($silent_control_request['contents']) &&
+        !isset($silent_control_request['ios_sound']),
+    'terminal call controls must be data-only and must not display a notification'
+);
+assert_call_latency_contract(
+    strpos($push_source, '$allow_voip = $allow_voip && !$is_control') === false &&
+        strpos($push_source, "? array('content-available' => 1)") !== false,
+    'terminal call controls must retain silent PushKit delivery for background CallKit cleanup'
+);
+
 assert_call_latency_contract(
     strpos($push_source, 'curl_multi_init()') !== false &&
         strpos($push_source, 'include_subscription_ids') !== false &&
