@@ -39,6 +39,10 @@ assert_deploy_contract(
         substr_count($workflow, 'nodejs/config.json') >= 2,
     'v2 checkout must preserve its tracked database configuration'
 );
+assert_deploy_contract(
+    substr_count($workflow, 'command_timeout: 30m') === 2,
+    'both remote deployment stages must allow enough time for Nuxt builds'
+);
 
 assert_deploy_contract(
     strpos($script, 'smoke_test_target "$V2_BASE_URL"') !== false &&
@@ -86,6 +90,20 @@ assert_deploy_contract(
     strpos($script, 'rollback_target') !== false &&
         strpos($script, '.output.previous') !== false,
     'failed builds or smoke tests must restore the previous runtime'
+);
+assert_deploy_contract(
+    strpos($script, 'active_build_root') !== false &&
+        strpos($script, 'active_build_process') !== false &&
+        strpos($script, 'active_build_pid') !== false &&
+        strpos($script, 'trap handle_interruption HUP INT TERM') !== false &&
+        strpos($script, 'rollback_interrupted_build') !== false,
+    'an interrupted SSH deployment must restore and restart the previous Nuxt runtime'
+);
+assert_deploy_contract(
+    strpos($script, "BUILD_NODE_OPTIONS=\"\${BUILD_NODE_OPTIONS:---max-old-space-size=3072}\"") !== false &&
+        strpos($script, 'timeout --signal=TERM --kill-after=30s') !== false &&
+        strpos($script, 'stop_active_build_process') !== false,
+    'Nuxt builds must have a bounded heap, an internal timeout and process-tree cleanup'
 );
 
 assert_deploy_contract(

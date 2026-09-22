@@ -14,6 +14,8 @@ V2_BASE_URL="${V2_BASE_URL:-https://v2.vnseea.vn}"
 PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://vnseea.vn}"
 DEPLOY_STATE_DIR="${DEPLOY_STATE_DIR:-/home/vnseea/.deploy}"
 PUSH_WORKER_SERVICE="${PUSH_WORKER_SERVICE:-vnseea-push-worker.service}"
+BUILD_NODE_OPTIONS="${BUILD_NODE_OPTIONS:---max-old-space-size=3072}"
+BUILD_TIMEOUT_SECONDS="${BUILD_TIMEOUT_SECONDS:-1500}"
 
 V2_CLIENT_PROCESS="vnseea-client"
 PRIMARY_CLIENT_PROCESS="vnseea-web"
@@ -26,6 +28,9 @@ OBSOLETE_REALTIME_PROCESSES=(
 release_tree=''
 new_manifest=''
 stale_manifest=''
+active_build_root=''
+active_build_process=''
+active_build_pid=''
 
 log() {
     printf '[deploy:%s] %s\n' "${DEPLOY_STAGE:-unknown}" "$*"
@@ -37,6 +42,8 @@ fail() {
 }
 
 cleanup() {
+    stop_active_build_process
+    rollback_interrupted_build
     if [[ -n "$release_tree" && -d "$release_tree" ]]; then
         rm -rf -- "$release_tree"
     fi
@@ -47,7 +54,14 @@ cleanup() {
         rm -f -- "$stale_manifest"
     fi
 }
+
+handle_interruption() {
+    log 'Remote deployment was interrupted; restoring the previous runtime'
+    exit 143
+}
+
 trap cleanup EXIT
+trap handle_interruption HUP INT TERM
 
 require_command() {
     command -v "$1" >/dev/null 2>&1 || fail "required command not found: $1"
@@ -86,6 +100,38 @@ rollback_target() {
     fi
 }
 
+rollback_interrupted_build() {
+    [[ -n "$active_build_root" && -n "$active_build_process" ]] || return 0
+    log "Restore interrupted build for $active_build_process"
+    rollback_target "$active_build_root" "$active_build_process"
+    active_build_root=''
+    active_build_process=''
+}
+
+stop_active_build_process() {
+    local pid="${active_build_pid:-}"
+    [[ -n "$pid" ]] || return 0
+
+    if kill -0 "$pid" 2>/dev/null; then
+        kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null || true
+        for _ in {1..50}; do
+            kill -0 "$pid" 2>/dev/null || break
+            sleep 0.1
+        done
+        if kill -0 "$pid" 2>/dev/null; then
+            kill -KILL -- "-$pid" 2>/dev/null || kill -KILL "$pid" 2>/dev/null || true
+        fi
+    fi
+    wait "$pid" 2>/dev/null || true
+    active_build_pid=''
+}
+
+clear_active_build() {
+    active_build_root=''
+    active_build_process=''
+    active_build_pid=''
+}
+
 build_nuxt_target() {
     local root="$1"
     local process_name="$2"
@@ -98,6 +144,8 @@ build_nuxt_target() {
     ) || return 1
 
     log "Build Nuxt for $process_name"
+    active_build_root="$root"
+    active_build_process="$process_name"
     pm2 stop "$process_name" >/dev/null 2>&1 || true
 
     safe_remove_client_dir "$root" '.output.previous'
@@ -107,20 +155,33 @@ build_nuxt_target() {
     safe_remove_client_dir "$root" '.nuxt'
     safe_remove_client_dir "$root" 'node_modules/.vite'
 
-    if ! (
+    local build_failed=0
+    (
         cd "$client_dir"
-        NODE_OPTIONS='--max-old-space-size=4096' "$PNPM_BIN" build
-    ) || [[ ! -f "$client_dir/.output/server/index.mjs" ]]; then
+        exec timeout --signal=TERM --kill-after=30s \
+            "$BUILD_TIMEOUT_SECONDS" env NODE_OPTIONS="$BUILD_NODE_OPTIONS" \
+            "$PNPM_BIN" build
+    ) &
+    active_build_pid=$!
+    if ! wait "$active_build_pid"; then
+        build_failed=1
+    fi
+    active_build_pid=''
+
+    if [[ "$build_failed" -ne 0 || ! -f "$client_dir/.output/server/index.mjs" ]]; then
         log "Nuxt build failed for $process_name; restoring previous output"
         rollback_target "$root" "$process_name"
+        clear_active_build
         return 1
     fi
 
     if ! pm2 restart "$process_name" --update-env >/dev/null; then
         log "PM2 restart failed for $process_name; restoring previous output"
         rollback_target "$root" "$process_name"
+        clear_active_build
         return 1
     fi
+    clear_active_build
 }
 
 finalize_output() {
@@ -444,6 +505,7 @@ require_command rsync
 require_command tar
 require_command curl
 require_command pm2
+require_command timeout
 [[ -x "$PNPM_BIN" ]] || fail "pnpm binary is not executable: $PNPM_BIN"
 [[ "$RELEASE_SHA" =~ ^[0-9a-fA-F]{40}$ ]] || fail 'RELEASE_SHA must be a full Git commit SHA'
 validate_deploy_root "$V2_DEPLOY_PATH" 'v2'

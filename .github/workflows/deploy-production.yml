@@ -30,6 +30,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: DEPLOY_STAGE,RELEASE_SHA,V2_DEPLOY_PATH,PRIMARY_DEPLOY_PATH,PNPM_BIN
           script_stop: true
+          command_timeout: 30m
           script: |
             set -Eeuo pipefail
 
@@ -80,6 +81,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: DEPLOY_STAGE,RELEASE_SHA,V2_DEPLOY_PATH,PRIMARY_DEPLOY_PATH,PNPM_BIN
           script_stop: true
+          command_timeout: 30m
           script: |
             set -Eeuo pipefail
 
