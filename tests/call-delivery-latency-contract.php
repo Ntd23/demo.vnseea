@@ -124,9 +124,12 @@ assert_call_latency_contract(
     'terminal call controls must be data-only and must not display a notification'
 );
 assert_call_latency_contract(
-    strpos($push_source, '$allow_voip = $allow_voip && !$is_control') === false &&
-        strpos($push_source, "? array('content-available' => 1)") !== false,
-    'terminal call controls must retain silent PushKit delivery for background CallKit cleanup'
+    strpos($push_source, '$allow_voip = (bool)$allow_voip && !$is_control;') !== false,
+    'terminal call controls must use silent regular push instead of creating a new CallKit call'
+);
+assert_call_latency_contract(
+    substr_count($push_source, "'apns-expiration: 0'") >= 2,
+    'incoming VoIP pushes must not be stored and delivered after the call ends'
 );
 
 assert_call_latency_contract(
