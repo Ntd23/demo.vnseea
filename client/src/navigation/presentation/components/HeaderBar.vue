@@ -100,50 +100,57 @@
             </Transition>
           </div>
 
-          <NuxtLink
-            :to="messagesRoute"
-            class="header-action-btn"
-            :class="route.path === appRoutes.messages ? 'header-action-btn--active' : ''"
-            :aria-label="$t('navigation.headerBar.messages')"
-          >
-            <Icon
-              :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-bold' : 'i-ph-chat-circle-dots-bold'"
-              class="h-[25px] w-[25px]"
-            />
-            <span v-if="isClientReady && !isMarketplaceExperience && navigationSummary.messageCount > 0" class="header-action-badge">
-              {{ navigationSummary.messageCount }}
-            </span>
-          </NuxtLink>
+          <ClientOnly>
+            <NavigationHeaderThemeToggle />
+            <NavigationHeaderLanguageToggle />
 
-          <div class="notification-popover-root">
-            <button
-              class="header-action-btn"
-              type="button"
-              :aria-label="$t('navigation.headerBar.notifications')"
-              @click="toggleNotifications"
-            >
-              <Icon name="i-ph-bell-bold" class="h-[25px] w-[25px]" />
-              <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
-                {{ notificationCount }}
-              </span>
-            </button>
+            <template v-if="backendSession">
+              <NuxtLink
+                :to="messagesRoute"
+                class="header-action-btn"
+                :class="route.path === appRoutes.messages ? 'header-action-btn--active' : ''"
+                :aria-label="$t('navigation.headerBar.messages')"
+              >
+                <Icon
+                  :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-bold' : 'i-ph-chat-circle-dots-bold'"
+                  class="h-[25px] w-[25px]"
+                />
+                <span v-if="isClientReady && !isMarketplaceExperience && navigationSummary.messageCount > 0" class="header-action-badge">
+                  {{ navigationSummary.messageCount }}
+                </span>
+              </NuxtLink>
 
-            <Transition
-              enter-active-class="transition duration-150 ease-out"
-              enter-from-class="opacity-0 translate-y-1"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition duration-100 ease-in"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 translate-y-1"
-            >
-              <NotificationDropdown
-                v-if="notificationOpen"
-                class="notification-popover"
-                :product-only="isMarketplaceExperience"
-                @navigate="notificationOpen = false"
-              />
-            </Transition>
-          </div>
+              <div class="notification-popover-root">
+                <button
+                  class="header-action-btn"
+                  type="button"
+                  :aria-label="$t('navigation.headerBar.notifications')"
+                  @click="toggleNotifications"
+                >
+                  <Icon name="i-ph-bell-bold" class="h-[25px] w-[25px]" />
+                  <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
+                    {{ notificationCount }}
+                  </span>
+                </button>
+
+                <Transition
+                  enter-active-class="transition duration-150 ease-out"
+                  enter-from-class="opacity-0 translate-y-1"
+                  enter-to-class="opacity-100 translate-y-0"
+                  leave-active-class="transition duration-100 ease-in"
+                  leave-from-class="opacity-100 translate-y-0"
+                  leave-to-class="opacity-0 translate-y-1"
+                >
+                  <NotificationDropdown
+                    v-if="notificationOpen"
+                    class="notification-popover"
+                    :product-only="isMarketplaceExperience"
+                    @navigate="notificationOpen = false"
+                  />
+                </Transition>
+              </div>
+            </template>
+          </ClientOnly>
 
           <ClientOnly>
             <NavigationHeaderUserMenu v-if="backendSession" :marketplace-mode="isMarketplaceExperience" />
@@ -205,29 +212,36 @@
 
         <!-- RIGHT GROUP: Locale + Avatar -->
         <div class="mobile-bar__group">
-          <NuxtLink
-            :to="messagesRoute"
-            class="mobile-icon-btn"
-            :class="route.path === appRoutes.messages ? 'mobile-icon-btn--active' : ''"
-            :aria-label="$t('navigation.headerBar.messages')"
-          >
-             <Icon name="i-ph-chat-circle-dots-bold" class="h-[20px] w-[20px]" />
-            <span v-if="isClientReady && !isMarketplaceExperience && navigationSummary.messageCount > 0" class="header-action-badge">
-              {{ navigationSummary.messageCount }}
-            </span>
-          </NuxtLink>
+          <ClientOnly>
+            <NavigationHeaderThemeToggle />
+            <NavigationHeaderLanguageToggle />
 
-          <button
-            class="mobile-icon-btn"
-            type="button"
-            :aria-label="$t('navigation.headerBar.notifications')"
-            @click="toggleNotifications"
-          >
-             <Icon name="i-ph-bell-bold" class="h-[20px] w-[20px]" />
-            <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
-              {{ notificationCount }}
-            </span>
-          </button>
+            <template v-if="backendSession">
+              <NuxtLink
+                :to="messagesRoute"
+                class="mobile-icon-btn"
+                :class="route.path === appRoutes.messages ? 'mobile-icon-btn--active' : ''"
+                :aria-label="$t('navigation.headerBar.messages')"
+              >
+                 <Icon name="i-ph-chat-circle-dots-bold" class="h-[20px] w-[20px]" />
+                <span v-if="isClientReady && !isMarketplaceExperience && navigationSummary.messageCount > 0" class="header-action-badge">
+                  {{ navigationSummary.messageCount }}
+                </span>
+              </NuxtLink>
+
+              <button
+                class="mobile-icon-btn"
+                type="button"
+                :aria-label="$t('navigation.headerBar.notifications')"
+                @click="toggleNotifications"
+              >
+                 <Icon name="i-ph-bell-bold" class="h-[20px] w-[20px]" />
+                <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
+                  {{ notificationCount }}
+                </span>
+              </button>
+            </template>
+          </ClientOnly>
 
           <ClientOnly>
             <button
@@ -386,6 +400,8 @@ import { useNavigationRequestsStore } from "../../application/stores/useNavigati
 import NavigationHeaderSearchInput from './HeaderSearchInput.vue'
 import HeaderRequestsDropdown from "./HeaderRequestsDropdown.vue"
 import NavigationHeaderUserMenu from './HeaderUserMenu.vue'
+import NavigationHeaderThemeToggle from './HeaderThemeToggle.vue'
+import NavigationHeaderLanguageToggle from './HeaderLanguageToggle.vue'
 import NavigationMobileMenu from './MobileMenu.vue'
 
 const currentAuthUserStore = useCurrentAuthUserStore()

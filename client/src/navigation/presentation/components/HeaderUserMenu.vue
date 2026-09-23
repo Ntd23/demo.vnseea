@@ -40,17 +40,6 @@
         <div v-if="currentUser?.isAdmin" class="user-menu__divider" />
 
         <div class="user-menu__section">
-          <div class="user-menu__item user-menu__item--theme">
-            <Icon name="i-ph-moon-bold" class="user-menu__item-icon h-5 w-5" />
-            <UColorModeSwitch color="primary" size="md" />
-          </div>
-
-          <NavigationLocaleSwitcher />
-        </div>
-
-        <div class="user-menu__divider" />
-
-        <div class="user-menu__section">
           <NuxtLink
             :to="logoutAction.to"
             class="user-menu__item user-menu__item--danger"
@@ -94,10 +83,6 @@
                 <Icon name="i-ph-wallet-fill" class="user-menu__stat-icon" />
                 <span>{{ $t("navigation.mobileMenu.walletLabel") || "Wallet" }}: {{ formattedWalletPoints }}</span>
               </NuxtLink>
-              <!-- <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="user-menu__stat" @click="open = false">
-                <Icon name="i-ph-circle-half-fill" class="user-menu__stat-icon" />
-                <span>{{ $t("navigation.mobileMenu.pointsLabel") || "VNSEEA" }}: {{ formattedPoints }}</span>
-              </NuxtLink> -->
             </div>
           </div>
         </div>
@@ -141,13 +126,6 @@
             </NuxtLink>
           </template>
 
-          <div class="user-menu__item user-menu__item--theme">
-            <Icon name="i-ph-moon-bold" class="user-menu__item-icon h-5 w-5" />
-            <UColorModeSwitch color="primary" size="md" />
-          </div>
-
-          <NavigationLocaleSwitcher />
-
           <NuxtLink
             :to="logoutAction.to"
             class="user-menu__item user-menu__item--danger"
@@ -157,13 +135,6 @@
             <span class="user-menu__item-label">{{ $t(logoutAction.label) }}</span>
           </NuxtLink>
         </div>
-
-        <!-- <div class="user-menu__divider" />
-
-        <button class="user-menu__switch" type="button">
-          <span>{{ $t("navigation.mobileMenu.bottomActions.switchAccount") }}</span>
-          <Icon name="i-ph-arrows-clockwise" class="h-4 w-4" />
-        </button> -->
       </div>
     </Transition>
   </div>
@@ -174,7 +145,6 @@ import { onClickOutside } from "@vueuse/core"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useBackendWebUrl } from "#shared-kernel/application/utils/backend-web-url"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
-import NavigationLocaleSwitcher from "./LocaleSwitcher.vue"
 
 const props = withDefaults(defineProps<{
   marketplaceMode?: boolean
@@ -204,13 +174,6 @@ const userInitials = computed(() =>
     .join("")
   || "U",
 )
-const secondaryLabel = computed(() => {
-  if (!currentUser.value) return ""
-  if (currentUser.value.isAdmin) return t("navigation.mobileMenu.adminTitle")
-  if (currentUser.value.isModerator) return t("navigation.mobileMenu.moderatorTitle")
-  if (currentUser.value.username) return `@${currentUser.value.username}`
-  return ""
-})
 
 const profilePath = computed(() => currentUser.value?.username ? `/@${currentUser.value.username}` : "#")
 
@@ -449,7 +412,7 @@ const logoutAction = {
   border-radius: 10px;
   font-size: 12.5px;
   font-weight: 500;
-   color: var(--text-primary);
+  color: var(--text-primary);
   text-decoration: none;
   transition: color 0.15s ease, background 0.15s ease;
 }
@@ -495,6 +458,7 @@ a.user-menu__stat:hover {
   background: var(--bg-surface-hover);
   color: var(--text-brand);
 }
+
 .user-menu__item:hover .user-menu__item-icon {
   color: var(--text-brand);
 }
@@ -521,24 +485,5 @@ a.user-menu__stat:hover {
 .user-menu__item-label {
   font-size: 16px;
   min-width: 0;
-}
-
-.user-menu__switch {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 18px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: background 0.12s ease;
-}
-
-.user-menu__switch:hover {
-  background: var(--bg-surface-hover);
 }
 </style>
