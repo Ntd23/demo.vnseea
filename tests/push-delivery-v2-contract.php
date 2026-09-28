@@ -160,6 +160,13 @@ assert_push_v2_contract(
     'iOS push must use the bundled system sound instead of a missing custom file'
 );
 assert_push_v2_contract(
+    strpos($service, "\$request['existing_android_channel_id'] = 'vnseea_notifications_v2';") !== false &&
+        strpos($legacy_service, "\$default_android_notification_channel = 'vnseea_notifications_v2';") !== false &&
+        strpos($service, 'app_notification_sound') === false &&
+        strpos($legacy_service, 'app_notification_sound') === false,
+    'Android push must use the app channel that plays the system notification sound'
+);
+assert_push_v2_contract(
     strpos($service, 'push_debug_file_write_failed') !== false &&
         strpos($legacy_service, 'push_debug_file_write_failed') !== false,
     'push diagnostics must fall back to PHP error logging when the dedicated file is not writable'
