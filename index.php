@@ -156,14 +156,16 @@ $wo['lang_dir'] = 'ltr';
 $wo['lang_og_meta'] = '';
 
 if (!empty($wo["language"]) && !empty($wo['iso']) && in_array($wo["language"], array_keys($wo['iso'])) && !empty($wo['iso'][$wo["language"]])) {
-    $wo['lang_attr'] = $wo['iso'][$wo["language"]]->iso;
-    $wo['lang_dir'] = $wo['iso'][$wo["language"]]->direction;
-    $wo['language_type'] = $wo['iso'][$wo["language"]]->direction;
+    $language_iso = (array) $wo['iso'][$wo["language"]];
+    $wo['lang_attr'] = $language_iso['iso'];
+    $wo['lang_dir'] = $language_iso['direction'];
+    $wo['language_type'] = $language_iso['direction'];
 }
 foreach ($all_langs as $key => $value) {
     $iso = '';
     if (!empty($wo['iso'][$value])) {
-        $iso = $wo['iso'][$value]->iso;
+        $language_iso = (array) $wo['iso'][$value];
+        $iso = $language_iso['iso'];
     }
     $wo['lang_og_meta'] .= '<link rel="alternate" href="'.$wo['config']['site_url'].'?lang='.$value.'" hreflang="'.$iso.'" />';
 }
