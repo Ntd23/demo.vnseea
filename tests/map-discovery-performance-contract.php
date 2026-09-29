@@ -30,8 +30,8 @@ assert_map_performance_contract(
     'successful Google reads must support bounded server-side caching'
 );
 assert_map_performance_contract(
-    strpos($source, "Wo_ApiMapDiscoveryConsumeRateBucket(\$identity, 'all', 120)") !== false &&
-        strpos($source, "'place_autocomplete' => 45") !== false &&
+    strpos($source, "Wo_ApiMapDiscoveryConsumeRateBucket(\$identity, 'all', 240)") !== false &&
+        strpos($source, "'place_autocomplete' => 120") !== false &&
         strpos($source, "'rate_limited'") !== false &&
         strpos($source, "['retry_after']") !== false,
     'map discovery must enforce global and action-specific limits'
