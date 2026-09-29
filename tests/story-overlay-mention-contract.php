@@ -17,6 +17,11 @@ $assertions = array(
         'story_overlay must accept the app overlay limit of 6000 characters'
     ),
     array(
+        strpos($create, 'json_encode($story_overlay, JSON_UNESCAPED_SLASHES)') !== false
+            && strpos($create, 'json_encode($story_overlay, JSON_UNESCAPED_UNICODE') === false,
+        'story_overlay must be stored as ASCII JSON so emoji fit the utf8 overlay_data column'
+    ),
+    array(
         $mention_start !== false,
         'mentioned people must get a story_mention notification'
     ),

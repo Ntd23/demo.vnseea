@@ -95,9 +95,11 @@ if (empty($error_code)) {
         && is_array($story_overlay)
         && !empty($story_overlay)
     ) {
+        // Keep the stored JSON ASCII-only: emoji stickers are 4-byte UTF-8 and the
+        // overlay_data column is utf8 (3-byte), so escape them as \uXXXX instead.
         $story_data['overlay_data'] = mysqli_real_escape_string(
             $sqlConnect,
-            json_encode($story_overlay, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            json_encode($story_overlay, JSON_UNESCAPED_SLASHES)
         );
     }
     if ($is_shared_post) {
