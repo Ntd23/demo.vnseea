@@ -32,7 +32,8 @@ if (isset($_POST['story_description']) && strlen($_POST['story_description']) > 
     $error_code    = 5;
     $error_message = 'Description is so long';
 }
-if (isset($_POST['story_overlay']) && strlen($_POST['story_overlay']) > 2000) {
+// Matches STORY_OVERLAY_MAX_JSON_LENGTH in the app (up to 12 stickers, text, mentions and links).
+if (isset($_POST['story_overlay']) && strlen($_POST['story_overlay']) > 6000) {
     $error_code    = 10;
     $error_message = 'Story overlay data is too long';
 }
@@ -229,6 +230,41 @@ if (empty($error_code)) {
                 'story_id' => $last_id
             );
         }
+    }
+}
+
+// People @mentioned in the story overlay get a notification that opens the
+// story, but only when the story's audience lets them see it.
+if (isset($response_data['api_status'])
+    && $response_data['api_status'] === 200
+    && !empty($response_data['story_id'])
+    && !empty($story_overlay['items'])
+    && is_array($story_overlay['items'])) {
+    $mentioned_user_ids = array();
+    foreach ($story_overlay['items'] as $overlay_item) {
+        if (!is_array($overlay_item) || (isset($overlay_item['kind']) ? $overlay_item['kind'] : '') !== 'mention') {
+            continue;
+        }
+        $mentioned_user_id = isset($overlay_item['userId']) ? (int) $overlay_item['userId'] : 0;
+        if ($mentioned_user_id > 0 && $mentioned_user_id != $wo['user']['id']) {
+            $mentioned_user_ids[$mentioned_user_id] = true;
+        }
+        if (count($mentioned_user_ids) >= 10) {
+            break;
+        }
+    }
+    $mentioned_story_id = (int) $response_data['story_id'];
+    foreach (array_keys($mentioned_user_ids) as $mentioned_user_id) {
+        if (function_exists('VNSEEA_CanViewStory') && !VNSEEA_CanViewStory($story_data, $mentioned_user_id)) {
+            continue;
+        }
+        Wo_RegisterNotification(array(
+            'recipient_id' => $mentioned_user_id,
+            'type' => 'story_mention',
+            'story_id' => $mentioned_story_id,
+            'text' => '',
+            'url' => 'index.php?link1=timeline&u=' . $wo['user']['username'] . '&story=true&story_id=' . $mentioned_story_id
+        ));
     }
 }
 
