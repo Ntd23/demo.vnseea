@@ -630,6 +630,8 @@
                 :media-url="message.isDeleted ? undefined : message.mediaUrl"
                 :media-name="message.isDeleted ? undefined : message.mediaName"
                 :media-type="message.isDeleted ? undefined : message.mediaType"
+                :media-thumb-url="message.isDeleted ? undefined : message.mediaThumbUrl"
+                :media-status="message.isDeleted ? undefined : message.mediaStatus"
                 :product-card="message.isDeleted ? undefined : getMiniProductMeta(message)?.card"
                 :order-request="message.isDeleted ? undefined : message.orderRequest"
                 :shared-post="message.isDeleted ? undefined : message.sharedPost"

@@ -196,8 +196,14 @@
                   :alt="item.title"
                   class="h-full w-full object-cover transition-transform group-hover:scale-105"
                 >
+                <img
+                  v-else-if="item.thumbnailUrl"
+                  :src="item.thumbnailUrl"
+                  :alt="item.title"
+                  class="h-full w-full object-cover"
+                >
                 <video
-                  v-else
+                  v-else-if="!isStreamedVideoUrl(item.url)"
                   :src="item.url"
                   class="h-full w-full object-cover"
                   muted
@@ -352,6 +358,10 @@ function focusSearch() {
   searchSectionRef.value?.scrollIntoView({ behavior: "smooth", block: "start" })
   nextTick(() => searchSectionRef.value?.querySelector<HTMLInputElement>("input")?.focus())
 }
+
+// Bunny Stream videos are HLS playlists; tiles show their poster instead of
+// loading the stream.
+const isStreamedVideoUrl = (url: string) => /\.m3u8(?:$|[?#])/i.test(url)
 
 function openMedia(item: MessageSharedContentItem) {
   if (item.kind !== "image" && item.kind !== "video") return

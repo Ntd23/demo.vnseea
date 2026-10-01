@@ -42,6 +42,13 @@ if ($upload_max_file_size > 0) {
     $upload_max_file_size_label = $upload_size_value . ' ' . $upload_size_unit;
 }
 $public_config = array(
+    // No secrets: clients only learn where chat videos go and when to skip compression.
+    'video_upload' => array(
+        'chat' => array(
+            'provider' => VNSEEA_BunnyStreamUploadsEnabled('private') ? 'bunny_stream' : 'local',
+            'compress_max_seconds' => max(0, (int) VNSEEA_BunnyConfig('vnseea_bunny_stream_compress_max_seconds', '180')),
+        ),
+    ),
     'siteName' => !empty($get_config['siteName']) ? $get_config['siteName'] : 'VNSEEA',
     'siteTitle' => !empty($get_config['siteTitle']) ? $get_config['siteTitle'] : (!empty($get_config['siteName']) ? $get_config['siteName'] : 'VNSEEA'),
     'siteDesc' => !empty($get_config['siteDesc']) ? $get_config['siteDesc'] : '',

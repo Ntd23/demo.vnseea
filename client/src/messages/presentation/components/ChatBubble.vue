@@ -202,16 +202,28 @@
               type="button"
               class="chat-bubble__media-trigger chat-bubble__video-trigger"
               :aria-label="t('pages.messagesPage.video')"
+              :disabled="Boolean(mediaStatus)"
               @click.stop="openMediaViewer"
             >
+              <NuxtImg
+                v-if="isStreamedVideo && mediaThumbUrl"
+                :src="mediaThumbUrl"
+                :alt="mediaName || t('pages.messagesPage.video')"
+                class="max-h-[360px] rounded-[10px]"
+              />
+              <span v-else-if="isStreamedVideo" class="chat-bubble__video-placeholder" />
               <video
+                v-else
                 :src="mediaUrl"
                 class="max-h-[360px] rounded-[10px]"
                 muted
                 playsinline
                 preload="metadata"
               />
-              <span class="chat-bubble__video-play" aria-hidden="true">
+              <span v-if="mediaStatus" class="chat-bubble__video-status">
+                {{ mediaStatus === "failed" ? t("pages.messagesPage.videoFailed") : t("pages.messagesPage.videoProcessing") }}
+              </span>
+              <span v-else class="chat-bubble__video-play" aria-hidden="true">
                 <Icon name="i-ph-play-fill" />
               </span>
             </button>
@@ -411,6 +423,8 @@ const props = defineProps<{
   mediaUrl?: string
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
+  mediaThumbUrl?: string
+  mediaStatus?: "processing" | "failed"
   productCard?: MessageProductCard
   orderRequest?: MessageOrderRequest
   sharedPost?: MessageSharedPostCardData
@@ -461,8 +475,12 @@ watch(() => props.mediaUrl, () => {
   mediaViewerOpen.value = false
 })
 
+// Bunny Stream videos are HLS playlists; loading one per bubble would stream
+// video in the background, so the bubble shows the poster instead.
+const isStreamedVideo = computed(() => /\.m3u8(?:$|[?#])/i.test(props.mediaUrl || ""))
+
 function openMediaViewer() {
-  if (!props.mediaUrl || !previewableMediaType.value) return
+  if (!props.mediaUrl || !previewableMediaType.value || props.mediaStatus) return
 
   mediaViewerOpen.value = true
 }
@@ -1328,6 +1346,31 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__video-trigger {
   background: #000;
+}
+
+.chat-bubble__video-trigger:disabled {
+  cursor: default;
+}
+
+.chat-bubble__video-placeholder {
+  display: block;
+  width: 240px;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.chat-bubble__video-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 64%);
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
 }
 
 .chat-bubble__video-play {

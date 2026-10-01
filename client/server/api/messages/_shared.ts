@@ -1110,6 +1110,11 @@ const buildContactPreview = (
     || buildContactPreviewLegacy(message)
 }
 
+const readMediaStatus = (entity: BackendEntity): MessageItem["mediaStatus"] => {
+  const status = firstString(entity, ["media_status"]).toLowerCase()
+  return status === "processing" || status === "failed" ? status : undefined
+}
+
 const buildMediaUrl = (
   entity: BackendEntity,
   resolveMediaUrl: (value: unknown) => string,
@@ -1637,6 +1642,10 @@ const mapThreadMessage = (
     mediaUrl: recalledPayload ? "" : mediaUrl,
     mediaName: recalledPayload ? "" : firstString(entity, ["mediaFileName", "media_file_name", "filename"]),
     mediaType: recalledPayload ? undefined : mediaType,
+    mediaThumbUrl: !recalledPayload && mediaType === "video"
+      ? resolveMediaUrl(firstString(entity, ["media_thumb"])) || undefined
+      : undefined,
+    mediaStatus: recalledPayload ? undefined : readMediaStatus(entity),
     story,
     productCard,
     orderRequest,
@@ -2617,6 +2626,7 @@ const mapSharedContentItem = (
     id: message.id,
     kind,
     url,
+    thumbnailUrl: kind === "video" ? message.mediaThumbUrl : undefined,
     title: buildSharedContentTitle(url, fallbackTitle),
     senderName: message.isMine ? "Bạn" : message.authorName || "Người dùng",
     time: message.time || "",

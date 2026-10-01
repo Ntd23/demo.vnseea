@@ -65,7 +65,8 @@
                 @click="openStorage('media')"
               >
                 <NuxtImg v-if="item.mediaType !== 'video'" :src="item.mediaUrl" :alt="item.mediaName || 'Media'" />
-                <video v-else :src="item.mediaUrl" muted playsinline />
+                <NuxtImg v-else-if="item.mediaThumbUrl" :src="item.mediaThumbUrl" :alt="item.mediaName || 'Video'" />
+                <video v-else-if="!isStreamedVideoUrl(item.mediaUrl)" :src="item.mediaUrl" muted playsinline />
                 <span v-if="item.mediaType === 'video'" class="group-info-panel__play"><Icon name="i-ph-play-fill" /></span>
               </button>
             </div>
@@ -212,9 +213,17 @@
               <section v-for="group in mediaGroups" :key="group.label">
                 <h3>{{ group.label }}</h3>
                 <div>
-                  <a v-for="item in group.items" :key="item.id" :href="item.mediaUrl" target="_blank" rel="noopener noreferrer">
+                  <a
+                    v-for="item in group.items"
+                    :key="item.id"
+                    :href="item.mediaUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    @click="openStreamedVideo($event, item)"
+                  >
                     <NuxtImg v-if="item.mediaType !== 'video'" :src="item.mediaUrl" :alt="item.mediaName || 'Media'" />
-                    <video v-else :src="item.mediaUrl" muted playsinline />
+                    <NuxtImg v-else-if="item.mediaThumbUrl" :src="item.mediaThumbUrl" :alt="item.mediaName || 'Video'" />
+                    <video v-else-if="!isStreamedVideoUrl(item.mediaUrl)" :src="item.mediaUrl" muted playsinline />
                     <span v-if="item.mediaType === 'video'" class="group-info-panel__play"><Icon name="i-ph-play-fill" /></span>
                   </a>
                 </div>
@@ -413,6 +422,15 @@
         </div>
       </template>
     </UModal>
+
+    <MessageMediaViewer
+      v-if="streamedVideo"
+      :open="Boolean(streamedVideo)"
+      :src="streamedVideo.mediaUrl || ''"
+      type="video"
+      :alt="streamedVideo.mediaName"
+      @close="streamedVideo = null"
+    />
   </div>
 </template>
 
@@ -424,6 +442,7 @@ import type {
   MessageGroupMember,
   MessageItem,
 } from "../../domain/types/messages.types"
+import MessageMediaViewer from "./MessageMediaViewer.vue"
 
 const props = defineProps<{
   contact?: MessageContact | null
@@ -487,6 +506,20 @@ const mediaMessages = computed(() =>
   ),
 )
 const mediaPreviewItems = computed(() => mediaMessages.value.slice(0, 8))
+const streamedVideo = ref<MessageItem | null>(null)
+
+const isStreamedVideoUrl = (url?: string) => /\.m3u8(?:$|[?#])/i.test(url || "")
+
+// Browsers other than Safari download an HLS playlist instead of playing it
+// in a new tab, so Bunny Stream videos open in the media viewer.
+function openStreamedVideo(event: MouseEvent, item: MessageItem) {
+  if (item.mediaType !== "video" || !isStreamedVideoUrl(item.mediaUrl)) return
+
+  event.preventDefault()
+  if (!item.mediaStatus) {
+    streamedVideo.value = item
+  }
+}
 const fileMessages = computed(() =>
   (props.messages ?? []).filter(message =>
     Boolean(message.mediaUrl)

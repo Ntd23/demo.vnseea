@@ -3147,6 +3147,8 @@
       "noRecipientsSelected": "Chưa chọn người nhận nào.",
       "clearVisible": "Bỏ chọn đang hiện",
       "attachmentLabel": "Đính kèm",
+      "videoProcessing": "Đang xử lý video",
+      "videoFailed": "Không xử lý được video",
       "shareLocation": "Chia sẻ vị trí hiện tại",
       "locationOwnTitle": "Vị trí của bạn",
       "locationDefaultTitle": "Vị trí được chia sẻ",

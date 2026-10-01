@@ -83,7 +83,8 @@ $required_config_defaults = array(
     'vnseea_bunny_stream_private_cdn_hostname' => '',
     'vnseea_bunny_stream_private_token_key' => '',
     'vnseea_bunny_stream_private_url_ttl' => '21600',
-    'vnseea_bunny_stream_compress_max_seconds' => '180'
+    'vnseea_bunny_stream_compress_max_seconds' => '180',
+    'vnseea_bunny_stream_max_upload_mb' => '10240'
 );
 foreach ($required_config_defaults as $config_name => $config_value) {
     if (!array_key_exists($config_name, $config)) {

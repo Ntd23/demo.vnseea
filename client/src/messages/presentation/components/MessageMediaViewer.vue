@@ -33,7 +33,8 @@
           >
           <video
             v-else-if="type === 'video'"
-            :src="src"
+            ref="videoElement"
+            :src="isHlsSource ? undefined : src"
             class="message-media-viewer__video"
             controls
             playsinline
@@ -41,7 +42,7 @@
           />
         </div>
 
-        <footer class="message-media-viewer__footer">
+        <footer v-if="!isHlsSource" class="message-media-viewer__footer">
           <a
             :href="src"
             target="_blank"
@@ -58,6 +59,8 @@
 </template>
 
 <script setup lang="ts">
+import type Hls from "hls.js"
+
 const props = defineProps<{
   open: boolean
   src: string
@@ -71,8 +74,16 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const closeButton = ref<HTMLButtonElement | null>(null)
+const videoElement = ref<HTMLVideoElement | null>(null)
 let previousBodyOverflow = ""
 let bodyScrollLocked = false
+let hlsPlayer: Hls | null = null
+let hlsAttachToken = 0
+
+// Bunny Stream videos are HLS playlists (.m3u8).
+const isHlsSource = computed(() =>
+  props.type === "video" && /\.m3u8(?:$|[?#])/i.test(props.src),
+)
 
 const title = computed(() =>
   props.type === "video"
@@ -116,7 +127,50 @@ watch(
   },
 )
 
-onBeforeUnmount(restoreBodyScroll)
+function detachHls() {
+  hlsPlayer?.destroy()
+  hlsPlayer = null
+}
+
+async function attachHlsSource() {
+  const token = ++hlsAttachToken
+  detachHls()
+
+  const video = videoElement.value
+  if (!import.meta.client || !video || !props.open || !isHlsSource.value) return
+
+  // Safari (and some mobile browsers) play HLS natively; others need hls.js.
+  if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = props.src
+    return
+  }
+
+  const { default: HlsPlayer } = await import("hls.js")
+  if (token !== hlsAttachToken) return
+
+  if (!HlsPlayer.isSupported()) {
+    video.src = props.src
+    return
+  }
+
+  hlsPlayer = new HlsPlayer()
+  hlsPlayer.loadSource(props.src)
+  hlsPlayer.attachMedia(video)
+}
+
+watch(
+  [() => props.open, () => props.src, videoElement],
+  () => {
+    void attachHlsSource()
+  },
+  { flush: "post" },
+)
+
+onBeforeUnmount(() => {
+  hlsAttachToken += 1
+  detachHls()
+  restoreBodyScroll()
+})
 </script>
 
 <style scoped>
