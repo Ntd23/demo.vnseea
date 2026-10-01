@@ -1809,7 +1809,7 @@ function Wo_GetMedia($media)
     }
     $media = trim((string) $media);
     if (filter_var($media, FILTER_VALIDATE_URL)) {
-        return $media;
+        return VNSEEA_RewriteMediaUrlForCdn($media);
     }
     $shared_upload_url = VNSEEA_GetSharedUploadUrl($media);
     if ($shared_upload_url !== '') {

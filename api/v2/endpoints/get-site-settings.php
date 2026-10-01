@@ -13,6 +13,12 @@ $get_config = Wo_GetConfig();
 foreach ($non_allowed_config as $key => $value) {
     unset($get_config[$value]);
 }
+// Bunny keys sign uploads and playback; clients only ever get signed results.
+foreach (array_keys($get_config) as $config_name) {
+    if (strpos($config_name, 'vnseea_bunny_') === 0) {
+        unset($get_config[$config_name]);
+    }
+}
 $get_config['logo_url'] = $config['theme_url'] . '/img/logo.' . $get_config['logo_extension'];
 $theme_url = $config['theme_url'];
 $logo_extension = !empty($get_config['logo_extension']) ? $get_config['logo_extension'] : 'png';

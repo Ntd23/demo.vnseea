@@ -61,12 +61,20 @@ const nativeAppAndroidStoreUrl = process.env.NUXT_PUBLIC_NATIVE_APP_ANDROID_STOR
 const backendWebBase = normalizeBackendWebBase(
   process.env.NUXT_PUBLIC_BACKEND_WEB_BASE?.trim() || backendApiBase,
 );
+// Extra media hosts such as the Bunny CDN pull zone that the admin panel can
+// switch on at runtime; the image proxy only fetches from allow-listed hosts.
+const extraImageDomains = (process.env.NUXT_IMAGE_EXTRA_DOMAINS || "")
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean)
+  .map((value) => extractHostname(/^https?:\/\//i.test(value) ? value : `https://${value}`));
 const imageDomains = Array.from(
   new Set(
     [
       extractHostname(publicSiteUrl),
       extractHostname(backendWebBase),
       extractHostname(mediaBaseUrl),
+      ...extraImageDomains,
     ].filter(Boolean),
   ),
 );
