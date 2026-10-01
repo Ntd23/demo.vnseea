@@ -63,6 +63,26 @@ if (!function_exists('VNSEEA_MessageMediaGroupColumnAvailable')) {
     }
 }
 
+if (!function_exists('VNSEEA_MessageMediaGroupSize')) {
+    /**
+     * Remembers, for this request, how many items the client is sending in an
+     * album so the push queue can notify once the final item arrives.
+     */
+    function VNSEEA_MessageMediaGroupSize($media_group_id, $size = null)
+    {
+        static $sizes = array();
+
+        $media_group_id = (string) $media_group_id;
+        if ($size !== null) {
+            $size = is_numeric($size) ? (int) $size : 0;
+            if ($media_group_id !== '' && $size >= 2 && $size <= 50) {
+                $sizes[$media_group_id] = $size;
+            }
+        }
+        return isset($sizes[$media_group_id]) ? $sizes[$media_group_id] : 0;
+    }
+}
+
 if (!function_exists('VNSEEA_PrepareMessageImageUpload')) {
     /**
      * Prepares an uploaded chat image before Wo_ShareFile stores it.
