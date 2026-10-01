@@ -216,6 +216,10 @@ export type MessageItem = {
   mediaUrl?: string
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
+  /** Poster image for video messages. */
+  mediaThumbUrl?: string
+  /** Set while a streamed video is still encoding, or when encoding failed. */
+  mediaStatus?: "processing" | "failed"
   story?: MessageStoryContext
   productCard?: MessageProductCard
   orderRequest?: MessageOrderRequest
@@ -282,6 +286,7 @@ export type MessageSharedContentItem = {
   id: number
   kind: MessageSharedContentKind
   url: string
+  thumbnailUrl?: string
   title: string
   senderName: string
   time: string

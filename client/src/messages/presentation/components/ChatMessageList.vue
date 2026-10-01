@@ -57,6 +57,8 @@
           :media-url="msg.isDeleted ? undefined : msg.mediaUrl"
           :media-name="msg.isDeleted ? undefined : msg.mediaName"
           :media-type="msg.isDeleted ? undefined : msg.mediaType"
+          :media-thumb-url="msg.isDeleted ? undefined : msg.mediaThumbUrl"
+          :media-status="msg.isDeleted ? undefined : msg.mediaStatus"
           :product-card="msg.isDeleted ? undefined : getProductMeta(msg)?.card"
           :order-request="msg.isDeleted ? undefined : msg.orderRequest"
           :shared-post="msg.isDeleted ? undefined : msg.sharedPost"

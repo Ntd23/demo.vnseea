@@ -39,7 +39,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
 			$messages = $db->where("text","%".$text."%","like")->orderBy('id', 'DESC')->get(T_MESSAGES, 50);
 			$search = array_map(function ($message)
 			{
-				return GetMessageById($message->id);
+				return VNSEEA_BunnyPresentMessageMedia(GetMessageById($message->id));
 			}, $messages);
 
 			$response_data = array(
@@ -79,7 +79,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
 				$db->where("media","%upload/photos%","like");
 			}
 			elseif ($_POST['media_type'] == 'videos') {
-				$db->where("media","%upload/videos%","like");
+				$db->where("(`media` LIKE '%upload/videos%' OR `media` LIKE 'bunny-stream://%')");
 			}
 			elseif ($_POST['media_type'] == 'audio') {
 				$db->where("media","%upload/sounds%","like");
@@ -101,7 +101,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
 			$messages = $db->orderBy('id','DESC')->get(T_MESSAGES,$limit);
 			$search = array_map(function ($message)
 			{
-				return GetMessageById($message->id);
+				return VNSEEA_BunnyPresentMessageMedia(GetMessageById($message->id));
 			}, $messages);
 
 			$response_data = array(

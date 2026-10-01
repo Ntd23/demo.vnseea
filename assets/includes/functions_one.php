@@ -1808,6 +1808,9 @@ function Wo_GetMedia($media)
         return '';
     }
     $media = trim((string) $media);
+    if (strpos($media, 'bunny-stream://') === 0) {
+        return VNSEEA_BunnyPlaybackUrl($media);
+    }
     if (filter_var($media, FILTER_VALIDATE_URL)) {
         return VNSEEA_RewriteMediaUrlForCdn($media);
     }

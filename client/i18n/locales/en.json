@@ -3125,6 +3125,8 @@
       "noRecipientsSelected": "No recipients selected yet.",
       "clearVisible": "Clear visible",
       "attachmentLabel": "Attachment",
+      "videoProcessing": "Processing video",
+      "videoFailed": "This video could not be processed",
       "shareLocation": "Share current location",
       "locationOwnTitle": "Your location",
       "locationDefaultTitle": "Shared location",
