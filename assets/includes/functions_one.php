@@ -8766,6 +8766,11 @@ function Wo_PostData($post_id, $placement = '', $limited = '', $comments_limit =
     }
 
     $story['media_geometry'] = VNSEEA_MediaGeometryPayload($story);
+    // Clients resolve stored paths themselves but cannot resolve a Bunny Stream
+    // reference, so every endpoint built on Wo_PostData returns its playlist.
+    if (!empty($story['postFile']) && strpos((string) $story['postFile'], 'bunny-stream://') === 0) {
+        $story['postFile'] = $story['postFile_full'];
+    }
     $story['privacy_contract'] = 'audience_v2';
     $story['is_anonymous'] = VNSEEA_IsAnonymousPost($story) ? 1 : 0;
     $story['is_owner'] = $viewer_id > 0 && !empty($story['user_id']) && (int) $story['user_id'] === $viewer_id;

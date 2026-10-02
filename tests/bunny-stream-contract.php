@@ -231,6 +231,7 @@ stream_assert(strpos($publish_sources['story'], "'mention_user_ids' => array_val
 stream_assert(strpos($publish_sources['status'], "(int) \$row['user_id'] !== (int) \$wo['user']['user_id']") !== false, 'only the uploader reads an upload status');
 stream_assert(strpos($publish_sources['worker'], 'VNSEEA_BunnyReloadConfig();') !== false && strpos($publish_sources['worker'], 'VNSEEA_BunnyRunMaintenance(10);') !== false, 'the push worker runs Bunny upkeep with fresh, decrypted settings');
 stream_assert(strpos($sources['functions'], "VNSEEA_BunnyReleaseVideo(\$fetched_data['postFile'], array('post_id' => (int) \$fetched_data['id']));") !== false, 'deleting a post removes its Bunny video');
+stream_assert(strpos($sources['functions'], "\$story['postFile'] = \$story['postFile_full'];") !== false, 'post data hands clients the playlist, never the Bunny reference');
 stream_assert(strpos($publish_sources['functions_three'], "VNSEEA_BunnyReleaseVideo(\$path, array('story_id' => (int) \$id));") !== false, 'deleting a story removes its Bunny video');
 stream_assert(strpos($publish_sources['migration'], 'ADD COLUMN IF NOT EXISTS `publish_state`') !== false, 'the migration adds the publish state');
 stream_assert(strpos($sources['settings'], "'story' => \$bunny_public_video_upload,") !== false, 'clients learn where post, reel and story videos go');
