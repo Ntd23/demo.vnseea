@@ -214,6 +214,21 @@ stream_assert(!$results[1]['ok'] && strpos($results[1]['message'], 'Block direct
 stream_assert(!$results[3]['ok'] && strpos($results[3]['message'], 'Block direct URL file access') !== false, 'chat referrer blocking is not blamed on the token key');
 unset($GLOBALS['vnseea_bunny_http']);
 
+// Without the file on this server, posts take their display size from Bunny.
+require_once $root . '/assets/includes/vnseea_post_media.php';
+$GLOBALS['vnseea_bunny_http'] = function ($method, $url, $headers, $body) use ($guid) {
+    return strpos($url, 'library/123/videos/' . $guid) !== false
+        ? array('status' => 200, 'body' => json_encode(array('guid' => $guid, 'width' => 1080, 'height' => 1920)))
+        : array('status' => 404, 'body' => '');
+};
+stream_equals(
+    VNSEEA_BunnyVideoGeometry(array('library_kind' => 'public', 'video_guid' => $guid)),
+    array('width' => 1080, 'height' => 1920, 'aspect_ratio' => 0.5625),
+    'encoded videos report their display size'
+);
+stream_assert(VNSEEA_BunnyVideoGeometry(array('library_kind' => 'public', 'video_guid' => 'missing')) === null, 'unknown videos have no size');
+unset($GLOBALS['vnseea_bunny_http']);
+
 $publish_sources = array(
     'new_post' => file_get_contents($root . '/api/v2/endpoints/new_post.php'),
     'story' => file_get_contents($root . '/api/v2/endpoints/create-story.php'),
@@ -231,6 +246,7 @@ stream_assert(strpos($publish_sources['story'], "'mention_user_ids' => array_val
 stream_assert(strpos($publish_sources['status'], "(int) \$row['user_id'] !== (int) \$wo['user']['user_id']") !== false, 'only the uploader reads an upload status');
 stream_assert(strpos($publish_sources['worker'], 'VNSEEA_BunnyReloadConfig();') !== false && strpos($publish_sources['worker'], 'VNSEEA_BunnyRunMaintenance(10);') !== false, 'the push worker runs Bunny upkeep with fresh, decrypted settings');
 stream_assert(strpos($sources['functions'], "VNSEEA_BunnyReleaseVideo(\$fetched_data['postFile'], array('post_id' => (int) \$fetched_data['id']));") !== false, 'deleting a post removes its Bunny video');
+stream_assert(strpos($sources['functions'], "\$story['postFile'] = \$story['postFile_full'];") !== false, 'post data hands clients the playlist, never the Bunny reference');
 stream_assert(strpos($publish_sources['functions_three'], "VNSEEA_BunnyReleaseVideo(\$path, array('story_id' => (int) \$id));") !== false, 'deleting a story removes its Bunny video');
 stream_assert(strpos($publish_sources['migration'], 'ADD COLUMN IF NOT EXISTS `publish_state`') !== false, 'the migration adds the publish state');
 stream_assert(strpos($sources['settings'], "'story' => \$bunny_public_video_upload,") !== false, 'clients learn where post, reel and story videos go');

@@ -814,6 +814,21 @@ if (!function_exists('VNSEEA_BunnySafely')) {
     }
 }
 
+if (!function_exists('VNSEEA_BunnyVideoGeometry')) {
+    /** Display width and height Bunny measured for an encoded video, or null. */
+    function VNSEEA_BunnyVideoGeometry($row)
+    {
+        $video = VNSEEA_BunnyApiRequest((string) $row['library_kind'], 'GET', '/videos/' . rawurlencode((string) $row['video_guid']), null, 5);
+        if ($video['status'] !== 200 || !is_array($video['data']) || !function_exists('VNSEEA_NormalizeMediaGeometry')) {
+            return null;
+        }
+        return VNSEEA_NormalizeMediaGeometry(
+            isset($video['data']['width']) ? $video['data']['width'] : 0,
+            isset($video['data']['height']) ? $video['data']['height'] : 0
+        );
+    }
+}
+
 if (!function_exists('VNSEEA_BunnyPublishPost')) {
     /**
      * Creates the post or reel that new_post.php held back while its video
@@ -838,6 +853,17 @@ if (!function_exists('VNSEEA_BunnyPublishPost')) {
                 // The stored values were escaped by new_post.php, as Wo_RegisterPost expects.
                 $post_data['postFile'] = VNSEEA_BunnyMediaRef('public', $row['video_guid']);
                 $post_data['time'] = time();
+                if ((empty($post_data['media_width']) || empty($post_data['media_height'])) &&
+                    function_exists('VNSEEA_PostMediaGeometryColumnsAvailable') && VNSEEA_PostMediaGeometryColumnsAvailable()
+                ) {
+                    // The file never reached this server, so ffprobe cannot size it;
+                    // Bunny measured it while encoding. Feeds lay videos out by it.
+                    $geometry = VNSEEA_BunnyVideoGeometry($row);
+                    if ($geometry) {
+                        $post_data['media_width'] = $geometry['width'];
+                        $post_data['media_height'] = $geometry['height'];
+                    }
+                }
                 $in_transaction = !empty($tagged_user_ids) && mysqli_begin_transaction($sqlConnect);
                 if (!empty($tagged_user_ids) && !$in_transaction) {
                     return array('ok' => false);
