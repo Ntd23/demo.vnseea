@@ -214,6 +214,21 @@ stream_assert(!$results[1]['ok'] && strpos($results[1]['message'], 'Block direct
 stream_assert(!$results[3]['ok'] && strpos($results[3]['message'], 'Block direct URL file access') !== false, 'chat referrer blocking is not blamed on the token key');
 unset($GLOBALS['vnseea_bunny_http']);
 
+// Without the file on this server, posts take their display size from Bunny.
+require_once $root . '/assets/includes/vnseea_post_media.php';
+$GLOBALS['vnseea_bunny_http'] = function ($method, $url, $headers, $body) use ($guid) {
+    return strpos($url, 'library/123/videos/' . $guid) !== false
+        ? array('status' => 200, 'body' => json_encode(array('guid' => $guid, 'width' => 1080, 'height' => 1920)))
+        : array('status' => 404, 'body' => '');
+};
+stream_equals(
+    VNSEEA_BunnyVideoGeometry(array('library_kind' => 'public', 'video_guid' => $guid)),
+    array('width' => 1080, 'height' => 1920, 'aspect_ratio' => 0.5625),
+    'encoded videos report their display size'
+);
+stream_assert(VNSEEA_BunnyVideoGeometry(array('library_kind' => 'public', 'video_guid' => 'missing')) === null, 'unknown videos have no size');
+unset($GLOBALS['vnseea_bunny_http']);
+
 $publish_sources = array(
     'new_post' => file_get_contents($root . '/api/v2/endpoints/new_post.php'),
     'story' => file_get_contents($root . '/api/v2/endpoints/create-story.php'),
