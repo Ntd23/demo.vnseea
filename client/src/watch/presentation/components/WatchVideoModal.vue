@@ -30,7 +30,9 @@
                   controls
                   autoplay
                   playsinline
-                  :src="videoSrc"
+                  v-hls-src="videoSrc"
+                  :src="isHlsUrl(videoSrc) ? undefined : videoSrc"
+                  :poster="isHlsUrl(videoSrc) ? videoPoster : undefined"
                   @play="isPlaying = true"
                   @pause="isPlaying = false"
                 />
@@ -307,6 +309,7 @@
 
 <script setup lang="ts">
 import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM"
+import { isHlsUrl, vHlsSrc } from "../../../shared-kernel/presentation/directives/hlsVideoSource"
 import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
 import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
@@ -381,6 +384,11 @@ const videoSrc = computed(() => {
   const videoItem = props.post.mediaItems?.find(m => m.type === 'video')
   return videoItem?.src || ""
 })
+
+// HLS playlists show no first frame until they load, so they get the post thumbnail.
+const videoPoster = computed(() =>
+  props.post?.mediaItems?.find(m => m.type === 'video')?.thumb || undefined,
+)
 
 const currentIndex = computed(() => {
   return props.relatedPosts.findIndex(p => p.id === props.post?.id)

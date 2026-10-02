@@ -33,12 +33,14 @@
 
             <video
               v-else-if="currentItem?.type === 'video'"
+              v-hls-src="currentItem.src"
+              :poster="isHlsUrl(currentItem.src) ? currentItem.thumb : undefined"
               controls
               playsinline
               preload="metadata"
               class="lightbox-modal__video"
             >
-              <source :src="currentItem.src" :type="currentItem.mime || 'video/mp4'">
+              <source v-if="!isHlsUrl(currentItem.src)" :src="currentItem.src" :type="currentItem.mime || 'video/mp4'">
             </video>
 
             <div v-else class="lightbox-modal__empty">
@@ -310,12 +312,14 @@ import type { FeedCommentRecord, FeedCommentSubmitPayload } from "../../../feed/
 import type { FeedCommentActionRepository } from "../../../feed/application/view-models/useFeedCommentItemVM"
 import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
+import { isHlsUrl, vHlsSrc } from "../../../shared-kernel/presentation/directives/hlsVideoSource"
 
 type LightboxItem = {
   type: "image" | "video"
   src: string
   alt?: string
   mime?: string
+  thumb?: string
 }
 
 const { t, te } = useI18n()

@@ -29,7 +29,9 @@
       >
         <video
           ref="videoRefs"
+          v-hls-src="item.src"
           :aria-label="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
+          :poster="isHlsUrl(item.src) ? item.thumb : undefined"
           class="media-grid__img media-grid__video"
           autoplay
           loop
@@ -38,7 +40,7 @@
           preload="auto"
           @loadedmetadata="handleVideoLoadedMetadata"
         >
-          <source :src="item.src" :type="item.mime || 'video/mp4'">
+          <source v-if="!isHlsUrl(item.src)" :src="item.src" :type="item.mime || 'video/mp4'">
         </video>
         <button
           class="media-grid__video-opener"
@@ -72,6 +74,7 @@
 
 <script setup lang="ts">
 import { useReelsViewerOverlay } from "../../../reels/application/composables/useReelsViewerOverlay"
+import { isHlsUrl, vHlsSrc } from "../../../shared-kernel/presentation/directives/hlsVideoSource"
 import { useFeedVideoSound } from "../../application/composables/useFeedVideoSound"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 
@@ -86,6 +89,7 @@ const props = defineProps<{
     src: string
     alt?: string
     mime?: string
+    thumb?: string
   }>
   post: FeedPostRecord
 }>()

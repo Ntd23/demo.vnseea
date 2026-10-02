@@ -100,7 +100,8 @@
               v-if="activeStoryIsVideo && activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
               ref="activeVideoRef"
               :key="`video-${activeStoryData.id}`"
-              :src="activeStoryData.media"
+              v-hls-src="activeStoryData.media"
+              :src="isHlsUrl(activeStoryData.media) ? undefined : activeStoryData.media"
               :poster="activeStoryData.poster || undefined"
               class="story-viewer__media story-viewer__media--video"
               autoplay
@@ -439,6 +440,7 @@ import {
   feedStoryCreatePath,
 } from "../../application/constants/story-carousel"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+import { isHlsUrl, vHlsSrc } from "../../../shared-kernel/presentation/directives/hlsVideoSource"
 import { useFeedStoryCarouselVM } from "../../application/view-models/useFeedStoryCarouselVM"
 import type { FeedStoryOverlayItem, FeedStoryRecord } from "../../domain/types/feed.types"
 /* Story app interstitial temporarily disabled until the iOS and Android apps are released.

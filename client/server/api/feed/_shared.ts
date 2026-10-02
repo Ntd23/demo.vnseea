@@ -163,7 +163,8 @@ const accentPalette = [
   "#e11d48",
 ] as const
 
-const videoExtensions = ["mp4", "mov", "webm", "m4v", "avi", "mpeg", "mpg", "mkv", "ogg", "wmv"]
+// m3u8: Bunny Stream videos are HLS playlists.
+const videoExtensions = ["mp4", "mov", "webm", "m4v", "avi", "mpeg", "mpg", "mkv", "ogg", "wmv", "m3u8"]
 
 const legacyGreetingCopy = {
   morning: {
@@ -950,7 +951,7 @@ const extractMediaItems = (
       src: normalizedValue,
       alt: fallbackAlt,
       thumb,
-      mime: type === "video" ? "video/mp4" : undefined,
+      mime: type === "video" ? (/\.m3u8(?:$|[?#])/i.test(normalizedValue) ? "application/vnd.apple.mpegurl" : "video/mp4") : undefined,
     })
   }
 
