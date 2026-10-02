@@ -7404,6 +7404,7 @@ function Wo_RegisterPost($re_data = array('recipient_id' => 0))
     $re_data['is_anonymous'] = $privacy['is_anonymous'];
     if (
         !empty($re_data['postFile'])
+        && strpos((string) $re_data['postFile'], 'bunny-stream://') !== 0
         && VNSEEA_PostMediaGeometryColumnsAvailable()
         && !VNSEEA_MediaGeometryPayload($re_data)
     ) {
@@ -9513,7 +9514,11 @@ function Wo_DeletePost($post_id = 0, $type = '')
             @unlink(trim($fetched_data['blur_url']));
             Wo_DeleteFromToS3($fetched_data['blur_url']);
         }
-        if (isset($fetched_data['postFile']) && !empty($fetched_data['postFile'])) {
+        if (isset($fetched_data['postFile']) && strpos((string) $fetched_data['postFile'], 'bunny-stream://') === 0) {
+            if (!$is_post_shared && !$is_this_post_shared) {
+                VNSEEA_BunnyReleaseVideo($fetched_data['postFile'], array('post_id' => (int) $fetched_data['id']));
+            }
+        } elseif (isset($fetched_data['postFile']) && !empty($fetched_data['postFile'])) {
             if ($fetched_data['postType'] != 'profile_picture' && $fetched_data['postType'] != 'profile_cover_picture' && !$is_post_shared && !$is_this_post_shared) {
                 @unlink(trim($fetched_data['postFile']));
                 $delete_from_s3 = Wo_DeleteFromToS3($fetched_data['postFile']);

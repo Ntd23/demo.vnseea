@@ -31,7 +31,8 @@
       >
       <video
         v-else-if="story.mediaType === 'video' && story.mediaUrl"
-        :src="story.mediaUrl"
+        v-hls-src="story.mediaUrl"
+        :src="isHlsUrl(story.mediaUrl) ? undefined : story.mediaUrl"
         class="message-story__preview-media message-story__preview-media--video"
         muted
         playsinline
@@ -100,7 +101,8 @@
 
             <video
               v-if="story.mediaType === 'video'"
-              :src="story.mediaUrl"
+              v-hls-src="story.mediaUrl"
+              :src="isHlsUrl(story.mediaUrl) ? undefined : story.mediaUrl"
               :poster="story.posterUrl"
               class="message-story__viewer-media"
               controls
@@ -127,6 +129,7 @@
 </template>
 
 <script setup lang="ts">
+import { isHlsUrl, vHlsSrc } from "../../../shared-kernel/presentation/directives/hlsVideoSource"
 import type { MessageStoryContext } from "../../domain/types/messages.types"
 
 type StoryMediaOrientation = "portrait" | "landscape" | "square"

@@ -3,7 +3,7 @@
 Tài liệu này liệt kê các bước làm trên **bunny.net**, **DNS**, **server** và **trang admin VNSEEA** để bật:
 
 - **Bunny CDN (Pull Zone)** – phát ảnh, avatar và video hiện có từ máy chủ Bunny gần người xem (giai đoạn A, dùng được ngay).
-- **Bunny Stream** – upload video mới thẳng lên Bunny, tự encode ra HLS nhiều chất lượng (giai đoạn B; có thể điền sẵn thông tin, nhưng **giữ công tắc tắt** cho tới khi bản giai đoạn B được deploy).
+- **Bunny Stream** – upload video mới thẳng lên Bunny, tự encode ra HLS nhiều chất lượng: video tin nhắn (giai đoạn B, mục 4) và video bài viết, reels, tin (giai đoạn C, mục 5). Mỗi giai đoạn có công tắc riêng; có thể điền sẵn thông tin nhưng **giữ công tắc tắt** cho tới khi bản tương ứng được deploy.
 
 Mọi thứ đều bật/tắt được trong admin. Tắt là hệ thống quay về chạy local như cũ ngay lập tức.
 
@@ -146,7 +146,10 @@ Thư viện `vnseea-public` **không** bật token authentication.
 
 Ở mục **Security** của **cả 2 thư viện**:
 
-- **Không** bật "Block direct URL file access" và **không** bật DRM (MediaCage). Ứng dụng và web phát thẳng file HLS, không qua trình phát embed của Bunny.
+- **Tắt** "Block direct URL file access". Bunny **bật sẵn** mục này khi tạo thư viện, nên phải vào tắt.
+  - Khi mục này bật, Bunny chặn mọi request không có header Referer. App iOS và Android phát video không gửi Referer, nên video trong app bị lỗi 403 dù link đã ký đúng.
+  - Web vẫn phát được vì trình duyệt có gửi Referer. Vì vậy lỗi này dễ bị bỏ sót nếu chỉ thử trên web.
+- **Không** bật DRM (MediaCage). Ứng dụng và web phát thẳng file HLS, không qua trình phát embed của Bunny.
 - Nếu điền **Allowed domains**, phải có `vnseea.vn` và domain v2. Để trống cũng được.
 
 ### 3.4 Lấy thông tin của từng thư viện
@@ -189,7 +192,7 @@ URL này cũng hiện sẵn trong admin (thẻ "Bunny Stream cho video mới", �
 4. Thẻ **"Bunny Stream cho video mới"**:
    - **Không nén trên máy với video dài hơn (giây)**: giữ `180`.
    - Hai dòng trạng thái phải báo **"đã đủ cấu hình"** cho cả 2 thư viện.
-   - **Giữ công tắc "Upload video mới lên Bunny Stream" TẮT** cho tới bước 4.5.
+   - **Giữ cả 2 công tắc TẮT**: "Upload video tin nhắn mới lên Bunny Stream" cho tới bước 4.5, "Upload video bài viết, reels, tin mới lên Bunny Stream" cho tới bước 5.5.
 
 ---
 
@@ -215,7 +218,7 @@ Admin → mục "Bunny CDN & Bunny Stream" → bấm **"Kiểm tra kết nối B
 
 - "Thư viện công khai: kết nối API thành công."
 - "Thư viện riêng tư: kết nối API thành công."
-- Dòng thứ ba, lần đầu sẽ báo "chưa có video đã encode để thử link có chữ ký". Kiểm tra lại dòng này ở bước 4.6.
+- Mỗi thư viện có thêm một dòng thử phát video. Lần đầu dòng này báo "chưa có video đã encode để thử phát". Kiểm tra lại ở bước 4.6 (thư viện riêng tư) và 5.6 (thư viện công khai).
 
 ### 4.4 Build app mới
 
@@ -223,7 +226,7 @@ Phần app chỉ thay đổi JavaScript, không thêm thư viện native. App b�
 
 ### 4.5 Bật công tắc
 
-Thẻ **"Bunny Stream cho video mới"** → bật **"Upload video mới lên Bunny Stream"**. App đọc cấu hình này mỗi 5 phút, nên có thể phải mở lại app để áp dụng ngay.
+Thẻ **"Bunny Stream cho video mới"** → bật **"Upload video tin nhắn mới lên Bunny Stream"**. App đọc cấu hình này mỗi 5 phút, nên có thể phải mở lại app để áp dụng ngay.
 
 ### 4.6 Thử nghiệm
 
@@ -232,7 +235,8 @@ Thẻ **"Bunny Stream cho video mới"** → bật **"Upload video mới lên Bu
 3. Ngay sau khi gửi, bong bóng chat hiện **"Đang xử lý video"**. Khi Bunny encode xong, video phát được. Video ngắn thường mất dưới 1 phút; video dài lâu hơn.
 4. Trong Bunny → thư viện `vnseea-chat` → **Videos**, thấy video mới.
 5. Mở hội thoại đó trên web, bằng **Chrome** và **Safari**. Bong bóng hiện ảnh bìa; bấm vào thì video phát và tua được.
-6. Bấm lại **"Kiểm tra kết nối Bunny Stream"**. Dòng thứ ba phải báo "link có chữ ký phát được, link không chữ ký bị chặn".
+6. Bấm lại **"Kiểm tra kết nối Bunny Stream"**. Dòng của thư viện riêng tư phải báo "link có chữ ký phát được, link không chữ ký bị chặn".
+   - Nếu báo "link có chữ ký bị từ chối (HTTP 403)", kiểm tra trước tiên mục "Block direct URL file access" (mục 3.3) đã tắt chưa, sau đó mới kiểm tra Token Authentication Key.
 7. Thu hồi một video thử nghiệm. Video đó biến mất khỏi thư viện Bunny. Nếu video đã được chuyển tiếp sang hội thoại khác, Bunny vẫn giữ video đó.
 
 ### 4.7 Quay lui
@@ -241,7 +245,67 @@ Tắt công tắc ở bước 4.5. Video mới lại upload lên server như cũ
 
 ---
 
-## 5. Checklist tóm tắt
+## 5. Bật giai đoạn C: video bài viết, reels và tin qua Bunny Stream
+
+Làm sau khi giai đoạn B chạy ổn. Video bài viết, reel và tin **đăng từ app** đi qua thư viện `vnseea-public`. Web vẫn upload lên server như cũ nhưng phát được video Bunny.
+
+Cách hoạt động:
+
+- Bấm **Đăng** xong, màn hình đóng ngay. Feed hiện thanh **"Đang tải video lên… %"**, rồi **"Đang xử lý video"**. Người dùng vẫn lướt app bình thường.
+- Bài, reel và tin **chỉ được tạo khi Bunny encode xong**, nên người khác không bao giờ thấy video chưa phát được. Follower nhận thông báo lúc đó.
+- Người đăng nhận thông báo (kèm push) khi bài đã lên, hoặc khi video lỗi và phải đăng lại.
+- Video dưới 3 phút được nén trên máy về 1080p (cạnh dài 1920). Video dài hơn gửi file gốc.
+- Xoá bài, xoá tin, hoặc tin hết 24 giờ thì video trên Bunny cũng bị xoá, để không tốn tiền lưu trữ.
+
+### 5.1 Kiểm tra thư viện `vnseea-public`
+
+- **Security**: **không** bật token authentication; **tắt** "Block direct URL file access" (xem mục 3.3).
+- **Webhook URL** đã dán (mục 3.5).
+- **Encoding**: 360p–1080p (mục 3.2).
+
+### 5.2 Cập nhật bảng trong database
+
+Chạy `database/migrations/20261003_bunny_stream_publish_uploads.sql` trên database **production** và **v2**, **trước khi deploy**. Chạy lại nhiều lần cũng không sao.
+
+File này thêm cột vào bảng `Wo_VnseeaMediaUploads` có từ giai đoạn B. Khi chưa chạy, server không cấp vé upload cho bài viết, reels và tin; app tự upload lên server như cũ, và admin hiện cảnh báo đỏ.
+
+### 5.3 Deploy backend và web
+
+Merge nhánh vào `main` của `demo.vnseea`. Deploy tự khởi động lại worker push (`vnseea-push-worker`). Worker này giờ làm thêm việc bảo trì Bunny mỗi phút:
+
+- Đăng các bài, reel, tin bị lỡ webhook.
+- Xoá video của tin hết hạn, của bài đã xoá, và của các lần upload bị bỏ dở.
+
+**Không cần bật cron.** Cũng **đừng bật `cron-job.php`** chỉ vì Bunny: file này còn tự gia hạn Pro (trừ tiền ví), thu phí gói theo dõi và xoá bài live. Lần chạy đầu sau thời gian dài có thể xử lý dồn một loạt giao dịch.
+
+Nếu đã lỡ chạy migration sau khi deploy, khởi động lại worker một lần: `systemctl restart vnseea-push-worker`.
+
+### 5.4 Build app mới
+
+Chỉ thay đổi JavaScript. App bản cũ vẫn upload video bài viết, reels, tin lên server như trước và vẫn phát được video Bunny.
+
+### 5.5 Bật công tắc
+
+Thẻ **"Bunny Stream cho video mới"** → bật **"Upload video bài viết, reels, tin mới lên Bunny Stream"**. App đọc cấu hình này mỗi 5 phút.
+
+### 5.6 Thử nghiệm
+
+1. **Bài viết, video ngắn** (dưới 3 phút): bấm Đăng → màn hình đóng ngay, feed hiện thanh tiến độ, rồi "Đang xử lý video". Khi xong, bài hiện ở đầu feed, thanh báo "Đã đăng bài viết", và có thông báo "Video của bạn đã xử lý xong…".
+2. Trong lúc bài đang xử lý, dùng **tài khoản khác** xem feed và trang cá nhân của người đăng: chưa thấy bài. Sau khi xong mới thấy, và follower nhận thông báo.
+3. **Bài viết, video dài** (trên 3 phút): như trên, app không nén mà gửi file gốc.
+4. **Reel**: thông báo "Đang đăng reel…", rồi reel hiện trong feed khi xong.
+5. **Tin (video)**: tin chỉ hiện trong khay tin khi xử lý xong. Thời hạn 24 giờ tính từ lúc tin hiện.
+6. Mở bài, reel, tin đó trên web bằng **Chrome** và **Safari**: phát và tua được.
+7. Bấm **"Kiểm tra kết nối Bunny Stream"**: dòng của thư viện công khai phải báo "video phát được trên app và web".
+8. Xoá một bài thử nghiệm và một tin thử nghiệm: video biến mất khỏi thư viện `vnseea-public` (tin hết hạn thì worker xoá trong vòng vài phút).
+
+### 5.7 Quay lui
+
+Tắt công tắc ở bước 5.5. Video mới lại upload lên server như cũ. Bài, reel, tin đã đăng vẫn phát được. Các video đang xử lý vẫn được đăng khi Bunny encode xong, miễn là vẫn giữ nguyên thông tin thư viện trong admin.
+
+---
+
+## 6. Checklist tóm tắt
 
 - [ ] Tài khoản Bunny: 2FA, nạp tiền, tự động nạp, cảnh báo chi tiêu
 - [ ] Pull Zone `vnseea-media` trỏ về `https://media.vnseea.vn`, bật Asia & Oceania
@@ -252,12 +316,17 @@ Tắt công tắc ở bước 4.5. Video mới lại upload lên server như cũ
 - [ ] Admin: điền hostname CDN, bật công tắc, thấy thông báo xanh
 - [ ] Hai thư viện Stream `vnseea-public` và `vnseea-chat`, encode 360p–1080p
 - [ ] `vnseea-chat`: bật token authentication cho file video, kiểm tra link không ký bị 403
+- [ ] Cả 2 thư viện: **tắt** "Block direct URL file access" (Bunny bật sẵn khi tạo thư viện)
 - [ ] Admin: điền thông tin 2 thư viện, cả hai báo "đã đủ cấu hình", công tắc Stream vẫn TẮT
 - [ ] Webhook URL dán vào cả 2 thư viện
 - [ ] Migration `20261002_bunny_stream_uploads.sql` đã chạy trên production và v2
 - [ ] Deploy backend + web; nút "Kiểm tra kết nối" báo 2 thư viện kết nối API thành công
-- [ ] Build app mới; bật "Upload video mới lên Bunny Stream"
+- [ ] Build app mới; bật "Upload video tin nhắn mới lên Bunny Stream"
 - [ ] Thử video ngắn và dài từ app; web phát được trên Chrome và Safari; dòng kiểm tra link có chữ ký báo thành công
+- [ ] Giai đoạn C: migration `20261003_bunny_stream_publish_uploads.sql` đã chạy trên production và v2 **trước** deploy
+- [ ] Deploy (worker push tự khởi động lại); **không** bật `cron-job.php`
+- [ ] Build app mới; bật "Upload video bài viết, reels, tin mới lên Bunny Stream"
+- [ ] Thử bài viết (ngắn, dài), reel, tin; tài khoản khác chỉ thấy bài sau khi xử lý xong; web phát được; dòng kiểm tra thư viện công khai báo thành công
 
 ---
 

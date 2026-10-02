@@ -10,8 +10,8 @@ if ($create === false) {
 
 $assertions = array(
     array(
-        substr_count($create, 'Wo_Resize_Crop_Image(540, 960, ') === 2,
-        'uploaded covers and ffmpeg frames must both be cropped to a 9:16 story thumbnail'
+        substr_count($create, 'Wo_Resize_Crop_Image(540, 960, ') === 3,
+        'uploaded covers, Bunny Stream story covers and ffmpeg frames must all be cropped to a 9:16 story thumbnail'
     ),
     array(
         strpos($create, 'Wo_Resize_Crop_Image(400, 400, ') === false,

@@ -39,7 +39,9 @@
             <template v-if="activeMedia?.type === 'video'">
               <video
                 ref="videoRef"
-                :src="activeMedia.src"
+                v-hls-src="activeMedia.src"
+                :src="isHlsUrl(activeMedia.src) ? undefined : activeMedia.src"
+                :poster="isHlsUrl(activeMedia.src) ? activeMedia.thumb : undefined"
                 class="reels-page__video"
                 autoplay
                 controls
@@ -459,6 +461,7 @@ import FeedCommentComposer from "../../../feed/presentation/components/CommentCo
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue";
 import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue";
 import type { FeedPostRecord } from "../../../feed/domain/types/feed.types";
+import { isHlsUrl, vHlsSrc } from "../../../shared-kernel/presentation/directives/hlsVideoSource";
 import { useReelsPageVM } from "../../application/view-models/useReelsPageVM";
 
 const props = defineProps<{
