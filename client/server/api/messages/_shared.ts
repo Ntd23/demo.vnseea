@@ -1,11 +1,11 @@
 // English description: Shared backend helpers and mappers for Nuxt messages API routes.
 
 import { createDecipheriv } from "node:crypto"
-import { createError, getHeader, getQuery, readBody, readMultipartFormData, type H3Event } from "h3"
+import { createError, getCookie, getHeader, getQuery, readBody, readMultipartFormData, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
-import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { getBackendCurrentUser, getBearerAccessToken } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import { fetchFeedPostById } from "../feed/_shared"
@@ -3000,6 +3000,14 @@ export async function updateTypingState(
     userId: number
   },
 ): Promise<MessageTypingState | { ok: boolean }> {
+  // The app sends its access token instead of a browser session. The legacy
+  // chat handler below needs that PHP session, so the app goes through API v2,
+  // which reads and writes the same typing state.
+  const appAccessToken = getCookie(event, "user_id") ? "" : getBearerAccessToken(event)
+  if (appAccessToken) {
+    return updateTypingStateWithAccessToken(event, input, appAccessToken)
+  }
+
   const webClient = createBackendWebClient(event)
   const currentUser = await getBackendCurrentUser(event)
   const sessionHash = asString(currentUser.session_hash)
@@ -3061,6 +3069,43 @@ export async function updateTypingState(
     })
   }
 
+  return { ok: true }
+}
+
+async function updateTypingStateWithAccessToken(
+  event: H3Event,
+  input: {
+    action: "start" | "stop" | "status"
+    userId: number
+  },
+  accessToken: string,
+): Promise<MessageTypingState | { ok: boolean }> {
+  const client = createBackendApiClient(event)
+  const query = { access_token: accessToken }
+
+  if (input.action === "status") {
+    const response = assertBackendApiSuccess(
+      await client.post<{ api_status?: number | string, typing?: number | string, recording?: number | string }>(
+        "get-chat-typing-status",
+        { user_id: input.userId },
+        query,
+      ),
+      "Unable to read typing state.",
+    )
+    return {
+      enabled: true,
+      typing: asNumber(response.typing) === 1,
+    }
+  }
+
+  assertBackendApiSuccess(
+    await client.post<{ api_status?: number | string }>(
+      "set-chat-typing-status",
+      { user_id: input.userId, status: input.action === "start" ? "typing" : "stopped" },
+      query,
+    ),
+    "Unable to update typing state.",
+  )
   return { ok: true }
 }
 

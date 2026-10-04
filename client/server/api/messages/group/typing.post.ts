@@ -44,7 +44,8 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const currentUser = await getBackendCurrentUser(event)
+  // The app signs in with its access token; group typing lives in this server's memory.
+  const currentUser = await getBackendCurrentUser(event, { allowBearerToken: true })
   const currentUserId = toNumber(currentUser.user_id)
 
   if (currentUserId <= 0) {

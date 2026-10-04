@@ -9,6 +9,10 @@ Mọi thứ đều bật/tắt được trong admin. Tắt là hệ thống quay
 
 > Giao diện Bunny thay đổi theo thời gian, tên nút có thể khác đôi chút so với tài liệu này. Mỗi phần đều có bước **Kiểm tra** để biết đã cấu hình đúng hay chưa.
 
+> ⚠️ **Không dùng tên miền mặc định `*.b-cdn.net` để phát media.** DNS của VNPT và Viettel chặn mọi tên miền `*.b-cdn.net`: VNPT trả "không tồn tại", Viettel trả `127.0.0.1`. Phần lớn người dùng trong nước để DNS mặc định của nhà mạng, nên họ sẽ không xem được ảnh và video. Upload vẫn chạy bình thường vì API của Bunny ở tên miền khác (`bunnycdn.com`), nên lỗi này dễ bị bỏ sót.
+>
+> Tên miền riêng của mình (ví dụ `cdn.vnseea.vn`) **trỏ CNAME** sang `*.b-cdn.net` thì vẫn phân giải bình thường qua DNS của nhà mạng (đã kiểm chứng trên VNPT ngày 04/10/2026). Vì vậy Pull Zone (mục 2.4) và **cả 2 thư viện Stream** (mục 3.5) đều phải dùng tên miền riêng.
+
 ---
 
 ## 0. Chuẩn bị
@@ -55,7 +59,7 @@ Trong Pull Zone vừa tạo → **Caching**:
 
 **Headers**: bật thêm CORS header cho các đuôi `jpg, jpeg, png, gif, webp, mp4, mov, m4a, mp3` để web phát được ảnh và video từ domain CDN.
 
-### 2.4 Hostname riêng `cdn.vnseea.vn` (khuyến nghị)
+### 2.4 Hostname riêng `cdn.vnseea.vn` (bắt buộc)
 
 1. Pull Zone → **General → Hostnames → Add Custom Hostname**: nhập `cdn.vnseea.vn`.
 2. Tại nhà cung cấp DNS, tạo bản ghi:
@@ -66,7 +70,7 @@ Trong Pull Zone vừa tạo → **Caching**:
 
 3. Đợi DNS có hiệu lực (thường vài phút), quay lại Bunny bấm bật **SSL miễn phí** cho `cdn.vnseea.vn`.
 
-Nếu chưa muốn dùng hostname riêng, có thể dùng thẳng `vnseea-media.b-cdn.net` ở các bước sau.
+Không dùng thẳng `vnseea-media.b-cdn.net` ở các bước sau: người dùng VNPT và Viettel sẽ không tải được (xem cảnh báo ở đầu tài liệu).
 
 ### 2.5 Kiểm tra Pull Zone
 
@@ -161,12 +165,46 @@ Thư viện → **API**, ghi lại (làm cho cả 2 thư viện):
 | Video Library ID | Một dãy số, ví dụ `123456` |
 | API Key | Chuỗi dài, **bí mật** |
 | Read-Only API Key | Chuỗi dài, **bí mật**. Dùng để xác thực webhook |
-| CDN Hostname | `vz-xxxxxxxx-xxx.b-cdn.net` |
+| CDN Hostname mặc định | `vz-xxxxxxxx-xxx.b-cdn.net`. Chỉ dùng làm đích CNAME ở mục 3.5, **không** điền vào admin |
 | Token Authentication Key | Chỉ thư viện `vnseea-chat` (mục 3.3), **bí mật** |
 
-> Không gửi các key bí mật qua chat hay email. Dán thẳng vào trang admin ở bước 3.6.
+> Không gửi các key bí mật qua chat hay email. Dán thẳng vào trang admin ở bước 3.7.
 
-### 3.5 Webhook
+### 3.5 Tên miền riêng cho 2 thư viện (bắt buộc)
+
+Mỗi thư viện Stream có một Pull Zone riêng với hostname mặc định `vz-xxxxxxxx-xxx.b-cdn.net`, mà DNS của VNPT và Viettel chặn (xem cảnh báo ở đầu tài liệu). Gắn cho mỗi thư viện một tên miền con của `vnseea.vn`:
+
+| Thư viện | Tên miền riêng |
+|---|---|
+| `vnseea-public` | `stream.vnseea.vn` |
+| `vnseea-chat` | `chat-stream.vnseea.vn` |
+
+1. **Bunny**: mở Pull Zone của thư viện. Vào **Stream → thư viện → API**, bấm vào CDN Hostname, hoặc vào **CDN → Pull Zones** và tìm Pull Zone có hostname trùng CDN Hostname của thư viện. Sau đó vào **General → Hostnames → Add hostname**, nhập tên miền riêng.
+2. **DNS** (nhà cung cấp tên miền `vnseea.vn`, hiện là PA Vietnam), tạo bản ghi cho từng thư viện:
+
+   | Loại | Tên | Giá trị | TTL |
+   |---|---|---|---|
+   | CNAME | `stream` | CDN Hostname mặc định của `vnseea-public` (`vz-….b-cdn.net`) | 3600 hoặc thấp hơn |
+   | CNAME | `chat-stream` | CDN Hostname mặc định của `vnseea-chat` (`vz-….b-cdn.net`) | 3600 hoặc thấp hơn |
+
+   Giá trị phải là **CNAME**, không dùng bản ghi A trỏ thẳng IP: Bunny chọn máy chủ gần người xem qua DNS của `b-cdn.net`.
+3. Đợi DNS có hiệu lực (thường vài phút), quay lại Bunny bấm **Verify & Activate SSL** cho từng tên miền (chứng chỉ Let's Encrypt miễn phí).
+4. Token Authentication của `vnseea-chat` gắn với Pull Zone, không gắn với tên miền, nên link có chữ ký dùng được ngay trên tên miền mới; không cần đổi key.
+
+**Kiểm tra** (thay `<video-id>` bằng một video đã encode trong thư viện `vnseea-public`):
+
+```bash
+# DNS của VNPT phải trả về CNAME và IP, không được NXDOMAIN
+dig @203.162.4.191 stream.vnseea.vn +short
+dig @203.162.4.191 chat-stream.vnseea.vn +short
+
+# Playlist công khai phải trả 200 qua tên miền mới
+curl -sI https://stream.vnseea.vn/<video-id>/playlist.m3u8 | grep -iE "^HTTP"
+```
+
+Nếu muốn web tối ưu được ảnh bìa từ hai tên miền này, thêm chúng vào `NUXT_IMAGE_EXTRA_DOMAINS` (mục 2.6), ví dụ `NUXT_IMAGE_EXTRA_DOMAINS=cdn.vnseea.vn,stream.vnseea.vn,chat-stream.vnseea.vn`. Video vẫn phát được trên web khi chưa thêm.
+
+### 3.6 Webhook
 
 Webhook báo cho VNSEEA biết khi nào Bunny encode xong, để tin nhắn chuyển từ "Đang xử lý video" sang phát được.
 
@@ -181,16 +219,16 @@ URL này cũng hiện sẵn trong admin (thẻ "Bunny Stream cho video mới", �
 - Webhook được xác thực bằng **Read-Only API Key** của thư viện. Nếu điền sai key đó trong admin, mọi webhook bị từ chối (HTTP 401).
 - Nếu webhook bị lỡ, server vẫn tự hỏi Bunny khi có người mở hội thoại (tối đa 30 giây một lần cho mỗi video). Video vẫn chuyển sang phát được, chỉ chậm hơn.
 
-### 3.6 Điền vào admin VNSEEA
+### 3.7 Điền vào admin VNSEEA
 
 **Admin → Cài đặt → Cấu hình tải tệp lên → mục "Bunny CDN & Bunny Stream"**
 
-1. Thẻ **"Thư viện công khai (bài viết, reels, story)"**: điền Library ID, API Key, Read-Only API Key, CDN Hostname của `vnseea-public`.
-2. Thẻ **"Thư viện riêng tư (video tin nhắn)"**: điền thông tin của `vnseea-chat`, thêm **Token Authentication Key**.
+1. Thẻ **"Thư viện công khai (bài viết, reels, story)"**: điền Library ID, API Key, Read-Only API Key của `vnseea-public`. Ô **CDN Hostname** điền `stream.vnseea.vn` (mục 3.5), **không** điền `vz-….b-cdn.net`.
+2. Thẻ **"Thư viện riêng tư (video tin nhắn)"**: điền thông tin của `vnseea-chat`, thêm **Token Authentication Key**. Ô **CDN Hostname** điền `chat-stream.vnseea.vn`.
    - **Thời hạn link video tin nhắn**: giữ `21600` (6 giờ).
 3. Ô key bí mật được lưu khi rời khỏi ô. Sau khi lưu, ô tự để trống và chỉ hiện "Đã lưu (…4 ký tự cuối)". Key được mã hoá trong database và không bao giờ gửi xuống app hay web.
 4. Thẻ **"Bunny Stream cho video mới"**:
-   - **Không nén trên máy với video dài hơn (giây)**: giữ `180`.
+   - **Không nén trên máy với video dài hơn (giây)**: `1200` (20 phút). Nén trên iPhone rất nhanh (video 5 phút mất khoảng 45 giây) và giảm dung lượng 4–10 lần. Đo ngày 02/10/2026: video 5 phút gửi file gốc 444 MB mất 15,5 phút upload, nén còn 123 MB; video chat 6,3 phút từ 779 MB còn 74 MB, tổng thời gian từ khoảng 26 phút còn khoảng 6 phút.
    - Hai dòng trạng thái phải báo **"đã đủ cấu hình"** cho cả 2 thư viện.
    - **Giữ cả 2 công tắc TẮT**: "Upload video tin nhắn mới lên Bunny Stream" cho tới bước 4.5, "Upload video bài viết, reels, tin mới lên Bunny Stream" cho tới bước 5.5.
 
@@ -218,6 +256,7 @@ Admin → mục "Bunny CDN & Bunny Stream" → bấm **"Kiểm tra kết nối B
 
 - "Thư viện công khai: kết nối API thành công."
 - "Thư viện riêng tư: kết nối API thành công."
+- Nếu có dòng đỏ "CDN Hostname đang là ….b-cdn.net", thư viện đó chưa dùng tên miền riêng: làm lại mục 3.5 và 3.7.
 - Mỗi thư viện có thêm một dòng thử phát video. Lần đầu dòng này báo "chưa có video đã encode để thử phát". Kiểm tra lại ở bước 4.6 (thư viện riêng tư) và 5.6 (thư viện công khai).
 
 ### 4.4 Build app mới
@@ -230,8 +269,8 @@ Thẻ **"Bunny Stream cho video mới"** → bật **"Upload video tin nhắn m�
 
 ### 4.6 Thử nghiệm
 
-1. Từ app mới, gửi một video **ngắn** (dưới 3 phút). App vẫn nén trên máy rồi mới upload.
-2. Gửi một video **dài** (trên 3 phút). App bỏ qua bước nén và upload file gốc theo từng phần 8 MB. Mạng chập chờn thì app tự thử lại (tối đa 5 lần) và tải tiếp từ phần đang dở. App bị tắt giữa chừng thì phải gửi lại từ đầu.
+1. Từ app mới, gửi một video **ngắn** (dưới ngưỡng "Không nén trên máy", mặc định 20 phút). App nén trên máy (cạnh dài tối đa 1080) rồi mới upload.
+2. Gửi một video **dài hơn ngưỡng**. App bỏ qua bước nén và upload file gốc theo từng phần 8 MB. Mạng chập chờn thì app tự thử lại (tối đa 5 lần) và tải tiếp từ phần đang dở. App bị tắt giữa chừng thì phải gửi lại từ đầu.
 3. Ngay sau khi gửi, bong bóng chat hiện **"Đang xử lý video"**. Khi Bunny encode xong, video phát được. Video ngắn thường mất dưới 1 phút; video dài lâu hơn.
 4. Trong Bunny → thư viện `vnseea-chat` → **Videos**, thấy video mới.
 5. Mở hội thoại đó trên web, bằng **Chrome** và **Safari**. Bong bóng hiện ảnh bìa; bấm vào thì video phát và tua được.
@@ -252,15 +291,17 @@ Làm sau khi giai đoạn B chạy ổn. Video bài viết, reel và tin **đăn
 Cách hoạt động:
 
 - Bấm **Đăng** xong, màn hình đóng ngay. Feed hiện thanh **"Đang tải video lên… %"**, rồi **"Đang xử lý video"**. Người dùng vẫn lướt app bình thường.
-- Bài, reel và tin **chỉ được tạo khi Bunny encode xong**, nên người khác không bao giờ thấy video chưa phát được. Follower nhận thông báo lúc đó.
+- Bài, reel và tin **chỉ được tạo khi video đã phát được**: server tự tải thử đoạn đầu của từng chất lượng H.264 trên CDN, vì Bunny có thể báo encode xong vài chục giây trước khi CDN phát được (nhất là khi bật Premium Encoding). Sau 5 phút vẫn chưa tải được thì server vẫn đăng, để bài không bị kẹt. Người khác không bao giờ thấy video chưa phát được. Follower nhận thông báo lúc bài lên.
 - Người đăng nhận thông báo (kèm push) khi bài đã lên, hoặc khi video lỗi và phải đăng lại.
-- Video dưới 3 phút được nén trên máy về 1080p (cạnh dài 1920). Video dài hơn gửi file gốc.
+- Video ngắn hơn ngưỡng "Không nén trên máy" (mặc định 20 phút) được nén trên máy về 1080p (cạnh dài 1920). Video dài hơn gửi file gốc.
+- App bắt đầu nén và upload ngay khi chọn video, trong lúc người dùng còn viết nội dung.
 - Xoá bài, xoá tin, hoặc tin hết 24 giờ thì video trên Bunny cũng bị xoá, để không tốn tiền lưu trữ.
 
 ### 5.1 Kiểm tra thư viện `vnseea-public`
 
 - **Security**: **không** bật token authentication; **tắt** "Block direct URL file access" (xem mục 3.3).
-- **Webhook URL** đã dán (mục 3.5).
+- **Webhook URL** đã dán (mục 3.6).
+- **Tên miền riêng** `stream.vnseea.vn` đã gắn và điền vào admin (mục 3.5, 3.7).
 - **Encoding**: 360p–1080p (mục 3.2).
 
 ### 5.2 Cập nhật bảng trong database
@@ -290,9 +331,9 @@ Thẻ **"Bunny Stream cho video mới"** → bật **"Upload video bài viết, 
 
 ### 5.6 Thử nghiệm
 
-1. **Bài viết, video ngắn** (dưới 3 phút): bấm Đăng → màn hình đóng ngay, feed hiện thanh tiến độ, rồi "Đang xử lý video". Khi xong, bài hiện ở đầu feed, thanh báo "Đã đăng bài viết", và có thông báo "Video của bạn đã xử lý xong…".
+1. **Bài viết, video ngắn** (dưới ngưỡng không nén): bấm Đăng → màn hình đóng ngay, feed hiện thanh tiến độ, rồi "Đang xử lý video". Khi xong, bài hiện ở đầu feed, thanh báo "Đã đăng bài viết", và có thông báo "Video của bạn đã xử lý xong…".
 2. Trong lúc bài đang xử lý, dùng **tài khoản khác** xem feed và trang cá nhân của người đăng: chưa thấy bài. Sau khi xong mới thấy, và follower nhận thông báo.
-3. **Bài viết, video dài** (trên 3 phút): như trên, app không nén mà gửi file gốc.
+3. **Bài viết, video dài** (trên ngưỡng không nén): như trên, app không nén mà gửi file gốc.
 4. **Reel**: thông báo "Đang đăng reel…", rồi reel hiện trong feed khi xong.
 5. **Tin (video)**: tin chỉ hiện trong khay tin khi xử lý xong. Thời hạn 24 giờ tính từ lúc tin hiện.
 6. Mở bài, reel, tin đó trên web bằng **Chrome** và **Safari**: phát và tua được.
@@ -305,7 +346,46 @@ Tắt công tắc ở bước 5.5. Video mới lại upload lên server như cũ
 
 ---
 
-## 6. Checklist tóm tắt
+## 6. Chuyển thư viện Stream đang chạy sang tên miền riêng
+
+Dành cho hệ thống đã bật giai đoạn B, C với CDN Hostname mặc định `vz-….b-cdn.net`. Người dùng VNPT và Viettel hiện **không xem được** video Bunny. Không cần build app mới, không cần tắt công tắc: link phát được tạo mỗi lần đọc dữ liệu, nên sau khi đổi tên miền, mọi bài, reel, tin và tin nhắn cũ đều phát qua tên miền mới.
+
+### 6.1 Gắn tên miền
+
+Làm mục 3.5 cho cả 2 thư viện: thêm hostname trong Bunny, tạo 2 bản ghi CNAME, bật SSL, rồi chạy các lệnh **Kiểm tra** ở mục 3.5. Chỉ sang bước 6.2 khi:
+
+- `dig @203.162.4.191 stream.vnseea.vn +short` và `dig @203.162.4.191 chat-stream.vnseea.vn +short` đều trả về dòng `vz-….b-cdn.net.` kèm địa chỉ IP;
+- `https://stream.vnseea.vn/<video-id>/playlist.m3u8` trả `HTTP/2 200` (dùng một video đã đăng);
+- trong Bunny, cả 2 hostname đều báo SSL đã bật.
+
+Bước này chưa ảnh hưởng người dùng: hệ thống vẫn dùng hostname cũ.
+
+### 6.2 Đổi trong admin
+
+**Admin → Cài đặt → Cấu hình tải tệp lên → mục "Bunny CDN & Bunny Stream"**:
+
+1. Thẻ **"Thư viện công khai"**: ô **CDN Hostname** đổi thành `stream.vnseea.vn`.
+2. Thẻ **"Thư viện riêng tư"**: ô **CDN Hostname** đổi thành `chat-stream.vnseea.vn`.
+3. Bấm **"Kiểm tra kết nối Bunny Stream"**. Không còn dòng đỏ "CDN Hostname đang là ….b-cdn.net". Thư viện công khai báo "video phát được trên app và web"; thư viện riêng tư báo "link có chữ ký phát được, link không chữ ký bị chặn".
+
+Worker push đọc lại cấu hình mỗi phút, nên không cần khởi động lại.
+
+### 6.3 Thử nghiệm
+
+1. Trên điện thoại dùng **Wi‑Fi VNPT** (hoặc 4G **Viettel**), để DNS mặc định: mở app, kéo lại feed.
+2. Mở một bài video, một reel, một tin và một video tin nhắn **đã đăng trước khi đổi**: phải phát được và tua được.
+3. Đăng mới một bài video và gửi một video tin nhắn: phát được.
+4. Trên web (Chrome và Safari), mở lại các video đó: phát được.
+
+App đang mở có thể còn giữ link cũ trong bộ nhớ: kéo lại feed, hoặc tắt hẳn app rồi mở lại.
+
+### 6.4 Quay lui
+
+Đổi ô CDN Hostname về `vz-….b-cdn.net` cũ. Không mất dữ liệu nào: chỉ là link phát quay về tên miền cũ.
+
+---
+
+## 7. Checklist tóm tắt
 
 - [ ] Tài khoản Bunny: 2FA, nạp tiền, tự động nạp, cảnh báo chi tiêu
 - [ ] Pull Zone `vnseea-media` trỏ về `https://media.vnseea.vn`, bật Asia & Oceania
@@ -317,7 +397,9 @@ Tắt công tắc ở bước 5.5. Video mới lại upload lên server như cũ
 - [ ] Hai thư viện Stream `vnseea-public` và `vnseea-chat`, encode 360p–1080p
 - [ ] `vnseea-chat`: bật token authentication cho file video, kiểm tra link không ký bị 403
 - [ ] Cả 2 thư viện: **tắt** "Block direct URL file access" (Bunny bật sẵn khi tạo thư viện)
-- [ ] Admin: điền thông tin 2 thư viện, cả hai báo "đã đủ cấu hình", công tắc Stream vẫn TẮT
+- [ ] Tên miền riêng `stream.vnseea.vn` và `chat-stream.vnseea.vn`: hostname trong Bunny, CNAME, SSL; `dig @203.162.4.191` trả về IP
+- [ ] Admin: điền thông tin 2 thư viện (CDN Hostname là tên miền riêng, không phải `*.b-cdn.net`), cả hai báo "đã đủ cấu hình", công tắc Stream vẫn TẮT
+- [ ] Ngưỡng "Không nén trên máy với video dài hơn (giây)": `1200`
 - [ ] Webhook URL dán vào cả 2 thư viện
 - [ ] Migration `20261002_bunny_stream_uploads.sql` đã chạy trên production và v2
 - [ ] Deploy backend + web; nút "Kiểm tra kết nối" báo 2 thư viện kết nối API thành công
@@ -327,6 +409,7 @@ Tắt công tắc ở bước 5.5. Video mới lại upload lên server như cũ
 - [ ] Deploy (worker push tự khởi động lại); **không** bật `cron-job.php`
 - [ ] Build app mới; bật "Upload video bài viết, reels, tin mới lên Bunny Stream"
 - [ ] Thử bài viết (ngắn, dài), reel, tin; tài khoản khác chỉ thấy bài sau khi xử lý xong; web phát được; dòng kiểm tra thư viện công khai báo thành công
+- [ ] Thử phát trên Wi‑Fi VNPT và 4G Viettel với DNS mặc định
 
 ---
 
@@ -336,3 +419,5 @@ Tắt công tắc ở bước 5.5. Video mới lại upload lên server như cũ
 - Stream webhooks: <https://docs.bunny.net/stream/webhooks>
 - Stream security options: <https://bunny.net/docs/stream/security-options>
 - CDN token authentication: <https://bunny.net/docs/cdn/security/token-authentication/advanced>
+- Custom hostname cho Pull Zone: <https://bunny.net/docs/cdn/custom-hostname>
+- SSL cho custom hostname: <https://bunny.net/docs/cdn/ssl-setup>
