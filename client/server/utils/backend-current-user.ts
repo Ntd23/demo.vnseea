@@ -1,6 +1,6 @@
-// English description: Resolves the current backend-authenticated user from the PHP browser session.
+// English description: Resolves the current backend-authenticated user from the PHP browser session, or from the app's bearer token on routes that opt in.
 
-import { createError, getCookie, type H3Event } from "h3"
+import { createError, getCookie, getHeader, type H3Event } from "h3"
 import { backendRoutes } from "../../src/shared-kernel/application/constants/route-registry"
 import { getBackendBaseCandidates } from "./backend-api-client"
 import { parseBackendApiResponse } from "./backend-api-response"
@@ -31,6 +31,8 @@ type RequestErrorLike = {
 
 type BackendCurrentUserOptions = {
   clearCookieOnRejectedSession?: boolean
+  /** Also accept the app's `Authorization: Bearer <access_token>` when there is no browser session. */
+  allowBearerToken?: boolean
 }
 
 const asBackendResponse = (value: unknown): BackendCurrentUserResponse | null => {
@@ -100,12 +102,22 @@ const rejectSession = (
   })
 }
 
+/** The app's access token from `Authorization: Bearer <token>`, or "" when there is none. */
+export function getBearerAccessToken(event: H3Event) {
+  const authorization = String(getHeader(event, "authorization") || "").trim()
+  return /^Bearer\s+([A-Za-z0-9._~-]{16,256})$/i.exec(authorization)?.[1] || ""
+}
+
 export async function getBackendCurrentUser(
   event: H3Event,
   options: BackendCurrentUserOptions = {},
 ) {
-  const userSession = getCookie(event, "user_id")
-  const clearCookieOnRejectedSession = options.clearCookieOnRejectedSession !== false
+  const cookieSession = getCookie(event, "user_id")
+  // The app's access token is a WoWonder session id too, so it resolves the
+  // same way; there is no browser cookie to clear when it is rejected.
+  const bearerSession = !cookieSession && options.allowBearerToken ? getBearerAccessToken(event) : ""
+  const userSession = cookieSession || bearerSession
+  const clearCookieOnRejectedSession = options.clearCookieOnRejectedSession !== false && !bearerSession
 
   if (!userSession) {
     throw createError({
