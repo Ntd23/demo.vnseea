@@ -1,4 +1,5 @@
 <?php
+require_once 'assets/includes/vnseea_page_inbox.php';
 if (!empty($_POST['page_id']) && is_numeric($_POST['page_id']) && $_POST['page_id'] > 0 && !empty($_POST['user_id']) && is_numeric($_POST['user_id']) && $_POST['user_id'] > 0) {
     $page_data = Wo_PageData($_POST['page_id']);
     if ($page_data['user_id'] == $wo['user']['id'] || Wo_IsCanPageUpdate($_POST['page_id'],'admins')) {
@@ -26,6 +27,11 @@ if (!empty($_POST['page_id']) && is_numeric($_POST['page_id']) && $_POST['page_i
         }
         if (!empty($_POST['delete_page']) && $_POST['delete_page'] == 1) {
             $update_array['delete_page'] = 1;
+        }
+        // Only touch the Page Inbox permission when the client sends it, so
+        // clients that do not know it yet cannot switch it off by omission.
+        if (isset($_POST['messages']) && VNSEEA_PageInboxPermissionColumnAvailable()) {
+            $update_array['messages'] = ($_POST['messages'] == 1) ? 1 : 0;
         }
 
         if (Wo_UpdatePageAdminData($_POST['page_id'], $update_array,$_POST['user_id'])) {

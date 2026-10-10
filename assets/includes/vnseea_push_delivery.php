@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/vnseea_call_notification_policy.php';
+require_once __DIR__ . '/vnseea_page_inbox.php';
 
 if (!function_exists('VNSEEA_PushUuidV4')) {
     function VNSEEA_PushUuidV4()
@@ -760,7 +761,12 @@ if (!function_exists('VNSEEA_MessagePushRecipients')) {
         $sender_id = (int)$message['from_id'];
         if (empty($message['group_id'])) {
             $recipient_id = (int)$message['to_id'];
-            return $recipient_id > 0 && $recipient_id !== $sender_id ? array($recipient_id) : array();
+            $recipient_ids = $recipient_id > 0 && $recipient_id !== $sender_id ? array($recipient_id) : array();
+            // A message to a Page also reaches its admins with the Messages permission.
+            return array_values(array_unique(array_merge(
+                $recipient_ids,
+                VNSEEA_PageInboxPushRecipients($message)
+            )));
         }
 
         $group_id = (int)$message['group_id'];
@@ -1095,6 +1101,22 @@ if (!function_exists('VNSEEA_EnqueueMessagePush')) {
 
         $sender = Wo_UserData((int)$message['from_id']);
         $sender_name = !empty($sender['name']) ? $sender['name'] : '';
+        $sender_avatar = !empty($sender['avatar']) ? $sender['avatar'] : '';
+        $page = !empty($message['page_id']) && empty($message['group_id'])
+            ? Wo_PageData((int)$message['page_id'])
+            : false;
+        $page_title = !empty($page['page_title']) ? $page['page_title'] : (!empty($page['page_name']) ? $page['page_name'] : '');
+        $page_owner_id = !empty($page['user_id']) ? (int)$page['user_id'] : 0;
+        $is_page_side_message = $page_owner_id > 0 && (int)$message['from_id'] === $page_owner_id;
+        if ($is_page_side_message && $page_title !== '') {
+            // Replies from the Page side are announced as the Page, never as
+            // the owner or the member who typed them.
+            $sender_name = $page_title;
+            $sender_avatar = !empty($page['avatar']) ? $page['avatar'] : $sender_avatar;
+        }
+        $page_inbox_member_ids = !empty($page) && !$is_page_side_message
+            ? VNSEEA_PageInboxMemberIds((int)$message['page_id'])
+            : array();
         $recipients = VNSEEA_MessagePushRecipients($message);
         $group_name = !empty($message['group_id'])
             ? VNSEEA_MessagePushGroupName($message['group_id'])
@@ -1147,7 +1169,7 @@ if (!function_exists('VNSEEA_EnqueueMessagePush')) {
                 'message_type' => $descriptor['type'],
                 'sender_id' => (string)$message['from_id'],
                 'sender_name' => $sender_name,
-                'sender_avatar' => !empty($sender['avatar']) ? $sender['avatar'] : '',
+                'sender_avatar' => $sender_avatar,
                 'recipient_id' => (string)$recipient_id,
                 'conversation_type' => $conversation['type'],
                 'conversation_id' => (string)$conversation['id'],
@@ -1167,6 +1189,16 @@ if (!function_exists('VNSEEA_EnqueueMessagePush')) {
             if ($media_group !== null) {
                 $payload['media_group_id'] = $media_group_id;
                 $payload['media_count'] = (string)($media_group['photos'] + $media_group['videos']);
+            }
+            if (in_array((int)$recipient_id, $page_inbox_member_ids, true)) {
+                // Page members open this in the Page Inbox thread with the customer.
+                $payload['page_inbox'] = '1';
+                $payload['page_inbox_user_id'] = (string)$message['from_id'];
+                if ($page_title !== '') {
+                    $payload['title'] = VNSEEA_PushLanguageIsVietnamese($language)
+                        ? $sender_name . ' đã nhắn cho ' . $page_title
+                        : $sender_name . ' messaged ' . $page_title;
+                }
             }
             $targets = VNSEEA_GetUserPushTargets($recipient_id, 'onesignal');
             if (empty($targets)) {
