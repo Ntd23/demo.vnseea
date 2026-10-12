@@ -49,6 +49,8 @@
       </div>
     </div>
 
+      <CmsPresentationSiteLegalFooter v-if="!isReelsPage" />
+
   </div>
 </template>
 
@@ -61,6 +63,7 @@ import NavigationRightSidebar from "../../src/navigation/presentation/components
 import NavigationChatWidgetLoadingState from "../../src/navigation/presentation/components/ChatWidgetLoadingState.vue"
 import DirectoryLeftSidebar from "../../src/directory/presentation/components/LeftSidebar.vue"
 import ReelsPresentationReelsViewerOverlay from "../../src/reels/presentation/components/ReelsViewerOverlay.vue"
+import CmsPresentationSiteLegalFooter from "../../src/cms/presentation/components/SiteLegalFooter.vue"
 import { isMarketplaceNavigationContext } from "../../src/shared-kernel/application/utils/marketplace-navigation"
 
 const route = useRoute()

@@ -148,6 +148,7 @@
         <span>{{ t("auth.footer.language") }}</span>
       </button>
     </footer>
+    <CmsPresentationSiteLegalFooter />
 
     <Teleport to="body">
       <div
@@ -211,6 +212,7 @@
 import { storeToRefs } from "pinia"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
+import CmsPresentationSiteLegalFooter from "../../../cms/presentation/components/SiteLegalFooter.vue"
 
 const props = withDefaults(defineProps<{
   title: string

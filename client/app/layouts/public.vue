@@ -21,12 +21,14 @@
     <main class="public-layout__main">
       <slot />
     </main>
+    <CmsPresentationSiteLegalFooter />
   </div>
 </template>
 
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import NavigationHeaderLogo from "../../src/navigation/presentation/components/HeaderLogo.vue"
+import CmsPresentationSiteLegalFooter from "../../src/cms/presentation/components/SiteLegalFooter.vue"
 
 const { t } = useI18n()
 </script>
