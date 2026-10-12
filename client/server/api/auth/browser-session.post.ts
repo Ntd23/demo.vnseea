@@ -72,7 +72,17 @@ export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig(event)
   const backendWebBase = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase || "")
   const backendCandidates = getBackendBaseCandidates(normalizeBackendBaseURL(backendWebBase))
-  const forwardedCookie = getRequestHeader(event, "cookie")
+  const incomingCookie = getRequestHeader(event, "cookie")
+  // Do not forward the existing browser session cookie during token exchange.
+  const forwardedCookie = incomingCookie
+    ?.split(";")
+    .map(cookie => cookie.trim())
+    .filter((cookie) => {
+      const separator = cookie.indexOf("=")
+      const name = (separator === -1 ? cookie : cookie.slice(0, separator)).trim()
+      return name !== "user_id"
+    })
+    .join("; ")
 
   let lastError: unknown
 

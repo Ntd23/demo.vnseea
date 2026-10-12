@@ -8401,7 +8401,7 @@ function Wo_GetAllProInfo() {
     return false;
 }
 // manage packages
-function Wo_GetReactionsTypes($type = "page") {
+function Wo_GetReactionsTypes_NoCache($type = "page") {
     global $sqlConnect, $wo;
     $data      = array();
     $reactions = mysqli_query($sqlConnect, "SELECT * FROM " . T_REACTIONS_TYPES);
@@ -8416,7 +8416,7 @@ function Wo_GetReactionsTypes($type = "page") {
     }
     return $data;
 }
-function Wo_GetCategories($table) {
+function Wo_GetCategories_NoCache($table) {
     global $sqlConnect, $wo;
     $data       = array();
     $categories = mysqli_query($sqlConnect, "SELECT * FROM " . $table);
@@ -9009,4 +9009,114 @@ if (!function_exists('Wo_ApiSendApnsVoipPush')) {
         return $status >= 200 && $status < 300;
     }
 }
+
+/* ===== VNSEEA_STATIC_CACHE BEGIN (2026-10-12) – cache Redis cho bảng tĩnh. Gỡ: xóa khối này và bỏ hậu tố _NoCache ===== */
+if (!function_exists('Wo_StaticCacheRedis')) {
+    function Wo_StaticCacheRedis()
+    {
+        static $conn = null, $failed = false;
+        if (!empty($GLOBALS['__wo_static_cache_off'])) {
+            $failed = true;
+        }
+        if ($failed) {
+            return null;
+        }
+        if ($conn !== null) {
+            return $conn;
+        }
+        try {
+            if (!class_exists('Redis')) {
+                $failed = true;
+                return null;
+            }
+            $r = new Redis();
+            if (!@$r->connect('127.0.0.1', 6379, 0.2)) {
+                $failed = true;
+                return null;
+            }
+            $r->setOption(Redis::OPT_READ_TIMEOUT, 0.2);
+            $conn = $r;
+            return $conn;
+        } catch (\Throwable $e) {
+            $failed = true;
+            return null;
+        }
+    }
+}
+if (!function_exists('Wo_StaticCache')) {
+    /* $valid: hàm kiểm tra kết quả có đáng lưu không (null = chỉ cần không rỗng) */
+    function Wo_StaticCache($key, $ttl, $loader, $valid = null)
+    {
+        static $mem = array();
+        global $sql_db_name;
+        $ns   = (isset($sql_db_name) && $sql_db_name !== '') ? $sql_db_name : md5(__FILE__);
+        $full = 'vnseea:static:' . $ns . ':' . $key;
+        if (array_key_exists($full, $mem)) {
+            return $mem[$full];
+        }
+        $r = Wo_StaticCacheRedis();
+        if ($r) {
+            try {
+                $raw = $r->get($full);
+                if (is_string($raw) && $raw !== '') {
+                    $val = @unserialize($raw, array('allowed_classes' => false));
+                    if (is_array($val)) {
+                        $mem[$full] = $val;
+                        return $val;
+                    }
+                }
+            } catch (\Throwable $e) {
+                $GLOBALS['__wo_static_cache_off'] = true; /* Redis lỗi/chậm: bỏ Redis cho hết request này */
+                $r = null;
+            }
+        }
+        $val = $loader();
+        $ok  = !empty($val) && is_array($val) && ($valid === null || $valid($val));
+        if ($ok) {
+            $mem[$full] = $val;
+            if ($r) {
+                try {
+                    $r->setex($full, $ttl, serialize($val));
+                } catch (\Throwable $e) {
+                    $GLOBALS['__wo_static_cache_off'] = true;
+                }
+            }
+        }
+        return $val;
+    }
+}
+if (!function_exists('Wo_StaticCacheLangTag')) {
+    function Wo_StaticCacheLangTag()
+    {
+        global $wo;
+        return (!empty($wo['language']) && is_string($wo['language'])) ? $wo['language'] : 'nolang';
+    }
+}
+if (!function_exists('Wo_StaticCacheNoNull')) {
+    function Wo_StaticCacheNoNull($arr)
+    {
+        foreach ($arr as $v) {
+            if ($v === null) {
+                return false;
+            }
+            if (is_array($v) && isset($v['name']) && $v['name'] === null) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+function Wo_GetReactionsTypes($type = "page") {
+    return Wo_StaticCache('reactions_types:' . Wo_StaticCacheLangTag(), 3600, function () use ($type) {
+        return Wo_GetReactionsTypes_NoCache($type);
+    }, 'Wo_StaticCacheNoNull');
+}
+
+function Wo_GetCategories($table) {
+    return Wo_StaticCache('categories:' . $table . ':' . Wo_StaticCacheLangTag(), 3600, function () use ($table) {
+        return Wo_GetCategories_NoCache($table);
+    }, 'Wo_StaticCacheNoNull');
+}
+/* ===== VNSEEA_STATIC_CACHE END ===== */
 ?>

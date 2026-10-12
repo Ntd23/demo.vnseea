@@ -43,7 +43,7 @@ module.exports = {
       },
     },
     {
-      name: process.env.REALTIME_PROCESS_NAME || "vnseea-realtime",
+      name: process.env.REALTIME_PROCESS_NAME || "demo-vnseea-realtime",
       cwd: clientRoot,
       script: path.join(clientRoot, "realtime", "notification-server.mjs"),
       interpreter: "node",
